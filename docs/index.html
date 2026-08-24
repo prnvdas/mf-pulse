@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portfolio — MF Pulse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#000;--paper:#fff;--green:#86bc25;--green-deep:#5f8a15;--red:#da291c;
+    --grey:#63666a;--grey-light:#97999b;--rule:#e4e4e4;--wash:#f7f7f7;--state:var(--green);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{background:var(--paper);color:var(--ink);
+    font-family:"Open Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    font-size:15px;line-height:1.5;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 32px}
+
+  header{border-bottom:1px solid var(--ink);padding:22px 0 16px}
+  .bar{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  .mark{font-size:23px;font-weight:700;letter-spacing:-.025em}
+  .mark i{display:inline-block;width:10px;height:10px;border-radius:50%;
+    background:var(--state);margin-left:3px;font-style:normal}
+  .ctl{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .stamp{font-size:11.5px;color:var(--grey);letter-spacing:.05em;text-transform:uppercase}
+  .stamp b{font-weight:600;color:var(--ink)}
+
+  button{font:inherit;cursor:pointer;border:1px solid var(--ink);background:var(--ink);
+    color:#fff;padding:9px 20px;font-size:12.5px;font-weight:700;letter-spacing:.09em;
+    text-transform:uppercase;transition:background .12s,color .12s}
+  button:hover:not(:disabled){background:#fff;color:var(--ink)}
+  button:disabled{opacity:.4;cursor:progress}
+  button.ghost{background:none;color:var(--ink);border-color:var(--rule);font-weight:600}
+  button.ghost[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:#fff}
+  button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+  .spin{display:inline-block;width:9px;height:9px;border:2px solid currentColor;
+    border-right-color:transparent;border-radius:50%;margin-right:7px;vertical-align:-1px;
+    animation:sp .6s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  .hero{display:grid;grid-template-columns:1fr auto;gap:48px;align-items:center;
+    padding:52px 0 44px;border-bottom:1px solid var(--rule)}
+  .eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--grey);margin-bottom:14px}
+  .headline{font-size:clamp(46px,8vw,88px);font-weight:300;line-height:1;
+    letter-spacing:-.035em;color:var(--state)}
+  .subline{margin-top:18px;font-size:14px;color:var(--grey);max-width:48ch}
+  .subline b{color:var(--ink);font-weight:600}
+  .orb{width:172px;height:172px;border-radius:50%;background:var(--state);
+    display:grid;place-content:center;text-align:center;color:#fff}
+  .orb .pct{font-size:34px;font-weight:600;letter-spacing:-.03em;line-height:1}
+  .orb .word{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+    margin-top:8px;opacity:.85}
+
+  .strip{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--rule)}
+  .stat{padding:22px 22px 22px 0}
+  .stat+.stat{padding-left:22px;border-left:1px solid var(--rule)}
+  .stat .k{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--grey);margin-bottom:7px}
+  .stat .v{font-size:23px;font-weight:600;letter-spacing:-.02em}
+  .stat .v.pos{color:var(--green-deep)}
+
+  section{padding:44px 0;border-bottom:1px solid var(--rule)}
+  h2{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+  h2 span{font-weight:400;letter-spacing:.04em;color:var(--grey-light);text-transform:none;font-size:12px}
+
+  table{width:100%;border-collapse:collapse}
+  th{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--grey);
+    text-align:right;padding:0 0 11px;border-bottom:1px solid var(--ink)}
+  th:first-child{text-align:left}
+  td{padding:16px 0;border-bottom:1px solid var(--rule);text-align:right}
+  td:first-child{text-align:left}
+  tbody tr:last-child td{border-bottom:none}
+  .fname{font-weight:600}
+  .fmeta{font-size:11.5px;color:var(--grey-light);margin-top:3px}
+  .pos{color:var(--green-deep);font-weight:600}
+  .neg{color:var(--red);font-weight:600}
+  .impact{font-weight:600;font-size:16px}
+  .cover{display:flex;align-items:center;gap:9px;justify-content:flex-end}
+  .cover .track{width:52px;height:4px;background:var(--rule);position:relative}
+  .cover .fill{position:absolute;inset:0 auto 0 0;background:var(--ink)}
+  .cover em{font-style:normal;font-size:12px;color:var(--grey);min-width:34px;text-align:right}
+
+  .contrib{display:grid;gap:8px}
+  .row{display:grid;grid-template-columns:1fr 130px 62px 56px;align-items:center;gap:12px;font-size:13.5px}
+  .row .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row .bw{position:relative;height:14px;background:var(--wash)}
+  .row .bw .b{position:absolute;top:0;bottom:0}
+  .row .bw .mid{position:absolute;top:-2px;bottom:-2px;left:50%;width:1px;background:var(--grey-light)}
+  .row .vv{text-align:right;font-size:12.5px;font-weight:600}
+  .row .wt{text-align:right;font-size:11.5px;color:var(--grey-light)}
+
+  .acc{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule)}
+  .acc>div{background:var(--paper);padding:20px 22px}
+  .acc .k{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--grey);margin-bottom:8px}
+  .acc .v{font-size:26px;font-weight:600;letter-spacing:-.02em}
+  .acc .n{font-size:11.5px;color:var(--grey-light);margin-top:6px}
+
+  .note{padding:22px 24px;background:var(--wash);font-size:13.5px;color:var(--grey);
+    border-left:3px solid var(--ink);line-height:1.65}
+  .note.bad{border-left-color:var(--red)}
+  .note b{color:var(--ink)}
+  .note code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;
+    background:#fff;padding:1px 5px;border:1px solid var(--rule)}
+  table.diag{width:100%;border-collapse:collapse;margin-top:14px;font-size:12.5px}
+  table.diag td{padding:7px 0;border-bottom:1px solid var(--rule);text-align:left;
+    vertical-align:top;word-break:break-word}
+  table.diag td:first-child{width:190px;color:var(--grey);padding-right:16px;
+    font-weight:600;white-space:nowrap}
+  table.diag tr:last-child td{border-bottom:none;color:var(--ink)}
+  .note .src{display:flex;gap:9px;margin-top:15px}
+  .note .src button{padding:7px 15px;font-size:11.5px}
+  .note input{font:inherit;font-size:13px;padding:9px 11px;border:1px solid var(--rule);
+    width:min(400px,100%);margin-top:13px;display:block;background:#fff}
+  .note input:focus{outline:2px solid var(--ink);outline-offset:-1px;border-color:var(--ink)}
+
+  footer{padding:32px 0 60px;font-size:12px;color:var(--grey-light);line-height:1.7}
+  footer b{color:var(--grey);font-weight:600}
+
+  @media(max-width:760px){
+    .wrap{padding:0 20px}
+    .hero{grid-template-columns:1fr;gap:30px;padding:38px 0}
+    .orb{width:132px;height:132px}.orb .pct{font-size:27px}
+    .strip{grid-template-columns:1fr 1fr}
+    .stat{padding:17px 15px 17px 0}
+    .stat:nth-child(3),.stat:nth-child(4){border-top:1px solid var(--rule)}
+    .stat:nth-child(3){padding-left:0;border-left:none}
+    .row{grid-template-columns:1fr 74px 56px}.row .wt{display:none}
+    .acc{grid-template-columns:1fr}
+    th:nth-child(4),td:nth-child(4){display:none}
+  }
+  @media(prefers-reduced-motion:reduce){.spin{animation:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <div class="mark">Portfolio<i></i></div>
+    <div class="ctl">
+      <span class="stamp" id="stamp">Ready</span>
+      <button class="ghost" id="diag" title="Test the price source and report exactly what failed">Diagnose</button>
+      <button class="ghost" id="auto" aria-pressed="false" title="Re-run every 60s while the market is open">Auto 60s</button>
+      <button id="refresh">Refresh live</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="hero">
+    <div>
+      <div class="eyebrow" id="eyebrow">Estimated impact today</div>
+      <div class="headline" id="pnl">—</div>
+      <p class="subline" id="sub">Press <b>Refresh live</b> to price every stock underneath your funds and infer today's NAV move.</p>
+    </div>
+    <div class="orb"><div>
+      <div class="pct" id="orbPct">—</div>
+      <div class="word" id="orbWord">Awaiting</div>
+    </div></div>
+  </div>
+
+  <div class="strip">
+    <div class="stat"><div class="k">Current value</div><div class="v" id="cv">—</div></div>
+    <div class="stat"><div class="k">Invested</div><div class="v" id="iv">—</div></div>
+    <div class="stat"><div class="k">Total returns</div><div class="v pos" id="tr">—</div></div>
+    <div class="stat"><div class="k">Return</div><div class="v pos" id="trp">—</div></div>
+  </div>
+
+  <section id="setupWrap" hidden>
+    <h2>Price source</h2>
+    <div class="note bad" id="setup"></div>
+  </section>
+
+  <section>
+    <h2>By fund <span id="fundNote"></span></h2>
+    <table>
+      <thead><tr>
+        <th>Fund</th><th>Est. NAV move</th><th>Impact</th><th>Holdings coverage</th>
+      </tr></thead>
+      <tbody id="funds"></tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>What moved it <span id="movedNote">Live prices, weighted by holding</span></h2>
+    <div class="contrib" id="contrib"></div>
+  </section>
+
+  <section>
+    <h2>Estimate accuracy <span>Predicted vs published NAV, last 30 sessions</span></h2>
+    <div id="accWrap"></div>
+  </section>
+
+  <footer>
+    <b>How this works.</b> AMFI publishes NAV once daily, after close. Pressing refresh prices
+    every stock in each fund's disclosed portfolio, weights the moves, models the untracked
+    tail with the fund's benchmark index, subtracts the day's TER accrual, and infers where
+    NAV lands tonight.<br>
+    <b>Read it as a direction, not a settlement figure.</b> Holdings come from monthly AMC
+    disclosures and lag reality. The accuracy panel shows measured error against published
+    NAV — trust that over the headline precision. Nothing here is investment advice.
+  </footer>
+
+</main>
+
+<script>
+// Source config lives in the URL hash, so the page stays static and bookmarkable.
+//   #source=worker&proxy=https://...workers.dev
+//   #source=sheet&sheet=https://docs.google.com/.../pub?output=csv
+const params = new URLSearchParams(location.hash.slice(1));
+let PROXY = params.get("proxy") || "";
+let SHEET = params.get("sheet") || "";
+let SOURCE = params.get("source") || (SHEET ? "sheet" : PROXY ? "worker" : "relay");
+
+let HASH_WRITABLE = true;
+function saveConfig() {
+  const p = new URLSearchParams();
+  p.set("source", SOURCE);
+  if (PROXY) p.set("proxy", PROXY);
+  if (SHEET) p.set("sheet", SHEET);
+  try {
+    location.hash = p.toString();          // fails in sandboxed iframes
+  } catch (e) {
+    HASH_WRITABLE = false;                 // settings still live in memory
+  }
+}
+
+const DEMO = {
+  tail_model: "benchmark",
+  funds: [
+    { id:"axis-small-cap", name:"Axis Small Cap Fund Direct Growth", ter_annual_pct:0.55,
+      benchmark_ticker:"^CNXSC", cash_pct:5.0, holdings_as_of:null,
+      seed_value:4927389, invested:3524824, holdings:[] },
+    { id:"mirae-large-midcap", name:"Mirae Asset Large & Midcap Fund Direct Growth", ter_annual_pct:0.49,
+      benchmark_ticker:"^NSEMDCP50", cash_pct:2.4, holdings_as_of:"2026-07-31",
+      seed_value:4704276, invested:3474898, holdings:[
+      {n:"HDFC Bank",t:"HDFCBANK.NS",w:6.34},{n:"ICICI Bank",t:"ICICIBANK.NS",w:3.61},
+      {n:"State Bank of India",t:"SBIN.NS",w:3.00},{n:"Reliance Industries",t:"RELIANCE.NS",w:2.80},
+      {n:"Axis Bank",t:"AXISBANK.NS",w:2.30},{n:"Infosys",t:"INFY.NS",w:2.10},
+      {n:"Larsen & Toubro",t:"LT.NS",w:1.95},{n:"Bharti Airtel",t:"BHARTIARTL.NS",w:1.85},
+      {n:"Kotak Mahindra Bank",t:"KOTAKBANK.NS",w:1.60},{n:"TCS",t:"TCS.NS",w:1.50},
+      {n:"NTPC",t:"NTPC.NS",w:1.40},{n:"Maruti Suzuki",t:"MARUTI.NS",w:1.35},
+      {n:"Bajaj Finance",t:"BAJFINANCE.NS",w:1.30},{n:"Sun Pharmaceutical",t:"SUNPHARMA.NS",w:1.25},
+      {n:"HCL Technologies",t:"HCLTECH.NS",w:1.20},{n:"Power Grid",t:"POWERGRID.NS",w:1.10},
+      {n:"Titan Company",t:"TITAN.NS",w:1.05},{n:"UltraTech Cement",t:"ULTRACEMCO.NS",w:1.00},
+      {n:"Mahindra & Mahindra",t:"M&M.NS",w:0.95},{n:"Cholamandalam Inv",t:"CHOLAFIN.NS",w:0.90}] },
+    { id:"jioblackrock-flexicap", name:"JioBlackRock Flexi Cap Fund Direct Growth", ter_annual_pct:0.50,
+      benchmark_ticker:"^CRSLDX", cash_pct:6.0, holdings_as_of:null,
+      seed_value:160660, invested:156992, holdings:[] }
+  ]
+};
+
+let CFG = null, ACC = { samples: 0 }, timer = null;
+
+const $ = id => document.getElementById(id);
+const inr = n => "₹" + Math.round(Math.abs(n)).toLocaleString("en-IN");
+const signed = n => (n >= 0 ? "+" : "−") + inr(n);
+const pc = (n, d = 2) => (n >= 0 ? "+" : "−") + Math.abs(n).toFixed(d) + "%";
+const valueOf = f => (f.units && f.last_nav) ? f.units * f.last_nav : (f.seed_value || 0);
+
+function marketOpen() {
+  const ist = new Date(Date.now() + (new Date().getTimezoneOffset() + 330) * 60000);
+  if (ist.getDay() === 0 || ist.getDay() === 6) return false;
+  const m = ist.getHours() * 60 + ist.getMinutes();
+  return m >= 555 && m <= 930;             // 09:15 - 15:30 IST
+}
+
+// --- source A: Cloudflare Worker (NSE bulk, Yahoo fallback) ----------------
+// Chunked at 40: if NSE is reachable the Worker answers from 3 bulk calls, but
+// if it's blocked the Worker falls back to one Yahoo request per symbol and the
+// free plan caps subrequests at 50. Cloudflare caches the NSE responses across
+// chunks, so the repeat cost is negligible.
+let LAST_SOURCES = null, LAST_NSE_ERROR = null;
+
+function classify(err, url) {
+  if (err instanceof TypeError) {
+    return { kind: "network", detail:
+      "The browser refused or could not complete the request to " + url + ". " +
+      "Three usual causes: the Worker isn't deployed yet; the page is running " +
+      "inside a sandboxed frame that blocks outbound requests; or the URL is wrong." };
+  }
+  return { kind: "http", detail: String(err.message || err) };
+}
+
+async function fetchViaWorker(tickers) {
+  if (!PROXY) throw new Error("no-source");
+  const chunks = [];
+  for (let i = 0; i < tickers.length; i += 40) chunks.push(tickers.slice(i, i + 40));
+  const base = PROXY.replace(/\/+$/, "");
+
+  const payloads = await Promise.all(chunks.map(async ch => {
+    const target = base + "/?symbols=" + encodeURIComponent(ch.join(","));
+    let r;
+    try {
+      r = await fetch(target, { cache: "no-store" });
+    } catch (e) {
+      const c = classify(e, base);
+      const err = new Error(c.detail); err.kind = c.kind; throw err;
+    }
+    if (!r.ok) {
+      const err = new Error("Worker replied HTTP " + r.status + " " + r.statusText);
+      err.kind = "http"; throw err;
+    }
+    return r.json();
+  }));
+
+  LAST_SOURCES = payloads.reduce((acc, p) => {
+    for (const [k, v] of Object.entries(p.sources || {})) acc[k] = (acc[k] || 0) + v;
+    return acc;
+  }, {});
+  LAST_NSE_ERROR = payloads.find(p => p.nse_error)?.nse_error || null;
+
+  return Object.assign({}, ...payloads.map(p => p.quotes || {}));
+}
+
+// --- source C: public CORS relay, no deploy --------------------------------
+// Works immediately with nothing to set up, which is its only virtue. It's a
+// free shared service: rate-limited, slow (one request per stock), and it can
+// disappear without notice. Fine for confirming the thing works; not something
+// to depend on.
+const RELAY = "https://api.allorigins.win/raw?url=";
+
+async function fetchViaRelay(tickers) {
+  LAST_SOURCES = { relay: 0 }; LAST_NSE_ERROR = null;
+  const quotes = {};
+
+  // Small batches — hammering a shared relay with 90 parallel requests gets
+  // you throttled, and a throttled response looks identical to a dead ticker.
+  for (let i = 0; i < tickers.length; i += 6) {
+    const batch = tickers.slice(i, i + 6);
+    const settled = await Promise.allSettled(batch.map(async t => {
+      const y = "https://query1.finance.yahoo.com/v8/finance/chart/" +
+        encodeURIComponent(t) + "?range=5d&interval=1d";
+      const r = await fetch(RELAY + encodeURIComponent(y), { cache: "no-store" });
+      if (!r.ok) throw new Error("relay " + r.status);
+      const m = (await r.json())?.chart?.result?.[0]?.meta;
+      const last = m?.regularMarketPrice;
+      const prev = m?.chartPreviousClose ?? m?.previousClose;
+      if (!last || !prev) throw new Error("no data");
+      return [t, { last, prev, pct: (last - prev) / prev * 100, src: "relay" }];
+    }));
+    for (const s of settled) {
+      if (s.status === "fulfilled") { quotes[s.value[0]] = s.value[1]; LAST_SOURCES.relay++; }
+    }
+    $("stamp").textContent = "Pricing " + Object.keys(quotes).length + "/" + tickers.length;
+  }
+
+  if (!Object.keys(quotes).length) {
+    const e = new Error("The public relay returned nothing for any ticker. It's a free " +
+      "shared service and is probably rate-limiting you. Deploy the Worker for something " +
+      "that actually holds up.");
+    e.kind = "network"; throw e;
+  }
+  return quotes;
+}
+
+// --- source B: a published Google Sheet full of GOOGLEFINANCE() ------------
+// One request, no deploy. But you get whatever Sheets last recalculated —
+// pressing refresh will not make Google fetch a newer price.
+function parseCSV(text) {
+  const rows = [];
+  let row = [], cell = "", quoted = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (quoted) {
+      if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else quoted = false; }
+      else cell += c;
+    } else if (c === '"') quoted = true;
+    else if (c === ",") { row.push(cell); cell = ""; }
+    else if (c === "\n") { row.push(cell); rows.push(row); row = []; cell = ""; }
+    else if (c !== "\r") cell += c;
+  }
+  if (cell || row.length) { row.push(cell); rows.push(row); }
+  return rows;
+}
+
+async function fetchViaSheet() {
+  if (!SHEET) throw new Error("no-source");
+  LAST_SOURCES = null; LAST_NSE_ERROR = null;
+  let r;
+  try {
+    r = await fetch(SHEET, { cache: "no-store" });
+  } catch (e) {
+    const c = classify(e, SHEET);
+    const err = new Error(c.detail); err.kind = c.kind; throw err;
+  }
+  if (!r.ok) {
+    const err = new Error("Sheet replied HTTP " + r.status +
+      " — is it published to the web as CSV?");
+    err.kind = "http"; throw err;
+  }
+
+  const rows = parseCSV(await r.text());
+  if (rows.length < 2) throw new Error("sheet looks empty");
+
+  const head = rows[0].map(h => h.trim().toLowerCase());
+  const iT = head.indexOf("ticker"), iL = head.indexOf("last");
+  const iP = head.indexOf("prev"), iPct = head.indexOf("pct");
+  if (iT < 0 || iPct < 0) throw new Error("expected columns: ticker, last, prev, pct");
+
+  const quotes = {};
+  for (const row of rows.slice(1)) {
+    const t = (row[iT] || "").trim();
+    const pct = parseFloat(row[iPct]);
+    if (!t || !isFinite(pct)) continue;      // #N/A rows drop out here
+    quotes[t] = { pct, last: parseFloat(row[iL]), prev: parseFloat(row[iP]) };
+  }
+  return quotes;
+}
+
+const fetchQuotes = tickers =>
+  SOURCE === "sheet" ? fetchViaSheet()
+  : SOURCE === "relay" ? fetchViaRelay(tickers)
+  : fetchViaWorker(tickers);
+
+// the inference — mirrors src/estimate.py exactly
+function inferFund(f, q) {
+  let trackedW = 0, weighted = 0;
+  const contributors = [];
+
+  for (const h of f.holdings) {
+    const quote = q[h.t];
+    if (!quote) continue;
+    trackedW += h.w;
+    weighted += h.w * quote.pct;
+    contributors.push({
+      name: h.n, weight: h.w, move: quote.pct,
+      contribution: h.w * quote.pct / 100, fund: f.name.split(" ")[0]
+    });
+  }
+
+  const trackedMove = trackedW ? weighted / trackedW : 0;
+  const tailW = Math.max(0, 100 - trackedW - f.cash_pct);
+  const bench = q[f.benchmark_ticker];
+  const tailMove = (CFG.tail_model === "benchmark" && bench) ? bench.pct : trackedMove;
+
+  const navMove = (trackedW / 100) * trackedMove
+                + (tailW / 100) * tailMove
+                - (f.ter_annual_pct || 0) / 365;
+
+  const value = valueOf(f);
+  const coverage = trackedW / Math.max(1e-9, 100 - f.cash_pct);
+  const bandPct = 0.10 + (1 - coverage) * 0.60;
+  const projectedNav = f.last_nav ? f.last_nav * (1 + navMove / 100) : null;
+
+  return {
+    ...f, navMove, value, projectedNav,
+    impact: value * navMove / 100,
+    band: Math.abs(value) * bandPct / 100,
+    coverage: trackedW,
+    priced: contributors.length, total: f.holdings.length,
+    contributors: contributors.sort((a, b) => Math.abs(b.contribution) - Math.abs(a.contribution))
+  };
+}
+
+function render(funds, meta) {
+  const value = funds.reduce((s, f) => s + f.value, 0);
+  const invested = funds.reduce((s, f) => s + (f.invested || 0), 0);
+  const impact = funds.reduce((s, f) => s + f.impact, 0);
+  const band = Math.sqrt(funds.reduce((s, f) => s + f.band ** 2, 0));
+  const todayPct = value ? impact / value * 100 : 0;
+  const up = impact >= 0;
+
+  // Projected: what tonight's NAV implies for total value and life-to-date P&L,
+  // not just today's wiggle. current value + today's estimated move.
+  const projectedValue = value + impact;
+  const projectedReturns = projectedValue - invested;
+  const projectedReturnsPct = invested ? projectedReturns / invested * 100 : 0;
+
+  document.documentElement.style.setProperty("--state", up ? "var(--green)" : "var(--red)");
+  $("pnl").textContent = signed(impact);
+  $("orbPct").textContent = pc(todayPct);
+  $("orbWord").textContent = up ? "In the green" : "In the red";
+  $("eyebrow").textContent = marketOpen() ? "Estimated impact — live" : "Estimated impact — session close";
+
+  $("sub").innerHTML =
+    "On <b>" + inr(value) + "</b>, inferred from <b>" + meta.priced + "</b> stock prices" +
+    (meta.blend ? " (" + meta.blend + ")" : "") + ". " +
+    "Expect the published NAV within roughly <b>±" + inr(band) + "</b> of this. " +
+    "If tonight's NAV lands here, your portfolio is worth <b>" + inr(projectedValue) +
+    "</b> — a total profit of <b>" + signed(projectedReturns) + "</b> (" +
+    pc(projectedReturnsPct) + ") since you started. " +
+    (marketOpen() ? "Market is open — this keeps moving until 15:30."
+                  : "Market closed — this is the final read for the session.");
+
+  $("cv").textContent = inr(value);
+  $("iv").textContent = inr(invested);
+  $("tr").textContent = signed(value - invested);
+  $("trp").textContent = pc(invested ? (value - invested) / invested * 100 : 0);
+
+  const thin = funds.filter(f => f.coverage < 70).length;
+  $("fundNote").textContent = thin
+    ? thin + " fund" + (thin > 1 ? "s" : "") + " thinly covered — reimport holdings" : "";
+
+  $("funds").innerHTML = funds.map(f => {
+    const cls = f.impact >= 0 ? "pos" : "neg";
+    const navLine = f.projectedNav
+      ? " · Est. NAV tonight ₹" + f.projectedNav.toFixed(2) + " (prev ₹" + f.last_nav.toFixed(2) + ")"
+      : "";
+    const line = (f.total
+      ? inr(f.value) + " · " + f.priced + "/" + f.total + " stocks priced · as of " + (f.holdings_as_of || "—")
+      : inr(f.value) + " · no holdings loaded — benchmark proxy only") + navLine;
+    return '<tr><td><div class="fname">' + f.name + '</div><div class="fmeta">' + line + '</div></td>' +
+      '<td class="' + cls + '">' + pc(f.navMove, 2) + '</td>' +
+      '<td class="impact ' + cls + '">' + signed(f.impact) + '</td>' +
+      '<td><div class="cover"><div class="track"><div class="fill" style="width:' +
+      Math.min(100, f.coverage) + '%"></div></div><em>' + Math.round(f.coverage) + '%</em></div></td></tr>';
+  }).join("");
+
+  const all = funds.flatMap(f => f.contributors)
+    .sort((a, b) => Math.abs(b.contribution) - Math.abs(a.contribution)).slice(0, 10);
+
+  $("movedNote").textContent = all.length
+    ? meta.priced + " of " + meta.requested + " priced · top 10 by weighted contribution" : "";
+
+  if (all.length) {
+    const max = Math.max.apply(null, all.map(c => Math.abs(c.contribution))) || 1;
+    $("contrib").innerHTML = all.map(c => {
+      const w = Math.abs(c.contribution) / max * 50, u = c.contribution >= 0;
+      return '<div class="row"><div class="nm">' + c.name +
+        ' <span style="color:var(--grey-light)">· ' + c.fund + '</span></div>' +
+        '<div class="bw"><div class="b" style="left:' + (u ? 50 : 50 - w) + '%;width:' + w +
+        '%;background:' + (u ? "var(--green)" : "var(--red)") + '"></div><div class="mid"></div></div>' +
+        '<div class="vv ' + (u ? "pos" : "neg") + '">' + pc(c.move, 1) + '</div>' +
+        '<div class="wt">' + c.weight.toFixed(1) + '%</div></div>';
+    }).join("");
+  } else {
+    $("contrib").innerHTML = '<div class="note">No holdings priced yet. Import each fund\'s ' +
+      'monthly portfolio disclosure with <code>import_holdings.py</code>, then run ' +
+      '<code>export_web.py</code>.</div>';
+  }
+
+  $("accWrap").innerHTML = ACC.samples
+    ? '<div class="acc"><div><div class="k">Mean absolute error</div><div class="v">' +
+      ACC.mae_pct.toFixed(2) + '%</div><div class="n">≈ ' + inr(value * ACC.mae_pct / 100) +
+      ' on today\'s balance</div></div><div><div class="k">Direction called right</div><div class="v">' +
+      ACC.direction_accuracy_pct.toFixed(0) + '%</div><div class="n">red-or-green, ' + ACC.samples +
+      ' sessions</div></div><div><div class="k">Worst miss</div><div class="v">' +
+      ACC.worst_error_pct.toFixed(2) + '%</div><div class="n">largest single-day error</div></div></div>'
+    : '<div class="note">Not enough data yet. Each night <code>reconcile.py</code> scores that ' +
+      "day's estimate against the NAV AMFI actually published; the measured error band appears " +
+      'here after a few sessions.</div>';
+}
+
+const SOURCE_HELP =
+  '<b>Pick where prices come from.</b> Browsers can\'t call Yahoo, Google Finance or NSE ' +
+  'directly — CORS blocks all three.<br><br>' +
+  '<b>No setup</b> — routes through a free public relay. Works this second, nothing to ' +
+  'install. Slow and rate-limited; use it to confirm things work, not to rely on.<br>' +
+  '<b>Worker</b> — paste <code>worker/worker.js</code> into Cloudflare\'s browser editor and ' +
+  'hit Deploy. Two minutes, no CLI. Tries NSE first (real-time, bulk), Yahoo as backup. ' +
+  'This is the one to end up on.<br>' +
+  '<b>Google Sheet</b> — <code>make_sheet.py</code>, paste into a sheet, publish as CSV. ' +
+  'No deploy, but you get Google\'s last recalculation rather than a live fetch, and thin ' +
+  'smallcaps come back blank.';
+
+function showSetup(msg) {
+  $("setupWrap").hidden = false;
+  $("setup").innerHTML = msg +
+    '<div class="src">' +
+      '<button class="ghost" data-src="relay" aria-pressed="' + (SOURCE === "relay") + '">No setup</button>' +
+      '<button class="ghost" data-src="worker" aria-pressed="' + (SOURCE === "worker") + '">Worker</button>' +
+      '<button class="ghost" data-src="sheet" aria-pressed="' + (SOURCE === "sheet") + '">Google Sheet</button>' +
+    '</div>' +
+    (SOURCE === "relay" ? '' :
+    '<input id="srcIn" placeholder="' + (SOURCE === "sheet"
+      ? "https://docs.google.com/spreadsheets/d/e/.../pub?output=csv"
+      : "https://mf-pulse-prices.you.workers.dev") +
+    '" value="' + (SOURCE === "sheet" ? SHEET : PROXY) + '">');
+
+  $("setup").querySelectorAll("[data-src]").forEach(b =>
+    b.addEventListener("click", () => { SOURCE = b.dataset.src; saveConfig(); showSetup(msg); }));
+
+  const input = $("srcIn");
+  if (input) input.addEventListener("change", e => {
+    const v = e.target.value.trim();
+    if (SOURCE === "sheet") SHEET = v; else PROXY = v;
+    saveConfig();
+    $("setupWrap").hidden = true;
+    run();
+  });
+}
+
+async function run() {
+  const btn = $("refresh");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>Pricing';
+  $("stamp").textContent = "Fetching quotes";
+
+  try {
+    const tickers = [...new Set(CFG.funds.flatMap(f =>
+      f.holdings.map(h => h.t).concat([f.benchmark_ticker])).filter(Boolean))];
+
+    const quotes = await fetchQuotes(tickers);
+    const priced = Object.keys(quotes).length;
+    if (!priced) throw new Error("no quotes returned");
+
+    const s = LAST_SOURCES || {};
+    const blend = SOURCE === "sheet" ? "Google Sheets"
+      : SOURCE === "relay" ? "public relay — slow, deploy the Worker when you can"
+      : [s.nse ? s.nse + " real-time via NSE" : null,
+         s.yahoo ? s.yahoo + " delayed via Yahoo" : null].filter(Boolean).join(", ");
+
+    render(CFG.funds.map(f => inferFund(f, quotes)), { priced, requested: tickers.length, blend });
+
+    if (LAST_NSE_ERROR) {
+      $("setupWrap").hidden = false;
+      $("setup").className = "note";
+      $("setup").innerHTML = "<b>NSE unreachable — running on Yahoo alone.</b> <code>" +
+        LAST_NSE_ERROR + "</code><br><br>NSE blocks datacenter IP ranges, and Cloudflare's " +
+        "egress is a frequent target. Prices are still correct, just 15 minutes delayed and " +
+        "thinner on illiquid smallcaps. Nothing to fix — it either works from your Worker's " +
+        "edge location or it doesn't.";
+    }
+
+    $("setupWrap").hidden = true;
+    $("stamp").innerHTML = (SOURCE === "sheet" ? "Sheets · " : SOURCE === "relay" ? "Relay · "
+      : (LAST_SOURCES && LAST_SOURCES.nse ? "NSE · " : "Yahoo · ")) + "Updated <b>" +
+      new Date().toLocaleTimeString("en-IN",
+        { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + "</b>";
+  } catch (err) {
+    $("stamp").textContent = "Refresh failed";
+    $("setup").className = "note bad";
+    showSetup(err.message === "no-source" ? SOURCE_HELP :
+      "<b>Couldn't reach the price source.</b><br><br>" + err.message +
+      "<br><br>Press <b>Diagnose</b> for a step-by-step check." +
+      (HASH_WRITABLE ? "" : "<br><br><b>Note:</b> this page can't write to its own URL, " +
+        "which means it's running in a sandboxed frame. Outbound requests are usually " +
+        "blocked there. Serve it for real: <code>python -m http.server -d docs 8000</code>."));
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Refresh live";
+  }
+}
+
+// --- diagnostics -----------------------------------------------------------
+async function diagnose() {
+  const out = [];
+  const url = SOURCE === "sheet" ? SHEET : SOURCE === "relay" ? RELAY : PROXY;
+
+  out.push(["Page origin", location.origin || "(none — opened as a file)"]);
+  out.push(["Source selected", SOURCE]);
+  out.push(["URL configured", url || "NOT SET — this alone will stop everything"]);
+  out.push(["Settings persist in URL", HASH_WRITABLE ? "yes" : "no — sandboxed frame, settings are memory-only"]);
+  out.push(["Holdings loaded", CFG.funds.reduce((s, f) => s + f.holdings.length, 0) + " across " + CFG.funds.length + " funds"]);
+
+  if (!url) {
+    out.push(["Verdict", SOURCE === "sheet"
+      ? "Publish the sheet as CSV and paste the URL above."
+      : "Run `wrangler deploy` in worker/ and paste the URL above."]);
+    return out;
+  }
+
+  const probe = SOURCE === "sheet" ? url
+    : url.replace(/\/+$/, "") + "/?symbols=RELIANCE.NS";
+  const t0 = performance.now();
+  try {
+    const r = await fetch(probe, { cache: "no-store" });
+    out.push(["Reached the source", "yes, HTTP " + r.status + " in " + Math.round(performance.now() - t0) + "ms"]);
+    const body = await r.text();
+    out.push(["Response size", body.length + " bytes"]);
+    out.push(["First 200 chars", body.slice(0, 200)]);
+    if (SOURCE !== "sheet") {
+      try {
+        const j = JSON.parse(body);
+        out.push(["Quotes returned", j.resolved + " of " + j.requested]);
+        out.push(["Source mix", JSON.stringify(j.sources || {})]);
+        if (j.nse_error) out.push(["NSE said", j.nse_error + " (falling back to Yahoo — not fatal)"]);
+        out.push(["Verdict", j.resolved ? "Working. If Refresh still looks wrong, the issue is holdings coverage, not connectivity."
+                                        : "Reachable but returned no quotes — check the symbol format."]);
+      } catch (e) { out.push(["Verdict", "Reached it, but the reply wasn't JSON. Is that URL really the Worker?"]); }
+    } else {
+      out.push(["Verdict", body.includes(",") ? "Reachable and looks like CSV." : "Reachable but doesn't look like CSV."]);
+    }
+  } catch (e) {
+    const c = classify(e, probe);
+    out.push(["Reached the source", "NO"]);
+    out.push(["Why", c.detail]);
+    out.push(["Verdict", location.origin
+      ? "Deploy the Worker, or double-check the URL."
+      : "You're on file:// or in a sandbox. Serve it properly: python -m http.server -d docs 8000"]);
+  }
+  return out;
+}
+
+$("diag").addEventListener("click", async e => {
+  const b = e.currentTarget;
+  b.disabled = true; b.textContent = "Checking";
+  const rows = await diagnose();
+  $("setupWrap").hidden = false;
+  $("setup").className = "note";
+  $("setup").innerHTML = "<b>Diagnostics</b><table class=\"diag\">" +
+    rows.map(([k, v]) => "<tr><td>" + k + "</td><td>" + String(v)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;") + "</td></tr>").join("") + "</table>";
+  b.disabled = false; b.textContent = "Diagnose";
+});
+
+$("refresh").addEventListener("click", run);
+
+$("auto").addEventListener("click", e => {
+  const on = e.currentTarget.getAttribute("aria-pressed") !== "true";
+  e.currentTarget.setAttribute("aria-pressed", String(on));
+  clearInterval(timer);
+  if (on) { timer = setInterval(() => { if (marketOpen()) run(); }, 60000); run(); }
+});
+
+window.addEventListener("error", e => {
+  $("stamp").textContent = "Script error";
+  $("setupWrap").hidden = false;
+  $("setup").className = "note bad";
+  $("setup").innerHTML = "<b>Something threw.</b> <code>" +
+    String(e.message).replace(/</g, "&lt;") + "</code><br><br>" +
+    "This shouldn't happen — the console will have the stack trace.";
+});
+
+// latest.json is written by estimate.py (locally or via GitHub Actions) using
+// yfinance straight from Python — no CORS, no relay, every ticker resolved.
+// Prefer it on load; the Refresh button then overrides it with a live pull.
+function adaptLatest(d) {
+  const funds = d.funds.map(f => ({
+    ...f,
+    value: f.current_value,
+    navMove: f.nav_move_pct,
+    impact: f.rupee_impact,
+    band: f.band_rupees,
+    coverage: f.coverage_pct,
+    projectedNav: f.projected_nav,
+    priced: (f.top_contributors || []).length,
+    total: f.holdings_count || 0,
+    holdings: [],
+    contributors: (f.top_contributors || []).map(c => ({
+      name: c.name, weight: c.weight_pct, move: c.move_pct,
+      contribution: c.contribution_pct, fund: f.name.split(" ")[0]
+    }))
+  }));
+  return { funds, priced: funds.reduce((s, f) => s + f.priced, 0),
+           generated: d.generated_label, resolved: d.tickers_resolved,
+           total: d.tickers_total };
+}
+
+(async () => {
+  CFG = await fetch("data/config.json", { cache: "no-store" })
+    .then(r => r.ok ? r.json() : Promise.reject()).catch(() => DEMO);
+  ACC = await fetch("data/accuracy.json", { cache: "no-store" })
+    .then(r => r.ok ? r.json() : Promise.reject()).catch(() => ({ samples: 0 }));
+
+  const latest = await fetch("data/latest.json", { cache: "no-store" })
+    .then(r => r.ok ? r.json() : Promise.reject()).catch(() => null);
+
+  if (latest && latest.funds) {
+    const a = adaptLatest(latest);
+    render(a.funds, { priced: a.priced, requested: a.total || a.priced,
+      blend: "estimate.py, " + a.resolved + "/" + a.total + " tickers" });
+    $("stamp").innerHTML = "Batch · <b>" + a.generated + "</b>";
+    return;   // don't immediately overwrite good data with a throttled relay pull
+  }
+
+  render(CFG.funds.map(f => inferFund(f, {})), { priced: 0, requested: 0, blend: "" });
+  $("pnl").textContent = "—";
+  $("orbPct").textContent = "—";
+  $("orbWord").textContent = "Awaiting";
+  $("movedNote").textContent = "";
+  $("sub").innerHTML = "Press <b>Refresh live</b> to price every stock underneath your funds and infer today's NAV move.";
+  document.documentElement.style.setProperty("--state", "var(--green)");
+
+  if (SOURCE === "relay" || (SOURCE === "sheet" ? SHEET : PROXY)) run(); else showSetup(SOURCE_HELP);
+})();
+</script>
+</body>
+</html>

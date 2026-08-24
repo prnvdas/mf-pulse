@@ -1,0 +1,11 @@
+name = "mf-pulse-prices"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+# Deploy:
+#   npm install -g wrangler
+#   cd worker && wrangler login && wrangler deploy
+#
+# You get a URL like https://mf-pulse-prices.<subdomain>.workers.dev
+# Paste it into the dashboard's settings box (stored in the URL hash, so you
+# can just bookmark the page with it attached).

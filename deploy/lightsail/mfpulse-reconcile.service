@@ -1,0 +1,8 @@
+[Unit]
+Description=MF Pulse nightly AMFI reconciliation
+
+[Service]
+Type=oneshot
+User=mfpulse
+WorkingDirectory=/opt/mf-pulse
+ExecStart=/opt/mf-pulse/.venv/bin/python src/reconcile.py

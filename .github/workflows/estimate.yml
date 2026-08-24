@@ -1,0 +1,38 @@
+name: estimate
+
+# Every 15 minutes during NSE hours (09:15-15:30 IST = 03:45-10:00 UTC),
+# plus one final run just after close to lock in the day's number.
+#
+# Note: GitHub's scheduler is best-effort and can lag 5-20 minutes under load.
+# That is fine for an end-of-day estimate; it would not be fine for trading.
+on:
+  schedule:
+    - cron: "*/15 4-10 * * 1-5"
+    - cron: "35 10 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: estimate
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python src/estimate.py
+      - name: Commit dashboard data
+        run: |
+          git config user.name  "mf-pulse"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/data
+          git diff --staged --quiet || git commit -m "estimate $(date -u +%FT%TZ)"
+          git push

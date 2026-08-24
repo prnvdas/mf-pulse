@@ -1,0 +1,70 @@
+# ---------------------------------------------------------------------------
+# MF Pulse — portfolio configuration
+#
+# `units` is the number that actually matters. Groww shows you rupees; the
+# engine needs units. If you don't know them, leave units: null and set
+# seed_value — the first reconcile run will back-solve units from AMFI NAV
+# and write them in.
+#
+# `amfi_code` is the scheme code from https://www.amfiindia.com/spages/NAVAll.txt
+# (grep the file for the scheme name — it's the first column).
+# ---------------------------------------------------------------------------
+
+currency: INR
+timezone: Asia/Kolkata
+
+market:
+  open: "09:15"
+  close: "15:30"
+  # Estimates outside this window are marked `stale: true` in the JSON.
+
+funds:
+  - id: axis-small-cap
+    name: Axis Small Cap Fund Direct Growth
+    amfi_code: 125354
+    ter_annual_pct: 0.55       # direct plan TER
+    benchmark_ticker: "^CNXSC" # Nifty Smallcap proxy for the untracked tail
+    groww_slug: axis-small-cap-fund-direct-growth
+    units: null
+    seed_value: 4927389
+    seed_invested: 3524824
+
+  - id: mirae-large-midcap
+    name: Mirae Asset Large & Midcap Fund Direct Growth
+    amfi_code: 118834
+    ter_annual_pct: 0.49
+    benchmark_ticker: "^NSEMDCP50"
+    groww_slug: mirae-asset-large-midcap-fund-direct-growth
+    units: null
+    seed_value: 4704276
+    seed_invested: 3474898
+
+  - id: jioblackrock-flexicap
+    name: JioBlackRock Flexi Cap Fund Direct Growth
+    amfi_code: 153859
+    ter_annual_pct: 0.50
+    benchmark_ticker: "^CRSLDX" # Nifty 500
+    groww_slug: jioblackrock-flexi-cap-fund-direct-growth
+    units: null
+    seed_value: 160660
+    seed_invested: 156992
+
+# Monthly SIP debits. Without these, units drift and the P&L quietly goes wrong.
+sips:
+  - fund_id: axis-small-cap
+    amount: 50000
+    day_of_month: 5
+  - fund_id: mirae-large-midcap
+    amount: 50000
+    day_of_month: 5
+  - fund_id: jioblackrock-flexicap
+    amount: 10000
+    day_of_month: 5
+
+estimator:
+  # How the untracked tail of each fund is modelled.
+  #   benchmark -> assume it moves like the fund's benchmark index
+  #   scale     -> assume it moves like the tracked portion (naive, riskier)
+  tail_model: benchmark
+  # Holdings older than this are flagged in the UI.
+  holdings_stale_days: 45

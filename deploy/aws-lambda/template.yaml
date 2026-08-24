@@ -1,0 +1,106 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: MF Pulse — price proxy + scheduled estimator on Lambda, state in S3
+
+Parameters:
+  ScheduleEnabled:
+    Type: String
+    Default: 'false'
+    AllowedValues: ['true', 'false']
+    Description: >
+      Leave false if GitHub Actions is your writer of record. Setting both to
+      true forks your unit counts and prediction history.
+
+Conditions:
+  UseSchedule: !Equals [!Ref ScheduleEnabled, 'true']
+
+Globals:
+  Function:
+    Runtime: python3.12
+    MemorySize: 512          # generous; the work is network-bound, not CPU
+    Timeout: 60
+    Architectures: [arm64]   # Graviton — ~20% cheaper per ms
+
+Resources:
+
+  DataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: expire-old-versions
+            Status: Enabled
+            NoncurrentVersionExpirationInDays: 30
+      VersioningConfiguration:
+        Status: Enabled
+
+  PulseFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../
+      Handler: deploy/aws-lambda/handler.handler
+      Environment:
+        Variables:
+          MFPULSE_S3_BUCKET: !Ref DataBucket
+          MFPULSE_S3_PREFIX: data/
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref DataBucket
+      FunctionUrlConfig:
+        AuthType: NONE       # public read-only price lookup; no secrets in it
+        Cors:
+          AllowOrigins: ['*']
+          AllowMethods: [GET]
+          MaxAge: 300
+
+  EstimateSchedule:
+    Type: AWS::Events::Rule
+    Condition: UseSchedule
+    Properties:
+      Description: Every 15 min during NSE hours (03:45-10:00 UTC, Mon-Fri)
+      ScheduleExpression: 'cron(0/15 4-10 ? * MON-FRI *)'
+      Targets:
+        - Arn: !GetAtt PulseFunction.Arn
+          Id: estimate
+          Input: '{"mode":"estimate"}'
+
+  ReconcileSchedule:
+    Type: AWS::Events::Rule
+    Condition: UseSchedule
+    Properties:
+      Description: 23:15 IST — after AMFI publishes
+      ScheduleExpression: 'cron(45 17 ? * MON-FRI *)'
+      Targets:
+        - Arn: !GetAtt PulseFunction.Arn
+          Id: reconcile
+          Input: '{"mode":"reconcile"}'
+
+  EstimatePermission:
+    Type: AWS::Lambda::Permission
+    Condition: UseSchedule
+    Properties:
+      FunctionName: !Ref PulseFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt EstimateSchedule.Arn
+
+  ReconcilePermission:
+    Type: AWS::Lambda::Permission
+    Condition: UseSchedule
+    Properties:
+      FunctionName: !Ref PulseFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt ReconcileSchedule.Arn
+
+Outputs:
+  PriceEndpoint:
+    Description: Paste this into the dashboard under Price source -> Worker
+    Value: !GetAtt PulseFunctionUrl.FunctionUrl
+  Bucket:
+    Value: !Ref DataBucket

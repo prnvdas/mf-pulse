@@ -1,0 +1,17 @@
+[Unit]
+Description=MF Pulse price API
+After=network-online.target
+
+[Service]
+User=mfpulse
+WorkingDirectory=/opt/mf-pulse
+ExecStart=/opt/mf-pulse/.venv/bin/uvicorn deploy.lightsail.api:app --host 127.0.0.1 --port 8001
+Restart=always
+RestartSec=5
+# 512MB box — keep the process from taking the whole thing down with it
+MemoryMax=200M
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

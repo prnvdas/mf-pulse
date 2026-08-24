@@ -1,0 +1,9 @@
+[Unit]
+Description=Reconcile after AMFI publishes
+
+[Timer]
+OnCalendar=Mon..Fri *-*-* 23:15 Asia/Kolkata
+Persistent=true
+
+[Install]
+WantedBy=timers.target

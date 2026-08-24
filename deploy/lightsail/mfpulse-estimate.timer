@@ -1,0 +1,9 @@
+[Unit]
+Description=Estimate every 15 min during NSE hours
+
+[Timer]
+OnCalendar=Mon..Fri *-*-* 09:15..15:30/0:15:00 Asia/Kolkata
+Persistent=false
+
+[Install]
+WantedBy=timers.target

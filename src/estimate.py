@@ -139,6 +139,7 @@ def estimate_fund(fund: dict, cfg: dict, moves: dict[str, float | None]) -> dict
         "tail_move_pct": round(tail_move, 2) if tail_move is not None else None,
         "holdings_as_of": holdings_doc.get("as_of"),
         "holdings_count": len(holdings),
+        "priced_count": len(contributors),
         "top_contributors": contributors[:8],
     }
 

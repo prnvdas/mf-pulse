@@ -729,7 +729,7 @@ function adaptLatest(d) {
     band: f.band_rupees,
     coverage: f.coverage_pct,
     projectedNav: f.projected_nav,
-    priced: (f.top_contributors || []).length,
+    priced: f.priced_count || 0,
     total: f.holdings_count || 0,
     holdings: [],
     contributors: (f.top_contributors || []).map(c => ({

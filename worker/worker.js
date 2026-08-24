@@ -164,6 +164,35 @@ async function yahooQuote(symbol) {
   return [symbol, { last, prev, pct: (last - prev) / prev * 100, src: "yahoo" }];
 }
 
+// --- AMFI NAV (for the post-close "did tonight's actual land yet" check) --
+
+const AMFI_NAV_URL = "https://www.amfiindia.com/spages/NAVAll.txt";
+
+/** {code: {nav, date, name}} for the requested scheme codes.
+ *
+ * Rows are `Code;ISIN payout;ISIN reinvest;Scheme Name;Plan;Option;NAV;Date`
+ * — 8 semicolon-fields. (AMFI used to publish 6, with Plan/Option folded
+ * into the name; this was a source of quiet breakage until the format
+ * changed and every row started missing the filter.)
+ */
+async function fetchAmfiNavs(codes) {
+  const res = await fetch(AMFI_NAV_URL, { cf: { cacheTtl: 300, cacheEverything: true } });
+  if (!res.ok) throw new Error(`amfi ${res.status}`);
+  const wanted = new Set(codes);
+  const navs = {};
+  for (const line of (await res.text()).split("\n")) {
+    const parts = line.split(";");
+    if (parts.length !== 8) continue;
+    const code = parts[0].trim();
+    if (code === "Scheme Code" || !wanted.has(code)) continue;
+    const [scheme, plan, option, nav, date] = parts.slice(3).map(p => p.trim());
+    const navVal = Number(nav);
+    if (!isFinite(navVal)) continue;
+    navs[code] = { nav: navVal, date, name: `${scheme} ${plan} ${option}`.trim() };
+  }
+  return navs;
+}
+
 // --- handler --------------------------------------------------------------
 
 export default {
@@ -171,6 +200,20 @@ export default {
     if (request.method === "OPTIONS") return new Response(null, { headers: CORS });
 
     const url = new URL(request.url);
+
+    const amfiCodes = (url.searchParams.get("amfi") || "")
+      .split(",").map(s => s.trim()).filter(Boolean);
+    if (amfiCodes.length) {
+      try {
+        const navs = await fetchAmfiNavs(amfiCodes);
+        return Response.json({ navs },
+          { headers: { ...CORS, "Cache-Control": "public, max-age=300" } });
+      } catch (err) {
+        return Response.json({ error: String(err.message || err) },
+          { status: 502, headers: CORS });
+      }
+    }
+
     const symbols = (url.searchParams.get("symbols") || "")
       .split(",").map(s => s.trim()).filter(Boolean);
 

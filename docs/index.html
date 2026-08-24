@@ -170,6 +170,11 @@
     <div class="stat"><div class="k">Return</div><div class="v pos" id="trp">—</div></div>
   </div>
 
+  <section id="amfiWrap" hidden>
+    <h2>Tonight's actual NAV <span>AMFI, checked live — not yet in the scored history below</span></h2>
+    <div class="note" id="amfiNote"></div>
+  </section>
+
   <section id="setupWrap" hidden>
     <h2>Price source</h2>
     <div class="note bad" id="setup"></div>
@@ -274,7 +279,7 @@ function marketOpen() {
 // if it's blocked the Worker falls back to one Yahoo request per symbol and the
 // free plan caps subrequests at 50. Cloudflare caches the NSE responses across
 // chunks, so the repeat cost is negligible.
-let LAST_SOURCES = null, LAST_NSE_ERROR = null;
+let LAST_SOURCES = null, LAST_NSE_ERROR = null, LAST_QUOTES = null;
 
 function classify(err, url) {
   if (err instanceof TypeError) {
@@ -585,6 +590,49 @@ function showSetup(msg) {
   });
 }
 
+// --- post-close: has AMFI actually published tonight's NAV yet? -----------
+// Only the Worker exposes this (it needs a server-side fetch, same CORS
+// wall as everything else). Display-only — this can't write back to
+// history.json/accuracy.json; that's still the nightly reconcile.py job.
+async function checkAmfi() {
+  if (SOURCE !== "worker" || !PROXY || marketOpen()) return;
+
+  const funds = CFG.funds.filter(f => f.amfi_code && f.last_nav);
+  if (!funds.length) return;
+
+  const base = PROXY.replace(/\/+$/, "");
+  const codes = funds.map(f => f.amfi_code).join(",");
+  let navs;
+  try {
+    const r = await fetch(base + "/?amfi=" + encodeURIComponent(codes), { cache: "no-store" });
+    if (!r.ok) return;
+    navs = (await r.json()).navs || {};
+  } catch (e) {
+    return;   // AMFI/Worker unreachable — say nothing, this is a bonus check
+  }
+
+  const fresh = funds
+    .map(f => ({ f, hit: navs[f.amfi_code] }))
+    .filter(({ f, hit }) => hit && hit.date !== f.last_nav_date);
+
+  if (!fresh.length) { $("amfiWrap").hidden = true; return; }
+
+  const rows = fresh.map(({ f, hit }) => {
+    const actual = (hit.nav - f.last_nav) / f.last_nav * 100;
+    const live = inferFund(f, LAST_QUOTES || {});
+    const err = Math.abs(live.navMove - actual);
+    const hitDir = (live.navMove >= 0) === (actual >= 0);
+    return "<b>" + f.name + "</b>: published ₹" + hit.nav.toFixed(2) + " (" + pc(actual) +
+      ") vs predicted " + pc(live.navMove) + " — off by " + err.toFixed(2) + "pp, direction " +
+      (hitDir ? "✅ correct" : "❌ wrong") + ".";
+  });
+
+  $("amfiWrap").hidden = false;
+  $("amfiNote").innerHTML = rows.join("<br><br>") +
+    "<br><br>This updates the moment AMFI publishes, just by refreshing. The scored " +
+    "accuracy panel below still only updates from the nightly <code>reconcile.py</code> run.";
+}
+
 async function run() {
   const btn = $("refresh");
   btn.disabled = true;
@@ -598,6 +646,7 @@ async function run() {
     const quotes = await fetchQuotes(tickers);
     const priced = Object.keys(quotes).length;
     if (!priced) throw new Error("no quotes returned");
+    LAST_QUOTES = quotes;
 
     const s = LAST_SOURCES || {};
     const blend = SOURCE === "sheet" ? "Google Sheets"
@@ -622,6 +671,8 @@ async function run() {
       : (LAST_SOURCES && LAST_SOURCES.nse ? "NSE · " : "Yahoo · ")) + "Updated <b>" +
       new Date().toLocaleTimeString("en-IN",
         { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + "</b>";
+
+    checkAmfi().catch(() => {});   // bonus check, never let it break the main flow
   } catch (err) {
     $("stamp").textContent = "Refresh failed";
     $("setup").className = "note bad";

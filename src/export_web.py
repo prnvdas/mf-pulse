@@ -23,6 +23,7 @@ def main() -> None:
             {
                 "id": f["id"],
                 "name": f["name"],
+                "amfi_code": f.get("amfi_code"),
                 "ter_annual_pct": f.get("ter_annual_pct", 0.0),
                 "benchmark_ticker": f.get("benchmark_ticker"),
                 "cash_pct": doc.get("cash_pct") or 0.0,

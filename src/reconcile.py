@@ -20,6 +20,10 @@ from common import (
 )
 
 
+def _parse_amfi_date(s: str) -> dt.date:
+    return dt.datetime.strptime(s, "%d-%b-%Y").date()
+
+
 def main() -> None:
     cfg = load_portfolio()
     ts = now_ist()
@@ -70,8 +74,18 @@ def main() -> None:
                 ) + sip["amount"]
                 print(f"[info] {fid}: SIP +{bought:.4f} units")
 
-        # Grade the estimate we made earlier today.
-        if prev_nav and latest and not latest.get("stale"):
+        # Grade the estimate we made earlier today. `stale` is a display-only
+        # flag (estimate.py's post-close run sets it on every close estimate
+        # to warn the UI it's not live) — it is NOT a signal that the number
+        # underneath is untrustworthy, so grading must not gate on it. What
+        # actually matters is whether `latest.json` holds an estimate from
+        # the same trading day AMFI just published a NAV for.
+        graded_day = _parse_amfi_date(row["date"])
+        generated_at = latest.get("generated_at") if latest else None
+        generated_day = (
+            dt.datetime.fromisoformat(generated_at).date() if generated_at else None
+        )
+        if prev_nav and latest and generated_day == graded_day:
             actual_pct = (new_nav - prev_nav) / prev_nav * 100.0
             predicted = next(
                 (f["nav_move_pct"] for f in latest["funds"] if f["id"] == fid), None

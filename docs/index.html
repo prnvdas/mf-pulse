@@ -282,6 +282,11 @@ function marketOpen() {
 let LAST_SOURCES = null, LAST_NSE_ERROR = null, LAST_QUOTES = null;
 
 function classify(err, url) {
+  if (err.name === "AbortError") {
+    return { kind: "timeout", detail:
+      "Timed out waiting for a response from " + url + ". The source is reachable " +
+      "but too slow (or stuck) to answer — try again, or switch price source." };
+  }
   if (err instanceof TypeError) {
     return { kind: "network", detail:
       "The browser refused or could not complete the request to " + url + ". " +
@@ -289,6 +294,16 @@ function classify(err, url) {
       "inside a sandboxed frame that blocks outbound requests; or the URL is wrong." };
   }
   return { kind: "http", detail: String(err.message || err) };
+}
+
+// Every price-source fetch below routes through this: a stalled request must
+// fail after a bounded wait, not hang the Refresh button forever. Without it,
+// one dead connection to a relay/worker/sheet wedges the whole refresh with
+// no error and no way out short of reloading the page.
+function fetchWithTimeout(url, opts, ms) {
+  const ctrl = new AbortController();
+  const id = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, { ...opts, signal: ctrl.signal }).finally(() => clearTimeout(id));
 }
 
 async function fetchViaWorker(tickers) {
@@ -301,7 +316,7 @@ async function fetchViaWorker(tickers) {
     const target = base + "/?symbols=" + encodeURIComponent(ch.join(","));
     let r;
     try {
-      r = await fetch(target, { cache: "no-store" });
+      r = await fetchWithTimeout(target, { cache: "no-store" }, 15000);
     } catch (e) {
       const c = classify(e, base);
       const err = new Error(c.detail); err.kind = c.kind; throw err;
@@ -335,12 +350,13 @@ async function fetchViaRelay(tickers) {
 
   // Small batches — hammering a shared relay with 90 parallel requests gets
   // you throttled, and a throttled response looks identical to a dead ticker.
+  let staleBatches = 0;
   for (let i = 0; i < tickers.length; i += 6) {
     const batch = tickers.slice(i, i + 6);
     const settled = await Promise.allSettled(batch.map(async t => {
       const y = "https://query1.finance.yahoo.com/v8/finance/chart/" +
         encodeURIComponent(t) + "?range=5d&interval=1d";
-      const r = await fetch(RELAY + encodeURIComponent(y), { cache: "no-store" });
+      const r = await fetchWithTimeout(RELAY + encodeURIComponent(y), { cache: "no-store" }, 12000);
       if (!r.ok) throw new Error("relay " + r.status);
       const m = (await r.json())?.chart?.result?.[0]?.meta;
       const last = m?.regularMarketPrice;
@@ -348,10 +364,20 @@ async function fetchViaRelay(tickers) {
       if (!last || !prev) throw new Error("no data");
       return [t, { last, prev, pct: (last - prev) / prev * 100, src: "relay" }];
     }));
+    const gained = settled.filter(s => s.status === "fulfilled").length;
     for (const s of settled) {
       if (s.status === "fulfilled") { quotes[s.value[0]] = s.value[1]; LAST_SOURCES.relay++; }
     }
     $("stamp").textContent = "Pricing " + Object.keys(quotes).length + "/" + tickers.length;
+
+    // Circuit breaker: with ~90-300 tickers batched 6 at a time, a relay that
+    // has died or started throttling partway through would otherwise grind
+    // through every remaining batch at the full timeout each — minutes of a
+    // spinning button before the error even shows. Five consecutive batches
+    // (30 tickers) with not one success means the relay has given up, not
+    // that a handful of symbols are individually unlucky — stop waiting.
+    staleBatches = gained > 0 ? 0 : staleBatches + 1;
+    if (staleBatches >= 5) break;
   }
 
   if (!Object.keys(quotes).length) {
@@ -388,7 +414,7 @@ async function fetchViaSheet() {
   LAST_SOURCES = null; LAST_NSE_ERROR = null;
   let r;
   try {
-    r = await fetch(SHEET, { cache: "no-store" });
+    r = await fetchWithTimeout(SHEET, { cache: "no-store" }, 15000);
   } catch (e) {
     const c = classify(e, SHEET);
     const err = new Error(c.detail); err.kind = c.kind; throw err;

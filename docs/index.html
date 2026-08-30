@@ -351,6 +351,7 @@ async function fetchViaRelay(tickers) {
   // Small batches — hammering a shared relay with 90 parallel requests gets
   // you throttled, and a throttled response looks identical to a dead ticker.
   let staleBatches = 0;
+  let tripped = false;
   for (let i = 0; i < tickers.length; i += 6) {
     const batch = tickers.slice(i, i + 6);
     const settled = await Promise.allSettled(batch.map(async t => {
@@ -377,12 +378,18 @@ async function fetchViaRelay(tickers) {
     // (30 tickers) with not one success means the relay has given up, not
     // that a handful of symbols are individually unlucky — stop waiting.
     staleBatches = gained > 0 ? 0 : staleBatches + 1;
-    if (staleBatches >= 5) break;
+    if (staleBatches >= 5) { tripped = true; break; }
   }
 
-  if (!Object.keys(quotes).length) {
-    const e = new Error("The public relay returned nothing for any ticker. It's a free " +
-      "shared service and is probably rate-limiting you. Deploy the Worker for something " +
+  // A tripped breaker means the relay died partway through — whatever
+  // handful of quotes trickled in before that (even a nonzero number) is
+  // not a usable estimate. Rendering it anyway is worse than an error: a
+  // fund showing "2/122 stocks priced" with a wildly wrong nav move looks
+  // like a real number, not a failure. Only a run that got all the way
+  // through the ticker list without the relay dying gets to render.
+  if (tripped || !Object.keys(quotes).length) {
+    const e = new Error("The public relay returned nothing usable — it's a free " +
+      "shared service and is probably rate-limiting you or down. Deploy the Worker for something " +
       "that actually holds up.");
     e.kind = "network"; throw e;
   }

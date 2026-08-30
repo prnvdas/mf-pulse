@@ -6,6 +6,7 @@ import datetime as dt
 import json
 import os
 import pathlib
+import time
 from zoneinfo import ZoneInfo
 
 import requests
@@ -85,14 +86,30 @@ def write_json(name: str, payload) -> None:
         fh.write(blob)
 
 
-def fetch_amfi_navs() -> dict[str, dict]:
+def fetch_amfi_navs(retries: int = 2) -> dict[str, dict]:
     """Return {scheme_code: {name, nav, date}} from AMFI's daily text file.
 
     The file is pipe-delimited with section headers scattered through it,
     so anything that isn't a 6-field row is skipped.
+
+    Retries a couple of times on failure — without this, a single transient
+    network blip costs the whole night's reconciliation (no grading, no SIP
+    application, no NAV update) rather than just one slow request.
     """
-    resp = requests.get(AMFI_NAV_URL, timeout=30)
-    resp.raise_for_status()
+    resp = None
+    last_exc: Exception | None = None
+    for attempt in range(retries + 1):
+        try:
+            resp = requests.get(AMFI_NAV_URL, timeout=30)
+            resp.raise_for_status()
+            break
+        except Exception as exc:  # noqa: BLE001
+            last_exc = exc
+            resp = None
+            if attempt < retries:
+                time.sleep(5)
+    if resp is None:
+        raise last_exc
 
     navs: dict[str, dict] = {}
     for line in resp.text.splitlines():

@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+import time
 
 import yfinance as yf
 
@@ -30,24 +31,37 @@ from common import (
 )
 
 
-def fetch_moves(tickers: list[str]) -> dict[str, float | None]:
-    """Percent change vs previous close for each ticker. None when unavailable."""
+def fetch_moves(tickers: list[str], retries: int = 2) -> dict[str, float | None]:
+    """Percent change vs previous close for each ticker. None when unavailable.
+
+    Retries a couple of times on failure — Yahoo has enough transient blips
+    that a single failed call would otherwise silently cost a whole trading
+    day's data point (and, if it's the post-close settle run, that day's
+    accuracy grading too).
+    """
     if not tickers:
         return {}
 
     moves: dict[str, float | None] = {t: None for t in tickers}
-    try:
-        data = yf.download(
-            tickers=" ".join(tickers),
-            period="5d",
-            interval="1d",
-            group_by="ticker",
-            progress=False,
-            threads=True,
-            auto_adjust=False,
-        )
-    except Exception as exc:  # noqa: BLE001 — never let a data blip kill the run
-        print(f"[warn] price fetch failed: {exc}", file=sys.stderr)
+    data = None
+    for attempt in range(retries + 1):
+        try:
+            data = yf.download(
+                tickers=" ".join(tickers),
+                period="5d",
+                interval="1d",
+                group_by="ticker",
+                progress=False,
+                threads=True,
+                auto_adjust=False,
+            )
+            break
+        except Exception as exc:  # noqa: BLE001 — never let a data blip kill the run
+            print(f"[warn] price fetch failed (attempt {attempt + 1}/{retries + 1}): {exc}",
+                  file=sys.stderr)
+            if attempt < retries:
+                time.sleep(5)
+    if data is None:
         return moves
 
     for ticker in tickers:
@@ -178,6 +192,18 @@ def main() -> None:
     moves = fetch_moves(sorted(tickers))
     resolved = sum(1 for v in moves.values() if v is not None)
     print(f"[info] resolved {resolved}/{len(moves)} tickers")
+
+    # Fail-safe: a near-total fetch failure (Yahoo outage, network blip) must
+    # not silently overwrite today's estimate with a bogus near-0% number
+    # computed from empty data. Refuse to publish instead — the previous
+    # latest.json stays in place, its date won't match tonight's NAV, and
+    # reconcile.py correctly skips grading rather than scoring a data outage
+    # as if it were a real (and misleadingly good-looking) prediction.
+    MIN_COVERAGE = 0.20
+    if tickers and resolved / len(moves) < MIN_COVERAGE:
+        print(f"[error] only {resolved}/{len(moves)} tickers resolved — "
+              "refusing to publish a degraded estimate", file=sys.stderr)
+        sys.exit(1)
 
     results = [estimate_fund(f, cfg, moves) for f in funds]
 

@@ -25,6 +25,12 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - run: python src/reconcile.py
+      # reconcile.py updates units/last_nav in state.json nightly (new NAV,
+      # SIP purchases), but config.json — what the browser reads for its own
+      # client-side inference and "Refresh live" — is otherwise only rebuilt
+      # by the monthly holdings.yml run. Without this, config.json silently
+      # drifts stale against state.json every night in between.
+      - run: python src/export_web.py
       - name: Commit reconciliation
         run: |
           git config user.name  "mf-pulse"

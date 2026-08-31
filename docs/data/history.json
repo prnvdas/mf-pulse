@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "date": "2026-09-01",
+    "fund_id": "axis-small-cap",
+    "predicted_pct": -0.191,
+    "actual_pct": 0.051,
+    "error_pct": 0.242,
+    "direction_hit": false
+  },
+  {
+    "date": "2026-09-01",
+    "fund_id": "mirae-large-midcap",
+    "predicted_pct": 0.103,
+    "actual_pct": -0.025,
+    "error_pct": 0.128,
+    "direction_hit": false
+  },
+  {
+    "date": "2026-09-01",
+    "fund_id": "jioblackrock-flexicap",
+    "predicted_pct": -0.191,
+    "actual_pct": -0.199,
+    "error_pct": 0.008,
+    "direction_hit": true
+  }
+]

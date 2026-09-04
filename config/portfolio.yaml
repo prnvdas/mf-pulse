@@ -50,16 +50,20 @@ funds:
     seed_invested: 156992
 
 # Monthly SIP debits. Without these, units drift and the P&L quietly goes wrong.
+# Debited on the 1st; `day_of_month` here is the NAV allocation date (the
+# fund house takes ~1-2 business days to realize funds and allot units), not
+# the debit date -- reconcile.py buys units at whichever NAV is current on
+# this day, so it has to match allocation, not debit.
 sips:
   - fund_id: axis-small-cap
     amount: 50000
-    day_of_month: 5
+    day_of_month: 3
   - fund_id: mirae-large-midcap
     amount: 50000
-    day_of_month: 5
+    day_of_month: 3
   - fund_id: jioblackrock-flexicap
     amount: 10000
-    day_of_month: 5
+    day_of_month: 3
 
 estimator:
   # How the untracked tail of each fund is modelled.

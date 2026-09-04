@@ -64,15 +64,29 @@ def main() -> None:
             entry["units"] = round(seed / new_nav, 4) if new_nav else 0.0
             print(f"[info] {fid}: seeded {entry['units']:.4f} units @ {new_nav}")
 
-        # Apply the SIP on its debit day.
+        # Apply the SIP around its allocation day. A strict "today == exact
+        # day" match means a single missed run (a workflow gap, a weekend,
+        # AMFI publishing late) silently loses that whole month's purchase
+        # forever, with no way to recover it later. Instead: buy it the
+        # first time reconcile.py runs on or within a few days after the
+        # target day, and use `sip_applied_month` to guarantee it happens
+        # exactly once per month even if reconcile.py runs daily across
+        # that whole window.
+        SIP_GRACE_DAYS = 4
+        this_month = ts.strftime("%Y-%m")
         for sip in cfg.get("sips", []):
-            if sip["fund_id"] == fid and ts.day == sip["day_of_month"]:
+            if sip["fund_id"] != fid:
+                continue
+            day = sip["day_of_month"]
+            due = day <= ts.day <= day + SIP_GRACE_DAYS
+            if due and entry.get("sip_applied_month") != this_month:
                 bought = sip["amount"] / new_nav
                 entry["units"] = round(entry["units"] + bought, 4)
                 entry["seed_invested"] = float(
                     entry.get("seed_invested", fund.get("seed_invested", 0))
                 ) + sip["amount"]
-                print(f"[info] {fid}: SIP +{bought:.4f} units")
+                entry["sip_applied_month"] = this_month
+                print(f"[info] {fid}: SIP +{bought:.4f} units (day {ts.day}, target {day})")
 
         # Grade the estimate we made earlier today. `stale` is a display-only
         # flag (estimate.py's post-close run sets it on every close estimate

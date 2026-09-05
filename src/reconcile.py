@@ -64,6 +64,14 @@ def main() -> None:
             entry["units"] = round(seed / new_nav, 4) if new_nav else 0.0
             print(f"[info] {fid}: seeded {entry['units']:.4f} units @ {new_nav}")
 
+        # Captured before any SIP purchase below, so the actual-vs-predicted
+        # rupee P&L grading further down compares like for like: estimate.py
+        # computed its predicted rupee impact off this same pre-SIP unit
+        # count (state.json isn't touched with new units until tonight), so
+        # crediting today's new SIP units into the "actual" P&L would inflate
+        # it with money that was never at risk of the day's price move.
+        units_before_sip = entry.get("units")
+
         # Apply the SIP around its allocation day. A strict "today == exact
         # day" match means a single missed run (a workflow gap, a weekend,
         # AMFI publishing late) silently loses that whole month's purchase
@@ -101,10 +109,16 @@ def main() -> None:
         )
         if prev_nav and latest and generated_day == graded_day:
             actual_pct = (new_nav - prev_nav) / prev_nav * 100.0
-            predicted = next(
-                (f["nav_move_pct"] for f in latest["funds"] if f["id"] == fid), None
+            latest_fund = next(
+                (f for f in latest["funds"] if f["id"] == fid), None
             )
+            predicted = latest_fund["nav_move_pct"] if latest_fund else None
             if predicted is not None:
+                actual_pl = (
+                    round(units_before_sip * (new_nav - prev_nav), 2)
+                    if units_before_sip
+                    else None
+                )
                 history.append(
                     {
                         "date": today,
@@ -113,6 +127,10 @@ def main() -> None:
                         "actual_pct": round(actual_pct, 3),
                         "error_pct": round(abs(predicted - actual_pct), 3),
                         "direction_hit": (predicted >= 0) == (actual_pct >= 0),
+                        "predicted_nav": latest_fund.get("projected_nav"),
+                        "actual_nav": new_nav,
+                        "predicted_pl_rupees": latest_fund.get("rupee_impact"),
+                        "actual_pl_rupees": actual_pl,
                     }
                 )
                 print(

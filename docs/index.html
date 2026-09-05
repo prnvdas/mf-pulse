@@ -200,7 +200,8 @@
     <div id="accWrap"></div>
     <table id="histTableEl" hidden>
       <thead><tr>
-        <th>Date</th><th>Fund</th><th>Predicted</th><th>Actual (published)</th><th>Error</th><th>Direction</th>
+        <th>Date</th><th>Fund</th><th>Predicted NAV</th><th>Actual NAV</th>
+        <th>Est. P&amp;L</th><th>Actual P&amp;L</th><th>Error</th><th>Direction</th>
       </tr></thead>
       <tbody id="histTable"></tbody>
     </table>
@@ -604,6 +605,15 @@ function renderHistoryTable() {
     const f = CFG.funds.find(x => x.id === fid);
     return f ? f.name.replace(" Direct Growth", "") : fid;
   };
+  // NAV move shown as the headline %, with the actual ₹NAV value as the
+  // detail line beneath it -- same "primary + fmeta" pattern used in the
+  // by-fund table above.
+  const navCell = (pct, nav) => pc(pct) + (nav != null
+    ? '<br><span style="font-size:11px;color:var(--grey-light)">₹' + nav.toFixed(2) + '</span>'
+    : "");
+  // Older history.json rows (written before this column existed) won't have
+  // rupee P&L recorded -- show a dash rather than a blank or NaN.
+  const plCell = rupees => rupees == null ? "—" : signed(rupees);
 
   const rows = [...HIST].sort((a, b) =>
     b.date.localeCompare(a.date) || a.fund_id.localeCompare(b.fund_id));
@@ -612,7 +622,9 @@ function renderHistoryTable() {
   $("histTable").innerHTML = rows.slice(0, 90).map(r => {
     const cls = r.direction_hit ? "pos" : "neg";
     return "<tr><td>" + r.date + "</td><td>" + nameOf(r.fund_id) + "</td><td>" +
-      pc(r.predicted_pct) + "</td><td>" + pc(r.actual_pct) + "</td><td>" +
+      navCell(r.predicted_pct, r.predicted_nav) + "</td><td>" +
+      navCell(r.actual_pct, r.actual_nav) + "</td><td>" +
+      plCell(r.predicted_pl_rupees) + "</td><td>" + plCell(r.actual_pl_rupees) + "</td><td>" +
       r.error_pct.toFixed(2) + "pp</td><td class=\"" + cls + "\">" +
       (r.direction_hit ? "✅ correct" : "❌ wrong") + "</td></tr>";
   }).join("");

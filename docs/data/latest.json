@@ -1,28 +1,28 @@
 {
-  "generated_at": "2026-09-04T19:53:49.665545+05:30",
-  "generated_label": "04 Sep 2026, 19:53 IST",
-  "stale": true,
+  "generated_at": "2026-09-05T18:58:23.903640+05:30",
+  "generated_label": "05 Sep 2026, 18:58 IST",
+  "stale": false,
   "market_open": false,
   "totals": {
-    "current_value": 9864708.75,
+    "current_value": 9851391.57,
     "invested": 7266714.0,
-    "total_returns": 2597994.75,
-    "total_returns_pct": 35.75,
-    "today_impact": -7473.21,
+    "total_returns": 2584677.57,
+    "total_returns_pct": 35.57,
+    "today_impact": -7459.12,
     "today_pct": -0.076,
-    "band_rupees": 6204.0
+    "band_rupees": 6196.0
   },
   "funds": [
     {
       "id": "axis-small-cap",
       "name": "Axis Small Cap Fund Direct Growth",
-      "current_value": 4975246.35,
+      "current_value": 4965867.26,
       "invested": 3574824.0,
       "nav_move_pct": -0.15,
-      "rupee_impact": -7470.28,
-      "last_nav": 137.92,
-      "projected_nav": 137.7129,
-      "band_rupees": 4124.0,
+      "rupee_impact": -7456.2,
+      "last_nav": 137.66,
+      "projected_nav": 137.4533,
+      "band_rupees": 4116.0,
       "coverage_pct": 88.0,
       "cash_pct": 14.4,
       "tail_pct": 0.0,
@@ -92,13 +92,13 @@
     {
       "id": "mirae-large-midcap",
       "name": "Mirae Asset Large & Midcap Fund Direct Growth",
-      "current_value": 4720553.58,
+      "current_value": 4716819.13,
       "invested": 3524898.0,
       "nav_move_pct": 0.001,
-      "rupee_impact": 44.9,
-      "last_nav": 179.496,
-      "projected_nav": 179.4977,
-      "band_rupees": 4632.0,
+      "rupee_impact": 44.86,
+      "last_nav": 179.354,
+      "projected_nav": 179.3557,
+      "band_rupees": 4628.0,
       "coverage_pct": 96.5,
       "cash_pct": 3.77,
       "tail_pct": 0.0,
@@ -168,13 +168,13 @@
     {
       "id": "jioblackrock-flexicap",
       "name": "JioBlackRock Flexi Cap Fund Direct Growth",
-      "current_value": 168908.82,
+      "current_value": 168705.18,
       "invested": 166992.0,
       "nav_move_pct": -0.028,
-      "rupee_impact": -47.83,
-      "last_nav": 10.0363,
-      "projected_nav": 10.0335,
-      "band_rupees": 168.0,
+      "rupee_impact": -47.78,
+      "last_nav": 10.0242,
+      "projected_nav": 10.0214,
+      "band_rupees": 167.0,
       "coverage_pct": 93.4,
       "cash_pct": 6.74,
       "tail_pct": 0.0,
@@ -243,28 +243,28 @@
     }
   ],
   "accuracy": {
-    "samples": 12,
-    "mae_pct": 0.059,
-    "direction_accuracy_pct": 83.3,
+    "samples": 15,
+    "mae_pct": 0.062,
+    "direction_accuracy_pct": 80.0,
     "worst_error_pct": 0.242,
     "per_fund": {
       "axis-small-cap": {
-        "samples": 4,
-        "mae_pct": 0.093,
-        "direction_accuracy_pct": 75.0,
+        "samples": 5,
+        "mae_pct": 0.082,
+        "direction_accuracy_pct": 80.0,
         "worst_error_pct": 0.242
       },
       "mirae-large-midcap": {
-        "samples": 4,
-        "mae_pct": 0.063,
-        "direction_accuracy_pct": 75.0,
+        "samples": 5,
+        "mae_pct": 0.066,
+        "direction_accuracy_pct": 60.0,
         "worst_error_pct": 0.128
       },
       "jioblackrock-flexicap": {
-        "samples": 4,
-        "mae_pct": 0.022,
+        "samples": 5,
+        "mae_pct": 0.036,
         "direction_accuracy_pct": 100.0,
-        "worst_error_pct": 0.057
+        "worst_error_pct": 0.093
       }
     }
   },

@@ -198,6 +198,12 @@
   <section>
     <h2>Estimate accuracy <span>Predicted vs published NAV, last 30 sessions</span></h2>
     <div id="accWrap"></div>
+    <table id="histTableEl" hidden>
+      <thead><tr>
+        <th>Date</th><th>Fund</th><th>Predicted</th><th>Actual (published)</th><th>Error</th><th>Direction</th>
+      </tr></thead>
+      <tbody id="histTable"></tbody>
+    </table>
   </section>
 
   <footer>
@@ -259,7 +265,7 @@ const DEMO = {
   ]
 };
 
-let CFG = null, ACC = { samples: 0 }, timer = null;
+let CFG = null, ACC = { samples: 0 }, HIST = [], timer = null;
 
 const $ = id => document.getElementById(id);
 const inr = n => "₹" + Math.round(Math.abs(n)).toLocaleString("en-IN");
@@ -584,6 +590,34 @@ function render(funds, meta) {
       'here after a few sessions.</div>';
 }
 
+// Day-by-day predicted-vs-published breakdown behind the summary cards above.
+// history.json gets one row per fund per trading day once AMFI publishes
+// that night (reconcile.py runs ~23:15 IST and again ~00:45 IST as a retry,
+// so this fills in shortly after midnight, not the instant the clock turns).
+// Independent of live quotes, so this renders once at load and doesn't need
+// to react to Refresh.
+function renderHistoryTable() {
+  const table = $("histTableEl");
+  if (!HIST.length) { table.hidden = true; return; }
+
+  const nameOf = fid => {
+    const f = CFG.funds.find(x => x.id === fid);
+    return f ? f.name.replace(" Direct Growth", "") : fid;
+  };
+
+  const rows = [...HIST].sort((a, b) =>
+    b.date.localeCompare(a.date) || a.fund_id.localeCompare(b.fund_id));
+
+  table.hidden = false;
+  $("histTable").innerHTML = rows.slice(0, 90).map(r => {
+    const cls = r.direction_hit ? "pos" : "neg";
+    return "<tr><td>" + r.date + "</td><td>" + nameOf(r.fund_id) + "</td><td>" +
+      pc(r.predicted_pct) + "</td><td>" + pc(r.actual_pct) + "</td><td>" +
+      r.error_pct.toFixed(2) + "pp</td><td class=\"" + cls + "\">" +
+      (r.direction_hit ? "✅ correct" : "❌ wrong") + "</td></tr>";
+  }).join("");
+}
+
 const SOURCE_HELP =
   '<b>Pick where prices come from.</b> Browsers can\'t call Yahoo, Google Finance or NSE ' +
   'directly — CORS blocks all three.<br><br>' +
@@ -831,6 +865,9 @@ function adaptLatest(d) {
     .then(r => r.ok ? r.json() : Promise.reject()).catch(() => DEMO);
   ACC = await fetch("data/accuracy.json", { cache: "no-store" })
     .then(r => r.ok ? r.json() : Promise.reject()).catch(() => ({ samples: 0 }));
+  HIST = await fetch("data/history.json", { cache: "no-store" })
+    .then(r => r.ok ? r.json() : Promise.reject()).catch(() => []);
+  renderHistoryTable();
 
   const latest = await fetch("data/latest.json", { cache: "no-store" })
     .then(r => r.ok ? r.json() : Promise.reject()).catch(() => null);

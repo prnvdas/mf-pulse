@@ -1,6 +1,9 @@
 name: estimate
 
-# Every 15 minutes during NSE hours (09:15-15:30 IST = 03:45-10:00 UTC).
+# Every 15 minutes during NSE hours (09:15-15:30 IST = 03:45-10:00 UTC),
+# Monday-Friday only -- is_market_window() already refuses to compute
+# anything on a Saturday regardless of when this cron fires, so running it
+# on Saturdays would just be 25 guaranteed no-op "mark stale" calls a day.
 #
 # Plus two runs after close, each with a different job:
 #   15:50 IST (10:20 UTC) — the SETTLE run. Forced (bypasses the market-hours
@@ -10,19 +13,25 @@ name: estimate
 #     the exact close second, so locking in at :00 risks freezing a still-
 #     settling price as if it were final. This settle run's output is what
 #     reconcile.py grades that night — it needs to be the real close, not
-#     an early guess at it.
+#     an early guess at it. Runs Saturdays too: NSE holds occasional special
+#     Saturday sessions (disaster-recovery drills, muhurat trading), and
+#     `--force` means this one, unlike the intraday cron, would actually
+#     compute something real if the market happened to be open. On an
+#     ordinary closed Saturday it just re-reads Friday's already-known
+#     close, which reconcile.py's "NAV unchanged" check safely no-ops on.
 #   16:15 IST (10:45 UTC) — display-only. Flips that settled number to
 #     `stale: true` so the UI stops implying it's still live. Does not
 #     recompute or affect grading (reconcile.py keys off the generated date,
-#     not the stale flag).
+#     not the stale flag). Also runs Saturdays, to flip whatever the settle
+#     run above just produced.
 #
 # Note: GitHub's scheduler is best-effort and can lag 5-20 minutes under load.
 # That is fine for an end-of-day estimate; it would not be fine for trading.
 on:
   schedule:
     - cron: "*/15 4-10 * * 1-5"
-    - cron: "20 10 * * 1-5"
-    - cron: "45 10 * * 1-5"
+    - cron: "20 10 * * 1-6"
+    - cron: "45 10 * * 1-6"
   workflow_dispatch:
 
 permissions:
@@ -43,10 +52,10 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - name: Settle run (forced fresh read of finalized closing prices)
-        if: github.event.schedule == '20 10 * * 1-5'
+        if: github.event.schedule == '20 10 * * 1-6'
         run: python src/estimate.py --force
       - name: Intraday / stale-flip run
-        if: github.event.schedule != '20 10 * * 1-5'
+        if: github.event.schedule != '20 10 * * 1-6'
         run: python src/estimate.py
       - name: Commit dashboard data
         run: |

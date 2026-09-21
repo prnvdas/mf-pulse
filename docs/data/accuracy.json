@@ -1,25 +1,25 @@
 {
   "samples": 30,
-  "mae_pct": 0.092,
+  "mae_pct": 0.097,
   "direction_accuracy_pct": 93.3,
   "worst_error_pct": 0.422,
   "per_fund": {
     "axis-small-cap": {
-      "samples": 14,
-      "mae_pct": 0.12,
-      "direction_accuracy_pct": 85.7,
+      "samples": 15,
+      "mae_pct": 0.117,
+      "direction_accuracy_pct": 86.7,
       "worst_error_pct": 0.422
     },
     "mirae-large-midcap": {
-      "samples": 14,
-      "mae_pct": 0.054,
-      "direction_accuracy_pct": 85.7,
+      "samples": 15,
+      "mae_pct": 0.058,
+      "direction_accuracy_pct": 86.7,
       "worst_error_pct": 0.195
     },
     "jioblackrock-flexicap": {
-      "samples": 14,
-      "mae_pct": 0.073,
-      "direction_accuracy_pct": 100.0,
+      "samples": 15,
+      "mae_pct": 0.081,
+      "direction_accuracy_pct": 93.3,
       "worst_error_pct": 0.244
     }
   }

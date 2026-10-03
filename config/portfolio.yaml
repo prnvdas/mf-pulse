@@ -105,3 +105,8 @@ projection:
 # government bond yield is a common stand-in for the risk-free rate.
 analytics:
   risk_free_pct: 6.5
+
+# Used by the daily greeting on the dashboard.
+profile:
+  name: Pranav
+  fd_rate_pct: 7   # rough bank fixed-deposit yield, used only as a yardstick

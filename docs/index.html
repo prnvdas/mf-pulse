@@ -103,6 +103,14 @@
 
   .acc.four{grid-template-columns:repeat(4,1fr)}
   .scroll{overflow-x:auto}
+  .brief{padding:30px 0 26px}
+  .bgreet{font-size:22px;font-weight:600;letter-spacing:-.015em;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .bsub{font-size:12.5px;color:var(--grey);margin-top:2px}
+  .bquote{margin:14px 0 0;color:var(--grey);font-size:14.5px;font-style:italic;max-width:62ch}
+  .bpoints{list-style:none;display:grid;gap:11px;margin:20px 0 6px}
+  .bpoints li{display:grid;grid-template-columns:130px 1fr;gap:14px;font-size:14px;line-height:1.55}
+  .bpoints .bk{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);padding-top:3px}
+  @media(max-width:760px){.bpoints li{grid-template-columns:1fr;gap:2px}}
   .ticker{display:flex;align-items:stretch;background:var(--wash);color:var(--ink);border-bottom:1px solid var(--rule);font-size:12.5px}
   .ticker[hidden]{display:none}
   .tk-lab{flex:none;color:var(--grey);font-size:10px;font-weight:600;letter-spacing:.14em;padding:0 18px 0 32px;display:flex;align-items:center;gap:7px;border-right:1px solid var(--rule);background:var(--wash);z-index:1}
@@ -223,6 +231,14 @@
 </div>
 
 <main class="wrap">
+
+  <section id="briefWrap" class="brief" hidden>
+    <div class="bgreet" id="bGreet"></div>
+    <div class="bsub" id="bSub"></div>
+    <p class="bquote" id="bQuote"></p>
+    <ul class="bpoints" id="bPoints"></ul>
+    <div id="bBull"></div>
+  </section>
 
   <div class="hero">
     <div>
@@ -377,7 +393,7 @@ const DEMO = {
   ]
 };
 
-let MARKET = [], CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, timer = null;
+let MARKET = [], BRIEF_PHASE = null, CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, timer = null;
 
 const $ = id => document.getElementById(id);
 const inr = n => "₹" + Math.round(Math.abs(n)).toLocaleString("en-IN");
@@ -705,6 +721,7 @@ function render(funds, meta) {
       'here after a few sessions.</div>';
 
   renderProjection(value, invested);
+  renderBrief(funds, value, invested, impact, meta);
 }
 
 // Long-horizon "where could this be" projection: today's value plus the
@@ -930,6 +947,118 @@ async function loadAiNews() {
 async function loadNews() {
   NEWS = await fetch("data/news.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => NEWS);
   renderWhy();
+}
+
+// Daily greeting: a motivation line that changes each day, an honest read of how
+// the portfolio is doing, and what a bull market could mean -- from each fund's own
+// history, shown next to a rough year so it informs rather than just cheers.
+const QUOTES = [
+  "Markets reward patience far more than they reward cleverness.",
+  "Every SIP instalment is a small vote for your future self.",
+  "A fall in prices is a sale on the units your SIP is about to buy.",
+  "You don't need to predict the market, you need to keep showing up.",
+  "Wealth is built in the quiet months, when nothing seems to be happening.",
+  "Compounding does its best work in the years you're tempted to quit.",
+  "Time in the market beats timing the market.",
+  "The goal isn't a perfect month; it's a decade of good ones.",
+  "Corrections are the price of admission for long-term returns.",
+  "Stay invested, stay boring, get rich slowly.",
+  "Your future self is quietly grateful for today's discipline.",
+  "One red day is noise; ten years of SIPs is a signal.",
+  "The best time to invest was years ago; the next best is this month's SIP.",
+  "Fear sells at the bottom; patience buys there.",
+  "Small, regular investments beat big ones driven by emotion.",
+  "A slow year is often where the next strong one is being built.",
+  "Don't watch the daily number; watch the direction over years.",
+  "Discipline is the one edge every investor can have.",
+  "Let the market do the shouting; let your SIP do the work.",
+  "Progress, not perfection: another month invested.",
+  "Rich investors aren't smarter, they're just still invested.",
+  "Every bull market started out looking like a bad year.",
+  "The market tests your patience before it pays it.",
+  "Consistency turns ordinary amounts into extraordinary outcomes.",
+  "You are not behind; you are compounding.",
+  "Volatility is the fee you pay for growth; you're already paying it wisely.",
+  "Today's dip is tomorrow's cheaper entry.",
+  "Build the habit and the numbers will follow.",
+  "Calm hands win in the long run.",
+  "What you do in the down months decides the up months.",
+  "Your SIP doesn't need good news, it needs time.",
+  "Think in years, check in months, act in SIPs.",
+];
+
+function renderBrief(funds, value, invested, impact, meta) {
+  const wrap = $("briefWrap");
+  if (!CFG || !value) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  const prof = CFG.profile || {};
+  const ist = new Date(Date.now() + (new Date().getTimezoneOffset() + 330) * 60000);
+  const hr = ist.getHours(), name = prof.name ? ", " + esc(prof.name) : "";
+  const day = Math.floor((ist - new Date(ist.getFullYear(), 0, 0)) / 86400000);
+  const phase = meta && meta.phase || BRIEF_PHASE;
+  const mk = phase === "holiday" ? "Markets are closed today" : phase === "final" ? "Markets have closed for the day"
+    : marketOpen() ? "Markets are open" : "Markets are closed right now";
+  const A = (ANALYTICS && ANALYTICS.funds) || [];
+  const vOf = id => (funds.find(f => f.id === id) || {}).value || 0;
+  const sg = (v, d = 1) => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d) + "%";
+
+  // how the last year went: value-weighted over the funds that have a full year
+  let wy = 0, wb = 0, wv = 0;
+  A.forEach(f => { const r = f.returns && f.returns["1Y"]; if (r && r.fund != null && r.bench != null) { const v = vOf(f.id); wy += v * r.fund; wb += v * r.bench; wv += v; } });
+  const have1y = wv > 0, y1 = have1y ? wy / wv : null, b1 = have1y ? wb / wv : null, cover = wv / value;
+  const fd = prof.fd_rate_pct || 7, gain = value - invested, gainPct = invested ? gain / invested * 100 : 0;
+
+  const score = (gain > 0 ? 1 : 0) + (have1y && y1 > b1 ? 1 : 0) + (have1y && y1 > fd ? 1 : 0);
+  const verdict = !have1y ? ["watch", "Building"] : score === 3 ? ["healthy", "On track — strong"] : score === 2 ? ["healthy", "On track"]
+    : score === 1 ? ["watch", "Steady — be patient"] : ["watch", "Patience needed"];
+  $("bGreet").innerHTML = (hr < 12 ? "Good morning" : hr < 17 ? "Good afternoon" : "Good evening") + name +
+    ' <span class="chip ' + verdict[0] + '">' + verdict[1] + "</span>";
+  $("bSub").textContent = ist.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" }) + " · " + mk;
+  $("bQuote").textContent = "“" + QUOTES[day % QUOTES.length] + "”";
+
+  const sipYear = (CFG.monthly_sip_total || 0) * 12;
+  // SIPs buy more units when prices sit below their recent highs
+  let gapW = 0, gapV = 0;
+  A.forEach(f => { if (f.recovery) { const v = vOf(f.id); gapW += v * f.recovery.gap_pct; gapV += v; } });
+  const gap = gapV ? gapW / gapV : 0;
+
+  const pts = [];
+  pts.push(["Where you stand", gain >= 0
+    ? "You've put in " + inr(invested) + " and it's now worth <b>" + inr(value) + "</b> — up <b>" + inr(gain) + "</b> (" + sg(gainPct) + ")."
+    : "You've put in " + inr(invested) + " and it's currently " + inr(-gain) + " below that (" + sg(gainPct) + "). Dips like this are part of the journey."]);
+  if (have1y) pts.push(["The past year", "Your funds returned about <b>" + sg(y1) + "</b> against " + sg(b1) + " for their benchmarks" +
+    (y1 > b1 ? " — you're ahead of the market. " : " — a little behind the market. ") +
+    "A bank deposit would have given roughly " + fd + "%." +
+    (y1 < fd ? " Equity can trail a deposit in a correction year; it's judged over many years, not one." : "") +
+    (cover < 0.9 ? " (Newer funds, about " + Math.round((1 - cover) * 100) + "% of your money, don't have a full year yet.)" : "")]);
+  pts.push(["Your habit", "Your SIP of <b>" + inr(CFG.monthly_sip_total || 0) + "</b> a month adds about " + inr(sipYear) + " a year of new savings." +
+    (gap >= 1.5 ? " With prices about " + gap.toFixed(0) + "% below their recent highs, each month's SIP is buying about " + gap.toFixed(0) + "% more units than at the peak." : "")]);
+  pts.push(["Today", phase === "holiday" ? "Markets are closed, so nothing moved. A good day to let compounding do its work."
+    : (impact >= 0 ? "Your portfolio is estimated up <b>" : "Your portfolio is estimated down <b>") + inr(impact) + "</b> today (" + sg(impact / value * 100, 2) + ")." +
+      (MARKET.length ? " " + MARKET.slice(0, 2).map(m => m.name + " " + sg(m.move_pct, 2)).join(", ") + "." : "")]);
+  $("bPoints").innerHTML = pts.map(p => '<li><span class="bk">' + p[0] + "</span><span>" + p[1] + "</span></li>").join("");
+
+  // ---- if a bull market comes
+  const sc = A.filter(f => f.scenarios);
+  if (!sc.length) { $("bBull").innerHTML = ""; return; }
+  const rec = A.reduce((s, f) => s + vOf(f.id) * ((f.recovery ? f.recovery.gap_pct : 0) / 100), 0);
+  const row = (label, sub, key) => {
+    const g = A.reduce((s, f) => s + vOf(f.id) * (((f.scenarios || {})[key] || 0) / 100), 0), pp = g / value * 100;
+    const end = value + g + sipYear * (1 + pp / 200);     // SIPs are invested through the year, so they earn about half a year's growth
+    return '<tr><td>' + label + ' <span class="sub2">' + sub + "</span></td><td class=\"" + (g >= 0 ? "pos" : "neg") + "\">" + signed(g) +
+      ' <span class="sub2">(' + sg(pp) + ")</span></td><td>" + inr(end) + "</td></tr>";
+  };
+  const first = sc[0].scenarios;
+  const wasOpen = !!(document.querySelector("#bBull details") || {}).open;
+  $("bBull").innerHTML = '<details' + (wasOpen ? " open" : "") + '><summary>If a bull market comes — what a good year could mean (from your funds\' own history, not a forecast)</summary>' +
+    '<div class="scroll"><table><thead><tr><th>A year like…</th><th>Growth on today\'s value</th><th>Portfolio in 12 months, with your SIPs</th></tr></thead><tbody>' +
+    (rec > 0 ? '<tr><td>Prices simply recover to their recent highs <span class="sub2">no time frame</span></td><td class="pos">' + signed(rec) + ' <span class="sub2">(' + sg(rec / value * 100) + ")</span></td><td>—</td></tr>" : "") +
+    row("A rough year", "worst on record", "worst") + row("A typical year", "median", "median") +
+    row("A strong year", "better than 3 in 4", "p75") + row("An exceptional year", "the best on record", "best") + "</tbody></table></div>" +
+    '<p class="sub2" style="margin-top:8px">Built from every 1-year stretch each fund has actually had (Axis and Mirae since 2013' +
+    (sc.some(f => f.scenarios.basis === "benchmark") ? "; JioBlackRock is new, so the Nifty 500\'s history since 2005 stands in for it" : "") +
+    "). Equity was up in about " + Math.round(sc.reduce((s, f) => s + f.scenarios.share_positive, 0) / sc.length) +
+    "% of those years. Good years are not a promise, which is why the rough one is shown too.</p></details>";
 }
 
 // Top movers: per-session gainers/laggards ranked by rupee impact on your money.

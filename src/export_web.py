@@ -49,6 +49,7 @@ def main() -> None:
             "funds": funds,
             "monthly_sip_total": monthly_sip_total,
             "projection": cfg.get("projection", {}),
+            "profile": cfg.get("profile", {}),
         },
     )
 

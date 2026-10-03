@@ -127,6 +127,52 @@ def risk_metrics(levels: pd.DataFrame, rf_pct: float) -> dict | None:
     }
 
 
+# --- "if a bull market comes": what this fund's own history says -----------------
+
+def rolling_year_returns(level: pd.Series) -> pd.Series:
+    """Every overlapping 1-year return the series has actually produced, in %."""
+    level = level.dropna().sort_index()
+    if len(level) < 300:
+        return pd.Series(dtype=float)
+    prior = level.asof(level.index - pd.Timedelta(days=365))
+    ok = level.index >= level.index[0] + pd.Timedelta(days=365)
+    return ((level[ok] / prior[ok].values - 1) * 100).dropna()
+
+
+def history_scenarios(nav: pd.Series | None, bench: pd.Series | None) -> dict | None:
+    """Typical / strong / best 1-year outcomes from real history.
+
+    Uses the fund's own NAV when it has 3+ years; a young fund borrows its benchmark's
+    history instead (and says so). This is "what has happened", not a forecast.
+    """
+    for basis, series in (("fund", nav), ("benchmark", bench)):
+        if series is None or len(series) < 2:
+            continue
+        span = (series.index[-1] - series.index[0]).days
+        if basis == "fund" and span < 3 * 365:
+            continue
+        r = rolling_year_returns(series)
+        if len(r) < 100:
+            continue
+        return {
+            "basis": basis, "since": series.index[0].date().isoformat(), "years": round(span / 365, 1),
+            "worst": round(float(r.min()), 1), "p25": round(float(np.percentile(r, 25)), 1),
+            "median": round(float(r.median()), 1), "p75": round(float(np.percentile(r, 75)), 1),
+            "best": round(float(r.max()), 1), "share_positive": round(float((r > 0).mean() * 100)),
+        }
+    return None
+
+
+def recovery(nav: pd.Series | None) -> dict | None:
+    """How far the latest NAV sits below its 6-month high."""
+    if nav is None or len(nav) < 30:
+        return None
+    win = nav[nav.index > nav.index[-1] - pd.Timedelta(days=182)]
+    peak, last = float(win.max()), float(nav.iloc[-1])
+    return {"nav_last": round(last, 4), "nav_peak_6m": round(peak, 4),
+            "gap_pct": round((peak / last - 1) * 100, 1), "peak_date": win.idxmax().date().isoformat()}
+
+
 # --- XIRR -----------------------------------------------------------------------
 
 def xirr(flows: list[tuple[dt.date, float]]) -> float | None:
@@ -332,6 +378,8 @@ def main() -> None:
                     out["returns"] = rets
                     out["risk"] = risk_metrics(levels, rf)
                     out["_bench"] = (bench, float(bench.iloc[-1]))
+                out["scenarios"] = history_scenarios(nav, bench)
+                out["recovery"] = recovery(nav)
         except Exception as exc:  # noqa: BLE001
             print(f"[warn] {fid}: return/risk metrics failed: {exc}", file=sys.stderr)
 

@@ -1,18 +1,14 @@
 name: reconcile
 
 # AMFI publishes NAV around 22:00-23:00 IST. We check at 23:15 IST (17:45 UTC)
-# and retry at 00:45 IST in case publication ran late.
-#
-# Runs Saturdays too: NSE occasionally holds special Saturday trading
-# sessions, and if one happens AMFI publishes a real NAV for it that needs
-# grading same as any other day. On an ordinary Saturday with no new trading,
-# reconcile.py's own "NAV unchanged" check finds nothing to do and no commit
-# happens -- this is just insurance for the rare real session, not something
-# that produces new output most weeks.
+# and retry at 00:45 IST in case publication ran late. Weekdays only --
+# estimate.yml no longer runs on Saturdays either, and AMFI doesn't publish
+# a NAV for a day the market didn't trade, so there would never be anything
+# new to grade on a Saturday regardless.
 on:
   schedule:
-    - cron: "45 17 * * 1-6"
-    - cron: "15 19 * * 1-6"
+    - cron: "45 17 * * 1-5"
+    - cron: "15 19 * * 1-5"
   workflow_dispatch:
 
 permissions:

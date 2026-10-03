@@ -16,6 +16,7 @@ estimate and a 90%-covered estimate deserve very different levels of trust.
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import sys
 import time
 
@@ -31,8 +32,16 @@ from common import (
 )
 
 
-def fetch_moves(tickers: list[str], retries: int = 2) -> dict[str, float | None]:
+def fetch_moves(
+    tickers: list[str], retries: int = 2
+) -> tuple[dict[str, float | None], dt.date | None]:
     """Percent change vs previous close for each ticker. None when unavailable.
+
+    Also returns the most recent bar date seen across all tickers — the
+    simplest available signal for "did the market actually trade today."
+    NSE has holidays (Gandhi Jayanti, Diwali, etc.) that fall on weekdays,
+    so is_market_window()'s weekday-only check doesn't catch them; deriving
+    it straight from the data avoids needing a maintained holiday calendar.
 
     Retries a couple of times on failure — Yahoo has enough transient blips
     that a single failed call would otherwise silently cost a whole trading
@@ -40,7 +49,7 @@ def fetch_moves(tickers: list[str], retries: int = 2) -> dict[str, float | None]
     accuracy grading too).
     """
     if not tickers:
-        return {}
+        return {}, None
 
     moves: dict[str, float | None] = {t: None for t in tickers}
     data = None
@@ -62,8 +71,9 @@ def fetch_moves(tickers: list[str], retries: int = 2) -> dict[str, float | None]
             if attempt < retries:
                 time.sleep(5)
     if data is None:
-        return moves
+        return moves, None
 
+    latest_bar_date: dt.date | None = None
     for ticker in tickers:
         try:
             frame = data[ticker] if len(tickers) > 1 else data
@@ -73,9 +83,12 @@ def fetch_moves(tickers: list[str], retries: int = 2) -> dict[str, float | None]
             prev, last = float(closes.iloc[-2]), float(closes.iloc[-1])
             if prev:
                 moves[ticker] = (last - prev) / prev * 100.0
+            bar_date = closes.index[-1].date()
+            if latest_bar_date is None or bar_date > latest_bar_date:
+                latest_bar_date = bar_date
         except Exception:  # noqa: BLE001
             continue
-    return moves
+    return moves, latest_bar_date
 
 
 def estimate_fund(fund: dict, cfg: dict, moves: dict[str, float | None]) -> dict:
@@ -189,9 +202,10 @@ def main() -> None:
         if f.get("benchmark_ticker"):
             tickers.add(f["benchmark_ticker"])
 
-    moves = fetch_moves(sorted(tickers))
+    moves, latest_bar_date = fetch_moves(sorted(tickers))
     resolved = sum(1 for v in moves.values() if v is not None)
-    print(f"[info] resolved {resolved}/{len(moves)} tickers")
+    print(f"[info] resolved {resolved}/{len(moves)} tickers, "
+          f"latest bar date {latest_bar_date}")
 
     # Fail-safe: a near-total fetch failure (Yahoo outage, network blip) must
     # not silently overwrite today's estimate with a bogus near-0% number
@@ -204,6 +218,22 @@ def main() -> None:
         print(f"[error] only {resolved}/{len(moves)} tickers resolved — "
               "refusing to publish a degraded estimate", file=sys.stderr)
         sys.exit(1)
+
+    # NSE holidays (Gandhi Jayanti, Diwali, etc.) land on ordinary weekdays,
+    # so is_market_window()'s weekday check alone doesn't catch them — a
+    # holiday Friday would otherwise compute a "fresh" estimate from
+    # yesterday's unchanged prices and publish it as if it were a real
+    # close, or (on the intraday cron) just churn out redundant commits all
+    # day. If nothing newer than the last known close exists yet, nothing
+    # actually traded today — treat it exactly like outside-market-hours.
+    if latest_bar_date and latest_bar_date < ts.date():
+        print(f"[info] no trading data newer than {latest_bar_date} — "
+              f"{ts.date()} looks like a market holiday; marking last estimate stale")
+        latest = read_json("latest.json", None)
+        if latest:
+            latest["stale"] = True
+            write_json("latest.json", latest)
+        return
 
     results = [estimate_fund(f, cfg, moves) for f in funds]
 

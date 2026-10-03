@@ -211,7 +211,7 @@
     <h2>Where this could be <span id="projNote"></span></h2>
     <table>
       <thead><tr>
-        <th>Horizon</th><th>Projected value</th><th>Total invested by then</th><th>Projected gain</th>
+        <th>Year</th><th>Projected value</th><th>Total invested by then</th><th>Projected gain</th>
       </tr></thead>
       <tbody id="projTable"></tbody>
     </table>
@@ -642,7 +642,9 @@ function renderProjection(value, invested) {
     const fv = projectFutureValue(value, sip, rate, y);
     const totalInvested = invested + sip * y * 12;
     const gain = fv - totalInvested;
-    return "<tr><td>" + y + (y === 1 ? " year" : " years") + "</td><td>" + inr(fv) +
+    const calYear = new Date().getFullYear() + y;
+    return "<tr><td>" + calYear + ' <span style="font-size:11px;color:var(--grey-light)">(' +
+      y + (y === 1 ? " yr" : " yrs") + ")</span></td><td>" + inr(fv) +
       "</td><td>" + inr(totalInvested) + "</td><td class=\"" + (gain >= 0 ? "pos" : "neg") +
       "\">" + signed(gain) + "</td></tr>";
   }).join("");

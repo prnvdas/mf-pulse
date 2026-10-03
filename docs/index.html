@@ -640,9 +640,12 @@ function render(funds, meta) {
         '<div class="wt">' + c.weight.toFixed(1) + '%</div></div>';
     }).join("");
   } else {
-    $("contrib").innerHTML = '<div class="note">No holdings priced yet. Import each fund\'s ' +
-      'monthly portfolio disclosure with <code>import_holdings.py</code>, then run ' +
-      '<code>export_web.py</code>.</div>';
+    $("contrib").innerHTML = meta.phase === "holiday"
+      ? '<div class="note">Markets were closed today (holiday or weekend), so no stock moved. ' +
+        'The <b>Top movers</b> section below has the last trading session.</div>'
+      : '<div class="note">No stock prices yet for this view. Press <b>Refresh live</b> ' +
+        'once the market is open; if holdings have never been imported, see ' +
+        '<code>import_holdings.py</code> and <code>export_web.py</code>.</div>';
   }
 
   $("accWrap").innerHTML = ACC.samples
@@ -1029,7 +1032,7 @@ async function applyBatch() {
   if (!latest || !latest.funds) throw new Error("latest.json has no funds");
   const a = adaptLatest(latest);
   render(a.funds, { priced: a.priced, requested: a.total || a.priced,
-    blend: "estimate.py, " + a.resolved + "/" + a.total + " tickers" });
+    blend: "estimate.py, " + a.resolved + "/" + a.total + " tickers", phase: a.phase });
   renderMarket(a.market);
   setupMoversPicker(a.movers);
   stampBatch(a);
@@ -1258,7 +1261,7 @@ function adaptLatest(d) {
   if (latest && latest.funds) {
     const a = adaptLatest(latest);
     render(a.funds, { priced: a.priced, requested: a.total || a.priced,
-      blend: "estimate.py, " + a.resolved + "/" + a.total + " tickers" });
+      blend: "estimate.py, " + a.resolved + "/" + a.total + " tickers", phase: a.phase });
     MOVERS = await fetch("data/movers.json", { cache: "no-store" }).then(r => r.ok ? r.json() : []).catch(() => []);
     setupMoversPicker(latest.movers);
     renderMarket(a.market);

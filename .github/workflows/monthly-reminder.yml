@@ -1,0 +1,40 @@
+name: monthly-reminder
+
+# Opens a GitHub issue on the 1st of every month (09:00 IST) assigned to the repo
+# owner, which GitHub turns into an email / mobile notification. Reminder to
+# re-sync the portfolio from a Groww or IndMoney screenshot.
+on:
+  schedule:
+    - cron: "30 3 1 * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      OWNER: ${{ github.repository_owner }}
+    steps:
+      - name: Close last month's reminder, open this month's
+        run: |
+          gh issue list -R "$REPO" --state open --search 'in:title "Refresh your portfolio"' --json number -q '.[].number' \
+            | xargs -r -I{} gh issue close {} -R "$REPO" --comment "Superseded by this month's reminder."
+          gh issue create -R "$REPO" --assignee "$OWNER" \
+            --title "Refresh your portfolio — $(date +'%B %Y')" \
+            --body "$(cat <<'BODY'
+          Time for the monthly portfolio check.
+
+          1. Open Groww or IndMoney and go to your mutual funds holdings page (the one showing **Invested**, **Current Value** and **Gain/Loss** for each fund).
+          2. Take a screenshot (crop out your name and folio details).
+          3. In this repo: **Add file → Upload files** → put it in the `screenshots/` folder → commit to `main`.
+          4. The `sync-screenshot` workflow reads it, updates your invested amounts and units, and deletes the image. Check the Actions tab: a green run means it was applied; a red one means nothing was changed and the log says why.
+
+          Notes
+          - Your SIP is allocated on the 3rd, so a screenshot taken before then won't include this month's SIP; the system adds it automatically.
+          - Before the market opens or after a holiday is fine: this only corrects invested amount and units.
+          BODY
+          )"

@@ -22,6 +22,8 @@
   header{border-bottom:1px solid var(--ink);padding:22px 0 16px}
   .bar{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
   .mark{font-size:23px;font-weight:700;letter-spacing:-.025em}
+  a.mark{color:inherit;text-decoration:none;cursor:pointer}
+  a.mark:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
   .mark i{display:inline-block;width:10px;height:10px;border-radius:50%;
     background:var(--state);margin-left:3px;font-style:normal}
   .ctl{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
@@ -169,7 +171,7 @@
 
 <header>
   <div class="wrap bar">
-    <div class="mark">Portfolio<i></i></div>
+    <a class="mark" id="home" href="#" title="Back to the top and reload the latest numbers">Portfolio<i></i></a>
     <div class="ctl">
       <span class="stamp" id="stamp">Ready</span>
       <button class="ghost" id="diag" title="Test the price source and report exactly what failed">Diagnose</button>
@@ -1185,6 +1187,16 @@ $("diag").addEventListener("click", async e => {
 });
 
 $("refresh").addEventListener("click", run);
+
+// "Portfolio" in the header acts as a home button: back to the top, panels
+// closed, numbers reloaded. preventDefault keeps the URL hash intact -- the
+// price-source settings are stored there.
+$("home").addEventListener("click", e => {
+  e.preventDefault();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  $("setupWrap").hidden = true;
+  run();
+});
 
 $("auto").addEventListener("click", e => {
   const on = e.currentTarget.getAttribute("aria-pressed") !== "true";

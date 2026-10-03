@@ -72,3 +72,14 @@ estimator:
   tail_model: benchmark
   # Holdings older than this are flagged in the UI.
   holdings_stale_days: 45
+
+# Long-horizon "where could this be" projection shown on the dashboard.
+# Pure illustration from today's current value plus the configured SIPs
+# above compounding at one assumed rate -- not a forecast, not a promise.
+# Equity CAGR varies enormously by period; 12% is a commonly used
+# long-term planning assumption for diversified Indian equity funds, not
+# a guarantee. Change it here if you want to see it under a different
+# assumption; it's the one number the whole projection hinges on.
+projection:
+  assumed_annual_return_pct: 12
+  horizons_years: [1, 3, 5, 7, 10, 15, 20, 25]

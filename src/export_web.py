@@ -40,9 +40,16 @@ def main() -> None:
             }
         )
 
+    monthly_sip_total = sum(float(s["amount"]) for s in cfg.get("sips", []))
+
     write_json(
         "config.json",
-        {"tail_model": cfg["estimator"]["tail_model"], "funds": funds},
+        {
+            "tail_model": cfg["estimator"]["tail_model"],
+            "funds": funds,
+            "monthly_sip_total": monthly_sip_total,
+            "projection": cfg.get("projection", {}),
+        },
     )
 
     total = sum(len(f["holdings"]) for f in funds)

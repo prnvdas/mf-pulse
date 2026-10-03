@@ -1,0 +1,63 @@
+name: adjust
+
+# Manual-only. Run this from the Actions tab (Run workflow) whenever money
+# moves in or out of a fund outside the automated monthly SIP -- a one-off
+# top-up, a withdrawal, a SIP amount that changed. There's no brokerage or
+# bank integration here, so this is the "I actually invested X, please
+# update" button: fill in the form, run it, the dashboard reflects it within
+# about a minute.
+on:
+  workflow_dispatch:
+    inputs:
+      fund:
+        description: "Which fund"
+        required: true
+        type: choice
+        options:
+          - axis-small-cap
+          - mirae-large-midcap
+          - jioblackrock-flexicap
+      amount:
+        description: "Rupees added (negative for a withdrawal), e.g. 20000 or -5000"
+        required: true
+        type: string
+      note:
+        description: "Optional note (shows up in the commit message)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    # Inputs go through env rather than being interpolated directly into a
+    # run: script -- `note` is free text, and splicing ${{ inputs.note }}
+    # straight into a bash script's source would let a note containing
+    # backticks or $(...) execute as shell commands on the runner. Routing
+    # through env makes it a plain data value instead.
+    env:
+      INPUT_FUND: ${{ inputs.fund }}
+      INPUT_AMOUNT: ${{ inputs.amount }}
+      INPUT_NOTE: ${{ inputs.note }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: >-
+          python src/adjust_investment.py
+          --fund "$INPUT_FUND" --amount "$INPUT_AMOUNT" --note "$INPUT_NOTE"
+      - run: python src/export_web.py
+      - name: Commit adjustment
+        run: |
+          git config user.name  "mf-pulse"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/data
+          MSG="adjust: $INPUT_FUND $INPUT_AMOUNT"
+          if [ -n "$INPUT_NOTE" ]; then MSG="$MSG ($INPUT_NOTE)"; fi
+          git commit -m "$MSG"
+          git push

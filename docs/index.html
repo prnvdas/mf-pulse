@@ -207,6 +207,21 @@
     </table>
   </section>
 
+  <section id="projWrap" hidden>
+    <h2>Where this could be <span id="projNote"></span></h2>
+    <table>
+      <thead><tr>
+        <th>Horizon</th><th>Projected value</th><th>Total invested by then</th><th>Projected gain</th>
+      </tr></thead>
+      <tbody id="projTable"></tbody>
+    </table>
+    <p class="note">Illustration only, not a forecast. Assumes today's value and SIP compound
+      at one fixed assumed rate every year with no interruptions, no fund switches, and no SIP
+      changes — real markets don't move in a straight line, and actual results will differ,
+      possibly by a lot. Change the assumed rate in <code>config/portfolio.yaml</code> under
+      <code>projection</code> if 12% doesn't match what you want to plan against.</p>
+  </section>
+
   <footer>
     <b>How this works.</b> AMFI publishes NAV once daily, after close. Pressing refresh prices
     every stock in each fund's disclosed portfolio, weights the moves, models the untracked
@@ -589,6 +604,48 @@ function render(funds, meta) {
     : '<div class="note">Not enough data yet. Each night <code>reconcile.py</code> scores that ' +
       "day's estimate against the NAV AMFI actually published; the measured error band appears " +
       'here after a few sessions.</div>';
+
+  renderProjection(value, invested);
+}
+
+// Long-horizon "where could this be" projection: today's value plus the
+// configured monthly SIP, compounding at one assumed rate from
+// config/portfolio.yaml (`projection`). Pure illustration, not a forecast --
+// real markets don't compound in a straight line. Recomputed on every
+// render() call so it tracks Refresh, but the only things that actually
+// change between refreshes are `value`/`invested` -- the assumed rate and
+// SIP amount are static config, not live data.
+function projectFutureValue(lumpsum, monthlySip, annualRatePct, years) {
+  const months = years * 12;
+  const i = annualRatePct / 100 / 12;
+  const fvLumpsum = lumpsum * Math.pow(1 + annualRatePct / 100, years);
+  const fvSip = i
+    ? monthlySip * ((Math.pow(1 + i, months) - 1) / i) * (1 + i)
+    : monthlySip * months;
+  return fvLumpsum + fvSip;
+}
+
+function renderProjection(value, invested) {
+  const proj = CFG.projection || {};
+  const rate = proj.assumed_annual_return_pct;
+  const horizons = proj.horizons_years;
+  const sip = CFG.monthly_sip_total || 0;
+  const wrap = $("projWrap");
+
+  if (!rate || !horizons || !horizons.length || !value) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+
+  $("projNote").textContent = "Assuming " + rate + "%/yr and today's " +
+    inr(sip) + "/month SIP continuing unchanged";
+
+  $("projTable").innerHTML = horizons.map(y => {
+    const fv = projectFutureValue(value, sip, rate, y);
+    const totalInvested = invested + sip * y * 12;
+    const gain = fv - totalInvested;
+    return "<tr><td>" + y + (y === 1 ? " year" : " years") + "</td><td>" + inr(fv) +
+      "</td><td>" + inr(totalInvested) + "</td><td class=\"" + (gain >= 0 ? "pos" : "neg") +
+      "\">" + signed(gain) + "</td></tr>";
+  }).join("");
 }
 
 // Day-by-day predicted-vs-published breakdown behind the summary cards above.

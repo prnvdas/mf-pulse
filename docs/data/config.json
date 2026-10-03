@@ -1649,5 +1649,19 @@
         }
       ]
     }
-  ]
+  ],
+  "monthly_sip_total": 110000.0,
+  "projection": {
+    "assumed_annual_return_pct": 12,
+    "horizons_years": [
+      1,
+      3,
+      5,
+      7,
+      10,
+      15,
+      20,
+      25
+    ]
+  }
 }

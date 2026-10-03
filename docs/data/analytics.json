@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-03T20:59:05.674715+05:30",
+  "generated_at": "2026-10-03T22:42:21.110913+05:30",
   "risk_free_pct": 6.5,
   "funds": [
     {
@@ -7,7 +7,7 @@
       "name": "Axis Small Cap Fund Direct Growth",
       "benchmark": {
         "name": "Nifty Smallcap 250",
-        "note": "price-return proxy via the HDFC Nifty Smallcap 250 ETF"
+        "note": "index level (price return); P/E comes from the HDFC Nifty Smallcap 250 ETF, which holds the same basket"
       },
       "mine": {
         "invested": 4125000.0,
@@ -22,29 +22,29 @@
         },
         "3M": {
           "fund": 0.39,
-          "bench": -1.59,
-          "diff": 1.98
+          "bench": -2.19,
+          "diff": 2.58
         },
         "6M": {
           "fund": 19.87,
-          "bench": 19.78,
-          "diff": 0.09
+          "bench": 19.45,
+          "diff": 0.42
         },
         "1Y": {
           "fund": 8.99,
-          "bench": 4.66,
-          "diff": 4.33
+          "bench": 4.27,
+          "diff": 4.72
         }
       },
       "risk": {
         "window_days": 363,
-        "beta": 0.83,
-        "alpha_pct": 4.18,
-        "vol_pct": 15.2,
-        "bench_vol_pct": 17.5,
-        "sharpe": 0.22,
+        "beta": 0.85,
+        "alpha_pct": 4.37,
+        "vol_pct": 15.0,
+        "bench_vol_pct": 17.2,
+        "sharpe": 0.21,
         "max_drawdown_pct": -14.7,
-        "bench_max_drawdown_pct": -18.1
+        "bench_max_drawdown_pct": -18.4
       },
       "valuation": {
         "fund_pe": 29.9,

@@ -23,12 +23,12 @@ funds:
     name: Axis Small Cap Fund Direct Growth
     amfi_code: 125354
     ter_annual_pct: 0.55       # direct plan TER
-    benchmark_ticker: "HDFCSML250.NS" # Nifty Smallcap 250 ETF (Axis small cap benchmark); Yahoo ^CNXSC stopped updating
+    benchmark_ticker: "NIFTYSMLCAP250.NS" # Nifty Smallcap 250 index (Axis small cap benchmark); Yahoo ^CNXSC stopped updating
     groww_slug: axis-small-cap-fund-direct-growth
     analytics_benchmark:
       name: Nifty Smallcap 250
-      note: price-return proxy via the HDFC Nifty Smallcap 250 ETF
-      returns: [{ticker: "HDFCSML250.NS", weight: 1.0}]
+      note: index level (price return); P/E comes from the HDFC Nifty Smallcap 250 ETF, which holds the same basket
+      returns: [{ticker: "NIFTYSMLCAP250.NS", weight: 1.0}]
       pe: [{ticker: "HDFCSML250.NS", weight: 1.0}]
     units: null
     seed_value: 5312000    # synced from IndMoney 2026-10-03

@@ -33,12 +33,12 @@ from common import (
 
 
 # Shown in the dashboard's news ticker. fast_info is used because Yahoo's
-# daily history for the smallcap and large-midcap indices holds only one bar,
+# daily history for the large-midcap index holds only one bar,
 # but it still reports the latest level and the previous close for them.
 INDICES = [
     ("Sensex", "^BSESN"),
     ("Nifty 50", "^NSEI"),
-    ("Nifty Smallcap 100", "^CNXSC"),
+    ("Nifty Smallcap 250", "NIFTYSMLCAP250.NS"),
     ("Nifty LargeMidcap 250", "NIFTY_LARGEMID250.NS"),
 ]
 

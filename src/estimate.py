@@ -292,6 +292,11 @@ def main() -> None:
         {"name": name, "ticker": t, "move_pct": round(moves[t], 2)}
         for t, name in MARKET_INDICES.items() if moves.get(t) is not None
     ]
+    held = {h["ticker"] for f in funds for h in load_holdings(f["id"]).get("holdings") or []}
+    pts = [moves[t] for t in held if moves.get(t) is not None]
+    breadth = None if is_holiday or not pts else {
+        "up": sum(1 for m in pts if m > 0), "down": sum(1 for m in pts if m < 0), "total": len(pts),
+    }
     movers = None if is_holiday else build_movers(funds, results, moves, ts.date().isoformat())
     after_close = ts.time() >= dt.time(15, 45)
     phase = "holiday" if is_holiday else ("final" if after_close else "live")
@@ -302,6 +307,17 @@ def main() -> None:
     # Errors are partly independent across funds, so add bands in quadrature
     # rather than straight — straight summing overstates the uncertainty.
     total_band = sum(r["band_rupees"] ** 2 for r in results) ** 0.5
+
+    if movers:
+        # kept with each day's record so the "why did the market move" view can
+        # still explain a past session (e.g. on a holiday) from the same facts
+        movers.update({
+            "market": market, "breadth": breadth,
+            "portfolio_pct": round(total_impact / total_value * 100.0, 3) if total_value else 0.0,
+            "portfolio_impact": round(total_impact),
+            "funds": [{"id": r["id"], "name": r["name"], "nav_move_pct": r["nav_move_pct"],
+                       "impact": round(r["rupee_impact"])} for r in results],
+        })
 
     payload = {
         "generated_at": ts.isoformat(),
@@ -327,6 +343,7 @@ def main() -> None:
         "funds": results,
         "movers": movers,
         "market": market,
+        "breadth": breadth,
         "accuracy": read_json("accuracy.json", {"samples": 0}),
         "tickers_resolved": resolved,
         "tickers_total": len(moves),

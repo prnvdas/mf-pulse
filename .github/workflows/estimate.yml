@@ -59,6 +59,12 @@ jobs:
           github.event.schedule != '5 11 * * 1-5' &&
           github.event.schedule != '20 11 * * 1-5'
         run: python src/estimate.py
+      # Headlines + the "why did the market move" explanation. Non-blocking: it
+      # depends on third-party news feeds, and a dead feed must never hold up
+      # (or fail) an estimate run.
+      - name: News and market explanation
+        continue-on-error: true
+        run: python src/news.py
       - name: Commit dashboard data
         run: |
           git config user.name  "mf-pulse"

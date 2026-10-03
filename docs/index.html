@@ -111,7 +111,7 @@
   .tk-track{flex:1;overflow-x:auto;overflow-y:hidden;white-space:nowrap;display:flex;align-items:center;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:grab}
   .tk-track::-webkit-scrollbar{display:none}
   .tk-btn{flex:none;background:#0c0f14;color:#aab2c0;border:0;border-left:1px solid #2a303a;padding:0 14px;font-size:11px;cursor:pointer}
-  .tk-btn:hover,.tk-btn:focus-visible{color:#fff;outline:none}
+  .ticker .tk-btn:hover,.ticker .tk-btn:focus,.ticker .tk-btn:active{background:#0c0f14;color:#fff;outline:none}
   .tk-run{display:inline-flex;align-items:center;white-space:nowrap}
   .tk-run>*,.tk-unit{flex:none}
   .tk-unit{display:inline-flex;align-items:center}
@@ -124,6 +124,8 @@
   .tk-run .src{color:#7f8a9a;margin-left:8px;font-size:11.5px}
   .tk-run .dot{color:#59616f;margin:0 22px}
   .tk-run .gap{width:36px}
+  .ticker.ai{border-bottom:2px solid #5b5bd6;border-top:1px solid #1d222b}
+  .ticker.ai .tk-lab{background:#5b5bd6}
   @media(prefers-reduced-motion:reduce){.tk-lab i{animation:none}}
   .why ol{list-style:none;margin:18px 0 0;display:grid;gap:14px}
   .why li{display:grid;grid-template-columns:28px 1fr;gap:12px;font-size:14.5px;line-height:1.6}
@@ -213,7 +215,12 @@
 <div class="ticker" id="ticker" hidden aria-label="Market indices">
   <span class="tk-lab" id="tkLab"><i></i>LIVE</span>
   <div class="tk-track" id="tkTrack"><div class="tk-run" id="tkRun"></div></div>
-  <button class="tk-btn" id="tkBtn" aria-label="Pause news ticker">❚❚</button>
+  <button class="tk-btn" id="tkBtn" aria-label="Pause index ticker">❚❚</button>
+</div>
+<div class="ticker ai" id="aiTicker" hidden aria-label="Latest AI and tech headlines, updated daily" title="Updated daily">
+  <span class="tk-lab" id="aiLab">AI &amp; TECH</span>
+  <div class="tk-track" id="aiTrack"><div class="tk-run" id="aiRun"></div></div>
+  <button class="tk-btn" id="aiBtn" aria-label="Pause AI news ticker">❚❚</button>
 </div>
 
 <main class="wrap">
@@ -837,71 +844,88 @@ function renderWhy() {
   };
 }
 
-// Index ticker: Sensex and the Nifty indices, scrolling continuously like a news
-// channel. A normal horizontally scrollable strip with an animation loop on top,
-// so it can also be dragged, swiped or wheeled; the loop pauses meanwhile and
-// resumes on its own. One set of indices is narrower than the screen, so the set
-// is repeated until it fills the strip twice over and the loop wraps by exactly
-// one set's width -- seamless, with no empty gap.
-let TK = { pos: 0, paused: false, off: false, resume: null, started: false, html: "", period: 0 };
-function renderTicker() {
-  const bar = $("ticker"), track = $("tkTrack"), run = $("tkRun");
-  if (!MARKET.length) { bar.hidden = true; return; }
-  bar.hidden = false;
-  $("tkLab").innerHTML = "<i></i>" + (marketOpen() ? "LIVE" : "LAST CLOSE");
-  const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;");
-  const unit = MARKET.map(m => {
+// Scrolling ticker bars (indices, AI headlines). Each is a normal horizontally
+// scrollable strip with an animation loop on top, so it can also be dragged,
+// swiped or wheeled; the loop pauses meanwhile and resumes on its own, and an
+// explicit pause/play button sits at the right. One set of items can be narrower
+// than the screen, so it is repeated until it covers the strip and the loop wraps
+// by exactly one set's width -- seamless, with no empty gap.
+function makeTicker(ids, buildUnit, label) {
+  const st = { pos: 0, paused: false, off: false, resume: null, started: false, key: "", period: 0, items: [] };
+  const g = k => document.getElementById(ids[k]);
+
+  function start(track) {
+    st.started = true;
+    const pause = () => { st.paused = true; clearTimeout(st.resume); };
+    const later = ms => { clearTimeout(st.resume); st.resume = setTimeout(() => { if (!st.off) { st.paused = false; st.pos = track.scrollLeft; } }, ms); };
+    g("btn").addEventListener("click", () => {
+      st.off = !st.off; st.paused = st.off; clearTimeout(st.resume); st.pos = track.scrollLeft;
+      g("btn").textContent = st.off ? "▶" : "❚❚";
+      g("btn").setAttribute("aria-label", (st.off ? "Play " : "Pause ") + ids.name);
+    });
+    // pause only while the pointer is on a link (so it can be clicked), not whenever the mouse rests over the strip
+    track.addEventListener("mouseover", e => { if (e.target.closest("a")) pause(); });
+    track.addEventListener("mouseout", e => { if (e.target.closest("a")) later(400); });
+    track.addEventListener("touchstart", pause, { passive: true });
+    track.addEventListener("touchend", () => later(3000));
+    track.addEventListener("wheel", () => { pause(); later(2500); }, { passive: true });
+    track.addEventListener("scroll", () => {
+      if (st.period > 0 && st.paused) {
+        if (track.scrollLeft >= st.period) track.scrollLeft -= st.period;
+        else if (track.scrollLeft <= 0) track.scrollLeft += st.period;
+      }
+    });
+    let last = performance.now();
+    const step = now => {
+      const dt = Math.min(0.1, (now - last) / 1000); last = now;
+      if (!st.paused && st.period > 0 && document.visibilityState === "visible") {
+        st.pos += 45 * dt;                       // px per second
+        if (st.pos >= st.period) st.pos -= st.period;
+        track.scrollLeft = st.pos;
+      }
+      requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  function render(items) {
+    st.items = items;
+    const bar = g("bar"), track = g("track"), run = g("run");
+    if (!items.length) { bar.hidden = true; return; }
+    bar.hidden = false;
+    g("lab").innerHTML = label();
+    const unit = '<span class="tk-unit">' + buildUnit(items) + '<span class="gap"></span></span>';
+    run.innerHTML = unit;
+    const w = run.firstChild.getBoundingClientRect().width;
+    if (!w) return;
+    st.period = w;
+    const copies = Math.ceil(track.clientWidth / w) + 1, key = unit + copies;
+    if (st.key !== key) { run.innerHTML = unit.repeat(copies); st.key = key; }
+    if (!st.started) start(track);
+  }
+  window.addEventListener("resize", () => { if (st.started) render(st.items); });
+  return { render };
+}
+
+const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+const INDEX_TICKER = makeTicker(
+  { bar: "ticker", track: "tkTrack", run: "tkRun", btn: "tkBtn", lab: "tkLab", name: "index ticker" },
+  items => items.map(m => {
     const up = m.move_pct >= 0, arrow = up ? "▲" : "▼";
     return '<span class="tk-idx"><b>' + esc(m.name) + '</b><span class="lv">' + m.level.toLocaleString("en-IN", { maximumFractionDigits: 2 }) +
       '</span><span class="' + (up ? "up" : "dn") + '">' + arrow + " " + Math.abs(m.change).toLocaleString("en-IN", { maximumFractionDigits: 2 }) +
       " (" + (up ? "+" : "−") + Math.abs(m.move_pct).toFixed(2) + '%)</span></span><span class="dot">|</span>';
-  }).join("") + '<span class="gap"></span>';
-  run.innerHTML = '<span class="tk-unit">' + unit + "</span>";
-  const w = run.firstChild.getBoundingClientRect().width;
-  if (!w) return;
-  TK.period = w;
-  const copies = Math.ceil(track.clientWidth / w) + 1;
-  const html = '<span class="tk-unit">' + unit + "</span>";
-  const key = unit + copies;
-  if (TK.html !== key) { run.innerHTML = html.repeat(copies); TK.html = key; }
-  if (!TK.started) startTicker(track);
-}
-window.addEventListener("resize", () => { if (TK.started) renderTicker(); });
-
-function startTicker(track) {
-  TK.started = true;
-  const pause = () => { TK.paused = true; clearTimeout(TK.resume); };
-  const later = ms => { clearTimeout(TK.resume); TK.resume = setTimeout(() => { if (!TK.off) { TK.paused = false; TK.pos = track.scrollLeft; } }, ms); };
-  $("tkBtn").addEventListener("click", () => {      // explicit pause/play for anyone who wants the strip still
-    TK.off = !TK.off; TK.paused = TK.off; clearTimeout(TK.resume); TK.pos = track.scrollLeft;
-    $("tkBtn").textContent = TK.off ? "▶" : "❚❚";
-    $("tkBtn").setAttribute("aria-label", TK.off ? "Play news ticker" : "Pause news ticker");
-  });
-  // Only pause while the pointer is on a headline (so it can be clicked), not
-  // whenever the mouse happens to rest somewhere over the strip.
-  track.addEventListener("mouseover", e => { if (e.target.closest("a")) pause(); });
-  track.addEventListener("mouseout", e => { if (e.target.closest("a")) later(400); });
-  track.addEventListener("touchstart", pause, { passive: true });
-  track.addEventListener("touchend", () => later(3000));
-  track.addEventListener("wheel", () => { pause(); later(2500); }, { passive: true });
-  track.addEventListener("scroll", () => {       // manual scrolling also wraps seamlessly
-    const per = TK.period;
-    if (per > 0 && TK.paused) {
-      if (track.scrollLeft >= per) track.scrollLeft -= per;
-      else if (track.scrollLeft <= 0) track.scrollLeft += per;
-    }
-  });
-  let last = performance.now();
-  const step = now => {
-    const dt = Math.min(0.1, (now - last) / 1000); last = now;
-    if (!TK.paused && TK.period > 0 && document.visibilityState === "visible") {
-      TK.pos += 45 * dt;                         // px per second
-      if (TK.pos >= TK.period) TK.pos -= TK.period;
-      track.scrollLeft = TK.pos;
-    }
-    requestAnimationFrame(step);
-  };
-  requestAnimationFrame(step);
+  }).join(""),
+  () => "<i></i>" + (marketOpen() ? "LIVE" : "LAST CLOSE"));
+const AI_TICKER = makeTicker(
+  { bar: "aiTicker", track: "aiTrack", run: "aiRun", btn: "aiBtn", lab: "aiLab", name: "AI news ticker" },
+  items => items.map(r => '<a href="' + esc(r.link) + '" target="_blank" rel="noopener noreferrer">' + esc(r.title) +
+    '<span class="src">' + esc(r.source) + '</span></a><span class="dot">●</span>').join(""),
+  () => "AI &amp; TECH");
+function renderTicker() { INDEX_TICKER.render(MARKET); }
+async function loadAiNews() {
+  const j = await fetch("data/ai_news.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => null);
+  AI_TICKER.render(j && j.items || []);
 }
 
 async function loadNews() {
@@ -1384,6 +1408,7 @@ function adaptLatest(d) {
     .then(r => r.ok ? r.json() : null).catch(() => null);
   renderCompare();
   loadNews();
+  loadAiNews();
   renderHistoryTable();
   renderHitMiss();
 

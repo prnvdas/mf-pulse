@@ -22,7 +22,7 @@ YAHOO = "https://query1.finance.yahoo.com/v8/finance/chart/"
 NSE = "https://www.nseindia.com"
 BULK_INDICES = ["NIFTY TOTAL MARKET", "NIFTY SMALLCAP 250", "NIFTY MIDCAP 150"]
 INDEX_ALIASES = {
-    "^NSEI": "NIFTY 50", "^CNXSC": "NIFTY SMALLCAP 100",
+    "^NSEI": "NIFTY 50", "NIFTYSMLCAP250.NS": "NIFTY SMALLCAP 250",
     "^NSEMDCP50": "NIFTY MIDCAP 100", "^CRSLDX": "NIFTY 500",
 }
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "

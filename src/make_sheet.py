@@ -28,7 +28,7 @@ from common import load_holdings, load_portfolio
 # Yahoo index tickers -> Google's INDEXNSE equivalents.
 # These are the shakiest part of the file — confirm in the sheet.
 INDEX_MAP = {
-    "^CNXSC": "INDEXNSE:NIFTY_SMLCAP_100",
+    "NIFTYSMLCAP250.NS": "INDEXNSE:NIFTY_SMLCAP_250",
     "^NSEMDCP50": "INDEXNSE:NIFTY_MIDCAP_100",
     "^CRSLDX": "INDEXNSE:NIFTY_500",
     "^NSEI": "INDEXNSE:NIFTY_50",

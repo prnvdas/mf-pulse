@@ -103,29 +103,28 @@
 
   .acc.four{grid-template-columns:repeat(4,1fr)}
   .scroll{overflow-x:auto}
-  .ticker{display:flex;align-items:stretch;background:#0c0f14;color:#fff;border-bottom:2px solid var(--red);font-size:13px}
+  .ticker{display:flex;align-items:stretch;background:var(--wash);color:var(--ink);border-bottom:1px solid var(--rule);font-size:12.5px}
   .ticker[hidden]{display:none}
-  .tk-lab{flex:none;background:var(--red);color:#fff;font-size:11px;font-weight:700;letter-spacing:.14em;padding:0 16px;display:flex;align-items:center;gap:8px;z-index:1}
-  .tk-lab i{width:7px;height:7px;border-radius:50%;background:#fff;animation:blink 1.4s ease-in-out infinite}
-  @keyframes blink{50%{opacity:.25}}
+  .tk-lab{flex:none;color:var(--grey);font-size:10px;font-weight:600;letter-spacing:.14em;padding:0 18px 0 32px;display:flex;align-items:center;gap:7px;border-right:1px solid var(--rule);background:var(--wash);z-index:1}
+  .tk-lab i{width:6px;height:6px;border-radius:50%;background:var(--green-deep)}
+  .tk-lab i.off{background:var(--grey-light)}
   .tk-track{flex:1;overflow-x:auto;overflow-y:hidden;white-space:nowrap;display:flex;align-items:center;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:grab}
   .tk-track::-webkit-scrollbar{display:none}
-  .tk-btn{flex:none;background:#0c0f14;color:#aab2c0;border:0;border-left:1px solid #2a303a;padding:0 14px;font-size:11px;cursor:pointer}
-  .ticker .tk-btn:hover,.ticker .tk-btn:focus,.ticker .tk-btn:active{background:#0c0f14;color:#fff;outline:none}
   .tk-run{display:inline-flex;align-items:center;white-space:nowrap}
   .tk-run>*,.tk-unit{flex:none}
   .tk-unit{display:inline-flex;align-items:center}
-  .tk-idx{display:inline-flex;align-items:baseline;gap:8px;padding:11px 0}
-  .tk-idx b{font-weight:600;letter-spacing:.04em;font-size:11px;text-transform:uppercase;color:#aab2c0}
-  .tk-idx .lv{font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}
-  .tk-idx .up{color:#4cd964}.tk-idx .dn{color:#ff6b5e}
-  .tk-run a{color:#fff;text-decoration:none;padding:11px 0}
+  .tk-idx{display:inline-flex;align-items:baseline;gap:8px;padding:9px 0}
+  .tk-idx b{font-weight:400;font-size:11px;color:var(--grey)}
+  .tk-idx .lv{font-weight:600;font-size:13px;font-variant-numeric:tabular-nums}
+  .tk-idx .up{color:var(--green-deep)}.tk-idx .dn{color:var(--red)}
+  .tk-run a{color:var(--ink);text-decoration:none;padding:9px 0}
   .tk-run a:hover{text-decoration:underline}
-  .tk-run .src{color:#7f8a9a;margin-left:8px;font-size:11.5px}
-  .tk-run .dot{color:#59616f;margin:0 22px}
+  .tk-run .src{color:var(--grey-light);margin-left:8px;font-size:11px}
+  .tk-run .dot{color:var(--rule);margin:0 22px}
   .tk-run .gap{width:36px}
-  .ticker.ai{border-bottom:2px solid #5b5bd6;border-top:1px solid #1d222b}
-  .ticker.ai .tk-lab{background:#5b5bd6}
+  .tk-btn{flex:none;background:var(--wash);color:var(--grey-light);border:0;border-left:1px solid var(--rule);padding:0 14px;font-size:10px;cursor:pointer}
+  .ticker .tk-btn:hover,.ticker .tk-btn:focus,.ticker .tk-btn:active{background:var(--wash);color:var(--ink);outline:none}
+  .ticker.ai{border-top:0}
   @media(prefers-reduced-motion:reduce){.tk-lab i{animation:none}}
   .why ol{list-style:none;margin:18px 0 0;display:grid;gap:14px}
   .why li{display:grid;grid-template-columns:28px 1fr;gap:12px;font-size:14.5px;line-height:1.6}
@@ -916,11 +915,11 @@ const INDEX_TICKER = makeTicker(
       '</span><span class="' + (up ? "up" : "dn") + '">' + arrow + " " + Math.abs(m.change).toLocaleString("en-IN", { maximumFractionDigits: 2 }) +
       " (" + (up ? "+" : "−") + Math.abs(m.move_pct).toFixed(2) + '%)</span></span><span class="dot">|</span>';
   }).join(""),
-  () => "<i></i>" + (marketOpen() ? "LIVE" : "LAST CLOSE"));
+  () => (marketOpen() ? "<i></i>LIVE" : '<i class="off"></i>LAST CLOSE'));
 const AI_TICKER = makeTicker(
   { bar: "aiTicker", track: "aiTrack", run: "aiRun", btn: "aiBtn", lab: "aiLab", name: "AI news ticker" },
   items => items.map(r => '<a href="' + esc(r.link) + '" target="_blank" rel="noopener noreferrer">' + esc(r.title) +
-    '<span class="src">' + esc(r.source) + '</span></a><span class="dot">●</span>').join(""),
+    '<span class="src">' + esc(r.source) + '</span></a><span class="dot">|</span>').join(""),
   () => "AI &amp; TECH");
 function renderTicker() { INDEX_TICKER.render(MARKET); }
 async function loadAiNews() {

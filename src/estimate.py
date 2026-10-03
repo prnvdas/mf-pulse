@@ -32,6 +32,12 @@ from common import (
 )
 
 
+MARKET_INDICES = {
+    "^NSEI": "Nifty 50", "^BSESN": "Sensex", "^NSEMDCP50": "Nifty Midcap 100",
+    "^CRSLDX": "Nifty 500", "HDFCSML250.NS": "Nifty Smallcap 250",
+}
+
+
 def fetch_moves(
     tickers: list[str], retries: int = 2
 ) -> tuple[dict[str, float | None], dt.date | None, dict[str, float]]:
@@ -358,6 +364,8 @@ def main() -> None:
             tickers.add(h["ticker"])
         if f.get("benchmark_ticker"):
             tickers.add(f["benchmark_ticker"])
+    # broad-market indices, shown on the dashboard as the market's direction
+    tickers.update(MARKET_INDICES)
 
     moves, latest_bar_date, week = fetch_moves(sorted(tickers))
     resolved = sum(1 for v in moves.values() if v is not None)
@@ -401,6 +409,10 @@ def main() -> None:
 
     # "final" = a run after the close with today's bar present: the number
     # reconcile.py will grade tonight. Everything else is a live batch.
+    market = [
+        {"name": name, "ticker": t, "move_pct": round(moves[t], 2)}
+        for t, name in MARKET_INDICES.items() if moves.get(t) is not None
+    ]
     movers = None if is_holiday else build_movers(funds, results, moves, ts.date().isoformat())
     after_close = ts.time() >= dt.time(15, 45)
     phase = "holiday" if is_holiday else ("final" if after_close else "live")
@@ -436,6 +448,7 @@ def main() -> None:
         "funds": results,
         "health": health,
         "movers": movers,
+        "market": market,
         "accuracy": read_json("accuracy.json", {"samples": 0}),
         "tickers_resolved": resolved,
         "tickers_total": len(moves),

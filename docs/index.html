@@ -173,7 +173,7 @@
     <div class="ctl">
       <span class="stamp" id="stamp">Ready</span>
       <button class="ghost" id="diag" title="Test the price source and report exactly what failed">Diagnose</button>
-      <button class="ghost" id="auto" aria-pressed="false" title="Re-run every 60s while the market is open">Auto 60s</button>
+      <button class="ghost" id="auto" aria-pressed="false" title="Re-run every 60s while the market is open (turns on by itself during market hours)">Auto 60s</button>
       <button id="refresh">Refresh live</button>
     </div>
   </div>
@@ -185,6 +185,7 @@
     <div>
       <div class="eyebrow" id="eyebrow">Estimated impact today</div>
       <div class="headline" id="pnl">—</div>
+      <div id="mkt" style="font-size:12.5px;margin:0 0 10px;display:flex;gap:18px;flex-wrap:wrap"></div>
       <p class="subline" id="sub">Press <b>Refresh live</b> to price every stock underneath your funds and infer today's NAV move.</p>
     </div>
     <div class="orb"><div>
@@ -289,7 +290,7 @@
 const params = new URLSearchParams(location.hash.slice(1));
 let PROXY = params.get("proxy") || "";
 let SHEET = params.get("sheet") || "";
-let SOURCE = params.get("source") || (SHEET ? "sheet" : PROXY ? "worker" : "relay");
+let SOURCE = params.get("source") || (SHEET ? "sheet" : PROXY ? "worker" : "batch");
 
 let HASH_WRITABLE = true;
 function saveConfig() {
@@ -785,9 +786,11 @@ function renderMovers(m, label) {
 
 function setupMoversPicker(latestMovers) {
   const sel = $("moversDay");
+  const prev = sel.value;
   const days = [...MOVERS].sort((a, b) => b.date.localeCompare(a.date));
   sel.innerHTML = (latestMovers ? '<option value="latest">Latest estimate</option>' : "") +
     days.map(d => '<option value="' + d.date + '">' + d.date + " (final)</option>").join("");
+  if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
   const show = () => {
     if (sel.value === "latest") renderMovers(latestMovers, "Latest estimate — impact on your money");
     else { const d = MOVERS.find(x => x.date === sel.value); renderMovers(d, d ? d.date + " session, final close" : ""); }
@@ -884,11 +887,12 @@ function showSetup(msg) {
   $("setupWrap").hidden = false;
   $("setup").innerHTML = msg +
     '<div class="src">' +
-      '<button class="ghost" data-src="relay" aria-pressed="' + (SOURCE === "relay") + '">No setup</button>' +
+      '<button class="ghost" data-src="batch" aria-pressed="' + (SOURCE === "batch") + '">Scheduled batch</button>' +
+      '<button class="ghost" data-src="relay" aria-pressed="' + (SOURCE === "relay") + '">Public relay</button>' +
       '<button class="ghost" data-src="worker" aria-pressed="' + (SOURCE === "worker") + '">Worker</button>' +
       '<button class="ghost" data-src="sheet" aria-pressed="' + (SOURCE === "sheet") + '">Google Sheet</button>' +
     '</div>' +
-    (SOURCE === "relay" ? '' :
+    (SOURCE === "relay" || SOURCE === "batch" ? '' :
     '<input id="srcIn" placeholder="' + (SOURCE === "sheet"
       ? "https://docs.google.com/spreadsheets/d/e/.../pub?output=csv"
       : "https://mf-pulse-prices.you.workers.dev") +
@@ -950,6 +954,44 @@ async function checkAmfi() {
     "accuracy panel below still only updates from the nightly <code>reconcile.py</code> run.";
 }
 
+// ---- batch source: the newest latest.json, written every ~15 min by the scheduled
+// job. Needs no proxy, can't be rate limited, and is what Refresh falls back to
+// whenever a live source fails -- so Refresh always ends with real numbers and an
+// honest age, never an error screen over stale ones.
+function ageMinutes(iso) {
+  const t = Date.parse(iso || "");
+  return isFinite(t) ? Math.max(0, Math.round((Date.now() - t) / 60000)) : null;
+}
+
+function stampBatch(a) {
+  const phaseLabel = { final: "Final close estimate", holiday: "Market closed today", live: "Intraday batch" }[a.phase] || "Batch";
+  const age = ageMinutes(a.generatedAt);
+  const late = age != null && marketOpen() && age > 30;
+  $("stamp").innerHTML = phaseLabel + " · <b>" + a.generated + "</b>" +
+    (age != null ? " · " + (age < 1 ? "just now" : age < 90 ? age + " min ago" : Math.round(age / 60) + " h ago") : "") +
+    (late ? ' · <span class="neg">delayed — the scheduler is running late</span>' : "");
+}
+
+function renderMarket(list) {
+  $("mkt").innerHTML = (list || []).map(m => '<span><span class="sub2">' + m.name + '</span> <span class="' +
+    (m.move_pct >= 0 ? "pos" : "neg") + '">' + pc(m.move_pct) + "</span></span>").join("");
+}
+
+async function applyBatch() {
+  const r = await fetch("data/latest.json?t=" + Date.now(), { cache: "no-store" });
+  if (!r.ok) throw new Error("latest.json replied HTTP " + r.status);
+  const latest = await r.json();
+  if (!latest || !latest.funds) throw new Error("latest.json has no funds");
+  const a = adaptLatest(latest);
+  render(a.funds, { priced: a.priced, requested: a.total || a.priced,
+    blend: "estimate.py, " + a.resolved + "/" + a.total + " tickers" });
+  HEALTH = a.health || null; renderHealth();
+  renderMarket(a.market);
+  setupMoversPicker(a.movers);
+  stampBatch(a);
+  return a;
+}
+
 async function run() {
   const btn = $("refresh");
   btn.disabled = true;
@@ -957,12 +999,21 @@ async function run() {
   $("stamp").textContent = "Fetching quotes";
 
   try {
+    if (SOURCE === "batch") {
+      await applyBatch();
+      $("setupWrap").hidden = true;
+      return;
+    }
     const tickers = [...new Set(CFG.funds.flatMap(f =>
       f.holdings.map(h => h.t).concat([f.benchmark_ticker])).filter(Boolean))];
 
     const quotes = await fetchQuotes(tickers);
     const priced = Object.keys(quotes).length;
     if (!priced) throw new Error("no quotes returned");
+    // A half-answered pull is worse than none: it renders as if complete. Below
+    // this share of tickers, treat the live source as failed and fall back.
+    if (priced / tickers.length < 0.6)
+      throw new Error("only " + priced + " of " + tickers.length + " stocks priced");
     LAST_QUOTES = quotes;
 
     const s = LAST_SOURCES || {};
@@ -991,6 +1042,17 @@ async function run() {
 
     checkAmfi().catch(() => {});   // bonus check, never let it break the main flow
   } catch (err) {
+    if (err.message !== "no-source") {
+      try {
+        const a = await applyBatch();
+        $("setupWrap").hidden = false;
+        $("setup").className = "note";
+        $("setup").innerHTML = "<b>Live prices unavailable</b> (" + String(err.message).replace(/</g, "&lt;") +
+          "). Showing the latest scheduled batch instead, generated " + a.generated + ". " +
+          "Press <b>Diagnose</b> to see why, or switch the source below.";
+        return;
+      } catch (e2) { /* batch unavailable too -- fall through to the error screen */ }
+    }
     $("stamp").textContent = "Refresh failed";
     $("setup").className = "note bad";
     showSetup(err.message === "no-source" ? SOURCE_HELP :
@@ -1008,6 +1070,19 @@ async function run() {
 // --- diagnostics -----------------------------------------------------------
 async function diagnose() {
   const out = [];
+  if (SOURCE === "batch") {
+    try {
+      const r = await fetch("data/latest.json?t=" + Date.now(), { cache: "no-store" });
+      const j = await r.json();
+      out.push(["Source selected", "batch (scheduled job, no proxy needed)"]);
+      out.push(["latest.json", "HTTP " + r.status + ", generated " + j.generated_label + ", phase " + (j.phase || "n/a")]);
+      out.push(["Age", ageMinutes(j.generated_at) + " min"]);
+      out.push(["Verdict", ageMinutes(j.generated_at) > 30 && marketOpen()
+        ? "Working, but stale: check the Actions tab -- the scheduled estimate job is running late."
+        : "Working. This is the data the page shows."]);
+    } catch (e) { out.push(["Verdict", "Could not read data/latest.json: " + e.message]); }
+    return out;
+  }
   const url = SOURCE === "sheet" ? SHEET : SOURCE === "relay" ? RELAY : PROXY;
 
   out.push(["Page origin", location.origin || "(none — opened as a file)"]);
@@ -1107,7 +1182,7 @@ function adaptLatest(d) {
   }));
   return { funds, priced: funds.reduce((s, f) => s + f.priced, 0),
            generated: d.generated_label, resolved: d.tickers_resolved,
-           total: d.tickers_total, phase: d.phase, health: d.health };
+           total: d.tickers_total, phase: d.phase, health: d.health, market: d.market, generatedAt: d.generated_at, movers: d.movers };
 }
 
 (async () => {
@@ -1131,8 +1206,9 @@ function adaptLatest(d) {
     MOVERS = await fetch("data/movers.json", { cache: "no-store" }).then(r => r.ok ? r.json() : []).catch(() => []);
     setupMoversPicker(latest.movers);
     renderHealth();
-    const phaseLabel = { final: "Final close estimate", holiday: "Market closed today", live: "Intraday batch" }[a.phase] || "Batch";
-    $("stamp").innerHTML = phaseLabel + " · <b>" + a.generated + "</b>";
+    renderMarket(a.market);
+    stampBatch(a);
+    if (marketOpen() && $("auto").getAttribute("aria-pressed") !== "true") $("auto").click();
     return;   // don't immediately overwrite good data with a throttled relay pull
   }
 
@@ -1144,7 +1220,7 @@ function adaptLatest(d) {
   $("sub").innerHTML = "Press <b>Refresh live</b> to price every stock underneath your funds and infer today's NAV move.";
   document.documentElement.style.setProperty("--state", "var(--green)");
 
-  if (SOURCE === "relay" || (SOURCE === "sheet" ? SHEET : PROXY)) run(); else showSetup(SOURCE_HELP);
+  if (SOURCE === "batch" || SOURCE === "relay" || (SOURCE === "sheet" ? SHEET : PROXY)) run(); else showSetup(SOURCE_HELP);
 })();
 </script>
 </body>

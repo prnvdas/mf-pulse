@@ -997,6 +997,13 @@ function renderCompare() {
     };
     const stat = (name, val, note) => "<dt>" + name + '<br><span class="sub2">' + note + "</span></dt><dd>" + val + "</dd>";
 
+    const x = f.xirr;
+    const xrow = "<tr><td>XIRR<br><span class=\"sub2\">" + (x && x.pct != null
+        ? (x.source === "transactions" ? "since " + x.since.slice(0, 7) : "as shown in the app") : "needs your dates") + "</span></td><td>" +
+      (x && x.pct != null ? sg(x.pct) : "—") + "</td><td>" + (x && x.bench_pct != null ? sg(x.bench_pct) : "—") +
+      '</td><td class="' + cls(x && x.bench_pct != null ? x.pct - x.bench_pct : null) + '">' +
+      (x && x.pct != null && x.bench_pct != null ? sg(x.pct - x.bench_pct) : "—") + "</td></tr>";
+
     let stats = "";
     if (k) {
       const b = k.beta;
@@ -1028,13 +1035,21 @@ function renderCompare() {
       '<p style="margin:0 0 12px">You: <b>' + (m.invested ? inr(m.invested) : "—") + "</b> → <b>" + (m.value ? inr(m.value) : "—") +
       '</b> <span class="' + cls(m.gain_pct) + '">' + sg(m.gain_pct) + "</span></p>" +
       '<table><thead><tr><th>Return</th><th>Fund</th><th>Bench.</th><th>Gap</th></tr></thead><tbody>' +
-      row("1 month", "1M") + row("3 months", "3M") + row("6 months", "6M") + row("1 year", "1Y") + "</tbody></table>" +
+      row("1 month", "1M") + row("3 months", "3M") + row("6 months", "6M") + row("1 year", "1Y") + xrow + "</tbody></table>" +
       (stats ? "<dl>" + stats + "</dl>" : '<p class="sub2">Risk figures need more history.</p>') + note + "</div>";
   }).join("");
 
+  const missing = ANALYTICS.funds.filter(f => !f.xirr || f.xirr.pct == null);
+  const bad = ANALYTICS.funds.filter(f => f.xirr && f.xirr.status === "mismatch");
+  const xirrNote = !missing.length ? "" : '<p class="sub2" style="margin-top:12px"><b>XIRR</b> is the true yearly return on money invested at different dates, so it needs the dates. ' +
+    (bad.length ? "The transactions logged for " + bad.map(f => short(f.name)).join(", ") + " don't add up to the invested amount, so it is hidden rather than wrong. "
+                : "") +
+    "List your investments in <code>config/transactions.csv</code> (template: <code>transactions.example.csv</code>) or sync a Groww screenshot that shows XIRR. " +
+    "Guessing the dates from totals would give a made-up number, so none is shown.</p>";
+
   $("compareBody").innerHTML = '<div class="hbanner"><span>' + head + "</span></div>" +
     '<div class="hcards">' + cards + "</div>" +
-    '<p class="sub2" style="margin-top:12px">Benchmarks are price-return proxies (index levels or ETFs), which leave out dividends — roughly 1% a year — so gaps and alpha look about that much better than against a total-return index. Alpha and beta use the last year of daily returns and a ' +
+    xirrNote + '<p class="sub2" style="margin-top:12px">Benchmarks are price-return proxies (index levels or ETFs), which leave out dividends — roughly 1% a year — so gaps and alpha look about that much better than against a total-return index. Alpha and beta use the last year of daily returns and a ' +
     (ANALYTICS.risk_free_pct || 6.5) + '% risk-free rate. Fund P/E is the whole portfolio\'s price divided by its yearly profit (loss-makers count as negative profit, so a few extreme P/Es can\'t distort it). Sites that average each stock\'s P/E show different numbers; the benchmark P/E is estimated from index ETFs, not NSE\'s official figure. Past performance, not advice.</p>';
 }
 

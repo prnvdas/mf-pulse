@@ -1,0 +1,10 @@
+# Copy to config/transactions.csv and list EVERY investment, one per line:
+#   date,fund_id,amount        positive = money invested, negative = money withdrawn
+# fund_id is one of: axis-small-cap, mirae-large-midcap, jioblackrock-flexicap
+# Dates may be 2024-03-05, 05-03-2024, 05/03/2024 or 05-Mar-2024.
+# XIRR is only shown when each fund's amounts add up (within 1%) to its invested total,
+# because a partial history would give a wrong rate.
+date,fund_id,amount
+2024-03-05,axis-small-cap,50000
+2024-03-05,mirae-large-midcap,50000
+2024-04-05,axis-small-cap,50000

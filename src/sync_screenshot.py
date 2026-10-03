@@ -151,6 +151,23 @@ def parse(items: list[dict], funds: list[dict]) -> tuple[dict, list[str]]:
                 pct = float(m[-1]) if m else pct
         got, why = solve(vals["invested"], vals["current"], vals["gain"], pct)
         if got:
+            # Groww prints an XIRR on holdings pages; keep it if the label is there
+            xp = None
+            for it in block:
+                if not re.search(r"xirr", it["t"], re.I):
+                    continue
+                text, m = it["t"], PCT_RE.search(it["t"])
+                if not m:   # the % may be a separate text region just beside/below the label
+                    near = sorted((o for o in block if o is not it and PCT_RE.search(o["t"])
+                                   and abs(o["y"] - it["y"]) < 60),
+                                  key=lambda o: abs(o["x"] - it["x"]) + abs(o["y"] - it["y"]))
+                    if near:
+                        text, m = near[0]["t"], PCT_RE.search(near[0]["t"])
+                if m:
+                    v = float(m.group(1))
+                    xp = -v if re.search(r"[-−–]\s*" + re.escape(m.group(1)), text) else v
+            if xp is not None and -60 <= xp <= 150:
+                got["xirr"] = xp
             found[fid] = got
         else:
             notes.append(f"{fid}: {why}")
@@ -222,6 +239,8 @@ def main() -> None:
         entry["units"] = round(got["value"] / nav, 4)
         entry["seed_invested"] = float(got["invested"])
         entry["last_synced"] = ts.date().isoformat()
+        if got.get("xirr") is not None:
+            entry["xirr_pct"], entry["xirr_date"] = got["xirr"], ts.date().isoformat()
         # A screenshot taken after this month's SIP allocation day already includes that SIP;
         # before it, leave the flag alone so reconcile.py still adds it. Prevents double counting.
         if ts.day > sips.get(fid, 3):

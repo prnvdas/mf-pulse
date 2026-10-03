@@ -24,7 +24,7 @@ import pandas as pd
 import requests
 import yfinance as yf
 
-from common import load_holdings, load_portfolio, now_ist, read_json, write_json
+from common import CONFIG, load_holdings, load_portfolio, now_ist, read_json, write_json
 
 FUNDAMENTALS_MAX_AGE_DAYS = 7
 PERIODS = {"1M": 30, "3M": 91, "6M": 182, "1Y": 365}
@@ -56,7 +56,7 @@ def fetch_prices(tickers: list[str]) -> dict[str, pd.Series]:
         return out
     try:
         data = yf.download(
-            tickers=" ".join(tickers), period="2y", interval="1d",
+            tickers=" ".join(tickers), period="max", interval="1d",
             group_by="ticker", progress=False, threads=True, auto_adjust=False,
         )
     except Exception as exc:  # noqa: BLE001
@@ -125,6 +125,86 @@ def risk_metrics(levels: pd.DataFrame, rf_pct: float) -> dict | None:
         "max_drawdown_pct": round(max_dd(win["fund"]), 1),
         "bench_max_drawdown_pct": round(max_dd(win["bench"]), 1),
     }
+
+
+# --- XIRR -----------------------------------------------------------------------
+
+def xirr(flows: list[tuple[dt.date, float]]) -> float | None:
+    """Annualised internal rate of return for dated cash flows (outflows negative).
+
+    Plain bisection, so no numerical-library dependency. None when it has no solution.
+    """
+    if not flows or not any(v < 0 for _, v in flows) or not any(v > 0 for _, v in flows):
+        return None
+    flows = sorted(flows)
+    t0 = flows[0][0]
+
+    def npv(r: float) -> float:
+        return sum(v / (1 + r) ** ((d - t0).days / 365.0) for d, v in flows)
+
+    lo, hi = -0.95, 10.0
+    if npv(lo) * npv(hi) > 0:
+        return None
+    for _ in range(200):
+        mid = (lo + hi) / 2
+        if npv(lo) * npv(mid) <= 0:
+            hi = mid
+        else:
+            lo = mid
+    return (lo + hi) / 2
+
+
+def parse_date(txt: str) -> dt.date:
+    for fmt in ("%Y-%m-%d", "%d-%m-%Y", "%d/%m/%Y", "%d-%b-%Y", "%d %b %Y"):
+        try:
+            return dt.datetime.strptime(txt.strip(), fmt).date()
+        except ValueError:
+            continue
+    raise ValueError(f"unrecognised date {txt!r}")
+
+
+def load_transactions() -> dict[str, list[tuple[dt.date, float]]]:
+    """config/transactions.csv: date,fund_id,amount (positive = invested, negative = withdrawn)."""
+    path = CONFIG / "transactions.csv"
+    out: dict[str, list[tuple[dt.date, float]]] = {}
+    if not path.exists():
+        return out
+    for n, line in enumerate(path.read_text().splitlines(), 1):
+        line = line.strip()
+        if not line or line.startswith("#") or line.lower().startswith("date"):
+            continue
+        try:
+            d, fid, amt = [x.strip() for x in line.split(",")[:3]]
+            out.setdefault(fid, []).append((parse_date(d), float(amt.replace("₹", ""))))
+        except ValueError as exc:
+            print(f"[warn] transactions.csv line {n} skipped: {exc}", file=sys.stderr)
+    return out
+
+
+def fund_xirr(fid: str, txns: dict, invested, value, as_of: dt.date, bench: pd.Series | None,
+              bench_last: float | None, screenshot: dict) -> dict | None:
+    """Exact XIRR from logged transactions; else the figure an app printed; else None."""
+    rows = txns.get(fid)
+    if rows:
+        logged = sum(a for _, a in rows)
+        if invested and abs(logged / invested - 1) > 0.01:
+            return {"status": "mismatch", "logged": round(logged), "invested": round(invested)}
+        flows = [(d, -a) for d, a in rows] + [(as_of, float(value))]
+        r = xirr(flows)
+        if r is None:
+            return None
+        out = {"pct": round(r * 100, 1), "source": "transactions", "since": min(d for d, _ in rows).isoformat(),
+               "bench_pct": None}
+        # the same cash flows invested in the benchmark instead -- an apples-to-apples yardstick
+        if bench is not None and bench_last and min(d for d, _ in rows) >= bench.index[0].date():
+            units = sum(a / float(bench.asof(pd.Timestamp(d))) for d, a in rows)
+            rb = xirr([(d, -a) for d, a in rows] + [(as_of, units * bench_last)])
+            out["bench_pct"] = None if rb is None else round(rb * 100, 1)
+        return out
+    if screenshot.get("xirr_pct") is not None:
+        return {"pct": screenshot["xirr_pct"], "source": "screenshot", "as_of": screenshot.get("xirr_date"),
+                "bench_pct": None}
+    return None
 
 
 # --- valuation ----------------------------------------------------------------
@@ -214,6 +294,7 @@ def main() -> None:
     all_tickers = sorted({h["ticker"] for hs in holdings.values() for h in hs} | set(bench_tickers))
     funda = refresh_fundamentals(all_tickers, ts.date())
 
+    txns = load_transactions()
     funds_out = []
     for f in cfg["funds"]:
         fid = f["id"]
@@ -250,8 +331,19 @@ def main() -> None:
                         }
                     out["returns"] = rets
                     out["risk"] = risk_metrics(levels, rf)
+                    out["_bench"] = (bench, float(bench.iloc[-1]))
         except Exception as exc:  # noqa: BLE001
             print(f"[warn] {fid}: return/risk metrics failed: {exc}", file=sys.stderr)
+
+        try:
+            b = out.pop("_bench", None)
+            as_of = (pd.Timestamp(out["as_of"]).date() if out.get("as_of") else ts.date())
+            out["xirr"] = fund_xirr(fid, txns, invested, value, as_of, b[0] if b else None,
+                                    b[1] if b else None, st)
+        except Exception as exc:  # noqa: BLE001
+            print(f"[warn] {fid}: xirr failed: {exc}", file=sys.stderr)
+            out.pop("_bench", None)
+            out["xirr"] = None
 
         try:
             hs = holdings[fid]
@@ -270,8 +362,17 @@ def main() -> None:
 
         funds_out.append(out)
 
+    portfolio_xirr = None
+    if txns and all(o.get("xirr") and o["xirr"].get("source") == "transactions" for o in funds_out):
+        flows = [(d, -a) for rows in txns.values() for d, a in rows]
+        flows += [(pd.Timestamp(o["as_of"]).date() if o.get("as_of") else ts.date(), float(o["mine"]["value"] or 0))
+                  for o in funds_out]
+        r = xirr(flows)
+        portfolio_xirr = None if r is None else round(r * 100, 1)
+
     write_json("analytics.json", {
-        "generated_at": ts.isoformat(), "risk_free_pct": rf, "funds": funds_out,
+        "generated_at": ts.isoformat(), "risk_free_pct": rf, "portfolio_xirr_pct": portfolio_xirr,
+        "funds": funds_out,
     })
     for o in funds_out:
         r = o["risk"] or {}

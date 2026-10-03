@@ -1,6 +1,7 @@
 {
-  "generated_at": "2026-10-03T22:54:13.178245+05:30",
+  "generated_at": "2026-10-03T23:03:31.017161+05:30",
   "risk_free_pct": 6.5,
+  "portfolio_xirr_pct": null,
   "funds": [
     {
       "id": "axis-small-cap",
@@ -52,8 +53,9 @@
         "fund_pb": 4.0,
         "bench_pe": 25.0
       },
-      "history_days": 727,
-      "as_of": "2026-10-01"
+      "history_days": 4683,
+      "as_of": "2026-10-01",
+      "xirr": null
     },
     {
       "id": "mirae-large-midcap",
@@ -106,7 +108,8 @@
         "bench_pe": 20.9
       },
       "history_days": 576,
-      "as_of": "2026-10-01"
+      "as_of": "2026-10-01",
+      "xirr": null
     },
     {
       "id": "jioblackrock-flexicap",
@@ -159,7 +162,8 @@
         "bench_pe": 20.6
       },
       "history_days": 349,
-      "as_of": "2026-10-01"
+      "as_of": "2026-10-01",
+      "xirr": null
     }
   ]
 }

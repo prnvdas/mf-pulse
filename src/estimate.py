@@ -32,10 +32,32 @@ from common import (
 )
 
 
-MARKET_INDICES = {
-    "^NSEI": "Nifty 50", "^BSESN": "Sensex", "^NSEMDCP50": "Nifty Midcap 100",
-    "^CRSLDX": "Nifty 500", "HDFCSML250.NS": "Nifty Smallcap 250",
-}
+# Shown in the dashboard's news ticker. fast_info is used because Yahoo's
+# daily history for the smallcap and large-midcap indices holds only one bar,
+# but it still reports the latest level and the previous close for them.
+INDICES = [
+    ("Sensex", "^BSESN"),
+    ("Nifty 50", "^NSEI"),
+    ("Nifty Smallcap 100", "^CNXSC"),
+    ("Nifty LargeMidcap 250", "NIFTY_LARGEMID250.NS"),
+]
+
+
+def fetch_indices() -> list[dict]:
+    out = []
+    for name, ticker in INDICES:
+        try:
+            fi = yf.Ticker(ticker).fast_info
+            last, prev = float(fi["lastPrice"]), float(fi["previousClose"])
+            if last and prev:
+                out.append({
+                    "name": name, "ticker": ticker, "level": round(last, 2),
+                    "change": round(last - prev, 2),
+                    "move_pct": round((last / prev - 1) * 100, 2),
+                })
+        except Exception as exc:  # noqa: BLE001 -- a missing chip must not fail the run
+            print(f"[warn] index {name} unavailable: {exc}", file=sys.stderr)
+    return out
 
 
 def fetch_moves(
@@ -246,8 +268,6 @@ def main() -> None:
             tickers.add(h["ticker"])
         if f.get("benchmark_ticker"):
             tickers.add(f["benchmark_ticker"])
-    # broad-market indices, shown on the dashboard as the market's direction
-    tickers.update(MARKET_INDICES)
 
     moves, latest_bar_date, week = fetch_moves(sorted(tickers))
     resolved = sum(1 for v in moves.values() if v is not None)
@@ -288,10 +308,7 @@ def main() -> None:
 
     # "final" = a run after the close with today's bar present: the number
     # reconcile.py will grade tonight. Everything else is a live batch.
-    market = [
-        {"name": name, "ticker": t, "move_pct": round(moves[t], 2)}
-        for t, name in MARKET_INDICES.items() if moves.get(t) is not None
-    ]
+    market = fetch_indices()
     held = {h["ticker"] for f in funds for h in load_holdings(f["id"]).get("holdings") or []}
     pts = [moves[t] for t in held if moves.get(t) is not None]
     breadth = None if is_holiday or not pts else {

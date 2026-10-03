@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-03T21:17:45.894652+05:30",
-  "generated_label": "03 Oct 2026, 21:17 IST",
+  "generated_at": "2026-10-03T21:30:46.858261+05:30",
+  "generated_label": "03 Oct 2026, 21:30 IST",
   "stale": true,
   "phase": "holiday",
   "market_open": false,
@@ -73,7 +73,36 @@
     }
   ],
   "movers": null,
-  "market": [],
+  "market": [
+    {
+      "name": "Sensex",
+      "ticker": "^BSESN",
+      "level": 71909.7,
+      "change": -570.59,
+      "move_pct": -0.79
+    },
+    {
+      "name": "Nifty 50",
+      "ticker": "^NSEI",
+      "level": 22421.95,
+      "change": -198.5,
+      "move_pct": -0.88
+    },
+    {
+      "name": "Nifty Smallcap 100",
+      "ticker": "^CNXSC",
+      "level": 19058.65,
+      "change": -176.15,
+      "move_pct": -0.92
+    },
+    {
+      "name": "Nifty LargeMidcap 250",
+      "ticker": "NIFTY_LARGEMID250.NS",
+      "level": 15604.7,
+      "change": -149.6,
+      "move_pct": -0.95
+    }
+  ],
   "breadth": null,
   "accuracy": {
     "samples": 30,
@@ -102,5 +131,5 @@
     }
   },
   "tickers_resolved": 0,
-  "tickers_total": 262
+  "tickers_total": 260
 }

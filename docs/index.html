@@ -103,18 +103,25 @@
 
   .acc.four{grid-template-columns:repeat(4,1fr)}
   .scroll{overflow-x:auto}
-  .ticker{display:flex;align-items:stretch;border-bottom:1px solid var(--rule);background:var(--wash);overflow:hidden;font-size:12.5px}
+  .ticker{display:flex;align-items:stretch;background:#0c0f14;color:#fff;border-bottom:2px solid var(--red);font-size:13px}
   .ticker[hidden]{display:none}
-  .tk-lab{flex:none;background:var(--ink);color:#fff;font-size:10px;font-weight:700;letter-spacing:.14em;padding:9px 14px;display:flex;align-items:center}
-  .tk-track{overflow:hidden;flex:1;display:flex;align-items:center;-webkit-mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent)}
-  .tk-run{display:inline-flex;white-space:nowrap;animation:tk var(--tk-dur,120s) linear infinite}
-  .tk-track:hover .tk-run,.tk-track:focus-within .tk-run{animation-play-state:paused}
-  .tk-run a{color:var(--ink);text-decoration:none;padding:9px 0}
+  .tk-lab{flex:none;background:var(--red);color:#fff;font-size:11px;font-weight:700;letter-spacing:.14em;padding:0 16px;display:flex;align-items:center;gap:8px;z-index:1}
+  .tk-lab i{width:7px;height:7px;border-radius:50%;background:#fff;animation:blink 1.4s ease-in-out infinite}
+  @keyframes blink{50%{opacity:.25}}
+  .tk-track{flex:1;overflow-x:auto;overflow-y:hidden;white-space:nowrap;display:flex;align-items:center;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:grab}
+  .tk-track::-webkit-scrollbar{display:none}
+  .tk-run{display:inline-flex;align-items:center;white-space:nowrap}
+  .tk-run>*{flex:none}
+  .tk-idx{display:inline-flex;align-items:baseline;gap:8px;padding:11px 0}
+  .tk-idx b{font-weight:600;letter-spacing:.04em;font-size:11px;text-transform:uppercase;color:#aab2c0}
+  .tk-idx .lv{font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}
+  .tk-idx .up{color:#4cd964}.tk-idx .dn{color:#ff6b5e}
+  .tk-run a{color:#fff;text-decoration:none;padding:11px 0}
   .tk-run a:hover{text-decoration:underline}
-  .tk-run .src{color:var(--grey-light);margin-left:6px}
-  .tk-run .dot{color:var(--grey-light);margin:0 18px;padding:9px 0}
-  @keyframes tk{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-  @media(prefers-reduced-motion:reduce){.tk-run{animation:none}.tk-track{overflow-x:auto}}
+  .tk-run .src{color:#7f8a9a;margin-left:8px;font-size:11.5px}
+  .tk-run .dot{color:#59616f;margin:0 22px}
+  .tk-run .gap{width:36px}
+  @media(prefers-reduced-motion:reduce){.tk-lab i{animation:none}}
   .why ol{list-style:none;margin:18px 0 0;display:grid;gap:14px}
   .why li{display:grid;grid-template-columns:28px 1fr;gap:12px;font-size:14.5px;line-height:1.6}
   .why .n{width:24px;height:24px;border-radius:50%;background:var(--wash);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:2px}
@@ -200,9 +207,9 @@
   </div>
 </header>
 
-<div class="ticker" id="ticker" hidden aria-label="Latest market and mutual fund headlines">
-  <span class="tk-lab">NEWS</span>
-  <div class="tk-track"><div class="tk-run" id="tkRun"></div></div>
+<div class="ticker" id="ticker" hidden aria-label="Market indices and latest headlines">
+  <span class="tk-lab" id="tkLab"><i></i>LIVE</span>
+  <div class="tk-track" id="tkTrack" tabindex="0"><div class="tk-run" id="tkRun"></div></div>
 </div>
 
 <main class="wrap">
@@ -211,7 +218,6 @@
     <div>
       <div class="eyebrow" id="eyebrow">Estimated impact today</div>
       <div class="headline" id="pnl">—</div>
-      <div id="mkt" style="font-size:12.5px;margin:0 0 10px;display:flex;gap:18px;flex-wrap:wrap"></div>
       <p class="subline" id="sub">Press <b>Refresh live</b> to price every stock underneath your funds and infer today's NAV move.</p>
     </div>
     <div class="orb"><div>
@@ -361,7 +367,7 @@ const DEMO = {
   ]
 };
 
-let CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, timer = null;
+let MARKET = [], CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, timer = null;
 
 const $ = id => document.getElementById(id);
 const inr = n => "₹" + Math.round(Math.abs(n)).toLocaleString("en-IN");
@@ -827,18 +833,66 @@ function renderWhy() {
   };
 }
 
+// News-channel ticker: index levels first, then headlines, scrolling continuously.
+// It is a normal horizontally scrollable strip with an animation loop on top, so
+// you can also drag, swipe or wheel it; the loop pauses while you do and resumes
+// on its own. The content is rendered twice so the wrap-around is seamless.
+let TK = { pos: 0, paused: false, resume: null, started: false, html: "" };
 function renderTicker() {
-  const bar = $("ticker");
-  const rows = NEWS ? (NEWS.market || []).slice(0, 10).concat((NEWS.funds || []).slice(0, 5))
-    .sort((a, b) => b.published.localeCompare(a.published)) : [];
-  if (!rows.length) { bar.hidden = true; return; }
-  bar.hidden = false;
+  const bar = $("ticker"), track = $("tkTrack"), run = $("tkRun");
   const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
-  const one = rows.map(r => '<a href="' + esc(r.link) + '" target="_blank" rel="noopener noreferrer">' + esc(r.title) +
-    '<span class="src">' + esc(r.source) + '</span></a><span class="dot">•</span>').join("");
-  const run = $("tkRun");
-  run.innerHTML = one + one;
-  run.style.setProperty("--tk-dur", Math.max(60, rows.length * 9) + "s");
+  const heads = NEWS ? (NEWS.market || []).slice(0, 10).concat((NEWS.funds || []).slice(0, 5))
+    .sort((a, b) => b.published.localeCompare(a.published)) : [];
+  if (!MARKET.length && !heads.length) { bar.hidden = true; return; }
+  bar.hidden = false;
+  $("tkLab").innerHTML = "<i></i>" + (marketOpen() ? "LIVE" : "LAST CLOSE");
+
+  const idx = MARKET.map(m => {
+    const up = m.move_pct >= 0, arrow = up ? "▲" : "▼";
+    return '<span class="tk-idx"><b>' + esc(m.name) + '</b><span class="lv">' + m.level.toLocaleString("en-IN", { maximumFractionDigits: 2 }) +
+      '</span><span class="' + (up ? "up" : "dn") + '">' + arrow + " " + Math.abs(m.change).toLocaleString("en-IN", { maximumFractionDigits: 2 }) +
+      " (" + (up ? "+" : "−") + Math.abs(m.move_pct).toFixed(2) + '%)</span></span><span class="dot">|</span>';
+  }).join("");
+  const news = heads.map(r => '<a href="' + esc(r.link) + '" target="_blank" rel="noopener noreferrer">' + esc(r.title) +
+    '<span class="src">' + esc(r.source) + '</span></a><span class="dot">●</span>').join("");
+  const once = idx + news + '<span class="gap"></span>';
+  if (TK.html === once) return;                 // unchanged -- don't disturb the scroll position
+  TK.html = once;
+  run.innerHTML = once + once;
+  if (!TK.started) startTicker(track);
+}
+
+function startTicker(track) {
+  TK.started = true;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;   // stays a manual, scrollable strip
+  const pause = () => { TK.paused = true; clearTimeout(TK.resume); };
+  const later = ms => { clearTimeout(TK.resume); TK.resume = setTimeout(() => { TK.paused = false; TK.pos = track.scrollLeft; }, ms); };
+  track.addEventListener("mouseenter", pause);
+  track.addEventListener("mouseleave", () => later(600));
+  track.addEventListener("touchstart", pause, { passive: true });
+  track.addEventListener("touchend", () => later(3000));
+  track.addEventListener("wheel", () => { pause(); later(2500); }, { passive: true });
+  track.addEventListener("focusin", pause);
+  track.addEventListener("focusout", () => later(600));
+  track.addEventListener("scroll", () => {       // manual scrolling also wraps seamlessly
+    const half = track.scrollWidth / 2;
+    if (half > 0 && TK.paused) {
+      if (track.scrollLeft >= half) track.scrollLeft -= half;
+      else if (track.scrollLeft <= 0) track.scrollLeft += half;
+    }
+  });
+  let last = performance.now();
+  const step = now => {
+    const dt = Math.min(0.1, (now - last) / 1000); last = now;
+    const half = track.scrollWidth / 2;
+    if (!TK.paused && half > 0 && document.visibilityState === "visible") {
+      TK.pos += 45 * dt;                         // px per second
+      if (TK.pos >= half) TK.pos -= half;
+      track.scrollLeft = TK.pos;
+    }
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
 }
 
 async function loadNews() {
@@ -1093,11 +1147,6 @@ function stampBatch(a) {
     (late ? ' · <span class="neg">delayed — the scheduler is running late</span>' : "");
 }
 
-function renderMarket(list) {
-  $("mkt").innerHTML = (list || []).map(m => '<span><span class="sub2">' + m.name + '</span> <span class="' +
-    (m.move_pct >= 0 ? "pos" : "neg") + '">' + pc(m.move_pct) + "</span></span>").join("");
-}
-
 async function applyBatch() {
   const r = await fetch("data/latest.json?t=" + Date.now(), { cache: "no-store" });
   if (!r.ok) throw new Error("latest.json replied HTTP " + r.status);
@@ -1106,10 +1155,9 @@ async function applyBatch() {
   const a = adaptLatest(latest);
   render(a.funds, { priced: a.priced, requested: a.total || a.priced,
     blend: "estimate.py, " + a.resolved + "/" + a.total + " tickers", phase: a.phase });
-  renderMarket(a.market);
   setupMoversPicker(a.movers);
   stampBatch(a);
-  loadNews();
+  MARKET = a.market || []; loadNews();
   return a;
 }
 
@@ -1339,8 +1387,8 @@ function adaptLatest(d) {
       blend: "estimate.py, " + a.resolved + "/" + a.total + " tickers", phase: a.phase });
     MOVERS = await fetch("data/movers.json", { cache: "no-store" }).then(r => r.ok ? r.json() : []).catch(() => []);
     setupMoversPicker(latest.movers);
-    renderMarket(a.market);
-    stampBatch(a);
+      stampBatch(a);
+    MARKET = a.market || []; renderTicker();
     if (marketOpen() && $("auto").getAttribute("aria-pressed") !== "true") $("auto").click();
     return;   // don't immediately overwrite good data with a throttled relay pull
   }

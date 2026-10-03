@@ -134,6 +134,7 @@ def refresh_fundamentals(tickers: list[str], today: dt.date) -> dict:
     stale = [
         t for t in tickers
         if t not in cache
+        or "ey" not in cache[t]
         or (today - dt.date.fromisoformat(cache[t].get("date", "2000-01-01"))).days
         > FUNDAMENTALS_MAX_AGE_DAYS
     ]
@@ -142,17 +143,22 @@ def refresh_fundamentals(tickers: list[str], today: dt.date) -> dict:
     def one(t: str):
         try:
             info = yf.Ticker(t).info
-            return t, {"pe": info.get("trailingPE"), "pb": info.get("priceToBook"),
-                       "date": today.isoformat()}
+            eps = info.get("trailingEps")
+            price = info.get("currentPrice") or info.get("regularMarketPrice") or info.get("previousClose")
+            pe = info.get("trailingPE")
+            # earnings yield keeps the sign: a loss-maker has negative earnings, which
+            # a P/E (None for losses) throws away
+            ey = eps / price if eps is not None and price else (1 / pe if pe else None)
+            return t, {"pe": pe, "pb": info.get("priceToBook"), "ey": ey, "date": today.isoformat()}
         except Exception:  # noqa: BLE001 -- keep the old value, retry next run
             return t, None
 
     with ThreadPoolExecutor(max_workers=8) as pool:
         for t, v in pool.map(one, stale):
-            if v is not None and (v["pe"] is not None or v["pb"] is not None):
+            if v is not None and (v["pe"] is not None or v["pb"] is not None or v["ey"] is not None):
                 cache[t] = v
             elif t not in cache:
-                cache[t] = {"pe": None, "pb": None, "date": today.isoformat()}
+                cache[t] = {"pe": None, "pb": None, "ey": None, "date": today.isoformat()}
     write_json("fundamentals.json", cache)
     return cache
 
@@ -169,6 +175,24 @@ def weighted_multiple(pairs: list[tuple[float, float | None]], lo=0.0, hi=500.0)
         return None, 0.0
     return round(sum(w for w, _ in ok) / sum(w / m for w, m in ok), 1), round(
         sum(w for w, _ in ok) / total * 100, 0)
+
+
+def aggregate_pe(pairs: list[tuple[float, float | None]]):
+    """Price-to-earnings of the whole basket: total price / total yearly earnings.
+
+    Each holding contributes weight * earnings-yield, loss-makers with their negative
+    earnings, so there is no averaging of P/Es and a stock with a tiny profit (P/E in
+    the hundreds) contributes almost nothing instead of distorting the figure.
+    Returns (P/E, share of weight that had earnings data).
+    """
+    have = [(w, ey) for w, ey in pairs if ey is not None]
+    total = sum(w for w, _ in pairs)
+    if not have or not total:
+        return None, 0.0
+    earnings = sum(w * ey for w, ey in have)
+    if earnings <= 0:
+        return None, 0.0
+    return round(sum(w for w, _ in have) / earnings, 1), round(sum(w for w, _ in have) / total * 100, 0)
 
 
 # --- main -----------------------------------------------------------------------
@@ -231,14 +255,8 @@ def main() -> None:
 
         try:
             hs = holdings[fid]
-            fpe, fcover = weighted_multiple(
-                [(float(h["weight_pct"]), (funda.get(h["ticker"]) or {}).get("pe")) for h in hs])
-            # stocks with a P/E above 100 (one-off or depressed earnings) can move the fund
-            # figure by a couple of points on their own, so report it both ways
-            fpe_core, _ = weighted_multiple(
-                [(float(h["weight_pct"]), (funda.get(h["ticker"]) or {}).get("pe")) for h in hs], hi=100.0)
-            extreme = [(float(h["weight_pct"])) for h in hs
-                       if (funda.get(h["ticker"]) or {}).get("pe") and 100 < funda[h["ticker"]]["pe"] < 500]
+            fpe, fcover = aggregate_pe(
+                [(float(h["weight_pct"]), (funda.get(h["ticker"]) or {}).get("ey")) for h in hs])
             fpb, _ = weighted_multiple(
                 [(float(h["weight_pct"]), (funda.get(h["ticker"]) or {}).get("pb")) for h in hs],
                 hi=100.0)
@@ -246,8 +264,7 @@ def main() -> None:
                 [(float(p["weight"]), (funda.get(p["ticker"]) or {}).get("pe"))
                  for p in ab.get("pe", [])])
             out["valuation"] = {"fund_pe": fpe, "fund_pe_cover_pct": fcover, "fund_pb": fpb,
-                                "fund_pe_ex_extreme": fpe_core, "extreme_count": len(extreme),
-                                "extreme_weight_pct": round(sum(extreme), 1), "bench_pe": bpe}
+                                "bench_pe": bpe}
         except Exception as exc:  # noqa: BLE001
             print(f"[warn] {fid}: valuation failed: {exc}", file=sys.stderr)
 

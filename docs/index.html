@@ -1016,12 +1016,10 @@ function renderCompare() {
     }
     if (v && v.fund_pe != null) {
       const prem = v.bench_pe ? (v.fund_pe / v.bench_pe - 1) * 100 : null;
-      const ext = v.extreme_count > 0 && v.fund_pe_ex_extreme != null
-        ? "; " + v.fund_pe_ex_extreme.toFixed(1) + "× without " + v.extreme_count + " stock" + (v.extreme_count > 1 ? "s" : "") + " above 100×" : "";
       const cmp = prem == null ? "" : Math.abs(prem) <= 10 ? "; about the same as the benchmark"
         : prem > 0 ? "; ~" + Math.round(prem) + "% pricier than the benchmark" : "; ~" + Math.round(-prem) + "% cheaper than the benchmark";
       stats += stat("P/E", v.fund_pe.toFixed(1) + "×" + (v.bench_pe ? " vs ~" + v.bench_pe.toFixed(1) + "×" : ""),
-        "price per ₹1 of yearly profit" + ext + cmp + " (benchmark P/E is an estimate)");
+        "price per ₹1 of yearly profit across all holdings" + cmp + " (benchmark P/E is an estimate)");
       if (v.fund_pb != null) stats += stat("P/B", v.fund_pb.toFixed(1) + "×", "price relative to book value");
     }
 
@@ -1038,7 +1036,7 @@ function renderCompare() {
   $("compareBody").innerHTML = '<div class="hbanner"><span>' + head + "</span></div>" +
     '<div class="hcards">' + cards + "</div>" +
     '<p class="sub2" style="margin-top:12px">Benchmarks are price-return proxies (index levels or ETFs), which leave out dividends — roughly 1% a year — so gaps and alpha look about that much better than against a total-return index. Alpha and beta use the last year of daily returns and a ' +
-    (ANALYTICS.risk_free_pct || 6.5) + '% risk-free rate. P/E is each fund\'s holdings weighted by size (loss-making companies left out); the benchmark P/E is estimated from index ETFs, not NSE\'s official figure. Past performance, not advice.</p>';
+    (ANALYTICS.risk_free_pct || 6.5) + '% risk-free rate. Fund P/E is the whole portfolio\'s price divided by its yearly profit (loss-makers count as negative profit, so a few extreme P/Es can\'t distort it). Sites that average each stock\'s P/E show different numbers; the benchmark P/E is estimated from index ETFs, not NSE\'s official figure. Past performance, not advice.</p>';
 }
 
 // Day-by-day predicted-vs-published breakdown behind the summary cards above.

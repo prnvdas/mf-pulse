@@ -3,30 +3,25 @@ name: estimate
 # Every 15 minutes during NSE hours (09:15-15:30 IST = 03:45-10:00 UTC),
 # Monday-Friday only.
 #
-# Plus a SETTLE window after close: three forced attempts at 15:50, 16:00
-# and 16:10 IST (10:20/10:30/10:40 UTC), each computing a genuinely fresh
-# number from Yahoo's finalized closing prices rather than snapshotting the
-# instant the bell rings (the daily close isn't always fully settled at
-# :00). This is what reconcile.py grades that night, so it needs to be
-# right -- and a single attempt isn't reliable enough to hang that on:
-# GitHub's scheduler is nominally "best-effort, 5-20 min lag under load,"
-# but this repo has actually seen multi-HOUR delays on scheduled runs (e.g.
-# commits timestamped 20:00+ IST for a cron meant to fire at 15:50). Each
-# attempt is idempotent -- post-close EOD prices don't change between
-# retries, so three overlapping attempts just make it far more likely that
-# at least one lands close to on time, not inconsistent.
-#
-# 16:30 IST (11:00 UTC) — display-only. Flips the settled number to
-# `stale: true` so the UI stops implying it's still live. Does not
-# recompute or affect grading (reconcile.py keys off the generated date,
-# not the stale flag).
+# Plus a SETTLE window after close: six forced attempts between 15:50 and
+# 16:50 IST (10:20, 10:30, 10:40, 10:50, 11:05, 11:20 UTC). Each computes a
+# fresh number from Yahoo's finalized closing prices rather than the instant
+# the bell rings (the daily close isn't always settled at :00), and tags it
+# phase="final" -- the number reconcile.py grades that night. A single
+# attempt isn't something to hang that on: GitHub's scheduler is
+# "best-effort," and this repo has seen runs land hours late. Attempts are
+# idempotent (post-close prices don't change), so spreading six across an
+# hour just raises the odds that at least one finishes before ~17:00 IST.
+# Later non-forced runs never downgrade a final number from the same day.
 on:
   schedule:
     - cron: "*/15 4-10 * * 1-5"
     - cron: "20 10 * * 1-5"
     - cron: "30 10 * * 1-5"
     - cron: "40 10 * * 1-5"
-    - cron: "0 11 * * 1-5"
+    - cron: "50 10 * * 1-5"
+    - cron: "5 11 * * 1-5"
+    - cron: "20 11 * * 1-5"
   workflow_dispatch:
 
 permissions:
@@ -50,13 +45,19 @@ jobs:
         if: >-
           github.event.schedule == '20 10 * * 1-5' ||
           github.event.schedule == '30 10 * * 1-5' ||
-          github.event.schedule == '40 10 * * 1-5'
+          github.event.schedule == '40 10 * * 1-5' ||
+          github.event.schedule == '50 10 * * 1-5' ||
+          github.event.schedule == '5 11 * * 1-5' ||
+          github.event.schedule == '20 11 * * 1-5'
         run: python src/estimate.py --force
-      - name: Intraday / stale-flip run
+      - name: Intraday run
         if: >-
           github.event.schedule != '20 10 * * 1-5' &&
           github.event.schedule != '30 10 * * 1-5' &&
-          github.event.schedule != '40 10 * * 1-5'
+          github.event.schedule != '40 10 * * 1-5' &&
+          github.event.schedule != '50 10 * * 1-5' &&
+          github.event.schedule != '5 11 * * 1-5' &&
+          github.event.schedule != '20 11 * * 1-5'
         run: python src/estimate.py
       - name: Commit dashboard data
         run: |

@@ -1,7 +1,8 @@
 {
-  "generated_at": "2026-10-03T16:42:07.661291+05:30",
-  "generated_label": "03 Oct 2026, 16:42 IST",
+  "generated_at": "2026-10-03T17:03:10.314461+05:30",
+  "generated_label": "03 Oct 2026, 17:03 IST",
   "stale": true,
+  "phase": "holiday",
   "market_open": false,
   "totals": {
     "current_value": 10450820.0,
@@ -71,6 +72,105 @@
       "top_contributors": []
     }
   ],
+  "health": {
+    "overall": "watch",
+    "value_share_pct": {
+      "healthy": 0.0,
+      "watch": 100.0,
+      "caution": 0.0
+    },
+    "funds": [
+      {
+        "id": "axis-small-cap",
+        "name": "Axis Small Cap Fund Direct Growth",
+        "status": "watch",
+        "value": 5311999.99,
+        "benchmark": "HDFCSML250.NS",
+        "trend": {
+          "w1": -3.0,
+          "m1": -3.43,
+          "m3": -2.38,
+          "drawdown_pct": -4.78
+        },
+        "breadth_pct": 31.7,
+        "top10_pct": 18.5,
+        "cash_pct": 12.2,
+        "holdings_age_days": 21,
+        "flags": [
+          {
+            "severity": 1,
+            "text": "Benchmark down 3.4% over 1 month"
+          },
+          {
+            "severity": 1,
+            "text": "Only 32% of holdings (by weight) are up over 5 days"
+          }
+        ]
+      },
+      {
+        "id": "mirae-large-midcap",
+        "name": "Mirae Asset Large & Midcap Fund Direct Growth",
+        "status": "watch",
+        "value": 4959000.01,
+        "benchmark": "^NSEMDCP50",
+        "trend": {
+          "w1": -3.87,
+          "m1": -7.72,
+          "m3": -5.3,
+          "drawdown_pct": -8.93
+        },
+        "breadth_pct": 31.0,
+        "top10_pct": 31.7,
+        "cash_pct": 3.49,
+        "holdings_age_days": 21,
+        "flags": [
+          {
+            "severity": 1,
+            "text": "Benchmark down 7.7% over 1 month"
+          },
+          {
+            "severity": 1,
+            "text": "Benchmark 8.9% below its 3-month high"
+          },
+          {
+            "severity": 1,
+            "text": "Only 31% of holdings (by weight) are up over 5 days"
+          }
+        ]
+      },
+      {
+        "id": "jioblackrock-flexicap",
+        "name": "JioBlackRock Flexi Cap Fund Direct Growth",
+        "status": "watch",
+        "value": 179820.0,
+        "benchmark": "^CRSLDX",
+        "trend": {
+          "w1": -3.08,
+          "m1": -6.35,
+          "m3": -6.19,
+          "drawdown_pct": -8.17
+        },
+        "breadth_pct": 27.8,
+        "top10_pct": 34.0,
+        "cash_pct": 8.27,
+        "holdings_age_days": 21,
+        "flags": [
+          {
+            "severity": 1,
+            "text": "Benchmark down 6.3% over 1 month"
+          },
+          {
+            "severity": 1,
+            "text": "Benchmark 8.2% below its 3-month high"
+          },
+          {
+            "severity": 1,
+            "text": "Only 28% of holdings (by weight) are up over 5 days"
+          }
+        ]
+      }
+    ]
+  },
   "accuracy": {
     "samples": 30,
     "mae_pct": 0.089,

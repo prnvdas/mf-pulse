@@ -34,7 +34,7 @@ from common import (
 
 def fetch_moves(
     tickers: list[str], retries: int = 2
-) -> tuple[dict[str, float | None], dt.date | None]:
+) -> tuple[dict[str, float | None], dt.date | None, dict[str, float]]:
     """Percent change vs previous close for each ticker. None when unavailable.
 
     Also returns the most recent bar date seen across all tickers — the
@@ -49,9 +49,10 @@ def fetch_moves(
     accuracy grading too).
     """
     if not tickers:
-        return {}, None
+        return {}, None, {}
 
     moves: dict[str, float | None] = {t: None for t in tickers}
+    week: dict[str, float] = {}
     data = None
     for attempt in range(retries + 1):
         try:
@@ -71,7 +72,7 @@ def fetch_moves(
             if attempt < retries:
                 time.sleep(5)
     if data is None:
-        return moves, None
+        return moves, None, week
 
     latest_bar_date: dt.date | None = None
     for ticker in tickers:
@@ -83,12 +84,133 @@ def fetch_moves(
             prev, last = float(closes.iloc[-2]), float(closes.iloc[-1])
             if prev:
                 moves[ticker] = (last - prev) / prev * 100.0
+            first = float(closes.iloc[0])
+            if first:
+                week[ticker] = (last - first) / first * 100.0
             bar_date = closes.index[-1].date()
             if latest_bar_date is None or bar_date > latest_bar_date:
                 latest_bar_date = bar_date
         except Exception:  # noqa: BLE001
             continue
-    return moves, latest_bar_date
+    return moves, latest_bar_date, week
+
+
+def fetch_trend(tickers: list[str]) -> dict[str, dict | None]:
+    """1w / 1m / 3m change and drawdown from the 3-month high, per index."""
+    out: dict[str, dict | None] = {t: None for t in tickers}
+    if not tickers:
+        return out
+    try:
+        data = yf.download(
+            tickers=" ".join(tickers), period="6mo", interval="1d",
+            group_by="ticker", progress=False, threads=True, auto_adjust=False,
+        )
+    except Exception as exc:  # noqa: BLE001
+        print(f"[warn] trend fetch failed: {exc}", file=sys.stderr)
+        return out
+    for t in tickers:
+        try:
+            frame = data[t] if len(tickers) > 1 else data
+            c = frame["Close"].dropna()
+            if len(c) < 25:
+                continue
+            last = float(c.iloc[-1])
+
+            def chg(n: int) -> float | None:
+                return round((last / float(c.iloc[-1 - n]) - 1) * 100, 2) if len(c) > n else None
+
+            hi = float(c.iloc[-63:].max())
+            out[t] = {
+                "w1": chg(5), "m1": chg(21), "m3": chg(63),
+                "drawdown_pct": round((last / hi - 1) * 100, 2),
+            }
+        except Exception:  # noqa: BLE001
+            continue
+    return out
+
+
+def build_health(funds: list[dict], results: list[dict],
+                 week: dict[str, float], trend: dict, ts: dt.datetime) -> dict:
+    """Plain, inspectable checks against the current market -- not a score.
+
+    Each fund gets traffic-light flags with the numbers behind them, so the
+    dashboard can show *why* something is amber rather than a bare verdict.
+    """
+    rank = {"healthy": 0, "watch": 1, "caution": 2}
+    cards = []
+    for f, r in zip(funds, results):
+        doc = load_holdings(f["id"])
+        hs = doc.get("holdings") or []
+        flags: list[dict] = []
+
+        def flag(sev: int, text: str) -> None:
+            flags.append({"severity": sev, "text": text})
+
+        t = trend.get(f.get("benchmark_ticker"))
+        if t:
+            if t["m1"] is not None and t["m1"] <= -8:
+                flag(2, f"Benchmark down {abs(t['m1']):.1f}% over 1 month")
+            elif t["m1"] is not None and t["m1"] <= -3:
+                flag(1, f"Benchmark down {abs(t['m1']):.1f}% over 1 month")
+            if t["drawdown_pct"] <= -12:
+                flag(2, f"Benchmark {abs(t['drawdown_pct']):.1f}% below its 3-month high")
+            elif t["drawdown_pct"] <= -7:
+                flag(1, f"Benchmark {abs(t['drawdown_pct']):.1f}% below its 3-month high")
+
+        with_week = [(float(h["weight_pct"]), week[h["ticker"]]) for h in hs if h["ticker"] in week]
+        wsum = sum(w for w, _ in with_week)
+        breadth = round(sum(w for w, m in with_week if m > 0) / wsum * 100, 1) if wsum else None
+        if breadth is not None:
+            if breadth < 25:
+                flag(2, f"Only {breadth:.0f}% of holdings (by weight) are up over 5 days")
+            elif breadth < 40:
+                flag(1, f"Only {breadth:.0f}% of holdings (by weight) are up over 5 days")
+
+        top10 = round(sum(sorted((float(h["weight_pct"]) for h in hs), reverse=True)[:10]), 1)
+        if top10 > 65:
+            flag(2, f"Top 10 holdings are {top10:.0f}% of the fund")
+        elif top10 > 50:
+            flag(1, f"Top 10 holdings are {top10:.0f}% of the fund")
+
+        age = None
+        if doc.get("as_of"):
+            try:
+                age = (ts.date() - dt.date.fromisoformat(str(doc["as_of"]))).days
+            except ValueError:
+                age = None
+        if age is not None:
+            if age > 75:
+                flag(2, f"Holdings data is {age} days old — estimate accuracy is degrading")
+            elif age > 45:
+                flag(1, f"Holdings data is {age} days old")
+
+        if r["coverage_pct"] and r["coverage_pct"] < 70:
+            flag(1, f"Only {r['coverage_pct']:.0f}% of the fund is tracked by name")
+
+        worst = max((x["severity"] for x in flags), default=0)
+        status = {0: "healthy", 1: "watch", 2: "caution"}[worst]
+        cards.append({
+            "id": f["id"], "name": f["name"], "status": status,
+            "value": r["current_value"], "benchmark": f.get("benchmark_ticker"),
+            "trend": t, "breadth_pct": breadth, "top10_pct": top10,
+            "cash_pct": float(doc.get("cash_pct") or 0.0), "holdings_age_days": age,
+            "flags": flags,
+        })
+
+    total = sum(c["value"] for c in cards) or 1.0
+    share = {s: sum(c["value"] for c in cards if c["status"] == s) / total * 100
+             for s in rank}
+    if share["caution"] >= 40:
+        overall = "caution"
+    elif share["caution"] > 0 or share["watch"] > 0:
+        overall = "watch"
+    else:
+        overall = "healthy"
+    return {
+        "overall": overall,
+        "value_share_pct": {k: round(v, 1) for k, v in share.items()},
+        "funds": cards,
+    }
 
 
 def estimate_fund(fund: dict, cfg: dict, moves: dict[str, float | None]) -> dict:
@@ -182,7 +304,12 @@ def main() -> None:
     if not is_market_window(cfg, ts) and not args.force:
         print("[info] outside market window; marking last estimate stale")
         latest = read_json("latest.json", None)
-        if latest:
+        locked_today = (
+            latest
+            and latest.get("phase") == "final"
+            and str(latest.get("generated_at", ""))[:10] == ts.date().isoformat()
+        )
+        if latest and not locked_today:
             latest["stale"] = True
             write_json("latest.json", latest)
         return
@@ -202,7 +329,7 @@ def main() -> None:
         if f.get("benchmark_ticker"):
             tickers.add(f["benchmark_ticker"])
 
-    moves, latest_bar_date = fetch_moves(sorted(tickers))
+    moves, latest_bar_date, week = fetch_moves(sorted(tickers))
     resolved = sum(1 for v in moves.values() if v is not None)
     print(f"[info] resolved {resolved}/{len(moves)} tickers, "
           f"latest bar date {latest_bar_date}")
@@ -239,6 +366,14 @@ def main() -> None:
 
     results = [estimate_fund(f, cfg, moves) for f in funds]
 
+    benchmarks = sorted({f["benchmark_ticker"] for f in funds if f.get("benchmark_ticker")})
+    health = build_health(funds, results, week, fetch_trend(benchmarks), ts)
+
+    # "final" = a run after the close with today's bar present: the number
+    # reconcile.py will grade tonight. Everything else is a live batch.
+    after_close = ts.time() >= dt.time(15, 45)
+    phase = "holiday" if is_holiday else ("final" if after_close else "live")
+
     total_value = sum(r["current_value"] for r in results)
     total_invested = sum(r["invested"] for r in results)
     total_impact = sum(r["rupee_impact"] for r in results)
@@ -250,6 +385,7 @@ def main() -> None:
         "generated_at": ts.isoformat(),
         "generated_label": ts.strftime("%d %b %Y, %H:%M IST"),
         "stale": is_holiday,
+        "phase": phase,
         "market_open": is_market_window(cfg, ts) and not is_holiday,
         "totals": {
             "current_value": round(total_value, 2),
@@ -267,6 +403,7 @@ def main() -> None:
             "band_rupees": round(total_band, 0),
         },
         "funds": results,
+        "health": health,
         "accuracy": read_json("accuracy.json", {"samples": 0}),
         "tickers_resolved": resolved,
         "tickers_total": len(moves),

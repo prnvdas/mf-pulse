@@ -99,6 +99,27 @@
   .acc .v{font-size:26px;font-weight:600;letter-spacing:-.02em}
   .acc .n{font-size:11.5px;color:var(--grey-light);margin-top:6px}
 
+  .acc.four{grid-template-columns:repeat(4,1fr)}
+  .scroll{overflow-x:auto}
+  .scroll table{min-width:560px}
+  .sub2{font-size:11px;color:var(--grey-light);font-weight:400}
+  .chip{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    padding:3px 9px;border-radius:99px;color:#fff;vertical-align:middle}
+  .chip.healthy{background:var(--green-deep)}.chip.watch{background:#c98a0a}.chip.caution{background:var(--red)}
+  .hgrid{display:grid;gap:5px;margin:6px 0}
+  .hrow{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:center;font-size:12.5px}
+  .hrow .cells{display:flex;gap:3px}
+  .hrow .c{flex:1;height:18px;min-width:6px;background:var(--rule)}
+  .hrow .c.hit{background:var(--green)}.hrow .c.miss{background:var(--red)}
+  .hhead{display:flex;justify-content:space-between;font-size:11px;color:var(--grey-light);margin:0 0 0 162px}
+  .hcards{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);margin-top:18px}
+  .hcard{background:var(--paper);padding:20px 22px;font-size:13px}
+  .hcard h3{font-size:14px;font-weight:600;margin-bottom:10px;display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+  .hcard dl{display:grid;grid-template-columns:1fr auto;gap:5px 12px;margin:10px 0}
+  .hcard dt{color:var(--grey)}.hcard dd{text-align:right;font-weight:600}
+  .hcard ul{margin:10px 0 0 16px;color:var(--grey);font-size:12.5px;line-height:1.6}
+  .hbanner{display:flex;gap:14px;align-items:center;padding:18px 22px;background:var(--wash);font-size:14px}
+  details>summary{cursor:pointer;font-size:12px;color:var(--grey);margin:22px 0 10px;letter-spacing:.04em}
   .note{padding:22px 24px;background:var(--wash);font-size:13.5px;color:var(--grey);
     border-left:3px solid var(--ink);line-height:1.65}
   .note.bad{border-left-color:var(--red)}
@@ -130,7 +151,9 @@
     .stat:nth-child(3){padding-left:0;border-left:none}
     .row{grid-template-columns:1fr 74px 56px}.row .wt{display:none}
     .acc{grid-template-columns:1fr}
-    th:nth-child(4),td:nth-child(4){display:none}
+    table.fundtbl th:nth-child(4),table.fundtbl td:nth-child(4){display:none}
+    .acc.four{grid-template-columns:1fr 1fr}
+    .hcards{grid-template-columns:1fr}
   }
   @media(prefers-reduced-motion:reduce){.spin{animation:none}}
 </style>
@@ -182,7 +205,7 @@
 
   <section>
     <h2>By fund <span id="fundNote"></span></h2>
-    <table>
+    <table class="fundtbl">
       <thead><tr>
         <th>Fund</th><th>Est. NAV move</th><th>Impact</th><th>Holdings coverage</th>
       </tr></thead>
@@ -195,9 +218,16 @@
     <div class="contrib" id="contrib"></div>
   </section>
 
+  <section id="healthWrap" hidden>
+    <h2>Portfolio health <span>Current market trend, checked against each fund's benchmark and holdings</span></h2>
+    <div id="healthBody"></div>
+  </section>
+
   <section>
     <h2>Estimate accuracy <span>Predicted vs published NAV, last 30 sessions</span></h2>
     <div id="accWrap"></div>
+    <div id="hitWrap"></div>
+    <details><summary>Day-by-day detail</summary>
     <table id="histTableEl" hidden>
       <thead><tr>
         <th>Date</th><th>Fund</th><th>Predicted NAV</th><th>Actual NAV</th>
@@ -205,21 +235,22 @@
       </tr></thead>
       <tbody id="histTable"></tbody>
     </table>
+    </details>
   </section>
 
   <section id="projWrap" hidden>
     <h2>Where this could be <span id="projNote"></span></h2>
-    <table>
-      <thead><tr>
-        <th>Year</th><th>Projected value</th><th>Total invested by then</th><th>Projected gain</th>
-      </tr></thead>
+    <div class="scroll"><table>
+      <thead><tr id="projHead"></tr></thead>
       <tbody id="projTable"></tbody>
-    </table>
-    <p class="note">Illustration only, not a forecast. Assumes today's value and SIP compound
-      at one fixed assumed rate every year with no interruptions, no fund switches, and no SIP
-      changes — real markets don't move in a straight line, and actual results will differ,
-      possibly by a lot. Change the assumed rate in <code>config/portfolio.yaml</code> under
-      <code>projection</code> if 12% doesn't match what you want to plan against.</p>
+    </table></div>
+    <p class="note">Illustration only, not a forecast. Rows are calendar year-ends; the first
+      counts only the SIPs still to come this year. Each column compounds today's value and the
+      SIP at a fixed annual return with no interruptions, fund switches or SIP changes. 12% is a
+      common long-run planning assumption; 15%, 18% and 22% are optimistic scenarios — sustaining
+      22% for decades would be exceptional. Real markets don't move in a straight line, and
+      results can differ a lot. Edit the scenarios under <code>projection</code> in
+      <code>config/portfolio.yaml</code>.</p>
   </section>
 
   <footer>
@@ -281,7 +312,7 @@ const DEMO = {
   ]
 };
 
-let CFG = null, ACC = { samples: 0 }, HIST = [], timer = null;
+let CFG = null, ACC = { samples: 0 }, HIST = [], HEALTH = null, timer = null;
 
 const $ = id => document.getElementById(id);
 const inr = n => "₹" + Math.round(Math.abs(n)).toLocaleString("en-IN");
@@ -615,39 +646,141 @@ function render(funds, meta) {
 // render() call so it tracks Refresh, but the only things that actually
 // change between refreshes are `value`/`invested` -- the assumed rate and
 // SIP amount are static config, not live data.
-function projectFutureValue(lumpsum, monthlySip, annualRatePct, years) {
-  const months = years * 12;
-  const i = annualRatePct / 100 / 12;
-  const fvLumpsum = lumpsum * Math.pow(1 + annualRatePct / 100, years);
-  const fvSip = i
-    ? monthlySip * ((Math.pow(1 + i, months) - 1) / i) * (1 + i)
-    : monthlySip * months;
-  return fvLumpsum + fvSip;
+function projectFutureValue(lumpsum, monthlySip, annualRatePct, tYears, nSips) {
+  const r = annualRatePct / 100;
+  const i = Math.pow(1 + r, 1 / 12) - 1;      // effective monthly rate, so r is a true annual return
+  const fvLump = lumpsum * Math.pow(1 + r, tYears);
+  const fvSip = i ? monthlySip * ((Math.pow(1 + i, nSips) - 1) / i) * (1 + i) : monthlySip * nSips;
+  return fvLump + fvSip;
 }
 
 function renderProjection(value, invested) {
   const proj = CFG.projection || {};
-  const rate = proj.assumed_annual_return_pct;
-  const horizons = proj.horizons_years;
+  const rates = proj.scenarios_pct || (proj.assumed_annual_return_pct ? [proj.assumed_annual_return_pct] : []);
+  const horizons = proj.horizons_years || [];
   const sip = CFG.monthly_sip_total || 0;
   const wrap = $("projWrap");
-
-  if (!rate || !horizons || !horizons.length || !value) { wrap.hidden = true; return; }
+  if (!rates.length || !horizons.length || !value) { wrap.hidden = true; return; }
   wrap.hidden = false;
 
-  $("projNote").textContent = "Assuming " + rate + "%/yr and today's " +
-    inr(sip) + "/month SIP continuing unchanged";
+  const now = new Date(), yr = now.getFullYear();
+  const tLeft = Math.max(0, (new Date(yr, 11, 31) - now) / 86400000 / 365);
+  // this month's SIP is already in the numbers once its allocation day (the 3rd) has passed
+  const sipsLeft = Math.max(0, 11 - now.getMonth()) + (now.getDate() < 3 ? 1 : 0);
 
-  $("projTable").innerHTML = horizons.map(y => {
-    const fv = projectFutureValue(value, sip, rate, y);
-    const totalInvested = invested + sip * y * 12;
-    const gain = fv - totalInvested;
-    const calYear = new Date().getFullYear() + y;
-    return "<tr><td>" + calYear + ' <span style="font-size:11px;color:var(--grey-light)">(' +
-      y + (y === 1 ? " yr" : " yrs") + ")</span></td><td>" + inr(fv) +
-      "</td><td>" + inr(totalInvested) + "</td><td class=\"" + (gain >= 0 ? "pos" : "neg") +
-      "\">" + signed(gain) + "</td></tr>";
+  $("projNote").textContent = inr(sip) + "/month SIP continuing · " + sipsLeft +
+    " SIP" + (sipsLeft === 1 ? "" : "s") + " left in " + yr;
+
+  const rows = [{ label: yr, sub: "year-end", t: tLeft, n: sipsLeft }]
+    .concat(horizons.map(y => ({ label: yr + y, sub: "+" + y + (y === 1 ? " yr" : " yrs"), t: tLeft + y, n: sipsLeft + 12 * y })));
+
+  $("projHead").innerHTML = "<th>Year-end</th><th>Invested by then</th>" +
+    rates.map(r => "<th>At " + r + "%</th>").join("");
+  $("projTable").innerHTML = rows.map(row => {
+    const inv = invested + sip * row.n;
+    const cells = rates.map(r => {
+      const fv = projectFutureValue(value, sip, r, row.t, row.n);
+      return "<td>" + inr(fv) + '<br><span class="sub2">' + signed(fv - inv) + "</span></td>";
+    }).join("");
+    return "<tr><td>" + row.label + ' <span class="sub2">(' + row.sub + ")</span></td><td>" + inr(inv) + "</td>" + cells + "</tr>";
   }).join("");
+}
+
+// Hit/miss dashboard: per-fund scorecard, a session-by-session hit/miss grid and
+// a daily error chart, all derived from history.json.
+function renderHitMiss() {
+  const wrap = $("hitWrap");
+  if (!HIST.length) { wrap.innerHTML = ""; return; }
+  const short = n => n.replace(" Direct Growth", "").replace(" Fund", "");
+  const dates = [...new Set(HIST.map(r => r.date))].sort().slice(-30);
+  const recent = HIST.filter(r => dates.includes(r.date));
+  const mean = a => a.length ? a.reduce((s, x) => s + x, 0) / a.length : 0;
+
+  const hitRate = rs => rs.length ? rs.filter(r => r.direction_hit).length / rs.length * 100 : 0;
+  const last10 = HIST.filter(r => [...new Set(HIST.map(x => x.date))].sort().slice(-10).includes(r.date));
+  const close = t => recent.filter(r => r.error_pct <= t).length / recent.length * 100;
+
+  let html = '<div class="acc four" style="margin-top:22px">' +
+    stat("Direction right", hitRate(recent).toFixed(0) + "%", recent.filter(r => r.direction_hit).length + " of " + recent.length + " fund-days") +
+    stat("Last 10 sessions", hitRate(last10).toFixed(0) + "%", "recent form") +
+    stat("Within 0.10pp", close(0.10).toFixed(0) + "%", "of NAV moves called this closely") +
+    stat("Within 0.20pp", close(0.20).toFixed(0) + "%", "of NAV moves") + "</div>";
+
+  html += '<table style="margin-top:26px"><thead><tr><th>Fund</th><th>Sessions</th><th>Hit rate</th><th>Avg error</th><th>Bias</th><th>Worst miss</th></tr></thead><tbody>' +
+    CFG.funds.map(f => {
+      const rs = recent.filter(r => r.fund_id === f.id);
+      if (!rs.length) return "";
+      const bias = mean(rs.map(r => r.predicted_pct - r.actual_pct));
+      return "<tr><td>" + short(f.name) + "</td><td>" + rs.length + "</td><td>" + hitRate(rs).toFixed(0) + "%</td><td>" +
+        mean(rs.map(r => r.error_pct)).toFixed(2) + "pp</td><td>" + (bias >= 0 ? "+" : "−") + Math.abs(bias).toFixed(2) +
+        "pp</td><td>" + Math.max(...rs.map(r => r.error_pct)).toFixed(2) + "pp</td></tr>";
+    }).join("") + "</tbody></table>" +
+    '<p class="sub2" style="margin-top:8px">Bias = average of (predicted − actual). A positive number means the estimate ran slightly optimistic. It is shown, not corrected: with this few sessions it is not statistically distinguishable from noise.</p>';
+
+  html += '<h2 style="margin-top:34px">Hit &amp; miss by session <span>green = direction right, red = wrong, newest on the right</span></h2><div class="hgrid">' +
+    CFG.funds.map(f => '<div class="hrow"><div>' + short(f.name) + '</div><div class="cells">' +
+      dates.map(d => {
+        const r = recent.find(x => x.date === d && x.fund_id === f.id);
+        if (!r) return '<div class="c"></div>';
+        return '<div class="c ' + (r.direction_hit ? "hit" : "miss") + '" title="' + d + ": predicted " + pc(r.predicted_pct) +
+          ", actual " + pc(r.actual_pct) + ", off by " + r.error_pct.toFixed(2) + 'pp"></div>';
+      }).join("") + "</div></div>").join("") + "</div>" +
+    '<div class="hhead"><span>' + dates[0] + "</span><span>" + dates[dates.length - 1] + "</span></div>";
+
+  const errs = dates.map(d => {
+    const rs = recent.filter(r => r.date === d);
+    return { d, e: mean(rs.map(r => r.error_pct)), allHit: rs.every(r => r.direction_hit) };
+  });
+  const top = Math.max(...errs.map(x => x.e), 0.1), bw = 100 / errs.length, avg = mean(errs.map(x => x.e));
+  html += '<h2 style="margin-top:34px">Daily error <span>average miss across your funds, in percentage points — dashed line is the average</span></h2>' +
+    '<svg viewBox="0 0 100 40" preserveAspectRatio="none" style="width:100%;height:120px;display:block;background:var(--wash)">' +
+    errs.map((x, i) => {
+      const h = x.e / top * 36;
+      return '<rect x="' + (i * bw + bw * 0.15).toFixed(2) + '" y="' + (38 - h).toFixed(2) + '" width="' + (bw * 0.7).toFixed(2) +
+        '" height="' + h.toFixed(2) + '" fill="' + (x.allHit ? "#86bc25" : "#da291c") + '"><title>' + x.d + ": " + x.e.toFixed(2) + "pp</title></rect>";
+    }).join("") +
+    '<line x1="0" x2="100" y1="' + (38 - avg / top * 36).toFixed(2) + '" y2="' + (38 - avg / top * 36).toFixed(2) +
+    '" stroke="#000" stroke-width=".4" stroke-dasharray="1.5 1.5" vector-effect="non-scaling-stroke"/></svg>' +
+    '<p class="sub2" style="margin-top:8px">Bars are green when every fund\'s direction was right that day, red when any was wrong. Tallest bar: ' +
+    top.toFixed(2) + "pp. Average: " + avg.toFixed(2) + "pp.</p>";
+  wrap.innerHTML = html;
+
+  function stat(k, v, n) {
+    return '<div><div class="k">' + k + '</div><div class="v">' + v + '</div><div class="n">' + n + "</div></div>";
+  }
+}
+
+// Rule-based health checks written by estimate.py into latest.json. Each flag
+// carries the numbers behind it -- this is deliberately not a score.
+function renderHealth() {
+  const wrap = $("healthWrap");
+  if (!HEALTH || !HEALTH.funds) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  const short = n => n.replace(" Direct Growth", "").replace(" Fund", "");
+  const s = HEALTH.value_share_pct || {};
+  const msg = {
+    healthy: "No warning signs in the current data.",
+    watch: Math.round((s.watch || 0) + (s.caution || 0)) + "% of your money sits in funds with at least one warning sign.",
+    caution: Math.round(s.caution || 0) + "% of your money sits in funds showing serious warning signs."
+  }[HEALTH.overall];
+  const pctCell = v => v == null ? "—" : '<span class="' + (v >= 0 ? "pos" : "neg") + '">' + pc(v, 1) + "</span>";
+
+  $("healthBody").innerHTML = '<div class="hbanner"><span class="chip ' + HEALTH.overall + '">' + HEALTH.overall + "</span><span>" + msg + "</span></div>" +
+    '<div class="hcards">' + HEALTH.funds.map(f => {
+      const t = f.trend;
+      return '<div class="hcard"><h3><span>' + short(f.name) + '<br><span class="sub2">' + inr(f.value) + '</span></span><span class="chip ' + f.status + '">' + f.status + "</span></h3><dl>" +
+        "<dt>Benchmark 1 week</dt><dd>" + pctCell(t && t.w1) + "</dd>" +
+        "<dt>Benchmark 1 month</dt><dd>" + pctCell(t && t.m1) + "</dd>" +
+        "<dt>Benchmark 3 months</dt><dd>" + pctCell(t && t.m3) + "</dd>" +
+        "<dt>From 3-month high</dt><dd>" + pctCell(t && t.drawdown_pct) + "</dd>" +
+        "<dt>Holdings up over 5 days</dt><dd>" + (f.breadth_pct == null ? "—" : f.breadth_pct.toFixed(0) + "%") + "</dd>" +
+        "<dt>Top 10 holdings</dt><dd>" + f.top10_pct.toFixed(0) + "%</dd>" +
+        "<dt>Cash</dt><dd>" + f.cash_pct.toFixed(1) + "%</dd>" +
+        "<dt>Holdings data age</dt><dd>" + (f.holdings_age_days == null ? "—" : f.holdings_age_days + " days") + "</dd></dl>" +
+        (f.flags.length ? "<ul>" + f.flags.map(x => "<li>" + x.text + "</li>").join("") + "</ul>"
+                        : '<p class="sub2">No warning signs.</p>') + "</div>";
+    }).join("") + "</div>" +
+    '<p class="sub2" style="margin-top:12px">Rule-based checks on market data (benchmark trend, how many holdings are rising, concentration, data freshness) — a read on conditions, not a rating of the fund or advice to buy or sell.</p>';
 }
 
 // Day-by-day predicted-vs-published breakdown behind the summary cards above.
@@ -928,7 +1061,7 @@ function adaptLatest(d) {
   }));
   return { funds, priced: funds.reduce((s, f) => s + f.priced, 0),
            generated: d.generated_label, resolved: d.tickers_resolved,
-           total: d.tickers_total };
+           total: d.tickers_total, phase: d.phase, health: d.health };
 }
 
 (async () => {
@@ -939,6 +1072,7 @@ function adaptLatest(d) {
   HIST = await fetch("data/history.json", { cache: "no-store" })
     .then(r => r.ok ? r.json() : Promise.reject()).catch(() => []);
   renderHistoryTable();
+  renderHitMiss();
 
   const latest = await fetch("data/latest.json", { cache: "no-store" })
     .then(r => r.ok ? r.json() : Promise.reject()).catch(() => null);
@@ -947,7 +1081,10 @@ function adaptLatest(d) {
     const a = adaptLatest(latest);
     render(a.funds, { priced: a.priced, requested: a.total || a.priced,
       blend: "estimate.py, " + a.resolved + "/" + a.total + " tickers" });
-    $("stamp").innerHTML = "Batch · <b>" + a.generated + "</b>";
+    HEALTH = a.health || null;
+    renderHealth();
+    const phaseLabel = { final: "Final close estimate", holiday: "Market closed today", live: "Intraday batch" }[a.phase] || "Batch";
+    $("stamp").innerHTML = phaseLabel + " · <b>" + a.generated + "</b>";
     return;   // don't immediately overwrite good data with a throttled relay pull
   }
 

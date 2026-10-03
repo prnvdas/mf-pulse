@@ -213,6 +213,36 @@ def build_health(funds: list[dict], results: list[dict],
     }
 
 
+def build_movers(funds: list[dict], results: list[dict],
+                 moves: dict[str, float | None], day: str) -> dict:
+    """Top 10 gainers and laggards across the whole portfolio, by rupee impact.
+
+    A stock held in several funds is summed across them -- what matters is how
+    much it moved *your* money, not its % move on a tiny position. This reports
+    what already happened in the session; it is not a forecast of which stocks
+    will rise.
+    """
+    agg: dict[str, dict] = {}
+    for f, r in zip(funds, results):
+        for h in load_holdings(f["id"]).get("holdings") or []:
+            move = moves.get(h["ticker"])
+            if move is None:
+                continue
+            exposure = r["current_value"] * float(h["weight_pct"]) / 100.0
+            row = agg.setdefault(h["ticker"], {
+                "name": h["name"], "ticker": h["ticker"], "move_pct": round(move, 2),
+                "exposure": 0.0, "impact": 0.0, "funds": [],
+            })
+            row["exposure"] += exposure
+            row["impact"] += exposure * move / 100.0
+            row["funds"].append(f["name"].replace(" Direct Growth", "").replace(" Fund", ""))
+    rows = [{**v, "exposure": round(v["exposure"]), "impact": round(v["impact"])}
+            for v in agg.values()]
+    gainers = sorted((x for x in rows if x["impact"] > 0), key=lambda x: -x["impact"])[:10]
+    laggards = sorted((x for x in rows if x["impact"] < 0), key=lambda x: x["impact"])[:10]
+    return {"date": day, "gainers": gainers, "laggards": laggards}
+
+
 def estimate_fund(fund: dict, cfg: dict, moves: dict[str, float | None]) -> dict:
     holdings_doc = load_holdings(fund["id"])
     holdings = holdings_doc.get("holdings") or []
@@ -371,6 +401,7 @@ def main() -> None:
 
     # "final" = a run after the close with today's bar present: the number
     # reconcile.py will grade tonight. Everything else is a live batch.
+    movers = None if is_holiday else build_movers(funds, results, moves, ts.date().isoformat())
     after_close = ts.time() >= dt.time(15, 45)
     phase = "holiday" if is_holiday else ("final" if after_close else "live")
 
@@ -404,12 +435,20 @@ def main() -> None:
         },
         "funds": results,
         "health": health,
+        "movers": movers,
         "accuracy": read_json("accuracy.json", {"samples": 0}),
         "tickers_resolved": resolved,
         "tickers_total": len(moves),
     }
 
     write_json("latest.json", payload)
+
+    # One record per trading day, written only from the post-close run so the
+    # history holds each session's final picture, not an intraday snapshot.
+    if phase == "final" and movers:
+        hist = [m for m in read_json("movers.json", []) if m["date"] != movers["date"]]
+        hist.append(movers)
+        write_json("movers.json", hist[-60:])
     print(
         f"[ok] today {payload['totals']['today_impact']:+,.0f} "
         f"({payload['totals']['today_pct']:+.2f}%) "

@@ -81,13 +81,24 @@ def fetch_feed(default_source: str, url: str) -> list[dict]:
     return out
 
 
+RELEVANT = re.compile(r"sensex|nifty|stock|share|market|fund|sip\b|nav\b|mutual|sebi|rbi|fii|fpi|ipo|equity|"
+                      r"invest|rupee|crude|dividend|etf|bank|earnings|results", re.I)
+JUNK = re.compile(r"live share|stock market news & updates|quotes[- ]|official site|homepage|^nse\b", re.I)
+
+
+def is_good(row: dict) -> bool:
+    """Google News search also returns site landing pages and loose matches."""
+    t = row["title"]
+    return len(t) >= 25 and not JUNK.search(t) and bool(RELEVANT.search(t))
+
+
 def collect(feeds: list[tuple[str, str]], now: dt.datetime) -> list[dict]:
     seen, rows = set(), []
     cutoff = now - dt.timedelta(hours=MAX_AGE_HOURS)
     for source, url in feeds:
         for row in fetch_feed(source, url):
             key = re.sub(r"[^a-z0-9]", "", row["title"].lower())[:60]
-            if key in seen or row["published"] < cutoff:
+            if key in seen or row["published"] < cutoff or not is_good(row):
                 continue
             seen.add(key)
             rows.append(row)

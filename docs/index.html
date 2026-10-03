@@ -103,23 +103,25 @@
 
   .acc.four{grid-template-columns:repeat(4,1fr)}
   .scroll{overflow-x:auto}
-  .newsbar{display:flex;gap:8px;align-items:center;overflow-x:auto;white-space:nowrap;padding:12px 0;border-bottom:1px solid var(--rule);scrollbar-width:thin}
-  .newsbar .lab{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-right:2px}
-  .newsbar .sep{width:1px;height:18px;background:var(--rule);margin:0 6px;flex:none}
-  .pill{display:inline-block;flex:none;font-size:12.5px;color:var(--ink);text-decoration:none;background:var(--paper);
-    border:1px solid var(--rule);border-radius:99px;padding:6px 14px;cursor:pointer;font-family:inherit}
-  .pill:hover,.pill:focus-visible{border-color:var(--ink);outline:none}
-  .pill.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .ticker{display:flex;align-items:stretch;border-bottom:1px solid var(--rule);background:var(--wash);overflow:hidden;font-size:12.5px}
+  .ticker[hidden]{display:none}
+  .tk-lab{flex:none;background:var(--ink);color:#fff;font-size:10px;font-weight:700;letter-spacing:.14em;padding:9px 14px;display:flex;align-items:center}
+  .tk-track{overflow:hidden;flex:1;display:flex;align-items:center;-webkit-mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(90deg,transparent,#000 24px,#000 calc(100% - 24px),transparent)}
+  .tk-run{display:inline-flex;white-space:nowrap;animation:tk var(--tk-dur,120s) linear infinite}
+  .tk-track:hover .tk-run,.tk-track:focus-within .tk-run{animation-play-state:paused}
+  .tk-run a{color:var(--ink);text-decoration:none;padding:9px 0}
+  .tk-run a:hover{text-decoration:underline}
+  .tk-run .src{color:var(--grey-light);margin-left:6px}
+  .tk-run .dot{color:var(--grey-light);margin:0 18px;padding:9px 0}
+  @keyframes tk{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  @media(prefers-reduced-motion:reduce){.tk-run{animation:none}.tk-track{overflow-x:auto}}
   .why ol{list-style:none;margin:18px 0 0;display:grid;gap:14px}
   .why li{display:grid;grid-template-columns:28px 1fr;gap:12px;font-size:14.5px;line-height:1.6}
   .why .n{width:24px;height:24px;border-radius:50%;background:var(--wash);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:2px}
   .tag{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:99px;margin-right:8px;vertical-align:1px}
   .tag.fact{background:#e8f1d6;color:var(--green-deep)}.tag.reason{background:#fdf0d5;color:#8a5a00}
   .why .ev{display:block;font-size:12px;color:var(--grey);margin-top:3px}
-  .why .ev a,.nlist a{color:inherit}
-  .nlist{list-style:none;display:grid;gap:0;margin-top:6px}
-  .nlist li{padding:11px 0;border-bottom:1px solid var(--rule);font-size:14px;line-height:1.45}
-  .nlist .m{font-size:11.5px;color:var(--grey-light);margin-top:2px}
+  .why .ev a{color:inherit}
   .mvgrid{display:grid;grid-template-columns:1fr 1fr;gap:36px}
   .mvgrid .scroll table{min-width:0}
   .mvgrid td,.mvgrid th{padding-left:12px}
@@ -198,24 +200,10 @@
   </div>
 </header>
 
-<nav class="wrap newsbar" aria-label="News and resources">
-  <span class="lab">News</span>
-  <a class="pill" href="#whyWrap" data-jump>Why the market moved ↓</a>
-  <a class="pill" href="#newsWrap" data-jump>Headlines ↓</a>
-  <span class="sep"></span>
-  <span class="lab">Stock market</span>
-  <a class="pill" target="_blank" rel="noopener noreferrer" href="https://economictimes.indiatimes.com/markets">ET Markets ↗</a>
-  <a class="pill" target="_blank" rel="noopener noreferrer" href="https://www.moneycontrol.com/news/business/markets/">Moneycontrol ↗</a>
-  <a class="pill" target="_blank" rel="noopener noreferrer" href="https://www.livemint.com/market">Mint ↗</a>
-  <a class="pill" target="_blank" rel="noopener noreferrer" href="https://www.business-standard.com/markets">Business Standard ↗</a>
-  <a class="pill" target="_blank" rel="noopener noreferrer" href="https://www.nseindia.com/">NSE ↗</a>
-  <span class="sep"></span>
-  <span class="lab">Mutual funds</span>
-  <a class="pill" target="_blank" rel="noopener noreferrer" href="https://economictimes.indiatimes.com/mf">ET Mutual Funds ↗</a>
-  <a class="pill" target="_blank" rel="noopener noreferrer" href="https://www.moneycontrol.com/mutual-funds/">Moneycontrol MF ↗</a>
-  <a class="pill" target="_blank" rel="noopener noreferrer" href="https://www.valueresearchonline.com/news/">Value Research ↗</a>
-  <a class="pill" target="_blank" rel="noopener noreferrer" href="https://www.amfiindia.com/">AMFI ↗</a>
-</nav>
+<div class="ticker" id="ticker" hidden aria-label="Latest market and mutual fund headlines">
+  <span class="tk-lab">NEWS</span>
+  <div class="tk-track"><div class="tk-run" id="tkRun"></div></div>
+</div>
 
 <main class="wrap">
 
@@ -277,13 +265,6 @@
       <div><div class="sub2" style="margin-bottom:6px">LAGGARDS</div><div class="scroll"><table><thead><tr><th>Stock</th><th>Move</th><th>Your exposure</th><th>Impact</th></tr></thead><tbody id="mvDown"></tbody></table></div></div>
     </div>
     <p class="sub2" style="margin-top:12px">What already moved in that session, not a prediction of which stocks will rise. Exposure is your money in the stock across all funds (fund value × its weight in the fund's latest disclosed holdings).</p>
-  </section>
-
-  <section id="newsWrap" hidden>
-    <h2>Latest headlines <span id="newsNote"></span></h2>
-    <div style="display:flex;gap:8px;margin:0 0 12px"><button class="pill on" data-tab="market">Stock market</button><button class="pill" data-tab="funds">Mutual funds</button></div>
-    <ul class="nlist" id="newsList"></ul>
-    <p class="sub2" style="margin-top:12px">Headlines link to the publishers' own pages. Sources: Economic Times, Mint and Google News feeds.</p>
   </section>
 
   <section id="compareWrap" hidden>
@@ -380,7 +361,7 @@ const DEMO = {
   ]
 };
 
-let CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, NEWS_TAB = "market", timer = null;
+let CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, timer = null;
 
 const $ = id => document.getElementById(id);
 const inr = n => "₹" + Math.round(Math.abs(n)).toLocaleString("en-IN");
@@ -830,38 +811,40 @@ function renderWhy() {
   wrap.hidden = false;
   $("whyTitle").innerHTML = w.title + ' <span>' + w.session + "</span>";
   const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  const SHOW = 5, more = w.points.length - SHOW;
+  const item = (p, i) => '<li' + (i >= SHOW ? ' class="whymore" hidden' : "") + '><span class="n">' + (i + 1) + "</span><div><span class=\"tag " + p.kind + "\">" +
+    (p.kind === "fact" ? "From your data" : "In the news") + "</span>" + esc(p.text) +
+    (p.evidence || []).slice(0, 1).map(e => '<span class="ev">↳ <a href="' + e.link + '" target="_blank" rel="noopener noreferrer">' + esc(e.title) +
+      "</a> — " + esc(e.source) + "</span>").join("") + "</div></li>";
   $("whyBody").innerHTML = '<div class="hbanner" style="margin-top:14px"><span>' + esc(w.summary) + "</span></div><ol>" +
-    w.points.map((p, i) => '<li><span class="n">' + (i + 1) + "</span><div><span class=\"tag " + p.kind + "\">" +
-      (p.kind === "fact" ? "From your data" : "In the news") + "</span>" + esc(p.text) +
-      (p.evidence || []).map(e => '<span class="ev">↳ <a href="' + e.link + '" target="_blank" rel="noopener noreferrer">' + esc(e.title) +
-        "</a> — " + esc(e.source) + "</span>").join("") + "</div></li>").join("") + "</ol>" +
-    ((w.reads || []).length ? '<p class="sub2" style="margin-top:16px">Want the full story? ' + w.reads.map(e =>
-      '<a href="' + e.link + '" target="_blank" rel="noopener noreferrer">' + esc(e.title) + "</a> (" + esc(e.source) + ")").join(" · ") + "</p>" : "");
+    w.points.map(item).join("") + "</ol>" +
+    (more > 0 ? '<button class="ghost" id="whyToggle" style="margin-top:14px">Show ' + more + " more</button>" : "");
+  const t = $("whyToggle");
+  if (t) t.onclick = () => {
+    const open = t.dataset.open !== "1";
+    wrap.querySelectorAll(".whymore").forEach(li => li.hidden = !open);
+    t.dataset.open = open ? "1" : "0"; t.textContent = open ? "Show fewer" : "Show " + more + " more";
+  };
 }
 
-function renderNews() {
-  const rows = NEWS && NEWS[NEWS_TAB], wrap = $("newsWrap");
-  if (!NEWS || !(NEWS.market || []).length && !(NEWS.funds || []).length) { wrap.hidden = true; return; }
-  wrap.hidden = false;
-  const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;");
-  const ago = iso => { const m = ageMinutes(iso); return m == null ? "" : m < 60 ? m + " min ago" : m < 1440 ? Math.round(m / 60) + " h ago" : Math.round(m / 1440) + " d ago"; };
-  $("newsList").innerHTML = (rows || []).slice(0, 15).map(r => '<li><a href="' + r.link + '" target="_blank" rel="noopener noreferrer">' +
-    esc(r.title) + '</a><div class="m">' + esc(r.source) + " · " + ago(r.published) + "</div></li>").join("") ||
-    '<li class="sub2">No recent headlines.</li>';
-  document.querySelectorAll("[data-tab]").forEach(b => b.classList.toggle("on", b.dataset.tab === NEWS_TAB));
+function renderTicker() {
+  const bar = $("ticker");
+  const rows = NEWS ? (NEWS.market || []).slice(0, 10).concat((NEWS.funds || []).slice(0, 5))
+    .sort((a, b) => b.published.localeCompare(a.published)) : [];
+  if (!rows.length) { bar.hidden = true; return; }
+  bar.hidden = false;
+  const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+  const one = rows.map(r => '<a href="' + esc(r.link) + '" target="_blank" rel="noopener noreferrer">' + esc(r.title) +
+    '<span class="src">' + esc(r.source) + '</span></a><span class="dot">•</span>').join("");
+  const run = $("tkRun");
+  run.innerHTML = one + one;
+  run.style.setProperty("--tk-dur", Math.max(60, rows.length * 9) + "s");
 }
 
 async function loadNews() {
   NEWS = await fetch("data/news.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => NEWS);
-  renderWhy(); renderNews();
+  renderWhy(); renderTicker();
 }
-
-document.querySelectorAll("[data-tab]").forEach(b => b.addEventListener("click", () => { NEWS_TAB = b.dataset.tab; renderNews(); }));
-document.querySelectorAll("[data-jump]").forEach(a => a.addEventListener("click", e => {
-  e.preventDefault();               // keep the URL hash: price-source settings live there
-  const el = document.querySelector(a.getAttribute("href"));
-  if (el && !el.hidden) el.scrollIntoView({ behavior: "smooth", block: "start" });
-}));
 
 // Top movers: per-session gainers/laggards ranked by rupee impact on your money.
 // Days come from data/movers.json (one record per trading day, written after the

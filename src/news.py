@@ -39,11 +39,6 @@ MARKET_FEEDS = [
     ("Mint", "https://www.livemint.com/rss/markets"),
     ("Google News", GN + "Sensex+Nifty+today"),
 ]
-FUND_FEEDS = [
-    ("Economic Times", "https://economictimes.indiatimes.com/mf/rssfeeds/359241701.cms"),
-    ("Google News", GN + "mutual+fund+India"),
-    ("Google News", GN + "SIP+mutual+fund+NAV+SEBI"),
-]
 MAX_AGE_HOURS = 72
 KEEP = 30
 
@@ -333,20 +328,19 @@ def build_why(latest, movers_hist, headlines, now) -> dict | None:
 def main() -> None:
     now = dt.datetime.now(dt.timezone.utc)
     market = collect(MARKET_FEEDS, now)
-    funds = collect(FUND_FEEDS, now)
-    if not market and not funds:
+    if not market:
         print("[warn] every news feed failed; leaving the previous news.json in place", file=sys.stderr)
         return
 
     why = build_why(read_json("latest.json", None), read_json("movers.json", []), market, now)
-    body = {"market": public(market), "funds": public(funds), "why": why}
+    body = {"market": public(market), "why": why}
 
     old = read_json("news.json", {})
     if {k: old.get(k) for k in body} == body:
         print("[info] news unchanged")
         return
     write_json("news.json", {"generated_at": now_ist().isoformat(), **body})
-    print(f"[ok] news.json — {len(market)} market, {len(funds)} fund headlines; "
+    print(f"[ok] news.json — {len(market)} market headlines; "
           f"why: {why['direction'] if why else None}, {len(why['points']) if why else 0} points")
 
 

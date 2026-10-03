@@ -110,6 +110,8 @@
   @keyframes blink{50%{opacity:.25}}
   .tk-track{flex:1;overflow-x:auto;overflow-y:hidden;white-space:nowrap;display:flex;align-items:center;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:grab}
   .tk-track::-webkit-scrollbar{display:none}
+  .tk-btn{flex:none;background:#0c0f14;color:#aab2c0;border:0;border-left:1px solid #2a303a;padding:0 14px;font-size:11px;cursor:pointer}
+  .tk-btn:hover,.tk-btn:focus-visible{color:#fff;outline:none}
   .tk-run{display:inline-flex;align-items:center;white-space:nowrap}
   .tk-run>*{flex:none}
   .tk-idx{display:inline-flex;align-items:baseline;gap:8px;padding:11px 0}
@@ -209,7 +211,8 @@
 
 <div class="ticker" id="ticker" hidden aria-label="Market indices and latest headlines">
   <span class="tk-lab" id="tkLab"><i></i>LIVE</span>
-  <div class="tk-track" id="tkTrack" tabindex="0"><div class="tk-run" id="tkRun"></div></div>
+  <div class="tk-track" id="tkTrack"><div class="tk-run" id="tkRun"></div></div>
+  <button class="tk-btn" id="tkBtn" aria-label="Pause news ticker">❚❚</button>
 </div>
 
 <main class="wrap">
@@ -837,7 +840,7 @@ function renderWhy() {
 // It is a normal horizontally scrollable strip with an animation loop on top, so
 // you can also drag, swipe or wheel it; the loop pauses while you do and resumes
 // on its own. The content is rendered twice so the wrap-around is seamless.
-let TK = { pos: 0, paused: false, resume: null, started: false, html: "" };
+let TK = { pos: 0, paused: false, off: false, resume: null, started: false, html: "" };
 function renderTicker() {
   const bar = $("ticker"), track = $("tkTrack"), run = $("tkRun");
   const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
@@ -864,16 +867,20 @@ function renderTicker() {
 
 function startTicker(track) {
   TK.started = true;
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;   // stays a manual, scrollable strip
   const pause = () => { TK.paused = true; clearTimeout(TK.resume); };
-  const later = ms => { clearTimeout(TK.resume); TK.resume = setTimeout(() => { TK.paused = false; TK.pos = track.scrollLeft; }, ms); };
-  track.addEventListener("mouseenter", pause);
-  track.addEventListener("mouseleave", () => later(600));
+  const later = ms => { clearTimeout(TK.resume); TK.resume = setTimeout(() => { if (!TK.off) { TK.paused = false; TK.pos = track.scrollLeft; } }, ms); };
+  $("tkBtn").addEventListener("click", () => {      // explicit pause/play for anyone who wants the strip still
+    TK.off = !TK.off; TK.paused = TK.off; clearTimeout(TK.resume); TK.pos = track.scrollLeft;
+    $("tkBtn").textContent = TK.off ? "▶" : "❚❚";
+    $("tkBtn").setAttribute("aria-label", TK.off ? "Play news ticker" : "Pause news ticker");
+  });
+  // Only pause while the pointer is on a headline (so it can be clicked), not
+  // whenever the mouse happens to rest somewhere over the strip.
+  track.addEventListener("mouseover", e => { if (e.target.closest("a")) pause(); });
+  track.addEventListener("mouseout", e => { if (e.target.closest("a")) later(400); });
   track.addEventListener("touchstart", pause, { passive: true });
   track.addEventListener("touchend", () => later(3000));
   track.addEventListener("wheel", () => { pause(); later(2500); }, { passive: true });
-  track.addEventListener("focusin", pause);
-  track.addEventListener("focusout", () => later(600));
   track.addEventListener("scroll", () => {       // manual scrolling also wraps seamlessly
     const half = track.scrollWidth / 2;
     if (half > 0 && TK.paused) {

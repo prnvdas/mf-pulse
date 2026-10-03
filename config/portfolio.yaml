@@ -42,9 +42,9 @@ funds:
     groww_slug: mirae-asset-large-midcap-fund-direct-growth
     analytics_benchmark:
       name: Nifty LargeMidcap 250
-      note: 50/50 blend of the Nifty 100 and Nifty Midcap 150 ETFs (price return), the index's own large/mid split
-      returns: [{ticker: "HDFCNIF100.NS", weight: 0.5}, {ticker: "HDFCMID150.NS", weight: 0.5}]
-      pe: [{ticker: "HDFCNIF100.NS", weight: 0.5}, {ticker: "HDFCMID150.NS", weight: 0.5}]
+      note: approx. 70/30 blend of the Nifty 100 and Nifty Midcap 150 ETFs (the index is Nifty 100 + Midcap 150, roughly 70% large-cap by weight); price return
+      returns: [{ticker: "HDFCNIF100.NS", weight: 0.7}, {ticker: "HDFCMID150.NS", weight: 0.3}]
+      pe: [{ticker: "HDFCNIF100.NS", weight: 0.7}, {ticker: "HDFCMID150.NS", weight: 0.3}]
     units: null
     seed_value: 4959000    # synced from IndMoney 2026-10-03
     seed_invested: 4075000 # synced from IndMoney 2026-10-03

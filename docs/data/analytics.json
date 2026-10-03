@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-03T22:42:21.110913+05:30",
+  "generated_at": "2026-10-03T22:45:13.593120+05:30",
   "risk_free_pct": 6.5,
   "funds": [
     {
@@ -50,6 +50,9 @@
         "fund_pe": 29.9,
         "fund_pe_cover_pct": 97.0,
         "fund_pb": 4.0,
+        "fund_pe_ex_extreme": 27.3,
+        "extreme_count": 11,
+        "extreme_weight_pct": 8.8,
         "bench_pe": 25.0
       },
       "history_days": 727,
@@ -60,7 +63,7 @@
       "name": "Mirae Asset Large & Midcap Fund Direct Growth",
       "benchmark": {
         "name": "Nifty LargeMidcap 250",
-        "note": "50/50 blend of the Nifty 100 and Nifty Midcap 150 ETFs (price return), the index's own large/mid split"
+        "note": "approx. 70/30 blend of the Nifty 100 and Nifty Midcap 150 ETFs (the index is Nifty 100 + Midcap 150, roughly 70% large-cap by weight); price return"
       },
       "mine": {
         "invested": 4075000.0,
@@ -70,40 +73,43 @@
       "returns": {
         "1M": {
           "fund": -6.92,
-          "bench": -5.82,
-          "diff": -1.1
+          "bench": -5.41,
+          "diff": -1.51
         },
         "3M": {
           "fund": -5.73,
-          "bench": -5.03,
-          "diff": -0.7
+          "bench": -4.93,
+          "diff": -0.8
         },
         "6M": {
           "fund": 6.76,
-          "bench": 5.91,
-          "diff": 0.85
+          "bench": 4.44,
+          "diff": 2.32
         },
         "1Y": {
           "fund": -1.0,
-          "bench": -1.64,
-          "diff": 0.64
+          "bench": -3.27,
+          "diff": 2.27
         }
       },
       "risk": {
         "window_days": 363,
-        "beta": 0.9,
-        "alpha_pct": -0.16,
+        "beta": 0.85,
+        "alpha_pct": 0.72,
         "vol_pct": 14.6,
         "bench_vol_pct": 14.5,
         "sharpe": -0.47,
         "max_drawdown_pct": -14.4,
-        "bench_max_drawdown_pct": -14.3
+        "bench_max_drawdown_pct": -14.5
       },
       "valuation": {
         "fund_pe": 25.4,
         "fund_pe_cover_pct": 96.0,
         "fund_pb": 3.1,
-        "bench_pe": 22.2
+        "fund_pe_ex_extreme": 23.6,
+        "extreme_count": 6,
+        "extreme_weight_pct": 7.6,
+        "bench_pe": 20.9
       },
       "history_days": 576,
       "as_of": "2026-10-01"
@@ -156,6 +162,9 @@
         "fund_pe": 17.9,
         "fund_pe_cover_pct": 100.0,
         "fund_pb": 2.6,
+        "fund_pe_ex_extreme": 17.4,
+        "extreme_count": 9,
+        "extreme_weight_pct": 2.8,
         "bench_pe": 20.6
       },
       "history_days": 349,

@@ -233,6 +233,12 @@ def main() -> None:
             hs = holdings[fid]
             fpe, fcover = weighted_multiple(
                 [(float(h["weight_pct"]), (funda.get(h["ticker"]) or {}).get("pe")) for h in hs])
+            # stocks with a P/E above 100 (one-off or depressed earnings) can move the fund
+            # figure by a couple of points on their own, so report it both ways
+            fpe_core, _ = weighted_multiple(
+                [(float(h["weight_pct"]), (funda.get(h["ticker"]) or {}).get("pe")) for h in hs], hi=100.0)
+            extreme = [(float(h["weight_pct"])) for h in hs
+                       if (funda.get(h["ticker"]) or {}).get("pe") and 100 < funda[h["ticker"]]["pe"] < 500]
             fpb, _ = weighted_multiple(
                 [(float(h["weight_pct"]), (funda.get(h["ticker"]) or {}).get("pb")) for h in hs],
                 hi=100.0)
@@ -240,7 +246,8 @@ def main() -> None:
                 [(float(p["weight"]), (funda.get(p["ticker"]) or {}).get("pe"))
                  for p in ab.get("pe", [])])
             out["valuation"] = {"fund_pe": fpe, "fund_pe_cover_pct": fcover, "fund_pb": fpb,
-                                "bench_pe": bpe}
+                                "fund_pe_ex_extreme": fpe_core, "extreme_count": len(extreme),
+                                "extreme_weight_pct": round(sum(extreme), 1), "bench_pe": bpe}
         except Exception as exc:  # noqa: BLE001
             print(f"[warn] {fid}: valuation failed: {exc}", file=sys.stderr)
 

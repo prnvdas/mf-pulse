@@ -34,6 +34,12 @@ jobs:
       # by the monthly holdings.yml run. Without this, config.json silently
       # drifts stale against state.json every night in between.
       - run: python src/export_web.py
+      # Fund-vs-benchmark analytics (beta, alpha, P/E...). Non-blocking: it leans
+      # on two third-party APIs, and a hiccup there must never hold up the
+      # NAV reconciliation above it.
+      - name: Fund analytics
+        continue-on-error: true
+        run: python src/analytics.py
       - name: Commit reconciliation
         run: |
           git config user.name  "mf-pulse"

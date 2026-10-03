@@ -25,6 +25,11 @@ funds:
     ter_annual_pct: 0.55       # direct plan TER
     benchmark_ticker: "HDFCSML250.NS" # Nifty Smallcap 250 ETF (Axis small cap benchmark); Yahoo ^CNXSC stopped updating
     groww_slug: axis-small-cap-fund-direct-growth
+    analytics_benchmark:
+      name: Nifty Smallcap 250
+      note: price-return proxy via the HDFC Nifty Smallcap 250 ETF
+      returns: [{ticker: "HDFCSML250.NS", weight: 1.0}]
+      pe: [{ticker: "HDFCSML250.NS", weight: 1.0}]
     units: null
     seed_value: 5312000    # synced from IndMoney 2026-10-03
     seed_invested: 4125000 # synced from IndMoney 2026-10-03
@@ -35,6 +40,11 @@ funds:
     ter_annual_pct: 0.49
     benchmark_ticker: "^NSEMDCP50"
     groww_slug: mirae-asset-large-midcap-fund-direct-growth
+    analytics_benchmark:
+      name: Nifty LargeMidcap 250
+      note: 50/50 blend of the Nifty 100 and Nifty Midcap 150 ETFs (price return), the index's own large/mid split
+      returns: [{ticker: "HDFCNIF100.NS", weight: 0.5}, {ticker: "HDFCMID150.NS", weight: 0.5}]
+      pe: [{ticker: "HDFCNIF100.NS", weight: 0.5}, {ticker: "HDFCMID150.NS", weight: 0.5}]
     units: null
     seed_value: 4959000    # synced from IndMoney 2026-10-03
     seed_invested: 4075000 # synced from IndMoney 2026-10-03
@@ -45,6 +55,11 @@ funds:
     ter_annual_pct: 0.50
     benchmark_ticker: "^CRSLDX" # Nifty 500
     groww_slug: jioblackrock-flexi-cap-fund-direct-growth
+    analytics_benchmark:
+      name: Nifty 500
+      note: index level (price return); benchmark P/E is approximated from a 75/15/10 large/mid/small ETF mix
+      returns: [{ticker: "^CRSLDX", weight: 1.0}]
+      pe: [{ticker: "HDFCNIF100.NS", weight: 0.75}, {ticker: "HDFCMID150.NS", weight: 0.15}, {ticker: "HDFCSML250.NS", weight: 0.10}]
     units: null
     seed_value: 179820    # synced from IndMoney 2026-10-03
     seed_invested: 187000 # synced from IndMoney 2026-10-03
@@ -85,3 +100,8 @@ estimator:
 projection:
   scenarios_pct: [12, 15, 18, 22]
   horizons_years: [1, 3, 5, 7, 10, 15, 20, 25]
+
+# Used by the fund-vs-benchmark analytics (alpha, Sharpe). India's ~10-year
+# government bond yield is a common stand-in for the risk-free rate.
+analytics:
+  risk_free_pct: 6.5

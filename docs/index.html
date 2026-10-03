@@ -236,9 +236,9 @@
     <p class="sub2" style="margin-top:12px">What already moved in that session, not a prediction of which stocks will rise. Exposure is your money in the stock across all funds (fund value × its weight in the fund's latest disclosed holdings).</p>
   </section>
 
-  <section id="healthWrap" hidden>
-    <h2>Portfolio health <span>Current market trend, checked against each fund's benchmark and holdings</span></h2>
-    <div id="healthBody"></div>
+  <section id="compareWrap" hidden>
+    <h2>How your funds compare <span>Each fund against its own benchmark, in plain terms</span></h2>
+    <div id="compareBody"></div>
   </section>
 
   <section>
@@ -330,7 +330,7 @@ const DEMO = {
   ]
 };
 
-let CFG = null, ACC = { samples: 0 }, HIST = [], HEALTH = null, MOVERS = [], timer = null;
+let CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], timer = null;
 
 const $ = id => document.getElementById(id);
 const inr = n => "₹" + Math.round(Math.abs(n)).toLocaleString("en-IN");
@@ -799,37 +799,80 @@ function setupMoversPicker(latestMovers) {
   if (sel.options.length) show(); else renderMovers(null);
 }
 
-// Rule-based health checks written by estimate.py into latest.json. Each flag
-// carries the numbers behind it -- this is deliberately not a score.
-function renderHealth() {
-  const wrap = $("healthWrap");
-  if (!HEALTH || !HEALTH.funds) { wrap.hidden = true; return; }
+// Fund vs benchmark, from data/analytics.json (analytics.py, nightly): returns,
+// beta, alpha, volatility, Sharpe, drawdown and weighted P/E, each with a
+// plain-language reading so the numbers explain themselves.
+function renderCompare() {
+  const wrap = $("compareWrap");
+  if (!ANALYTICS || !(ANALYTICS.funds || []).length) { wrap.hidden = true; return; }
   wrap.hidden = false;
   const short = n => n.replace(" Direct Growth", "").replace(" Fund", "");
-  const s = HEALTH.value_share_pct || {};
-  const msg = {
-    healthy: "No warning signs in the current data.",
-    watch: Math.round((s.watch || 0) + (s.caution || 0)) + "% of your money sits in funds with at least one warning sign.",
-    caution: Math.round(s.caution || 0) + "% of your money sits in funds showing serious warning signs."
-  }[HEALTH.overall];
-  const pctCell = v => v == null ? "—" : '<span class="' + (v >= 0 ? "pos" : "neg") + '">' + pc(v, 1) + "</span>";
+  const sg = (v, d = 1) => v == null ? "—" : (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d) + "%";
+  const cls = v => v == null ? "" : v >= 0 ? "pos" : "neg";
 
-  $("healthBody").innerHTML = '<div class="hbanner"><span class="chip ' + HEALTH.overall + '">' + HEALTH.overall + "</span><span>" + msg + "</span></div>" +
-    '<div class="hcards">' + HEALTH.funds.map(f => {
-      const t = f.trend;
-      return '<div class="hcard"><h3><span>' + short(f.name) + '<br><span class="sub2">' + inr(f.value) + '</span></span><span class="chip ' + f.status + '">' + f.status + "</span></h3><dl>" +
-        "<dt>Benchmark 1 week</dt><dd>" + pctCell(t && t.w1) + "</dd>" +
-        "<dt>Benchmark 1 month</dt><dd>" + pctCell(t && t.m1) + "</dd>" +
-        "<dt>Benchmark 3 months</dt><dd>" + pctCell(t && t.m3) + "</dd>" +
-        "<dt>From 3-month high</dt><dd>" + pctCell(t && t.drawdown_pct) + "</dd>" +
-        "<dt>Holdings up over 5 days</dt><dd>" + (f.breadth_pct == null ? "—" : f.breadth_pct.toFixed(0) + "%") + "</dd>" +
-        "<dt>Top 10 holdings</dt><dd>" + f.top10_pct.toFixed(0) + "%</dd>" +
-        "<dt>Cash</dt><dd>" + f.cash_pct.toFixed(1) + "%</dd>" +
-        "<dt>Holdings data age</dt><dd>" + (f.holdings_age_days == null ? "—" : f.holdings_age_days + " days") + "</dd></dl>" +
-        (f.flags.length ? "<ul>" + f.flags.map(x => "<li>" + x.text + "</li>").join("") + "</ul>"
-                        : '<p class="sub2">No warning signs.</p>') + "</div>";
-    }).join("") + "</div>" +
-    '<p class="sub2" style="margin-top:12px">Rule-based checks on market data (benchmark trend, how many holdings are rising, concentration, data freshness) — a read on conditions, not a rating of the fund or advice to buy or sell.</p>';
+  // headline: how many funds beat their benchmark over the longest window each has
+  const gaps = ANALYTICS.funds.map(f => {
+    const r = f.returns || {};
+    const k = ["1Y", "6M", "3M", "1M"].find(x => r[x] && r[x].diff != null);
+    return k ? { f, k, d: r[k].diff } : null;
+  }).filter(Boolean);
+  const beating = gaps.filter(g => g.d > 0).length;
+  const head = gaps.length
+    ? "<b>" + beating + " of " + gaps.length + "</b> funds are ahead of their benchmark over the longest period we can measure" +
+      (beating < gaps.length ? "; the others are behind." : ".")
+    : "Benchmark comparison needs a little more history.";
+
+  const cards = ANALYTICS.funds.map(f => {
+    const r = f.returns, k = f.risk, v = f.valuation, m = f.mine || {};
+    const bn = f.benchmark && f.benchmark.name || "benchmark";
+    const row = (label, key) => {
+      const x = r && r[key];
+      return "<tr><td>" + label + "</td><td>" + (x && x.fund != null ? sg(x.fund) : "—") + "</td><td>" +
+        (x && x.bench != null ? sg(x.bench) : "—") + '</td><td class="' + cls(x && x.diff) + '">' +
+        (x && x.diff != null ? sg(x.diff) : "—") + "</td></tr>";
+    };
+    const stat = (name, val, note) => "<dt>" + name + '<br><span class="sub2">' + note + "</span></dt><dd>" + val + "</dd>";
+
+    let stats = "";
+    if (k) {
+      const b = k.beta;
+      stats += stat("Beta", b.toFixed(2),
+        Math.abs(b - 1) <= 0.1 ? "moves in line with " + bn
+        : b < 1 ? "swings " + Math.round((1 - b) * 100) + "% less than " + bn
+                : "swings " + Math.round((b - 1) * 100) + "% more than " + bn);
+      const a = k.alpha_pct;
+      stats += stat("Alpha", sg(a) + "/yr",
+        Math.abs(a) < 1 ? "about what its risk explains"
+        : a > 0 ? "earned " + a.toFixed(1) + "% a year more than its risk explains"
+                : "earned " + Math.abs(a).toFixed(1) + "% a year less than its risk explains");
+      stats += stat("Volatility", k.vol_pct.toFixed(0) + "% vs " + k.bench_vol_pct.toFixed(0) + "%", "how bumpy the ride has been");
+      stats += stat("Sharpe ratio", k.sharpe.toFixed(2), k.sharpe >= 1 ? "good return for the risk taken" : k.sharpe >= 0.5 ? "fair return for the risk taken" : "weak return for the risk taken");
+      stats += stat("Worst fall", sg(k.max_drawdown_pct, 0) + " vs " + sg(k.bench_max_drawdown_pct, 0), "deepest drop from a peak, past ~" + Math.round(k.window_days / 30) + " months");
+    }
+    if (v && v.fund_pe != null) {
+      const prem = v.bench_pe ? (v.fund_pe / v.bench_pe - 1) * 100 : null;
+      stats += stat("P/E", v.fund_pe.toFixed(1) + (v.bench_pe ? " vs " + v.bench_pe.toFixed(1) : ""),
+        prem == null ? "price paid per ₹1 of earnings" :
+        Math.abs(prem) <= 10 ? "priced about like " + bn
+        : prem > 0 ? "holdings cost " + Math.round(prem) + "% more per ₹ of earnings than " + bn
+                   : "holdings cost " + Math.round(-prem) + "% less per ₹ of earnings than " + bn);
+      if (v.fund_pb != null) stats += stat("P/B", v.fund_pb.toFixed(1), "price relative to book value");
+    }
+
+    const note = f.history_days != null && f.history_days < 400
+      ? '<p class="sub2" style="margin-top:8px">Only ' + Math.round(f.history_days / 30) + ' months of history so far, so longer periods and the risk figures rest on less data.</p>' : "";
+    return '<div class="hcard"><h3><span>' + short(f.name) + '<br><span class="sub2">vs ' + bn + "</span></span></h3>" +
+      '<p style="margin:0 0 12px">You: <b>' + (m.invested ? inr(m.invested) : "—") + "</b> → <b>" + (m.value ? inr(m.value) : "—") +
+      '</b> <span class="' + cls(m.gain_pct) + '">' + sg(m.gain_pct) + "</span></p>" +
+      '<table><thead><tr><th>Return</th><th>Fund</th><th>Bench.</th><th>Gap</th></tr></thead><tbody>' +
+      row("1 month", "1M") + row("3 months", "3M") + row("6 months", "6M") + row("1 year", "1Y") + "</tbody></table>" +
+      (stats ? "<dl>" + stats + "</dl>" : '<p class="sub2">Risk figures need more history.</p>') + note + "</div>";
+  }).join("");
+
+  $("compareBody").innerHTML = '<div class="hbanner"><span>' + head + "</span></div>" +
+    '<div class="hcards">' + cards + "</div>" +
+    '<p class="sub2" style="margin-top:12px">Benchmarks are price-return proxies (index levels or ETFs), which leave out dividends — roughly 1% a year — so gaps and alpha look about that much better than against a total-return index. Alpha and beta use the last year of daily returns and a ' +
+    (ANALYTICS.risk_free_pct || 6.5) + '% risk-free rate. P/E is each fund\'s holdings weighted by size, excluding loss-making companies. Past performance, not advice.</p>';
 }
 
 // Day-by-day predicted-vs-published breakdown behind the summary cards above.
@@ -985,7 +1028,6 @@ async function applyBatch() {
   const a = adaptLatest(latest);
   render(a.funds, { priced: a.priced, requested: a.total || a.priced,
     blend: "estimate.py, " + a.resolved + "/" + a.total + " tickers" });
-  HEALTH = a.health || null; renderHealth();
   renderMarket(a.market);
   setupMoversPicker(a.movers);
   stampBatch(a);
@@ -1192,6 +1234,9 @@ function adaptLatest(d) {
     .then(r => r.ok ? r.json() : Promise.reject()).catch(() => ({ samples: 0 }));
   HIST = await fetch("data/history.json", { cache: "no-store" })
     .then(r => r.ok ? r.json() : Promise.reject()).catch(() => []);
+  ANALYTICS = await fetch("data/analytics.json", { cache: "no-store" })
+    .then(r => r.ok ? r.json() : null).catch(() => null);
+  renderCompare();
   renderHistoryTable();
   renderHitMiss();
 
@@ -1202,10 +1247,8 @@ function adaptLatest(d) {
     const a = adaptLatest(latest);
     render(a.funds, { priced: a.priced, requested: a.total || a.priced,
       blend: "estimate.py, " + a.resolved + "/" + a.total + " tickers" });
-    HEALTH = a.health || null;
     MOVERS = await fetch("data/movers.json", { cache: "no-store" }).then(r => r.ok ? r.json() : []).catch(() => []);
     setupMoversPicker(latest.movers);
-    renderHealth();
     renderMarket(a.market);
     stampBatch(a);
     if (marketOpen() && $("auto").getAttribute("aria-pressed") !== "true") $("auto").click();

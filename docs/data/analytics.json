@@ -1,0 +1,165 @@
+{
+  "generated_at": "2026-10-03T20:59:05.674715+05:30",
+  "risk_free_pct": 6.5,
+  "funds": [
+    {
+      "id": "axis-small-cap",
+      "name": "Axis Small Cap Fund Direct Growth",
+      "benchmark": {
+        "name": "Nifty Smallcap 250",
+        "note": "price-return proxy via the HDFC Nifty Smallcap 250 ETF"
+      },
+      "mine": {
+        "invested": 4125000.0,
+        "value": 5312000,
+        "gain_pct": 28.78
+      },
+      "returns": {
+        "1M": {
+          "fund": -3.8,
+          "bench": -4.22,
+          "diff": 0.42
+        },
+        "3M": {
+          "fund": 0.39,
+          "bench": -1.59,
+          "diff": 1.98
+        },
+        "6M": {
+          "fund": 19.87,
+          "bench": 19.78,
+          "diff": 0.09
+        },
+        "1Y": {
+          "fund": 8.99,
+          "bench": 4.66,
+          "diff": 4.33
+        }
+      },
+      "risk": {
+        "window_days": 363,
+        "beta": 0.83,
+        "alpha_pct": 4.18,
+        "vol_pct": 15.2,
+        "bench_vol_pct": 17.5,
+        "sharpe": 0.22,
+        "max_drawdown_pct": -14.7,
+        "bench_max_drawdown_pct": -18.1
+      },
+      "valuation": {
+        "fund_pe": 29.9,
+        "fund_pe_cover_pct": 97.0,
+        "fund_pb": 4.0,
+        "bench_pe": 25.0
+      },
+      "history_days": 727,
+      "as_of": "2026-10-01"
+    },
+    {
+      "id": "mirae-large-midcap",
+      "name": "Mirae Asset Large & Midcap Fund Direct Growth",
+      "benchmark": {
+        "name": "Nifty LargeMidcap 250",
+        "note": "50/50 blend of the Nifty 100 and Nifty Midcap 150 ETFs (price return), the index's own large/mid split"
+      },
+      "mine": {
+        "invested": 4075000.0,
+        "value": 4959000,
+        "gain_pct": 21.69
+      },
+      "returns": {
+        "1M": {
+          "fund": -6.92,
+          "bench": -5.82,
+          "diff": -1.1
+        },
+        "3M": {
+          "fund": -5.73,
+          "bench": -5.03,
+          "diff": -0.7
+        },
+        "6M": {
+          "fund": 6.76,
+          "bench": 5.91,
+          "diff": 0.85
+        },
+        "1Y": {
+          "fund": -1.0,
+          "bench": -1.64,
+          "diff": 0.64
+        }
+      },
+      "risk": {
+        "window_days": 363,
+        "beta": 0.9,
+        "alpha_pct": -0.16,
+        "vol_pct": 14.6,
+        "bench_vol_pct": 14.5,
+        "sharpe": -0.47,
+        "max_drawdown_pct": -14.4,
+        "bench_max_drawdown_pct": -14.3
+      },
+      "valuation": {
+        "fund_pe": 25.4,
+        "fund_pe_cover_pct": 96.0,
+        "fund_pb": 3.1,
+        "bench_pe": 22.2
+      },
+      "history_days": 576,
+      "as_of": "2026-10-01"
+    },
+    {
+      "id": "jioblackrock-flexicap",
+      "name": "JioBlackRock Flexi Cap Fund Direct Growth",
+      "benchmark": {
+        "name": "Nifty 500",
+        "note": "index level (price return); benchmark P/E is approximated from a 75/15/10 large/mid/small ETF mix"
+      },
+      "mine": {
+        "invested": 187000.0,
+        "value": 179820,
+        "gain_pct": -3.84
+      },
+      "returns": {
+        "1M": {
+          "fund": -5.48,
+          "bench": -6.35,
+          "diff": 0.87
+        },
+        "3M": {
+          "fund": -4.39,
+          "bench": -6.05,
+          "diff": 1.66
+        },
+        "6M": {
+          "fund": 5.14,
+          "bench": 4.39,
+          "diff": 0.75
+        },
+        "1Y": {
+          "fund": null,
+          "bench": null,
+          "diff": null
+        }
+      },
+      "risk": {
+        "window_days": 349,
+        "beta": 1.0,
+        "alpha_pct": 2.09,
+        "vol_pct": 14.6,
+        "bench_vol_pct": 14.4,
+        "sharpe": -0.79,
+        "max_drawdown_pct": -14.3,
+        "bench_max_drawdown_pct": -14.8
+      },
+      "valuation": {
+        "fund_pe": 17.9,
+        "fund_pe_cover_pct": 100.0,
+        "fund_pb": 2.6,
+        "bench_pe": 20.6
+      },
+      "history_days": 349,
+      "as_of": "2026-10-01"
+    }
+  ]
+}

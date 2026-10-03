@@ -1,245 +1,74 @@
 {
-  "generated_at": "2026-10-02T21:47:52.936698+05:30",
-  "generated_label": "02 Oct 2026, 21:47 IST",
+  "generated_at": "2026-10-03T16:42:07.661291+05:30",
+  "generated_label": "03 Oct 2026, 16:42 IST",
   "stale": true,
   "market_open": false,
   "totals": {
-    "current_value": 9349864.07,
-    "invested": 7266714.0,
-    "total_returns": 2083150.07,
-    "total_returns_pct": 28.67,
-    "today_impact": -92472.71,
-    "today_pct": -0.989,
-    "band_rupees": 6441.0
+    "current_value": 10450820.0,
+    "invested": 8387000.0,
+    "total_returns": 2063820.0,
+    "total_returns_pct": 24.61,
+    "today_impact": -149.07,
+    "today_pct": -0.001,
+    "band_rupees": 50884.0
   },
   "funds": [
     {
       "id": "axis-small-cap",
       "name": "Axis Small Cap Fund Direct Growth",
-      "current_value": 4780449.87,
-      "invested": 3574824.0,
-      "nav_move_pct": -0.988,
-      "rupee_impact": -47211.98,
+      "current_value": 5311999.99,
+      "invested": 4125000.0,
+      "nav_move_pct": -0.002,
+      "rupee_impact": -80.04,
       "last_nav": 132.52,
-      "projected_nav": 131.2112,
-      "band_rupees": 4694.0,
-      "coverage_pct": 88.1,
+      "projected_nav": 132.518,
+      "band_rupees": 37184.0,
+      "coverage_pct": 0.0,
       "cash_pct": 12.2,
-      "tail_pct": 0.0,
-      "tail_move_pct": -1.12,
+      "tail_pct": 87.8,
+      "tail_move_pct": 0.0,
       "holdings_as_of": "2026-09-12",
       "holdings_count": 120,
-      "priced_count": 120,
-      "top_contributors": [
-        {
-          "name": "CCL Products (India) Ltd",
-          "ticker": "CCL.NS",
-          "weight_pct": 2.58,
-          "move_pct": 3.64,
-          "contribution_pct": 0.094
-        },
-        {
-          "name": "Sansera Engineering Ltd",
-          "ticker": "SANSERA.NS",
-          "weight_pct": 1.45,
-          "move_pct": -5.75,
-          "contribution_pct": -0.0832
-        },
-        {
-          "name": "PB Fintech Ltd",
-          "ticker": "POLICYBZR.NS",
-          "weight_pct": 0.95,
-          "move_pct": -7.89,
-          "contribution_pct": -0.0746
-        },
-        {
-          "name": "Blue Star Ltd",
-          "ticker": "BLUESTARCO.NS",
-          "weight_pct": 1.36,
-          "move_pct": -3.85,
-          "contribution_pct": -0.0522
-        },
-        {
-          "name": "Minda Corporation Ltd",
-          "ticker": "MINDACORP.NS",
-          "weight_pct": 1.34,
-          "move_pct": -3.68,
-          "contribution_pct": -0.0495
-        },
-        {
-          "name": "Vesuvius India Ltd",
-          "ticker": "VESUVIUS.NS",
-          "weight_pct": 1.02,
-          "move_pct": -4.74,
-          "contribution_pct": -0.0482
-        },
-        {
-          "name": "S.J.S Enterprises Ltd",
-          "ticker": "SJS.NS",
-          "weight_pct": 1.09,
-          "move_pct": -4.35,
-          "contribution_pct": -0.0476
-        },
-        {
-          "name": "Syrma SGS Technology Ltd",
-          "ticker": "SYRMA.NS",
-          "weight_pct": 1.13,
-          "move_pct": -3.65,
-          "contribution_pct": -0.0412
-        }
-      ]
+      "priced_count": 0,
+      "top_contributors": []
     },
     {
       "id": "mirae-large-midcap",
       "name": "Mirae Asset Large & Midcap Fund Direct Growth",
-      "current_value": 4409095.3,
-      "invested": 3524898.0,
-      "nav_move_pct": -0.996,
-      "rupee_impact": -43901.39,
+      "current_value": 4959000.01,
+      "invested": 4075000.0,
+      "nav_move_pct": -0.001,
+      "rupee_impact": -66.57,
       "last_nav": 167.653,
-      "projected_nav": 165.9837,
-      "band_rupees": 4408.0,
-      "coverage_pct": 96.5,
+      "projected_nav": 167.6507,
+      "band_rupees": 34713.0,
+      "coverage_pct": 0.0,
       "cash_pct": 3.49,
-      "tail_pct": 0.0,
-      "tail_move_pct": -1.11,
+      "tail_pct": 96.5,
+      "tail_move_pct": 0.0,
       "holdings_as_of": "2026-09-12",
       "holdings_count": 79,
-      "priced_count": 79,
-      "top_contributors": [
-        {
-          "name": "PB Fintech Ltd",
-          "ticker": "POLICYBZR.NS",
-          "weight_pct": 2.31,
-          "move_pct": -7.89,
-          "contribution_pct": -0.1821
-        },
-        {
-          "name": "HDFC Bank Ltd",
-          "ticker": "HDFCBANK.NS",
-          "weight_pct": 6.23,
-          "move_pct": 1.76,
-          "contribution_pct": 0.1099
-        },
-        {
-          "name": "Steel Authority Of India Ltd",
-          "ticker": "SAIL.NS",
-          "weight_pct": 1.99,
-          "move_pct": -3.85,
-          "contribution_pct": -0.0765
-        },
-        {
-          "name": "Swiggy Ltd.",
-          "ticker": "SWIGGY.NS",
-          "weight_pct": 1.58,
-          "move_pct": -4.84,
-          "contribution_pct": -0.0763
-        },
-        {
-          "name": "Maruti Suzuki India Ltd",
-          "ticker": "MARUTI.NS",
-          "weight_pct": 1.44,
-          "move_pct": -4.86,
-          "contribution_pct": -0.0699
-        },
-        {
-          "name": "Infosys Ltd",
-          "ticker": "INFY.NS",
-          "weight_pct": 1.35,
-          "move_pct": 4.11,
-          "contribution_pct": 0.0555
-        },
-        {
-          "name": "Reliance Industries Ltd",
-          "ticker": "RELIANCE.NS",
-          "weight_pct": 3.19,
-          "move_pct": -1.63,
-          "contribution_pct": -0.0518
-        },
-        {
-          "name": "Delhivery Ltd",
-          "ticker": "DELHIVERY.NS",
-          "weight_pct": 2.1,
-          "move_pct": -2.37,
-          "contribution_pct": -0.0498
-        }
-      ]
+      "priced_count": 0,
+      "top_contributors": []
     },
     {
       "id": "jioblackrock-flexicap",
       "name": "JioBlackRock Flexi Cap Fund Direct Growth",
-      "current_value": 160318.9,
-      "invested": 166992.0,
-      "nav_move_pct": -0.848,
-      "rupee_impact": -1359.34,
+      "current_value": 179820.0,
+      "invested": 187000.0,
+      "nav_move_pct": -0.001,
+      "rupee_impact": -2.46,
       "last_nav": 9.5259,
-      "projected_nav": 9.4451,
-      "band_rupees": 157.0,
-      "coverage_pct": 92.0,
+      "projected_nav": 9.5258,
+      "band_rupees": 1259.0,
+      "coverage_pct": 0.0,
       "cash_pct": 8.27,
-      "tail_pct": 0.0,
-      "tail_move_pct": -0.97,
+      "tail_pct": 91.7,
+      "tail_move_pct": 0.0,
       "holdings_as_of": "2026-09-12",
       "holdings_count": 121,
-      "priced_count": 121,
-      "top_contributors": [
-        {
-          "name": "HDFC Bank Ltd",
-          "ticker": "HDFCBANK.NS",
-          "weight_pct": 6.39,
-          "move_pct": 1.76,
-          "contribution_pct": 0.1127
-        },
-        {
-          "name": "Mahindra & Mahindra Ltd",
-          "ticker": "M&M.NS",
-          "weight_pct": 3.06,
-          "move_pct": -3.05,
-          "contribution_pct": -0.0934
-        },
-        {
-          "name": "Infosys Ltd",
-          "ticker": "INFY.NS",
-          "weight_pct": 2.23,
-          "move_pct": 4.11,
-          "contribution_pct": 0.0918
-        },
-        {
-          "name": "Tata Steel Ltd",
-          "ticker": "TATASTEEL.NS",
-          "weight_pct": 2.28,
-          "move_pct": -3.42,
-          "contribution_pct": -0.0781
-        },
-        {
-          "name": "Steel Authority Of India Ltd",
-          "ticker": "SAIL.NS",
-          "weight_pct": 1.63,
-          "move_pct": -3.85,
-          "contribution_pct": -0.0629
-        },
-        {
-          "name": "Reliance Industries Ltd",
-          "ticker": "RELIANCE.NS",
-          "weight_pct": 3.56,
-          "move_pct": -1.63,
-          "contribution_pct": -0.0579
-        },
-        {
-          "name": "ICICI Bank Ltd",
-          "ticker": "ICICIBANK.NS",
-          "weight_pct": 6.0,
-          "move_pct": -0.84,
-          "contribution_pct": -0.0504
-        },
-        {
-          "name": "Indian Oil Corporation Ltd",
-          "ticker": "IOC.NS",
-          "weight_pct": 1.57,
-          "move_pct": -2.66,
-          "contribution_pct": -0.0418
-        }
-      ]
+      "priced_count": 0,
+      "top_contributors": []
     }
   ],
   "accuracy": {
@@ -268,6 +97,6 @@
       }
     }
   },
-  "tickers_resolved": 259,
+  "tickers_resolved": 0,
   "tickers_total": 260
 }

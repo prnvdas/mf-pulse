@@ -26,8 +26,8 @@ funds:
     benchmark_ticker: "^CNXSC" # Nifty Smallcap proxy for the untracked tail
     groww_slug: axis-small-cap-fund-direct-growth
     units: null
-    seed_value: 4927389
-    seed_invested: 3524824
+    seed_value: 5312000    # synced from IndMoney 2026-10-03
+    seed_invested: 4125000 # synced from IndMoney 2026-10-03
 
   - id: mirae-large-midcap
     name: Mirae Asset Large & Midcap Fund Direct Growth
@@ -36,8 +36,8 @@ funds:
     benchmark_ticker: "^NSEMDCP50"
     groww_slug: mirae-asset-large-midcap-fund-direct-growth
     units: null
-    seed_value: 4704276
-    seed_invested: 3474898
+    seed_value: 4959000    # synced from IndMoney 2026-10-03
+    seed_invested: 4075000 # synced from IndMoney 2026-10-03
 
   - id: jioblackrock-flexicap
     name: JioBlackRock Flexi Cap Fund Direct Growth
@@ -46,8 +46,8 @@ funds:
     benchmark_ticker: "^CRSLDX" # Nifty 500
     groww_slug: jioblackrock-flexi-cap-fund-direct-growth
     units: null
-    seed_value: 160660
-    seed_invested: 156992
+    seed_value: 179820    # synced from IndMoney 2026-10-03
+    seed_invested: 187000 # synced from IndMoney 2026-10-03
 
 # Monthly SIP debits. Without these, units drift and the P&L quietly goes wrong.
 # Debited on the 1st; `day_of_month` here is the NAV allocation date (the

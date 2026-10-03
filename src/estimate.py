@@ -220,20 +220,22 @@ def main() -> None:
         sys.exit(1)
 
     # NSE holidays (Gandhi Jayanti, Diwali, etc.) land on ordinary weekdays,
-    # so is_market_window()'s weekday check alone doesn't catch them — a
-    # holiday Friday would otherwise compute a "fresh" estimate from
-    # yesterday's unchanged prices and publish it as if it were a real
-    # close, or (on the intraday cron) just churn out redundant commits all
-    # day. If nothing newer than the last known close exists yet, nothing
-    # actually traded today — treat it exactly like outside-market-hours.
-    if latest_bar_date and latest_bar_date < ts.date():
+    # so is_market_window()'s weekday check alone doesn't catch them. If
+    # nothing newer than the last known close exists yet, nothing actually
+    # traded today — today's move is 0%, not whatever yesterday's move
+    # happened to be (using moves as fetched would silently attribute
+    # yesterday's price action to today). current_value/invested still need
+    # to reflect the latest state.json, though — a manual correction via
+    # adjust_investment.py shouldn't have to wait for the next trading day
+    # to show up just because today happens to be a holiday. So: zero out
+    # the moves (nav_move_pct comes out to just the day's TER drag, coverage
+    # correctly shows 0%) rather than skipping the computation entirely.
+    is_holiday = bool(latest_bar_date and latest_bar_date < ts.date())
+    if is_holiday:
         print(f"[info] no trading data newer than {latest_bar_date} — "
-              f"{ts.date()} looks like a market holiday; marking last estimate stale")
-        latest = read_json("latest.json", None)
-        if latest:
-            latest["stale"] = True
-            write_json("latest.json", latest)
-        return
+              f"{ts.date()} looks like a market holiday; today's move is 0%")
+        moves = {t: None for t in moves}
+        resolved = 0
 
     results = [estimate_fund(f, cfg, moves) for f in funds]
 
@@ -247,8 +249,8 @@ def main() -> None:
     payload = {
         "generated_at": ts.isoformat(),
         "generated_label": ts.strftime("%d %b %Y, %H:%M IST"),
-        "stale": False,
-        "market_open": is_market_window(cfg, ts),
+        "stale": is_holiday,
+        "market_open": is_market_window(cfg, ts) and not is_holiday,
         "totals": {
             "current_value": round(total_value, 2),
             "invested": round(total_invested, 2),

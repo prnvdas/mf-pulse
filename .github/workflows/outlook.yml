@@ -1,0 +1,37 @@
+name: outlook
+
+# "Next session setup" card: expected move size and the overnight-US lean.
+#   07:30 IST (02:00 UTC) -- the US has closed, so the lean is available
+#   17:30 IST (12:00 UTC) -- range for the next session (the lean is 'pending' until the US closes)
+# Monday-Friday. Separate from the estimate job so a failure here can't affect it.
+on:
+  schedule:
+    - cron: "0 2 * * 1-5"
+    - cron: "0 12 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: outlook
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python src/outlook.py
+      - name: Commit
+        run: |
+          git config user.name  "mf-pulse"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/data
+          git diff --staged --quiet || git commit -m "outlook $(date -u +%FT%TZ)"
+          git pull --rebase -q origin main
+          git push

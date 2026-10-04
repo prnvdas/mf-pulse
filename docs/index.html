@@ -103,6 +103,14 @@
 
   .acc.four{grid-template-columns:repeat(4,1fr)}
   .scroll{overflow-x:auto}
+  .outlook{border:1px solid var(--rule);padding:16px 20px 14px;margin:18px 0 6px;font-size:13.5px;line-height:1.55}
+  .outlook .oh{display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-weight:600;font-size:14px}
+  .outlook .ou{font-size:11.5px;color:var(--grey-light);margin:2px 0 10px}
+  .outlook .orow{display:grid;grid-template-columns:120px 1fr;gap:12px;padding:6px 0;border-top:1px solid var(--rule)}
+  .outlook .ok{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);padding-top:3px}
+  .outlook table{font-size:12px;margin-top:8px}.outlook td,.outlook th{padding:7px 0}
+  .chip.flat{background:var(--grey-light)}
+  @media(max-width:760px){.outlook .orow{grid-template-columns:1fr;gap:1px}}
   .seg{display:inline-flex;border:1px solid var(--rule);margin:2px 0 16px}
   .seg button{font:inherit;font-size:12.5px;background:var(--paper);color:var(--grey);border:0;border-right:1px solid var(--rule);padding:8px 18px;cursor:pointer}
   .seg button:last-child{border-right:0}
@@ -246,6 +254,7 @@
     <div class="bsub" id="bSub"></div>
     <p class="bquote" id="bQuote"></p>
     <ul class="bpoints" id="bPoints"></ul>
+    <div class="outlook" id="bOutlook" hidden></div>
     <div id="bBull"></div>
   </section>
 
@@ -406,7 +415,7 @@ const DEMO = {
   ]
 };
 
-let MARKET = [], BRIEF_PHASE = null, CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, timer = null;
+let MARKET = [], OUTLOOK = null, BRIEF_PHASE = null, CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, timer = null;
 
 const $ = id => document.getElementById(id);
 const inr = n => "₹" + Math.round(Math.abs(n)).toLocaleString("en-IN");
@@ -1049,6 +1058,50 @@ async function loadAiNews() {
 async function loadNews() {
   NEWS = await fetch("data/news.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => NEWS);
   renderWhy();
+}
+
+// "Next session setup": how big a move to expect (volatility-based, calibrated) and a
+// lean from the overnight US market with the historical odds behind it. Technical
+// indicators are deliberately absent: they tested no better than guessing. Every
+// call is logged and scored against the real next close, and that record is shown.
+function renderOutlook() {
+  const box = $("bOutlook"), o = OUTLOOK;
+  if (!o || !o.nifty) { box.hidden = true; return; }
+  box.hidden = false;
+  const d = x => new Date(x + "T00:00:00").toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
+  const pts = n => n.toLocaleString("en-IN", { maximumFractionDigits: 0 });
+  const L = o.lean || {}, p = o.portfolio, c = o.calibration || {}, rec = o.record || {}, oos = o.lean_out_of_sample || {};
+  const chip = L.status !== "ok" ? ["flat", "lean pending"] : L.label === "leans up" ? ["healthy", "leans up"] : L.label === "leans down" ? ["caution", "leans down"] : ["flat", "no clear lean"];
+  const sg = (v, dd = 2) => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(dd) + "%";
+  const upd = new Date(o.generated_at).toLocaleString("en-IN", { weekday: "short", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" });
+
+  const leanText = L.status === "ok"
+    ? "The S&P 500 " + (L.us_sessions > 1 ? "moved " : "") + sg(L.sp_move_pct) + (L.us_sessions > 1 ? " over the " + L.us_sessions + " US sessions" : "") + " since the Nifty's last close. In " + L.n.toLocaleString("en-IN") +
+      " past cases where it " + L.bucket + ", the Nifty rose in <b>" + Math.round(L.p_up) + "%</b> of next sessions (average " + sg(L.avg_next_pct) + "). " +
+      (L.label === "no clear lean" ? "That is too close to the everyday ~53% to call a direction." : "It is a lean, not a certainty.")
+    : (L.reason || "Not available yet.");
+
+  box.innerHTML = '<div class="oh">Next session setup <span class="chip ' + chip[0] + '">' + chip[1] + "</span></div>" +
+    '<div class="ou">Updated ' + upd + " IST · Nifty 50 last closed at " + pts(o.base_close) + " (" + d(o.base_close_date) + ")</div>" +
+    '<div class="orow"><span class="ok">Typical move</span><span>About <b>±' + o.sigma_pct.toFixed(2) + "%</b> on the Nifty (" + pts(o.nifty.typical[0]) + "–" + pts(o.nifty.typical[1]) + ")" +
+      (p ? ", about <b>±" + inr(p.typical_rupees) + "</b> on your portfolio" : "") + ". The move lands inside this on roughly " + Math.round(c.within1_pct / 10) + " in 10 sessions.</span></div>" +
+    '<div class="orow"><span class="ok">A wide day</span><span>±' + (2 * o.sigma_pct).toFixed(2) + "% (" + pts(o.nifty.wide[0]) + "–" + pts(o.nifty.wide[1]) + ")" +
+      (p ? ", about ±" + inr(p.wide_rupees) : "") + " — covers about " + Math.round(c.within2_pct / 5) + " in 20 sessions.</span></div>" +
+    '<div class="orow"><span class="ok">Overnight lean</span><span>' + leanText + "</span></div>" +
+    '<div class="orow"><span class="ok">Track record</span><span>' + (rec.sessions
+      ? "Scored on " + rec.sessions + " real session" + (rec.sessions > 1 ? "s" : "") + ": the typical range held " + rec.range_1s_pct + "% of the time" +
+        (rec.calls ? "; the lean was right " + rec.lean_hit_pct + "% of " + rec.calls + " call" + (rec.calls > 1 ? "s" : "") : "; no directional calls yet") + "."
+      : "Building — each call is logged and checked against the real next close; results appear after the next session.") + "</span></div>" +
+    "<details><summary>How this is worked out, and what was tested</summary>" +
+    "<p class=\"sub2\" style=\"margin:6px 0\">The size comes from recent daily volatility (a decaying average of past moves). Over " + (c.n || 0).toLocaleString("en-IN") + " Nifty sessions that range held " + c.within1_pct + "% of the time at 1× and " + c.within2_pct + "% at 2×. " +
+    "The lean uses only the overnight S&P 500 move and plain historical frequencies. Learned on data before " + (oos.test_from || "2020").slice(0, 4) + " and tested on the years after, it called the direction " + oos.hit_pct + "% of the time against " + oos.always_up_pct + "% for always guessing up (" + (oos.n || 0).toLocaleString("en-IN") + " sessions). " +
+    "Technical indicators (RSI, MACD, moving averages, momentum) were backtested too and did no better than guessing, so none are used. This is a probability, not a prediction.</p>" +
+    '<table><thead><tr><th>If the S&amp;P 500…</th><th>Past cases</th><th>Nifty rose next session</th><th>Avg move</th></tr></thead><tbody>' +
+    (o.buckets || []).map(b => "<tr><td>" + b.bucket + "</td><td>" + b.n.toLocaleString("en-IN") + "</td><td>" + b.p_up.toFixed(0) + "%</td><td>" + sg(b.avg_next_pct) + "</td></tr>").join("") + "</tbody></table></details>";
+}
+async function loadOutlook() {
+  OUTLOOK = await fetch("data/outlook.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => OUTLOOK);
+  renderOutlook();
 }
 
 // Daily greeting: a motivation line that changes each day, an honest read of how
@@ -1747,6 +1800,7 @@ function adaptLatest(d) {
   renderCompare();
   loadNews();
   loadAiNews();
+  loadOutlook();
   renderHistoryTable();
   renderHitMiss();
 

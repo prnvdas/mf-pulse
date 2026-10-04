@@ -1,0 +1,83 @@
+{
+  "generated_at": "2026-10-04T16:10:50.830333+05:30",
+  "base_close_date": "2026-10-01",
+  "base_close": 22421.95,
+  "sigma_pct": 0.7,
+  "nifty": {
+    "typical": [
+      22264.9,
+      22579.0
+    ],
+    "wide": [
+      22107.8,
+      22736.1
+    ]
+  },
+  "portfolio": {
+    "value": 10450820,
+    "sigma_pct": 0.79,
+    "typical_rupees": 82817,
+    "wide_rupees": 165633
+  },
+  "lean": {
+    "status": "ok",
+    "label": "no clear lean",
+    "p_up": 59.3,
+    "n": 1026,
+    "bucket": "rose 0.3\u20131%",
+    "avg_next_pct": 0.17,
+    "sp_date": "2026-10-02",
+    "sp_move_pct": 0.93,
+    "us_sessions": 2
+  },
+  "buckets": [
+    {
+      "bucket": "fell more than 1%",
+      "n": 571,
+      "p_up": 34.5,
+      "avg_next_pct": -0.51
+    },
+    {
+      "bucket": "fell 0.3\u20131%",
+      "n": 755,
+      "p_up": 40.7,
+      "avg_next_pct": -0.22
+    },
+    {
+      "bucket": "was flat (within 0.3%)",
+      "n": 1484,
+      "p_up": 55.2,
+      "avg_next_pct": 0.09
+    },
+    {
+      "bucket": "rose 0.3\u20131%",
+      "n": 1026,
+      "p_up": 59.3,
+      "avg_next_pct": 0.17
+    },
+    {
+      "bucket": "rose more than 1%",
+      "n": 635,
+      "p_up": 67.9,
+      "avg_next_pct": 0.5
+    }
+  ],
+  "calibration": {
+    "within1_pct": 70.3,
+    "within2_pct": 94.5,
+    "n": 4539
+  },
+  "lean_out_of_sample": {
+    "hit_pct": 62.2,
+    "always_up_pct": 54.0,
+    "n": 1615,
+    "test_from": "2020-01-01"
+  },
+  "record": {
+    "sessions": 0,
+    "range_1s_pct": null,
+    "range_2s_pct": null,
+    "calls": 0,
+    "lean_hit_pct": null
+  }
+}

@@ -1313,14 +1313,44 @@ function ageMinutes(iso) {
   return isFinite(t) ? Math.max(0, Math.round((Date.now() - t) / 60000)) : null;
 }
 
-function stampBatch(a) {
-  const phaseLabel = { final: "Final close estimate", holiday: "Market closed today", live: "Intraday batch" }[a.phase] || "Batch";
+// Header status: the live clock and market state are worked out here from the
+// current time, so they are always right; the data's own timestamp is shown
+// separately as an age. (It used to print the batch's generation time, which
+// sits frozen all weekend and made the page look stuck on yesterday.)
+let LAST_BATCH = null;
+function istNow() { return new Date(Date.now() + (new Date().getTimezoneOffset() + 330) * 60000); }
+
+function holidayToday() {
+  // the job found no new trading data and flagged today (IST) as a holiday
+  const ist = istNow(), gen = LAST_BATCH && LAST_BATCH.generatedAt ? new Date(Date.parse(LAST_BATCH.generatedAt) + 330 * 60000) : null;
+  return !!(LAST_BATCH && LAST_BATCH.phase === "holiday" && gen && gen.getUTCFullYear() === ist.getFullYear() &&
+    gen.getUTCMonth() === ist.getMonth() && gen.getUTCDate() === ist.getDate());
+}
+
+function marketStatus() {
+  const ist = istNow(), dow = ist.getDay(), mins = ist.getHours() * 60 + ist.getMinutes();
+  if (dow === 0 || dow === 6) return "Market closed · weekend";
+  if (holidayToday()) return "Market holiday today";
+  if (marketOpen()) return "Market open";
+  if (mins < 555) return "Market opens at 09:15";
+  return mins <= 960 ? "Market closed · final read pending" : "Market closed";
+}
+
+function paintStamp() {
+  const a = LAST_BATCH;
+  if (!a) return;
+  const ist = istNow();
+  const clock = ist.toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short", year: "numeric" }) + ", " +
+    String(ist.getHours()).padStart(2, "0") + ":" + String(ist.getMinutes()).padStart(2, "0") + " IST";
   const age = ageMinutes(a.generatedAt);
-  const late = age != null && marketOpen() && age > 30;
-  $("stamp").innerHTML = phaseLabel + " · <b>" + a.generated + "</b>" +
-    (age != null ? " · " + (age < 1 ? "just now" : age < 90 ? age + " min ago" : Math.round(age / 60) + " h ago") : "") +
+  const late = age != null && marketOpen() && !holidayToday() && age > 30;
+  $("stamp").innerHTML = marketStatus() + " · <b>" + clock + "</b>" +
+    (age != null ? " · data " + (age < 1 ? "just updated" : age < 90 ? age + " min old" : age < 2880 ? Math.round(age / 60) + " h old" : Math.round(age / 1440) + " days old") : "") +
     (late ? ' · <span class="neg">delayed — the scheduler is running late</span>' : "");
 }
+setInterval(paintStamp, 30000);        // keep the clock and the data age moving
+
+function stampBatch(a) { LAST_BATCH = a; paintStamp(); }
 
 async function applyBatch() {
   const r = await fetch("data/latest.json?t=" + Date.now(), { cache: "no-store" });
@@ -1340,7 +1370,7 @@ async function run() {
   const btn = $("refresh");
   btn.disabled = true;
   btn.innerHTML = '<span class="spin"></span>Pricing';
-  $("stamp").textContent = "Fetching quotes";
+  if (SOURCE !== "batch") $("stamp").textContent = "Fetching quotes";   // the batch read is instant; don't flicker the header
 
   try {
     if (SOURCE === "batch") {

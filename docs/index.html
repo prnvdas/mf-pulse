@@ -103,6 +103,15 @@
 
   .acc.four{grid-template-columns:repeat(4,1fr)}
   .scroll{overflow-x:auto}
+  .seg{display:inline-flex;border:1px solid var(--rule);margin:2px 0 16px}
+  .seg button{font:inherit;font-size:12.5px;background:var(--paper);color:var(--grey);border:0;border-right:1px solid var(--rule);padding:8px 18px;cursor:pointer}
+  .seg button:last-child{border-right:0}
+  .seg button[aria-selected=true]{background:var(--ink);color:#fff}
+  .seg button:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+  .pchart{position:relative;margin-top:22px}
+  .pchart svg{display:block;width:100%;overflow:visible}
+  .ptip{position:absolute;pointer-events:none;background:var(--paper);border:1px solid var(--rule);box-shadow:0 4px 18px rgba(0,0,0,.08);padding:10px 12px;font-size:12px;line-height:1.55;min-width:190px;z-index:2}
+  .ptip b{font-weight:600}.ptip .m{color:var(--grey)}
   .brief{padding:30px 0 26px}
   .bgreet{font-size:22px;font-weight:600;letter-spacing:-.015em;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
   .bsub{font-size:12.5px;color:var(--grey);margin-top:2px}
@@ -321,17 +330,21 @@
 
   <section id="projWrap" hidden>
     <h2>Where this could be <span id="projNote"></span></h2>
-    <div class="scroll"><table>
-      <thead><tr id="projHead"></tr></thead>
-      <tbody id="projTable"></tbody>
-    </table></div>
-    <p class="note">Illustration only, not a forecast. Rows are calendar year-ends; the first
-      counts only the SIPs still to come this year. Each column compounds today's value and the
-      SIP at a fixed annual return with no interruptions, fund switches or SIP changes. 12% is a
-      common long-run planning assumption; 15%, 18% and 22% are optimistic scenarios — sustaining
-      22% for decades would be exceptional. Real markets don't move in a straight line, and
-      results can differ a lot. Edit the scenarios under <code>projection</code> in
-      <code>config/portfolio.yaml</code>.</p>
+    <div class="sub2" style="margin:0 0 6px">Assumed yearly return</div>
+    <div class="seg" id="projSeg" role="tablist" aria-label="Assumed yearly return"></div>
+    <div class="acc four" id="projKpis"></div>
+    <div class="pchart" id="projChart"></div>
+    <details><summary>Year-by-year, every year</summary>
+      <div class="scroll"><table>
+        <thead><tr><th>Year-end</th><th>Invested so far</th><th>Portfolio value</th><th>Total gain</th><th>Return that year</th></tr></thead>
+        <tbody id="projTable"></tbody>
+      </table></div>
+    </details>
+    <p class="note">Illustration only, not a forecast. It compounds today's value and your SIP at one fixed
+      yearly return, with no interruptions, fund switches or SIP changes; the first year counts only the SIPs
+      still to come. 12% is a common long-run planning assumption; 15%, 18% and 22% are optimistic scenarios,
+      and holding 22% for decades would be exceptional. Real markets move unevenly and results can differ a
+      lot. Edit the scenarios under <code>projection</code> in <code>config/portfolio.yaml</code>.</p>
   </section>
 
   <footer>
@@ -747,37 +760,118 @@ function projectFutureValue(lumpsum, monthlySip, annualRatePct, tYears, nSips) {
   return fvLump + fvSip;
 }
 
+let PROJ = { sel: 0, last: null };
+const cx = n => n >= 1e7 ? "₹" + (n / 1e7).toFixed(n >= 1e9 ? 0 : 2) + " Cr" : n >= 1e5 ? "₹" + (n / 1e5).toFixed(1) + " L" : "₹" + Math.round(n).toLocaleString("en-IN");
+
+// Every year-end from this year to ~25 years out for one assumed return: portfolio
+// value, money invested, and what the year itself earned (value change minus the
+// SIPs paid in that year).
+function projectionSeries(value, invested, rate, sip, tLeft, sipsLeft, years) {
+  const pts = [{ x: -tLeft, year: null, v: value, inv: invested, ret: null, retPct: null }];
+  let prevV = value;
+  for (let k = 0; k <= years; k++) {
+    const t = tLeft + k, n = sipsLeft + 12 * k;
+    const v = projectFutureValue(value, sip, rate, t, n), paid = (k === 0 ? sipsLeft : 12) * sip;
+    pts.push({ x: k, k, year: new Date().getFullYear() + k, v, inv: invested + sip * n, ret: v - prevV - paid, retPct: (v - prevV - paid) / prevV * 100 });
+    prevV = v;
+  }
+  return pts;
+}
+
 function renderProjection(value, invested) {
   const proj = CFG.projection || {};
   const rates = proj.scenarios_pct || (proj.assumed_annual_return_pct ? [proj.assumed_annual_return_pct] : []);
-  const horizons = proj.horizons_years || [];
-  const sip = CFG.monthly_sip_total || 0;
-  const wrap = $("projWrap");
-  if (!rates.length || !horizons.length || !value) { wrap.hidden = true; return; }
+  const years = Math.max(...(proj.horizons_years || [25]));
+  const sip = CFG.monthly_sip_total || 0, wrap = $("projWrap");
+  if (!rates.length || !value) { wrap.hidden = true; return; }
   wrap.hidden = false;
+  PROJ.last = { value, invested };
+  if (PROJ.sel >= rates.length) PROJ.sel = 0;
 
   const now = new Date(), yr = now.getFullYear();
   const tLeft = Math.max(0, (new Date(yr, 11, 31) - now) / 86400000 / 365);
-  // this month's SIP is already in the numbers once its allocation day (the 3rd) has passed
-  const sipsLeft = Math.max(0, 11 - now.getMonth()) + (now.getDate() < 3 ? 1 : 0);
+  const sipsLeft = Math.max(0, 11 - now.getMonth()) + (now.getDate() < 3 ? 1 : 0);   // this month's SIP counts once its allocation day (the 3rd) has passed
+  $("projNote").textContent = inr(sip) + "/month SIP continuing · " + sipsLeft + " SIP" + (sipsLeft === 1 ? "" : "s") + " left in " + yr;
 
-  $("projNote").textContent = inr(sip) + "/month SIP continuing · " + sipsLeft +
-    " SIP" + (sipsLeft === 1 ? "" : "s") + " left in " + yr;
+  const all = rates.map(r => projectionSeries(value, invested, r, sip, tLeft, sipsLeft, years));
+  const S = all[PROJ.sel], last = S[S.length - 1];
 
-  const rows = [{ label: yr, sub: "year-end", t: tLeft, n: sipsLeft }]
-    .concat(horizons.map(y => ({ label: yr + y, sub: "+" + y + (y === 1 ? " yr" : " yrs"), t: tLeft + y, n: sipsLeft + 12 * y })));
+  $("projSeg").innerHTML = rates.map((r, i) => '<button role="tab" aria-selected="' + (i === PROJ.sel) + '" data-i="' + i + '">' + r + "%</button>").join("");
+  $("projSeg").querySelectorAll("button").forEach(b => b.onclick = () => { PROJ.sel = +b.dataset.i; renderProjection(value, invested); });
 
-  $("projHead").innerHTML = "<th>Year-end</th><th>Invested by then</th>" +
-    rates.map(r => "<th>At " + r + "%</th>").join("");
-  $("projTable").innerHTML = rows.map(row => {
-    const inv = invested + sip * row.n;
-    const cells = rates.map(r => {
-      const fv = projectFutureValue(value, sip, r, row.t, row.n);
-      return "<td>" + inr(fv) + '<br><span class="sub2">' + signed(fv - inv) + "</span></td>";
-    }).join("");
-    return "<tr><td>" + row.label + ' <span class="sub2">(' + row.sub + ")</span></td><td>" + inr(inv) + "</td>" + cells + "</tr>";
-  }).join("");
+  // headline tiles for the selected return
+  const pick = [5, 10, 20, years].filter((y, i, a) => y <= years && a.indexOf(y) === i).slice(0, 4);
+  $("projKpis").innerHTML = pick.map(y => { const p = S.find(q => q.k === y); return '<div><div class="k">In ' + y + ' years · ' + p.year + '</div><div class="v">' + cx(p.v) +
+    '</div><div class="n">' + (p.v / p.inv).toFixed(1) + '× the ' + cx(p.inv) + " you'll have put in</div></div>"; }).join("");
+
+  // year-by-year table (selected return)
+  $("projTable").innerHTML = S.slice(1).map(p => "<tr><td>" + p.year + (p.k === 0 ? ' <span class="sub2">(rest of year)</span>' : "") + "</td><td>" + inr(p.inv) + "</td><td>" + inr(p.v) +
+    '</td><td class="pos">' + signed(p.v - p.inv) + '</td><td class="' + (p.ret >= 0 ? "pos" : "neg") + '">' + signed(p.ret) + ' <span class="sub2">(' + (p.retPct >= 0 ? "+" : "−") + Math.abs(p.retPct).toFixed(1) + "%)</span></td></tr>").join("");
+
+  drawProjectionChart(all, rates, PROJ.sel, last);
 }
+
+// SVG chart. It scales to the selected return, so the faint lines for higher
+// returns run off the top instead of flattening everything else.
+function drawProjectionChart(all, rates, sel, last) {
+  const host = $("projChart");
+  const W = Math.max(300, host.clientWidth || 800), H = W < 520 ? 250 : 330;
+  const narrow = W < 520, m = { l: narrow ? 46 : 62, r: narrow ? 14 : 84, t: 14, b: 28 };
+  const S = all[sel], x0 = S[0].x, x1 = S[S.length - 1].x;
+  const top = niceMax(last.v * 1.06);
+  const X = x => m.l + (x - x0) / (x1 - x0) * (W - m.l - m.r), Y = v => H - m.b - v / top * (H - m.t - m.b);
+  const path = pts => pts.map((p, i) => (i ? "L" : "M") + X(p.x).toFixed(1) + " " + Y(p.v).toFixed(1)).join(" ");
+  const ticks = 4, yt = Array.from({ length: ticks + 1 }, (_, i) => top / ticks * i);
+  const xt = S.filter(p => p.k != null && (p.k % 5 === 0 || p.k === S[S.length - 1].k));
+  const others = all.map((s2, i) => i === sel ? "" : '<path d="' + path(s2) + '" fill="none" stroke="#c9cbcd" stroke-width="1.2"/>').join("");
+  let stack = 0;   // labels for lines that run off the top are stacked so they can't overlap
+  const labels = narrow ? "" : all.map((s2, i) => { const v = s2[s2.length - 1].v; if (i === sel) return ""; const off = v > top;
+    const yy = off ? m.t + 8 + 14 * stack++ : Y(v);
+    return '<text x="' + (W - m.r + 6) + '" y="' + (yy + 3) + '" font-size="10.5" fill="#97999b">' + rates[i] + "% " + (off ? "↑ " : "") + cx(v) + "</text>"; }).join("");
+
+  host.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" height="' + H + '" role="img" aria-label="Projected portfolio value by year">' +
+    '<defs><linearGradient id="pg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#86bc25" stop-opacity=".28"/><stop offset="1" stop-color="#86bc25" stop-opacity="0"/></linearGradient>' +
+    '<clipPath id="pclip"><rect x="' + m.l + '" y="' + m.t + '" width="' + (W - m.l - m.r) + '" height="' + (H - m.t - m.b) + '"/></clipPath></defs>' +
+    yt.map(v => '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + Y(v).toFixed(1) + '" y2="' + Y(v).toFixed(1) + '" stroke="#ececec"/><text x="' + (m.l - 8) + '" y="' + (Y(v) + 3).toFixed(1) + '" font-size="10.5" text-anchor="end" fill="#97999b">' + (v ? cx(v).replace("₹", "₹") : "0") + "</text>").join("") +
+    xt.map(p => '<text x="' + X(p.x).toFixed(1) + '" y="' + (H - 8) + '" font-size="10.5" text-anchor="middle" fill="#97999b">' + p.year + "</text>").join("") +
+    '<g clip-path="url(#pclip)">' + others +
+    '<path d="' + path(S) + " L" + X(x1).toFixed(1) + " " + Y(0) + " L" + X(x0).toFixed(1) + " " + Y(0) + ' Z" fill="url(#pg)"/>' +
+    '<path d="' + S.map((p, i) => (i ? "L" : "M") + X(p.x).toFixed(1) + " " + Y(p.inv).toFixed(1)).join(" ") + '" fill="none" stroke="#97999b" stroke-width="1.4" stroke-dasharray="4 4"/>' +
+    '<path d="' + path(S) + '" fill="none" stroke="#5f8a15" stroke-width="2.4" stroke-linejoin="round"/></g>' +
+    '<circle cx="' + X(x1).toFixed(1) + '" cy="' + Y(last.v).toFixed(1) + '" r="4" fill="#5f8a15"/>' +
+    (narrow ? '<text x="' + (W - m.r) + '" y="' + (Y(last.v) - 11).toFixed(1) + '" font-size="12" font-weight="600" text-anchor="end" fill="#1d1d1b">' + cx(last.v) + "</text>"
+            : '<text x="' + (W - m.r + 8) + '" y="' + (Y(last.v) + 4).toFixed(1) + '" font-size="12" font-weight="600" fill="#1d1d1b">' + cx(last.v) + "</text>" +
+              '<text x="' + (W - m.r + 8) + '" y="' + (Y(last.inv) + 4).toFixed(1) + '" font-size="10.5" fill="#97999b">invested</text>') + labels +
+    '<line id="pguide" y1="' + m.t + '" y2="' + (H - m.b) + '" stroke="#97999b" stroke-dasharray="3 3" visibility="hidden"/><circle id="pdot" r="4.5" fill="#fff" stroke="#5f8a15" stroke-width="2" visibility="hidden"/>' +
+    '<rect id="phit" x="' + m.l + '" y="' + m.t + '" width="' + (W - m.l - m.r) + '" height="' + (H - m.t - m.b) + '" fill="transparent"/></svg>' +
+    '<div class="ptip" id="ptip" hidden></div>';
+
+  const svg = host.querySelector("svg"), tip = $("ptip"), pts = S.filter(p => p.k != null);
+  const move = e => {
+    const r = svg.getBoundingClientRect(), px = ((e.touches ? e.touches[0].clientX : e.clientX) - r.left) * (W / r.width);
+    const xv = x0 + (px - m.l) / (W - m.l - m.r) * (x1 - x0);
+    const p = pts.reduce((a, b) => Math.abs(b.x - xv) < Math.abs(a.x - xv) ? b : a);
+    const gx = X(p.x), gy = Y(p.v);
+    $("pguide").setAttribute("x1", gx); $("pguide").setAttribute("x2", gx); $("pguide").setAttribute("visibility", "visible");
+    $("pdot").setAttribute("cx", gx); $("pdot").setAttribute("cy", gy); $("pdot").setAttribute("visibility", "visible");
+    tip.hidden = false;
+    tip.innerHTML = "<b>" + p.year + "</b> <span class=\"m\">· " + (p.k === 0 ? "end of this year" : p.k + " yr" + (p.k > 1 ? "s" : "") + " from now") + "</span><br>" +
+      "<b>" + inr(p.v) + "</b> at " + rates[sel] + "%<br><span class=\"m\">invested " + inr(p.inv) + "<br>that year " + signed(p.ret) + "</span>" +
+      all.map((s2, i) => i === sel ? "" : '<br><span class="m">' + rates[i] + "%: " + cx(s2.find(q => q.k === p.k).v) + "</span>").join("");
+    const tw = tip.offsetWidth, left = Math.min(Math.max(gx * (r.width / W) - tw / 2, 0), r.width - tw);
+    tip.style.left = left + "px"; tip.style.top = Math.max(0, gy * (r.width / W) - tip.offsetHeight - 14) + "px";
+  };
+  const hide = () => { tip.hidden = true; ["pguide", "pdot"].forEach(id => $(id).setAttribute("visibility", "hidden")); };
+  const hit = $("phit");
+  hit.addEventListener("mousemove", move); hit.addEventListener("mouseleave", hide);
+  hit.addEventListener("touchstart", move, { passive: true }); hit.addEventListener("touchmove", move, { passive: true }); hit.addEventListener("touchend", hide);
+}
+
+function niceMax(v) {
+  const p = Math.pow(10, Math.floor(Math.log10(v))), f = v / p;
+  return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p;
+}
+window.addEventListener("resize", () => { if (PROJ.last && !$("projWrap").hidden) renderProjection(PROJ.last.value, PROJ.last.invested); });
 
 // Hit/miss dashboard: per-fund scorecard, a session-by-session hit/miss grid and
 // a daily error chart, all derived from history.json.

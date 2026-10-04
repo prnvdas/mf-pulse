@@ -249,14 +249,6 @@
 
 <main class="wrap">
 
-  <section id="briefWrap" class="brief" hidden>
-    <div class="bgreet" id="bGreet"></div>
-    <div class="bsub" id="bSub"></div>
-    <p class="bquote" id="bQuote"></p>
-    <ul class="bpoints" id="bPoints"></ul>
-    <div class="outlook" id="bOutlook" hidden></div>
-    <div id="bBull"></div>
-  </section>
 
   <div class="hero">
     <div>
@@ -276,6 +268,15 @@
     <div class="stat"><div class="k">Total returns</div><div class="v pos" id="tr">—</div></div>
     <div class="stat"><div class="k">Return</div><div class="v pos" id="trp">—</div></div>
   </div>
+
+  <section id="briefWrap" class="brief" hidden>
+    <div class="bgreet" id="bGreet"></div>
+    <div class="bsub" id="bSub"></div>
+    <p class="bquote" id="bQuote"></p>
+    <ul class="bpoints" id="bPoints"></ul>
+    <div class="outlook" id="bOutlook" hidden></div>
+    <div id="bBull"></div>
+  </section>
 
   <section id="amfiWrap" hidden>
     <h2>Tonight's actual NAV <span>AMFI, checked live — not yet in the scored history below</span></h2>
@@ -679,8 +680,10 @@ function render(funds, meta) {
   $("orbWord").textContent = up ? "In the green" : "In the red";
   $("eyebrow").textContent = marketOpen() ? "Estimated impact — live" : "Estimated impact — session close";
 
-  $("sub").innerHTML =
-    "On <b>" + inr(value) + "</b>, inferred from <b>" + meta.priced + "</b> stock prices" +
+  $("sub").innerHTML = meta.phase === "holiday"
+    ? "Markets were closed, so no stock moved. Your portfolio is worth <b>" + inr(value) + "</b> at the last close — a total profit of <b>" +
+      signed(value - invested) + "</b> (" + pc(invested ? (value - invested) / invested * 100 : 0) + ") since you started."
+    :     "On <b>" + inr(value) + "</b>, inferred from <b>" + meta.priced + "</b> stock prices" +
     (meta.blend ? " (" + meta.blend + ")" : "") + ". " +
     "Expect the published NAV within roughly <b>±" + inr(band) + "</b> of this. " +
     "If tonight's NAV lands here, your portfolio is worth <b>" + inr(projectedValue) +
@@ -1523,7 +1526,7 @@ async function applyBatch() {
     blend: "estimate.py, " + a.resolved + "/" + a.total + " tickers", phase: a.phase });
   setupMoversPicker(a.movers);
   stampBatch(a);
-  MARKET = a.market || []; renderTicker(); loadNews();
+  MARKET = a.market || []; renderTicker(); loadNews(); loadOutlook();
   return a;
 }
 

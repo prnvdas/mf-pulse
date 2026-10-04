@@ -18,6 +18,19 @@ market:
   close: "15:30"
   # Estimates outside this window are marked `stale: true` in the JSON.
 
+# Sessions outside the normal Mon-Fri 09:15-15:30 pattern (Diwali Muhurat trading,
+# occasional special Saturday sessions). Times are IST. The server treats these as
+# open, and the page's Refresh goes live during them instead of saying "market
+# closed". When NSE publishes the circular, set the exact start/end and drop
+# `provisional`. For each new entry also add its cron line to
+# .github/workflows/special-session.yml (python src/special_sessions_cron.py prints them).
+special_sessions:
+  - date: "2026-11-08"
+    name: Diwali Muhurat trading
+    start: "17:30"      # provisional window; NSE announces the exact hour (usually ~1h around 18:00-19:15)
+    end: "20:00"
+    provisional: true
+
 funds:
   - id: axis-small-cap
     name: Axis Small Cap Fund Direct Growth

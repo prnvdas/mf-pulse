@@ -128,8 +128,34 @@ def fetch_amfi_navs(retries: int = 2) -> dict[str, dict]:
     return navs
 
 
+def special_session(cfg: dict, when: dt.datetime) -> dict | None:
+    """The configured special session (Muhurat etc.) that falls on this IST date, if any."""
+    for sp in cfg.get("special_sessions") or []:
+        if str(sp.get("date")) == when.date().isoformat():
+            return sp
+    return None
+
+
+def _hm(txt: str) -> tuple[int, int]:
+    h, m = txt.split(":")
+    return int(h), int(m)
+
+
+def session_end(cfg: dict, when: dt.datetime) -> dt.datetime:
+    """When today's last trading session ends (a special evening session, else the normal close)."""
+    sp = special_session(cfg, when)
+    h, m = _hm(sp["end"]) if sp else _hm(cfg["market"]["close"])
+    return when.replace(hour=h, minute=m, second=0, microsecond=0)
+
+
 def is_market_window(cfg: dict, when: dt.datetime | None = None) -> bool:
     when = when or now_ist()
+    sp = special_session(cfg, when)
+    if sp:  # special sessions count as open even on a weekend or a regular holiday
+        sh, sm = _hm(sp["start"])
+        start = when.replace(hour=sh, minute=sm, second=0, microsecond=0)
+        if start <= when <= session_end(cfg, when):
+            return True
     if when.weekday() >= 5:
         return False
     open_h, open_m = (int(x) for x in cfg["market"]["open"].split(":"))

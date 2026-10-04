@@ -1,0 +1,48 @@
+name: special-session
+
+# Live estimates during special trading sessions that fall outside the normal
+# Mon-Fri 09:15-15:30 pattern (Diwali Muhurat trading, occasional Saturday
+# sessions). Schedules in Actions are fixed in this file, so each session in
+# config/portfolio.yaml needs a cron line here: run
+#   python src/special_sessions_cron.py
+# and paste its output below. Every line also repeats yearly on that date, so the
+# guard step skips the run unless today is actually a configured special session;
+# delete entries once they've passed.
+on:
+  schedule:
+    - cron: "*/10 12-14 8 11 *"   # Diwali Muhurat trading 2026-11-08 (17:30-20:20 IST)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: estimate
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Estimate (only on a configured special-session day)
+        run: |
+          cd src
+          if python special_sessions_cron.py --is-today; then
+            python estimate.py --force
+          else
+            echo "today is not a configured special session -- nothing to do"
+          fi
+      - name: Commit dashboard data
+        run: |
+          git config user.name  "mf-pulse"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/data
+          git diff --staged --quiet || git commit -m "special-session $(date -u +%FT%TZ)"
+          git pull --rebase -q origin main
+          git push

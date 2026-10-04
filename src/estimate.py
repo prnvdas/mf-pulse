@@ -24,6 +24,7 @@ import yfinance as yf
 
 from common import (
     is_market_window,
+    session_end,
     load_holdings,
     load_portfolio,
     now_ist,
@@ -315,7 +316,7 @@ def main() -> None:
         "up": sum(1 for m in pts if m > 0), "down": sum(1 for m in pts if m < 0), "total": len(pts),
     }
     movers = None if is_holiday else build_movers(funds, results, moves, ts.date().isoformat())
-    after_close = ts.time() >= dt.time(15, 45)
+    after_close = ts >= session_end(cfg, ts) + dt.timedelta(minutes=15)   # 15 min after the day's last session
     phase = "holiday" if is_holiday else ("final" if after_close else "live")
 
     total_value = sum(r["current_value"] for r in results)

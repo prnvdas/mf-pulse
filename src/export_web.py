@@ -50,6 +50,7 @@ def main() -> None:
             "monthly_sip_total": monthly_sip_total,
             "projection": cfg.get("projection", {}),
             "profile": cfg.get("profile", {}),
+            "special_sessions": cfg.get("special_sessions", []),
         },
     )
 

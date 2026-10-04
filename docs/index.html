@@ -401,10 +401,18 @@ const signed = n => (n >= 0 ? "+" : "−") + inr(n);
 const pc = (n, d = 2) => (n >= 0 ? "+" : "−") + Math.abs(n).toFixed(d) + "%";
 const valueOf = f => (f.units && f.last_nav) ? f.units * f.last_nav : (f.seed_value || 0);
 
+// Configured special sessions (Diwali Muhurat trading, special Saturdays) from config.json.
+function istDate(ist) { return ist.getFullYear() + "-" + String(ist.getMonth() + 1).padStart(2, "0") + "-" + String(ist.getDate()).padStart(2, "0"); }
+function hmToMin(t) { const [h, m] = String(t).split(":"); return (+h) * 60 + (+m); }
+function specialToday() {
+  const d = istDate(istNow());
+  return ((CFG && CFG.special_sessions) || []).find(x => String(x.date) === d) || null;
+}
+
 function marketOpen() {
-  const ist = new Date(Date.now() + (new Date().getTimezoneOffset() + 330) * 60000);
+  const ist = istNow(), m = ist.getHours() * 60 + ist.getMinutes(), sp = specialToday();
+  if (sp && m >= hmToMin(sp.start) && m <= hmToMin(sp.end)) return true;   // open even on a weekend / holiday
   if (ist.getDay() === 0 || ist.getDay() === 6) return false;
-  const m = ist.getHours() * 60 + ist.getMinutes();
   return m >= 555 && m <= 930;             // 09:15 - 15:30 IST
 }
 
@@ -1329,6 +1337,12 @@ function holidayToday() {
 
 function marketStatus() {
   const ist = istNow(), dow = ist.getDay(), mins = ist.getHours() * 60 + ist.getMinutes();
+  const sp = specialToday();
+  if (sp) {
+    if (mins >= hmToMin(sp.start) && mins <= hmToMin(sp.end)) return "Special session open · " + sp.name;
+    if (mins < hmToMin(sp.start)) return sp.name + " at " + sp.start + (sp.provisional ? " (time to be confirmed)" : "");
+  }
+  if (LAST_BATCH && liveBatchOutsideRegularHours({ phase: LAST_BATCH.phase, generatedAt: LAST_BATCH.generatedAt })) return "Special session in progress";
   if (dow === 0 || dow === 6) return "Market closed · weekend";
   if (holidayToday()) return "Market holiday today";
   if (marketOpen()) return "Market open";
@@ -1366,6 +1380,59 @@ async function applyBatch() {
   return a;
 }
 
+// When the market looks closed (weekend, holiday, after hours) Refresh checks
+// whether it really is before doing anything: a configured special session counts
+// as open (handled in marketOpen), and an unannounced one is caught by the data
+// itself -- a "live" batch written in the last 30 minutes means trading is happening.
+// A fresh "live" batch is only evidence of an unannounced session if it was written
+// when regular trading wasn't running -- otherwise the last batch of a normal day
+// would look like trading for ~25 minutes after the close.
+function liveBatchOutsideRegularHours(j) {
+  const age = ageMinutes(j && (j.generated_at || j.generatedAt));
+  if (!j || j.phase !== "live" || age == null || age > 30) return false;
+  const gen = new Date(Date.parse(j.generated_at || j.generatedAt) + 330 * 60000);   // IST wall-clock via UTC getters
+  const m = gen.getUTCHours() * 60 + gen.getUTCMinutes(), dow = gen.getUTCDay();
+  return dow === 0 || dow === 6 || m < 555 || m > 945;
+}
+
+async function marketReallyClosed() {
+  if (marketOpen()) return false;
+  try {
+    const j = await fetch("data/latest.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.json());
+    if (liveBatchOutsideRegularHours(j)) return false;
+  } catch (e) { /* can't tell: treat as closed, the batch below still loads */ }
+  return true;
+}
+
+function nextSessionText() {
+  const ist = istNow(), mins = ist.getHours() * 60 + ist.getMinutes();
+  const fmt = d => d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
+  const d = new Date(ist);
+  if (!(d.getDay() >= 1 && d.getDay() <= 5 && mins < 555 && !holidayToday())) {
+    do { d.setDate(d.getDate() + 1); } while (d.getDay() === 0 || d.getDay() === 6);
+  }
+  let t = "Next regular session: " + fmt(d) + ", 09:15 (unless it is a holiday).";
+  const soon = ((CFG && CFG.special_sessions) || []).filter(x => { const dd = new Date(x.date + "T00:00:00"); return dd >= new Date(ist.getFullYear(), ist.getMonth(), ist.getDate()) && dd - ist < 30 * 86400000 && String(x.date) !== istDate(ist); })[0];
+  if (soon) t += " Special session: " + soon.name + ", " + fmt(new Date(soon.date + "T00:00:00")) + (soon.provisional ? " (time to be confirmed)." : " " + soon.start + "–" + soon.end + ".");
+  return t;
+}
+
+function showClosedNotice() {
+  const st = marketStatus(), sp = specialToday(), nowM = istNow().getHours() * 60 + istNow().getMinutes();
+  if (sp && nowM < hmToMin(sp.start)) {
+    $("setupWrap").hidden = false;
+    $("setup").className = "note";
+    $("setup").innerHTML = "<b>Market closed right now</b> — " + sp.name + " is expected today around " + sp.start + "–" + sp.end +
+      (sp.provisional ? " (timing to be confirmed by NSE)" : "") + ". Showing the last close; Refresh again once it starts.";
+    return;
+  }
+  const why = /weekend/.test(st) ? "it's the weekend" : /holiday/.test(st) ? "today is a market holiday"
+    : /opens at/.test(st) ? "the market hasn't opened yet" : "today's session has ended";
+  $("setupWrap").hidden = false;
+  $("setup").className = "note";
+  $("setup").innerHTML = "<b>Market closed for today</b> — " + why + ". Showing the last close. " + nextSessionText();
+}
+
 async function run() {
   const btn = $("refresh");
   btn.disabled = true;
@@ -1373,6 +1440,11 @@ async function run() {
   if (SOURCE !== "batch") $("stamp").textContent = "Fetching quotes";   // the batch read is instant; don't flicker the header
 
   try {
+    if (await marketReallyClosed()) {
+      try { await applyBatch(); } catch (e) { /* keep whatever is on screen */ }
+      showClosedNotice();
+      return;
+    }
     if (SOURCE === "batch") {
       await applyBatch();
       $("setupWrap").hidden = true;

@@ -64,8 +64,12 @@ jobs:
           find screenshots -maxdepth 1 -type f \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' \) -print0 | xargs -0 -r git rm -q
           git add docs/data
           git diff --staged --quiet || git commit -m "sync-screenshot: ${{ steps.sync.outcome }} ($(date -u +%F))"
-          git pull --rebase -q origin main
-          git push
+          # Retry: another workflow may push between our pull and push. Our fresh data wins any conflict.
+          for n in 1 2 3 4; do
+            git pull --rebase --autostash -X theirs -q origin main && git push -q && exit 0
+            sleep $((n * 6))
+          done
+          echo "push failed after 4 attempts" >&2; exit 1
 
       - name: Fail the run if nothing validated
         if: steps.sync.outcome == 'failure'

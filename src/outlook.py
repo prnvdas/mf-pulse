@@ -77,11 +77,15 @@ def main() -> None:
     state = read_json("state.json", {})
     d = yf.download(["^NSEI", "^GSPC"], period="max", interval="1d", progress=False,
                     auto_adjust=False, timeout=30, group_by="ticker")
-    nifty = d["^NSEI"]["Close"].dropna()
+    try:
+        nifty = d["^NSEI"]["Close"].dropna()
+    except KeyError:   # Yahoo returned nothing at all
+        print("[error] no index data from Yahoo; leaving outlook.json unchanged", file=sys.stderr)
+        sys.exit(1)
     nifty = nifty[nifty.index >= "2008-01-01"]
     # During the session Yahoo's daily series ends with today's unfinished bar; that is not a
     # "last close". (A delayed morning run on 5 Oct hit exactly this.)
-    if nifty.index[-1].date() == ts.date() and ts < session_end(cfg, ts) + dt.timedelta(minutes=15):
+    if len(nifty) and nifty.index[-1].date() == ts.date() and ts < session_end(cfg, ts) + dt.timedelta(minutes=15):
         nifty = nifty.iloc[:-1]
     sp = d["^GSPC"]["Close"].dropna()
     if len(nifty) < 500 or len(sp) < 500:

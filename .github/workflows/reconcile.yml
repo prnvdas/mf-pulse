@@ -40,6 +40,7 @@ jobs:
       # NAV reconciliation above it.
       - name: Fund analytics
         continue-on-error: true
+        timeout-minutes: 6
         run: python src/analytics.py
       - name: Commit reconciliation
         run: |
@@ -47,5 +48,9 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add docs/data
           git diff --staged --quiet || git commit -m "reconcile $(date -u +%F)"
-          git pull --rebase --autostash -X theirs -q origin main
-          git push
+          # Retry: another workflow may push between our pull and push. Our fresh data wins any conflict.
+          for n in 1 2 3 4; do
+            git pull --rebase --autostash -X theirs -q origin main && git push -q && exit 0
+            sleep $((n * 6))
+          done
+          echo "push failed after 4 attempts" >&2; exit 1

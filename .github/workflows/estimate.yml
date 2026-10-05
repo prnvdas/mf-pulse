@@ -76,6 +76,7 @@ jobs:
       # (or fail) an estimate run.
       - name: News and market explanation
         continue-on-error: true
+        timeout-minutes: 4
         run: python src/news.py
       - name: Commit dashboard data
         run: |
@@ -83,5 +84,9 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add docs/data
           git diff --staged --quiet || git commit -m "estimate $(date -u +%FT%TZ)"
-          git pull --rebase --autostash -X theirs -q origin main
-          git push
+          # Retry: another workflow may push between our pull and push. Our fresh data wins any conflict.
+          for n in 1 2 3 4; do
+            git pull --rebase --autostash -X theirs -q origin main && git push -q && exit 0
+            sleep $((n * 6))
+          done
+          echo "push failed after 4 attempts" >&2; exit 1

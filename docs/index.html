@@ -1921,13 +1921,18 @@ function adaptLatest(d) {
            total: d.tickers_total, phase: d.phase, health: d.health, market: d.market, generatedAt: d.generated_at, movers: d.movers };
 }
 
+// Fetch JSON and accept it only if it has the expected shape (a file that is valid JSON but
+// the wrong kind -- null, {} where a list belongs -- must fall back, not crash the page).
+function loadJson(url, valid, fallback) {
+  return fetch(url, { cache: "no-store" }).then(r => r.ok ? r.json() : Promise.reject())
+    .then(j => valid(j) ? j : Promise.reject()).catch(() => fallback);
+}
+const isObj = j => j && typeof j === "object" && !Array.isArray(j);
+
 (async () => {
-  CFG = await fetch("data/config.json", { cache: "no-store" })
-    .then(r => r.ok ? r.json() : Promise.reject()).catch(() => DEMO);
-  ACC = await fetch("data/accuracy.json", { cache: "no-store" })
-    .then(r => r.ok ? r.json() : Promise.reject()).catch(() => ({ samples: 0 }));
-  HIST = await fetch("data/history.json", { cache: "no-store" })
-    .then(r => r.ok ? r.json() : Promise.reject()).catch(() => []);
+  CFG = await loadJson("data/config.json", j => isObj(j) && Array.isArray(j.funds) && j.funds.length, DEMO);
+  ACC = await loadJson("data/accuracy.json", isObj, { samples: 0 });
+  HIST = await loadJson("data/history.json", Array.isArray, []);
   ANALYTICS = await fetch("data/analytics.json", { cache: "no-store" })
     .then(r => r.ok ? r.json() : null).catch(() => null);
   renderCompare();
@@ -1945,7 +1950,7 @@ function adaptLatest(d) {
     LAST_BATCH = a;
     render(a.funds, { priced: a.priced, requested: a.total || a.priced,
       blend: "estimate.py, " + a.resolved + "/" + a.total + " tickers", phase: a.phase });
-    MOVERS = await fetch("data/movers.json", { cache: "no-store" }).then(r => r.ok ? r.json() : []).catch(() => []);
+    MOVERS = await loadJson("data/movers.json", Array.isArray, []);
     setupMoversPicker(latest.movers);
       stampBatch(a);
     MARKET = a.market || []; renderTicker();

@@ -23,6 +23,7 @@ import time
 import yfinance as yf
 
 from common import (
+    special_session,
     is_market_window,
     session_end,
     load_holdings,
@@ -299,6 +300,17 @@ def main() -> None:
     # the moves (nav_move_pct comes out to just the day's TER drag, coverage
     # correctly shows 0%) rather than skipping the computation entirely.
     is_holiday = bool(latest_bar_date and latest_bar_date < ts.date())
+    # In the opening minutes Yahoo may not have published today's first bar yet, which looks
+    # exactly like a holiday. Don't announce "market closed today" on a normal morning; a
+    # real holiday is still declared by the first run after 09:45 (or any forced/after-close run).
+    if (is_holiday and not args.force and not special_session(cfg, ts)
+            and ts.hour * 60 + ts.minute < 9 * 60 + 45):
+        print("[info] no bar for today yet (opening minutes); not declaring a holiday, keeping last data")
+        latest = read_json("latest.json", None)
+        if latest and not (latest.get("phase") == "final" and str(latest.get("generated_at", ""))[:10] == ts.date().isoformat()):
+            latest["stale"] = True
+            write_json("latest.json", latest)
+        return
     if is_holiday:
         print(f"[info] no trading data newer than {latest_bar_date} — "
               f"{ts.date()} looks like a market holiday; today's move is 0%")

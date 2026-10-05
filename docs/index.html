@@ -973,7 +973,13 @@ function renderWhy() {
   const w = NEWS && NEWS.why, wrap = $("whyWrap");
   if (!w || !(w.points || []).length) { wrap.hidden = true; return; }
   wrap.hidden = false;
-  $("whyTitle").innerHTML = w.title + ' <span>' + w.session + "</span>";
+  // The server bakes "the market is closed today" into the label when it runs; judge that
+  // against the live IST clock instead, so a stale file can never claim it on a trading day.
+  const n = istNow(), todayIso = n.getFullYear() + "-" + String(n.getMonth() + 1).padStart(2, "0") + "-" + String(n.getDate()).padStart(2, "0");
+  let sess = String(w.session || "");
+  if (w.date === todayIso) sess = "Today";
+  else if (!closedAllDay()) sess = sess.replace(/ — the market is closed today/, "") + (marketOpen() ? " — today's session is still in progress" : "");
+  $("whyTitle").innerHTML = w.title + ' <span>' + sess + "</span>";
   const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;");
   const SHOW = 5, more = w.points.length - SHOW;
   const item = (p, i) => '<li' + (i >= SHOW ? ' class="whymore" hidden' : "") + '><span class="n">' + (i + 1) + "</span><div><span class=\"tag " + p.kind + "\">" +

@@ -1,12 +1,15 @@
 name: outlook
 
 # "Next session setup" card: expected move size and the overnight-US lean.
-#   07:30 IST (02:00 UTC) -- the US has closed, so the lean is available
+#   07:30 IST (02:07 UTC) -- the US has closed, so the lean is available; retried at 08:17 and 09:07 IST
+#   because GitHub's scheduler can drop or delay a run (it did on 5 Oct)
 #   17:30 IST (12:00 UTC) -- range for the next session (the lean is 'pending' until the US closes)
 # Monday-Friday. Separate from the estimate job so a failure here can't affect it.
 on:
   schedule:
     - cron: "7 2 * * 1-5"
+    - cron: "47 2 * * 1-5"
+    - cron: "37 3 * * 1-5"
     - cron: "7 12 * * 1-5"
   workflow_dispatch:
 

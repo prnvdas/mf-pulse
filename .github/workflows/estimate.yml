@@ -78,6 +78,16 @@ jobs:
         continue-on-error: true
         timeout-minutes: 4
         run: python src/news.py
+      # Next-session setup card: refreshed right after the close and in the morning as well, so it
+      # doesn't depend on outlook.yml's own schedule alone. Non-blocking.
+      - name: Next-session outlook
+        if: >-
+          inputs.force == true ||
+          github.event.schedule == '52 3 * * 1-5' ||
+          github.event.schedule == '53 10 * * 1-5'
+        continue-on-error: true
+        timeout-minutes: 4
+        run: python src/outlook.py
       - name: Commit dashboard data
         run: |
           git config user.name  "mf-pulse"

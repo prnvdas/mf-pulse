@@ -1079,6 +1079,18 @@ async function loadNews() {
 // lean from the overnight US market with the historical odds behind it. Technical
 // indicators are deliberately absent: they tested no better than guessing. Every
 // call is logged and scored against the real next close, and that record is shown.
+// The directional lean needs the US session's close (about 01:30-02:30 IST). Say what is
+// actually going on right now, by the live IST clock, instead of a flat "not yet".
+function pendingLeanText() {
+  const n = istNow(), m = n.getHours() * 60 + n.getMinutes();
+  if (m >= 19 * 60 || m < 2 * 60 + 30)
+    return "The US market is open right now (it closes around 01:30–02:30 IST). The lean is added automatically on the ~07:30 IST update, once the US session has finished. " +
+      "The ranges above are already the prediction for the next session: how big a move to expect.";
+  if (m < 9 * 60 + 15)
+    return "The US session has closed. The lean is added by the ~07:30 IST update (it can run a little late).";
+  return "The morning update that adds this has not landed yet. It is retried on the next scheduled update; the ranges above are unaffected.";
+}
+
 function renderOutlook() {
   const box = $("bOutlook"), o = OUTLOOK;
   if (!o || !o.nifty) { box.hidden = true; return; }
@@ -1094,7 +1106,7 @@ function renderOutlook() {
     ? "The S&P 500 " + (L.us_sessions > 1 ? "moved " : "") + sg(L.sp_move_pct) + (L.us_sessions > 1 ? " over the " + L.us_sessions + " US sessions" : "") + " since the Nifty's last close. In " + L.n.toLocaleString("en-IN") +
       " past cases where it " + L.bucket + ", the Nifty rose in <b>" + Math.round(L.p_up) + "%</b> of next sessions (average " + sg(L.avg_next_pct) + "). " +
       (L.label === "no clear lean" ? "That is too close to the everyday ~53% to call a direction." : "It is a lean, not a certainty.")
-    : (L.reason || "Not available yet.");
+    : pendingLeanText();
 
   box.innerHTML = '<div class="oh">Next session setup <span class="chip ' + chip[0] + '">' + chip[1] + "</span></div>" +
     '<div class="ou">Updated ' + upd + " IST · Nifty 50 last closed at " + pts(o.base_close) + " (" + d(o.base_close_date) + ")</div>" +

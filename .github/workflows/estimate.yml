@@ -23,7 +23,15 @@ on:
     - cron: "8 11 * * 1-5"
     - cron: "23 11 * * 1-5"
     - cron: "38 11 * * 1-5"
+  # Also startable from outside the schedule (the dashboard's Refresh button, or an
+  # external cron service) through the Actions API; `force` runs the full read even
+  # outside market hours, which is what produces the end-of-day "final" number.
   workflow_dispatch:
+    inputs:
+      force:
+        description: "Force a fresh read even outside market hours (use after the close)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -45,6 +53,7 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Settle run (forced fresh read of finalized closing prices)
         if: >-
+          inputs.force == true ||
           github.event.schedule == '23 10 * * 1-5' ||
           github.event.schedule == '38 10 * * 1-5' ||
           github.event.schedule == '53 10 * * 1-5' ||
@@ -54,6 +63,7 @@ jobs:
         run: python src/estimate.py --force
       - name: Intraday run
         if: >-
+          inputs.force != true &&
           github.event.schedule != '23 10 * * 1-5' &&
           github.event.schedule != '38 10 * * 1-5' &&
           github.event.schedule != '53 10 * * 1-5' &&

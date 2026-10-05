@@ -103,6 +103,10 @@
 
   .acc.four{grid-template-columns:repeat(4,1fr)}
   .scroll{overflow-x:auto}
+  .od{margin:30px 0 8px;font-size:13px;color:var(--grey)}
+  .od p{margin:8px 0;line-height:1.6;max-width:70ch}
+  .odrow{display:flex;gap:8px;flex-wrap:wrap}
+  .odrow input{flex:1;min-width:220px;font:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--rule)}
   .outlook{border:1px solid var(--rule);padding:16px 20px 14px;margin:18px 0 6px;font-size:13.5px;line-height:1.55}
   .outlook .oh{display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-weight:600;font-size:14px}
   .outlook .ou{font-size:11.5px;color:var(--grey-light);margin:2px 0 10px}
@@ -356,6 +360,15 @@
       and holding 22% for decades would be exceptional. Real markets move unevenly and results can differ a
       lot. Edit the scenarios under <code>projection</code> in <code>config/portfolio.yaml</code>.</p>
   </section>
+
+  <details id="odBox" class="od">
+    <summary>Reliable updates (optional)</summary>
+    <p>GitHub's schedule can run late or skip runs. With a token saved <b>in this browser only</b>, Refresh can ask GitHub to run the update right away, and this page will request one itself if market-hours data goes stale.
+      Create a fine-grained token for this repository only with <b>Actions: Read and write</b> (nothing else), then paste it here. Steps are in <code>TRIGGERS.md</code>.</p>
+    <div class="odrow"><input id="odToken" type="password" autocomplete="off" placeholder="github_pat_…" aria-label="GitHub token">
+      <button class="ghost" id="odSave">Save</button><button class="ghost" id="odTest" hidden>Send a test update</button><button class="ghost" id="odRemove" hidden>Remove</button></div>
+    <p class="sub2"><span id="odState"></span> <span id="odMsg"></span></p>
+  </details>
 
   <footer>
     <b>How this works.</b> AMFI publishes NAV once daily, after close. Pressing refresh prices
@@ -1598,7 +1611,98 @@ function showClosedNotice() {
   $("setup").innerHTML = "<b>Market closed for today</b> — " + why + ". Showing the last close. " + nextSessionText();
 }
 
-async function run() {
+// ---- On-demand updates (optional) -----------------------------------------------------
+// GitHub's schedule is best-effort and can run hours late or skip runs entirely. With a
+// fine-grained token (this repo only, "Actions: read & write") saved in THIS browser, the
+// page can start the update itself: Refresh asks GitHub to run the estimate job and shows
+// the result when it lands; an open page also does so when market-hours data is stale, and
+// when the close passes without a final read. The token never leaves this browser except in
+// the request to api.github.com.
+const OD = { tok: "mfp_gh_token", last: "mfp_gh_last" };
+function odToken() { try { return localStorage.getItem(OD.tok) || ""; } catch (e) { return ""; } }
+function odRepo() {
+  const r = CFG && CFG.profile && CFG.profile.github_repo;
+  if (r) return r;
+  return location.hostname.endsWith("github.io") ? location.hostname.split(".")[0] + "/" + (location.pathname.split("/")[1] || "") : "";
+}
+function odCooldown(ms) { try { return Date.now() - (+localStorage.getItem(OD.last) || 0) < ms; } catch (e) { return false; } }
+
+async function odDispatch(force) {
+  const repo = odRepo(), tok = odToken();
+  if (!repo || !tok) return { ok: false, msg: "no token or repository configured" };
+  try {
+    const r = await fetch("https://api.github.com/repos/" + repo + "/actions/workflows/estimate.yml/dispatches", {
+      method: "POST",
+      headers: { Authorization: "Bearer " + tok, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", "Content-Type": "application/json" },
+      body: JSON.stringify({ ref: "main", inputs: { force: force ? "true" : "false" } })
+    });
+    if (r.status === 204) { try { localStorage.setItem(OD.last, String(Date.now())); } catch (e) {} return { ok: true }; }
+    const why = { 401: "the token was rejected (expired or mistyped)", 403: "the token doesn't have Actions: Read and write on this repository",
+                  404: "the repository or workflow wasn't found, or the token can't see it", 422: "GitHub rejected the request" }[r.status] || ("GitHub replied HTTP " + r.status);
+    return { ok: false, msg: why };
+  } catch (e) { return { ok: false, msg: "couldn't reach GitHub (" + (e.message || e) + ")" }; }
+}
+
+async function latestMeta() {
+  const j = await fetch("data/latest.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.json());
+  return { gen: j.generated_at, phase: j.phase };
+}
+
+function odNotice(html, bad) { $("setupWrap").hidden = false; $("setup").className = bad ? "note bad" : "note"; $("setup").innerHTML = html; $("setup").dataset.od = String(Date.now()); }
+function odNoticeFresh() { return Date.now() - (+$("setup").dataset.od || 0) < 120000; }
+
+// Ask GitHub for a fresh update, then wait for the new data to appear on the site (the job
+// takes ~1-2 minutes and GitHub Pages ~1 more).
+async function onDemandUpdate(force, why) {
+  let base = null;
+  try { base = (await latestMeta()).gen; } catch (e) {}
+  if (!odCooldown(3 * 60 * 1000)) {
+    $("stamp").textContent = "Requesting a fresh update…";
+    const r = await odDispatch(force);
+    if (!r.ok) { odNotice("<b>Couldn't start an update:</b> " + r.msg + ". Showing the latest scheduled batch instead.", true); try { await applyBatch(); } catch (e) {} return; }
+  }
+  odNotice((why ? why + " " : "") + "<b>Update requested</b> — fetching fresh prices. This usually takes 2–3 minutes; the page updates by itself when it lands.");
+  for (let i = 0; i < 26; i++) {
+    await new Promise(res => setTimeout(res, 10000));
+    $("stamp").textContent = "Updating… " + Math.round((i + 1) * 10 / 60 * 10) / 10 + " min";
+    try { const m = await latestMeta(); if (m.gen !== base) { await applyBatch(); $("setupWrap").hidden = true; return; } } catch (e) {}
+  }
+  try { await applyBatch(); } catch (e) {}
+  odNotice("The update was requested, but the new data isn't on the site yet. GitHub may still be running it — press Refresh again in a minute.");
+}
+
+// After the close on a trading day with no final read yet, ask for one.
+async function needsFinal() {
+  if (!odToken() || closedAllDay() || istNow().getHours() * 60 + istNow().getMinutes() < 945) return false;
+  try { const m = await latestMeta(); return !(m.phase === "final" && String(m.gen).slice(0, 10) === istDate(istNow())); } catch (e) { return false; }
+}
+
+// Open page + market hours + stale data: request an update (at most once per 10 minutes).
+function selfHeal(a) {
+  const age = ageMinutes(a && a.generatedAt);
+  if (odToken() && marketOpen() && !holidayToday() && age != null && age > 20 && !odCooldown(10 * 60 * 1000)) odDispatch(false);
+}
+
+function renderOnDemandBox() {
+  const has = !!odToken();
+  $("odState").textContent = has ? "Enabled — a token is saved in this browser." : "Not enabled.";
+  $("odRemove").hidden = !has; $("odTest").hidden = !has;
+}
+$("odSave").addEventListener("click", () => {
+  const v = $("odToken").value.trim();
+  if (!/^(github_pat_|ghp_)/.test(v)) { $("odMsg").textContent = "That doesn't look like a GitHub token (it should start with github_pat_)."; return; }
+  try { localStorage.setItem(OD.tok, v); } catch (e) { $("odMsg").textContent = "This browser blocked saving."; return; }
+  $("odToken").value = ""; $("odMsg").textContent = "Saved. Use “Send a test update” to check it works."; renderOnDemandBox();
+});
+$("odRemove").addEventListener("click", () => { try { localStorage.removeItem(OD.tok); } catch (e) {} $("odMsg").textContent = "Token removed from this browser."; renderOnDemandBox(); });
+$("odTest").addEventListener("click", async () => {
+  $("odMsg").textContent = "Sending…";
+  const r = await odDispatch(false);
+  $("odMsg").textContent = r.ok ? "Works — GitHub accepted the request. An update run is starting (see the Actions tab)." : "Didn't work: " + r.msg + ".";
+});
+renderOnDemandBox();
+
+async function run(manual) {
   const btn = $("refresh");
   btn.disabled = true;
   btn.innerHTML = '<span class="spin"></span>Pricing';
@@ -1606,13 +1710,18 @@ async function run() {
 
   try {
     if (await marketReallyClosed()) {
+      if (manual === true && await needsFinal()) {
+        await onDemandUpdate(true, "The market has closed but today's final read hasn't been produced yet.");
+        return;
+      }
       try { await applyBatch(); } catch (e) { /* keep whatever is on screen */ }
       showClosedNotice();
       return;
     }
+    if (manual === true && odToken()) { await onDemandUpdate(false); return; }
     if (SOURCE === "batch") {
-      await applyBatch();
-      $("setupWrap").hidden = true;
+      const a0 = await applyBatch(); selfHeal(a0);
+      if (!odNoticeFresh()) $("setupWrap").hidden = true;
       return;
     }
     const tickers = [...new Set(CFG.funds.flatMap(f =>
@@ -1753,7 +1862,7 @@ $("diag").addEventListener("click", async e => {
   b.disabled = false; b.textContent = "Diagnose";
 });
 
-$("refresh").addEventListener("click", run);
+$("refresh").addEventListener("click", () => run(true));
 
 // "Portfolio" in the header acts as a home button: back to the top, panels
 // closed, numbers reloaded. preventDefault keeps the URL hash intact -- the

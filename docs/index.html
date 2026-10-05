@@ -681,7 +681,8 @@ function render(funds, meta) {
   $("eyebrow").textContent = marketOpen() ? "Estimated impact — live" : "Estimated impact — session close";
 
   $("sub").innerHTML = meta.phase === "holiday"
-    ? "Markets were closed, so no stock moved. Your portfolio is worth <b>" + inr(value) + "</b> at the last close — a total profit of <b>" +
+    ? (closedAllDay() ? "Markets were closed, so no stock moved. Your" : preOpenNote() + "Showing the last close — your") +
+      " portfolio is worth <b>" + inr(value) + "</b>" + (closedAllDay() ? " at the last close" : "") + " — a total profit of <b>" +
       signed(value - invested) + "</b> (" + pc(invested ? (value - invested) / invested * 100 : 0) + ") since you started."
     :     "On <b>" + inr(value) + "</b>, inferred from <b>" + meta.priced + "</b> stock prices" +
     (meta.blend ? " (" + meta.blend + ")" : "") + ". " +
@@ -735,8 +736,11 @@ function render(funds, meta) {
     }).join("");
   } else {
     $("contrib").innerHTML = meta.phase === "holiday"
-      ? '<div class="note">Markets were closed today (holiday or weekend), so no stock moved. ' +
-        'The <b>Top movers</b> section below has the last trading session.</div>'
+      ? (closedAllDay()
+        ? '<div class="note">Markets were closed today (holiday or weekend), so no stock moved. ' +
+          'The <b>Top movers</b> section below has the last trading session.</div>'
+        : '<div class="note">No stock moves yet today — they appear with the first estimate once the market is open (from 09:15). ' +
+          'The <b>Top movers</b> section below has the last trading session.</div>')
       : '<div class="note">No stock prices yet for this view. Press <b>Refresh live</b> ' +
         'once the market is open; if holdings have never been imported, see ' +
         '<code>import_holdings.py</code> and <code>export_web.py</code>.</div>';
@@ -1154,8 +1158,7 @@ function renderBrief(funds, value, invested, impact, meta) {
   const hr = ist.getHours(), name = prof.name ? ", " + esc(prof.name) : "";
   const day = Math.floor((ist - new Date(ist.getFullYear(), 0, 0)) / 86400000);
   const phase = meta && meta.phase || BRIEF_PHASE;
-  const mk = phase === "holiday" ? "Markets are closed today" : phase === "final" ? "Markets have closed for the day"
-    : marketOpen() ? "Markets are open" : "Markets are closed right now";
+  const mk = marketStatus();   // from the live clock, not from whatever the last data file happened to say
   const A = (ANALYTICS && ANALYTICS.funds) || [];
   const vOf = id => (funds.find(f => f.id === id) || {}).value || 0;
   const sg = (v, d = 1) => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d) + "%";
@@ -1191,7 +1194,8 @@ function renderBrief(funds, value, invested, impact, meta) {
     (cover < 0.9 ? " (Newer funds, about " + Math.round((1 - cover) * 100) + "% of your money, don't have a full year yet.)" : "")]);
   pts.push(["Your habit", "Your SIP of <b>" + inr(CFG.monthly_sip_total || 0) + "</b> a month adds about " + inr(sipYear) + " a year of new savings." +
     (gap >= 1.5 ? " With prices about " + gap.toFixed(0) + "% below their recent highs, each month's SIP is buying about " + gap.toFixed(0) + "% more units than at the peak." : "")]);
-  pts.push(["Today", phase === "holiday" ? "Markets are closed, so nothing moved. A good day to let compounding do its work."
+  pts.push(["Today", phase === "holiday" ? (closedAllDay() ? "Markets are closed, so nothing moved. A good day to let compounding do its work."
+      : preOpenNote() + "Until then your portfolio stays at its last close.")
     : (impact >= 0 ? "Your portfolio is estimated up <b>" : "Your portfolio is estimated down <b>") + inr(impact) + "</b> today (" + sg(impact / value * 100, 2) + ")." +
       (MARKET.length ? " " + MARKET.slice(0, 2).map(m => m.name + " " + sg(m.move_pct, 2)).join(", ") + "." : "")]);
   $("bPoints").innerHTML = pts.map(p => '<li><span class="bk">' + p[0] + "</span><span>" + p[1] + "</span></li>").join("");
@@ -1485,6 +1489,16 @@ function holidayToday() {
     gen.getUTCMonth() === ist.getMonth() && gen.getUTCDate() === ist.getDate());
 }
 
+// A "holiday" phase stored in the data only describes TODAY if the job wrote it today.
+// On a normal Monday morning the label left over from the weekend says nothing about
+// today -- trusting it is what made the greeting claim "markets are closed today".
+function closedAllDay() { return (istNow().getDay() % 6 === 0 && !specialToday()) || holidayToday(); }
+function preOpenNote() {
+  const mins = istNow().getHours() * 60 + istNow().getMinutes();
+  return marketOpen() ? "The market is open — today's first estimate arrives with the next update (within about 15 minutes). "
+    : mins < 555 ? "The market opens at 09:15; today's estimate starts then. " : "";
+}
+
 function marketStatus() {
   const ist = istNow(), dow = ist.getDay(), mins = ist.getHours() * 60 + ist.getMinutes();
   const sp = specialToday();
@@ -1522,6 +1536,7 @@ async function applyBatch() {
   const latest = await r.json();
   if (!latest || !latest.funds) throw new Error("latest.json has no funds");
   const a = adaptLatest(latest);
+  LAST_BATCH = a;           // known before drawing, so the status helpers can see it
   render(a.funds, { priced: a.priced, requested: a.total || a.priced,
     blend: "estimate.py, " + a.resolved + "/" + a.total + " tickers", phase: a.phase });
   setupMoversPicker(a.movers);
@@ -1812,6 +1827,7 @@ function adaptLatest(d) {
 
   if (latest && latest.funds) {
     const a = adaptLatest(latest);
+    LAST_BATCH = a;
     render(a.funds, { priced: a.priced, requested: a.total || a.priced,
       blend: "estimate.py, " + a.resolved + "/" + a.total + " tickers", phase: a.phase });
     MOVERS = await fetch("data/movers.json", { cache: "no-store" }).then(r => r.ok ? r.json() : []).catch(() => []);

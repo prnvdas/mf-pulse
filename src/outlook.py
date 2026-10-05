@@ -30,7 +30,7 @@ import pandas as pd
 import yfinance as yf
 
 from analytics import fetch_nav_series
-from common import load_portfolio, now_ist, read_json, write_json
+from common import load_portfolio, now_ist, read_json, session_end, write_json
 
 LAMBDA = 0.94
 BINS = [-99, -1.0, -0.3, 0.3, 1.0, 99]
@@ -76,9 +76,13 @@ def main() -> None:
     cfg, ts = load_portfolio(), now_ist()
     state = read_json("state.json", {})
     d = yf.download(["^NSEI", "^GSPC"], period="max", interval="1d", progress=False,
-                    auto_adjust=False, group_by="ticker")
+                    auto_adjust=False, timeout=30, group_by="ticker")
     nifty = d["^NSEI"]["Close"].dropna()
     nifty = nifty[nifty.index >= "2008-01-01"]
+    # During the session Yahoo's daily series ends with today's unfinished bar; that is not a
+    # "last close". (A delayed morning run on 5 Oct hit exactly this.)
+    if nifty.index[-1].date() == ts.date() and ts < session_end(cfg, ts) + dt.timedelta(minutes=15):
+        nifty = nifty.iloc[:-1]
     sp = d["^GSPC"]["Close"].dropna()
     if len(nifty) < 500 or len(sp) < 500:
         print("[error] not enough index history; leaving outlook.json unchanged", file=sys.stderr)

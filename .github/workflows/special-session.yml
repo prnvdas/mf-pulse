@@ -10,7 +10,7 @@ name: special-session
 # delete entries once they've passed.
 on:
   schedule:
-    - cron: "*/10 12-14 8 11 *"   # Diwali Muhurat trading 2026-11-08 (17:30-20:20 IST)
+    - cron: "3,13,23,33,43,53 12-14 8 11 *"   # Diwali Muhurat trading 2026-11-08 (17:30-20:20 IST)
   workflow_dispatch:
 
 permissions:
@@ -23,6 +23,7 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

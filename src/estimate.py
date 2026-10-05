@@ -92,7 +92,7 @@ def fetch_moves(
                 group_by="ticker",
                 progress=False,
                 threads=True,
-                auto_adjust=False,
+                auto_adjust=False, timeout=30,
             )
             break
         except Exception as exc:  # noqa: BLE001 — never let a data blip kill the run

@@ -57,7 +57,7 @@ def fetch_prices(tickers: list[str]) -> dict[str, pd.Series]:
     try:
         data = yf.download(
             tickers=" ".join(tickers), period="max", interval="1d",
-            group_by="ticker", progress=False, threads=True, auto_adjust=False,
+            group_by="ticker", progress=False, threads=True, auto_adjust=False, timeout=30,
         )
     except Exception as exc:  # noqa: BLE001
         print(f"[warn] benchmark download failed: {exc}", file=sys.stderr)

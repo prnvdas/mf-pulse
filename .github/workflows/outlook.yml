@@ -6,8 +6,8 @@ name: outlook
 # Monday-Friday. Separate from the estimate job so a failure here can't affect it.
 on:
   schedule:
-    - cron: "0 2 * * 1-5"
-    - cron: "0 12 * * 1-5"
+    - cron: "7 2 * * 1-5"
+    - cron: "7 12 * * 1-5"
   workflow_dispatch:
 
 permissions:
@@ -19,6 +19,7 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

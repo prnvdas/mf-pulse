@@ -32,6 +32,7 @@ permissions:
 jobs:
   run:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     # Inputs go through env rather than being interpolated directly into a
     # run: script -- `note` is free text, and splicing ${{ inputs.note }}
     # straight into a bash script's source would let a note containing

@@ -4,7 +4,7 @@ name: ai-news
 # once a day at 08:00 IST (02:30 UTC), every day of the week.
 on:
   schedule:
-    - cron: "30 2 * * *"
+    - cron: "37 2 * * *"
   workflow_dispatch:
 
 permissions:
@@ -16,6 +16,7 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
+    timeout-minutes: 6
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

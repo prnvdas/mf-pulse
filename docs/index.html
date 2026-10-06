@@ -20,6 +20,13 @@
   .wrap{max-width:1080px;margin:0 auto;padding:0 32px}
 
   header{border-bottom:1px solid var(--ink);padding:22px 0 16px}
+  .glance{margin:14px 0 4px}
+  .gtxt{font-size:15px;line-height:1.5}
+  .gbar{position:relative;display:flex;justify-content:space-between;align-items:center;height:30px;margin:10px 0 6px;background:#f1d5d2;font-size:12px;font-weight:600;letter-spacing:.02em}
+  .gbar i{position:absolute;left:0;top:0;bottom:0;background:var(--green);opacity:.85}
+  .gbar span{position:relative;padding:0 10px;color:var(--ink)}
+  .gbar em{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink)}
+  .gnote{font-size:12px;color:var(--grey);line-height:1.5}
   .toast{position:fixed;top:14px;left:50%;transform:translate(-50%,-16px);max-width:min(560px,calc(100vw - 32px));background:var(--ink);color:var(--paper);padding:12px 18px;font-size:13.5px;line-height:1.5;z-index:50;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;border-left:3px solid var(--green)}
   .toast.show{opacity:1;transform:translate(-50%,0)}
   .toast.bad{border-left-color:var(--red)}
@@ -1098,17 +1105,32 @@ function renderOutlook() {
   const d = x => new Date(x + "T00:00:00").toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
   const pts = n => n.toLocaleString("en-IN", { maximumFractionDigits: 0 });
   const L = o.lean || {}, p = o.portfolio, c = o.calibration || {}, rec = o.record || {}, oos = o.lean_out_of_sample || {};
-  const chip = L.status !== "ok" ? ["flat", "lean pending"] : L.label === "leans up" ? ["healthy", "leans up"] : L.label === "leans down" ? ["caution", "leans down"] : ["flat", "no clear lean"];
+  const tilt = L.status === "ok" ? (L.p_up >= 56 ? "slight tilt up" : L.p_up <= 44 ? "slight tilt down" : "no clear lean") : "";
+  const chip = L.status !== "ok" ? ["flat", "lean pending"] : L.label === "leans up" ? ["healthy", "leans up"] : L.label === "leans down" ? ["caution", "leans down"]
+    : [tilt === "slight tilt up" ? "healthy" : tilt === "slight tilt down" ? "caution" : "flat", tilt];
   const sg = (v, dd = 2) => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(dd) + "%";
   const upd = new Date(o.generated_at).toLocaleString("en-IN", { weekday: "short", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" });
 
   const leanText = L.status === "ok"
     ? "The S&P 500 " + (L.us_sessions > 1 ? "moved " : "") + sg(L.sp_move_pct) + (L.us_sessions > 1 ? " over the " + L.us_sessions + " US sessions" : "") + " since the Nifty's last close. In " + L.n.toLocaleString("en-IN") +
       " past cases where it " + L.bucket + ", the Nifty rose in <b>" + Math.round(L.p_up) + "%</b> of next sessions (average " + sg(L.avg_next_pct) + "). " +
-      (L.label === "no clear lean" ? "That is too close to the everyday ~53% to call a direction." : "It is a lean, not a certainty.")
+      (L.label !== "no clear lean" ? "It is a lean, not a certainty."
+        : tilt === "no clear lean" ? "That is too close to the everyday ~53% to call a direction."
+        : "That is only a few points away from the everyday ~53%: a small tilt, not strong enough to count as a call.")
     : pendingLeanText();
 
-  box.innerHTML = '<div class="oh">Next session setup <span class="chip ' + chip[0] + '">' + chip[1] + "</span></div>" +
+  // One plain line for the whole picture, with the odds drawn out; the baseline (~53% of
+  // sessions rise) is shown so nobody mistakes 59% for a sure thing.
+  const glance = L.status === "ok"
+    ? '<div class="glance"><div class="gtxt"><b>Tomorrow at a glance:</b> ' +
+      (L.p_up >= 56 ? "slightly more likely to rise than fall" : L.p_up <= 44 ? "slightly more likely to fall than rise" : "about as likely to rise as to fall") +
+      ", most likely finishing between " + pts(o.nifty.typical[0]) + " and " + pts(o.nifty.typical[1]) + ".</div>" +
+      '<div class="gbar" title="Chance the Nifty rises next session, from similar past overnight S&P moves"><i style="width:' + Math.round(L.p_up) + '%"></i><span class="gu">Up ' + Math.round(L.p_up) +
+      '%</span><span class="gd">Down ' + (100 - Math.round(L.p_up)) + '%</span><em style="left:53%" title="On an ordinary day about 53% of sessions rise"></em></div>' +
+      '<div class="gnote">The thin marker is the everyday baseline (about 53% of sessions rise). An edge of a few points is small: treat it as a tilt, not a call.</div></div>'
+    : "";
+
+  box.innerHTML = '<div class="oh">Next session setup <span class="chip ' + chip[0] + '">' + chip[1] + "</span></div>" + glance +
     '<div class="ou">Updated ' + upd + " IST · Nifty 50 last closed at " + pts(o.base_close) + " (" + d(o.base_close_date) + ")</div>" +
     '<div class="orow"><span class="ok">Typical move</span><span>About <b>±' + o.sigma_pct.toFixed(2) + "%</b> on the Nifty (" + pts(o.nifty.typical[0]) + "–" + pts(o.nifty.typical[1]) + ")" +
       (p ? ", about <b>±" + inr(p.typical_rupees) + "</b> on your portfolio" : "") + ". The move lands inside this on roughly " + Math.round(c.within1_pct / 10) + " in 10 sessions.</span></div>" +

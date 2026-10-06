@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-05T19:27:27.939064+05:30",
+  "generated_at": "2026-10-06T08:43:33.116245+05:30",
   "base_close_date": "2026-10-05",
   "base_close": 22555.75,
   "sigma_pct": 0.69,
@@ -14,14 +14,21 @@
     ]
   },
   "portfolio": {
-    "value": 10450820,
-    "sigma_pct": 0.79,
-    "typical_rupees": 82817,
-    "wide_rupees": 165633
+    "value": 10465706,
+    "sigma_pct": 0.77,
+    "typical_rupees": 80488,
+    "wide_rupees": 160975
   },
   "lean": {
-    "status": "pending",
-    "reason": "The US market hasn't closed since the last Nifty close yet; this updates around 07:30 IST."
+    "status": "ok",
+    "label": "no clear lean",
+    "p_up": 59.3,
+    "n": 1026,
+    "bucket": "rose 0.3\u20131%",
+    "avg_next_pct": 0.17,
+    "sp_date": "2026-10-05",
+    "sp_move_pct": 0.66,
+    "us_sessions": 1
   },
   "buckets": [
     {

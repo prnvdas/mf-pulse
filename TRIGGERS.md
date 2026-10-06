@@ -29,24 +29,30 @@ Repeat on each device/browser you want this on.
 
 Behaviour: Refresh during market hours requests a fresh run and waits for the new data (about 2–3 minutes). There is a 3-minute cooldown between requests, and the automatic catch-up runs at most once per 10 minutes.
 
-## 2B. cron-job.org option
+## 2B. cron-job.org option (recommended)
 
-1. Sign up at https://cron-job.org (free) and set your account timezone to **Asia/Kolkata**.
-2. Create **job 1: intraday** → *Create cronjob*:
-   - URL: `https://api.github.com/repos/prnvdas/mf-pulse/actions/workflows/estimate.yml/dispatches`
-   - Schedule: custom, Monday–Friday, every 15 minutes between 09:20 and 15:35 (minutes 05,20,35,50 avoid GitHub's busiest marks).
-   - Advanced → Request method **POST**; Headers:
-     - `Authorization: Bearer github_pat_…` (your cron token)
-     - `Accept: application/vnd.github+json`
-     - `X-GitHub-Api-Version: 2022-11-28`
-     - `User-Agent: mf-pulse-cron`
-     - `Content-Type: application/json`
-   - Request body: `{"ref":"main"}`
-   - Success is HTTP **204**; enable failure notifications.
-3. Create **job 2: after-close final** the same way, with schedule Mon–Fri at **15:55** (and optionally a second at **16:25**), body:
-   `{"ref":"main","inputs":{"force":"true"}}`
+1. Sign up at https://cron-job.org (free). In Settings, set the timezone to **Asia/Kolkata**.
+2. Create **four** cron jobs. All use the same method, headers and token; only the URL, schedule and body differ.
 
-Overlapping runs are harmless: the workflow uses a concurrency group, and a later intraday run never downgrades a same-day final.
+   Common settings (Advanced tab): request method **POST**; headers
+   - `Authorization: Bearer github_pat_...` (your cron token)
+   - `Accept: application/vnd.github+json`
+   - `X-GitHub-Api-Version: 2022-11-28`
+   - `User-Agent: mf-pulse-cron`
+   - `Content-Type: application/json`
+
+   Success is HTTP **204**. Turn on "notify on failure".
+
+   | # | Purpose | URL ends with | Schedule (IST) | Request body |
+   |---|---|---|---|---|
+   | 1 | Live numbers | `.../workflows/estimate.yml/dispatches` | Mon-Fri, every 15 min, 09:20-15:35 | `{"ref":"main"}` |
+   | 2 | End-of-day final read | `.../workflows/estimate.yml/dispatches` | Mon-Fri 15:55 (and again 16:25) | `{"ref":"main","inputs":{"force":"true"}}` |
+   | 3 | Morning outlook (US lean) | `.../workflows/outlook.yml/dispatches` | Mon-Fri 07:45 (and again 09:05) | `{"ref":"main"}` |
+   | 4 | Nightly NAV grading | `.../workflows/reconcile.yml/dispatches` | Mon-Fri 23:30 | `{"ref":"main"}` |
+
+   Full URL pattern: `https://api.github.com/repos/prnvdas/mf-pulse/actions/workflows/<file>/dispatches`
+
+Overlapping runs are harmless: each workflow queues behind itself, and a later intraday run never downgrades a same-day final.
 
 ## Test from a terminal
 

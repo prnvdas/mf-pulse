@@ -1075,7 +1075,16 @@ const INDEX_TICKER = makeTicker(
       '</span><span class="' + (up ? "up" : "dn") + '">' + arrow + " " + Math.abs(m.change).toLocaleString("en-IN", { maximumFractionDigits: 2 }) +
       " (" + (up ? "+" : "−") + Math.abs(m.move_pct).toFixed(2) + '%)</span></span><span class="dot">|</span>';
   }).join(""),
-  () => (marketOpen() ? "<i></i>LIVE" : '<i class="off"></i>LAST CLOSE'));
+  () => tickerLabel());
+// "LIVE" only when the numbers really are fresh. Showing yesterday's close under a LIVE tag
+// on a trading morning (before the first update lands) was misleading.
+function tickerLabel() {
+  if (!marketOpen()) return '<i class="off"></i>LAST CLOSE';
+  const age = LAST_BATCH ? ageMinutes(LAST_BATCH.generatedAt) : null;
+  if (age != null && age <= 30) return "<i></i>LIVE";
+  const t = LAST_BATCH && LAST_BATCH.generatedAt ? new Date(LAST_BATCH.generatedAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }) : "";
+  return '<i class="off"></i>' + (age != null && age > 600 ? "LAST CLOSE" : "AS OF " + t);
+}
 function renderTicker() { INDEX_TICKER.render(MARKET); }
 
 async function loadNews() {
@@ -1565,9 +1574,16 @@ function paintStamp() {
     String(ist.getHours()).padStart(2, "0") + ":" + String(ist.getMinutes()).padStart(2, "0") + " IST";
   const age = ageMinutes(a.generatedAt);
   const late = age != null && marketOpen() && !holidayToday() && age > 30;
+  const mins = ist.getHours() * 60 + ist.getMinutes();
+  // First update of the day is due ~09:22-09:40; don't blame the scheduler before then.
+  const waiting = late && mins < 9 * 60 + 45 && age > 300 && !specialToday();
+  const fix = odToken() ? "press Refresh live to request one" : '<a href="#odBox" id="odFix">set up automatic updates</a>';
   $("stamp").innerHTML = marketStatus() + " · <b>" + clock + "</b>" +
     (age != null ? " · data " + (age < 1 ? "just updated" : age < 90 ? age + " min old" : age < 2880 ? Math.round(age / 60) + " h old" : Math.round(age / 1440) + " days old") : "") +
-    (late ? ' · <span class="neg">delayed — the scheduler is running late</span>' : "");
+    (waiting ? " · waiting for today's first update (due about 09:30)"
+      : late ? ' · <span class="neg">delayed — updates are running late; ' + fix + "</span>" : "");
+  const tl = $("tkLab"); if (tl) tl.innerHTML = tickerLabel();
+  const of = $("odFix"); if (of) of.onclick = () => { const b = $("odBox"); if (b) { b.open = true; b.scrollIntoView({ behavior: "smooth", block: "center" }); } return false; };
 }
 setInterval(paintStamp, 30000);        // keep the clock and the data age moving
 

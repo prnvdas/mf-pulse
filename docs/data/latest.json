@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-07T23:21:43.163902+05:30",
-  "generated_label": "07 Oct 2026, 23:21 IST",
+  "generated_at": "2026-10-07T23:27:44.052471+05:30",
+  "generated_label": "07 Oct 2026, 23:27 IST",
   "stale": false,
   "phase": "final",
   "market_open": false,
@@ -9,9 +9,9 @@
     "invested": 8387000.0,
     "total_returns": 2204104.16,
     "total_returns_pct": 26.28,
-    "today_impact": -45220.9,
-    "today_pct": -0.427,
-    "band_rupees": 7378.0
+    "today_impact": -45441.25,
+    "today_pct": -0.429,
+    "band_rupees": 7295.0
   },
   "funds": [
     {
@@ -19,18 +19,18 @@
       "name": "Axis Small Cap Fund Direct Growth",
       "current_value": 5376936.91,
       "invested": 4125000.0,
-      "nav_move_pct": -0.155,
-      "rupee_impact": -8332.16,
+      "nav_move_pct": -0.159,
+      "rupee_impact": -8552.51,
       "last_nav": 134.14,
-      "projected_nav": 133.9321,
-      "band_rupees": 5394.0,
-      "coverage_pct": 87.8,
+      "projected_nav": 133.9266,
+      "band_rupees": 5280.0,
+      "coverage_pct": 88.1,
       "cash_pct": 12.2,
       "tail_pct": 0.0,
       "tail_move_pct": 0.09,
       "holdings_as_of": "2026-09-12",
       "holdings_count": 120,
-      "priced_count": 119,
+      "priced_count": 120,
       "top_contributors": [
         {
           "name": "Brigade Enterprises Ltd",
@@ -495,17 +495,17 @@
     ],
     "breadth": {
       "up": 93,
-      "down": 163,
-      "total": 256
+      "down": 164,
+      "total": 257
     },
-    "portfolio_pct": -0.427,
-    "portfolio_impact": -45221,
+    "portfolio_pct": -0.429,
+    "portfolio_impact": -45441,
     "funds": [
       {
         "id": "axis-small-cap",
         "name": "Axis Small Cap Fund Direct Growth",
-        "nav_move_pct": -0.155,
-        "impact": -8332
+        "nav_move_pct": -0.159,
+        "impact": -8553
       },
       {
         "id": "mirae-large-midcap",
@@ -553,8 +553,8 @@
   ],
   "breadth": {
     "up": 93,
-    "down": 163,
-    "total": 256
+    "down": 164,
+    "total": 257
   },
   "accuracy": {
     "samples": 30,
@@ -582,6 +582,6 @@
       }
     }
   },
-  "tickers_resolved": 259,
+  "tickers_resolved": 260,
   "tickers_total": 260
 }

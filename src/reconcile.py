@@ -153,9 +153,55 @@ def main() -> None:
     write_json("state.json", state)
     write_json("history.json", history)
     write_json("accuracy.json", summarise(history))
+    if settle_latest(latest, state):
+        write_json("latest.json", latest)
 
     if updated_any:
         print("[ok] reconciled")
+
+
+def settle_latest(latest: dict | None, state: dict) -> bool:
+    """Bring latest.json's money figures up to the NAVs reconcile just recorded.
+
+    The dashboard reads latest.json, which estimate.py builds from the *previous* NAV plus an
+    estimated move for the session. Once the real NAV is published (overnight) that estimate
+    has been graded; leaving it would keep showing last night's pre-NAV value (and the graded
+    session's "today" move) until the next session's first run. So: value, invested and
+    NAV follow the new NAV, and the settled session's move is reset to zero. Idempotent --
+    it only acts when a fund's NAV or units differ from state.
+    """
+    if not latest or not latest.get("funds"):
+        return False
+    changed = False
+    for f in latest["funds"]:
+        st = state.get(f["id"]) or {}
+        units, nav = st.get("units"), st.get("last_nav")
+        if not units or not nav:
+            continue
+        if f.get("last_nav") is not None and abs(f["last_nav"] - nav) < 1e-9 \
+                and abs(f["current_value"] - units * nav) < 1.0:
+            continue
+        f["current_value"] = round(units * nav, 2)
+        f["invested"] = float(st.get("seed_invested") or f.get("invested") or 0.0)
+        f["last_nav"] = nav
+        f["projected_nav"] = round(nav, 4)
+        f["nav_move_pct"] = 0.0
+        f["rupee_impact"] = 0.0
+        f["band_rupees"] = 0.0
+        changed = True
+    if not changed:
+        return False
+    t = latest.setdefault("totals", {})
+    value = sum(f["current_value"] for f in latest["funds"])
+    invested = sum(f["invested"] for f in latest["funds"])
+    t.update({
+        "current_value": round(value, 2), "invested": round(invested, 2),
+        "total_returns": round(value - invested, 2),
+        "total_returns_pct": round((value - invested) / invested * 100.0, 2) if invested else 0.0,
+        "today_impact": 0.0, "today_pct": 0.0, "band_rupees": 0.0,
+    })
+    latest["nav_settled"] = max((st.get("last_nav_date") or "") for st in state.values()) if state else None
+    return True
 
 
 def summarise(history: list[dict]) -> dict:

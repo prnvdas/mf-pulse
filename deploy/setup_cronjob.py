@@ -40,6 +40,8 @@ PLAN = {
     "Final read": ("estimate.yml", [15, 16], [55], WEEKDAYS, {"ref": "main", "inputs": {"force": "true"}}),
     "Morning outlook": ("outlook.yml", [7, 9], [15], WEEKDAYS, {"ref": "main"}),
     "Nightly grading": ("reconcile.yml", [23], [30], WEEKDAYS, {"ref": "main"}),
+    "GIFT Nifty evening": ("gift.yml", [18, 21, 23], [5], [0, 1, 2, 3, 4], {"ref": "main"}),
+    "GIFT Nifty morning": ("gift.yml", [8], [35], WEEKDAYS, {"ref": "main"}),
     "Nightly grading retry": ("reconcile.yml", [3], [30], [2, 3, 4, 5, 6], {"ref": "main"}),
 }
 

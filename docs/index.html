@@ -435,7 +435,7 @@ const DEMO = {
   ]
 };
 
-let MARKET = [], OUTLOOK = null, BRIEF_PHASE = null, CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, timer = null;
+let MARKET = [], OUTLOOK = null, GIFT = null, BRIEF_PHASE = null, CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, timer = null;
 
 const $ = id => document.getElementById(id);
 const inr = n => "₹" + Math.round(Math.abs(n)).toLocaleString("en-IN");
@@ -1108,6 +1108,22 @@ function pendingLeanText() {
   return "The morning update that adds this has not landed yet. It is retried on the next scheduled update; the ranges above are unaffected.";
 }
 
+// GIFT Nifty (ex-SGX Nifty): Nifty futures that trade ~21 h a day. Outside market hours they are the
+// best hint of the next open. Shown as the gap from the Nifty's last close; a future carries a small
+// premium/discount, so treat the last ~0.1% as noise. Not backtested (no free history) -- said so on screen.
+function giftInfo() {
+  const o = OUTLOOK, g = GIFT;
+  if (!o || !o.base_close || !g || !(g.last > 0) || marketOpen()) return null;
+  const q = String(g.quote_time || "").match(/^(\d{2})-(\w{3})-(\d{4}) (\d{2}):(\d{2})/);
+  const qt = q ? Date.parse(q[1] + " " + q[2] + " " + q[3] + " " + q[4] + ":" + q[5] + " GMT+0530") : NaN;
+  const fresh = isFinite(qt) ? (Date.now() - qt) / 60000 : ageMinutes(g.fetched_at);
+  if (fresh == null || fresh > 14 * 60 || ageMinutes(o.generated_at) > 40 * 60) return null;
+  const gap = (g.last / o.base_close - 1) * 100, a = Math.abs(gap);
+  const word = a < 0.15 ? "a flat open" : (gap > 0 ? (a < 0.5 ? "a modestly higher open" : "a clearly higher open") : (a < 0.5 ? "a modestly lower open" : "a clearly lower open"));
+  const t = isFinite(qt) ? new Date(qt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }) : "";
+  return { gap, word, last: g.last, t, own: g.change_pct };
+}
+
 function renderOutlook() {
   const box = $("bOutlook"), o = OUTLOOK;
   if (!o || !o.nifty) { box.hidden = true; return; }
@@ -1131,22 +1147,30 @@ function renderOutlook() {
 
   // One plain line for the whole picture, with the odds drawn out; the baseline (~53% of
   // sessions rise) is shown so nobody mistakes 59% for a sure thing.
+  const G = giftInfo();
   const glance = L.status === "ok"
     ? '<div class="glance"><div class="gtxt"><b>Tomorrow at a glance:</b> ' +
       (L.p_up >= 56 ? "slightly more likely to rise than fall" : L.p_up <= 44 ? "slightly more likely to fall than rise" : "about as likely to rise as to fall") +
-      ", most likely finishing between " + pts(o.nifty.typical[0]) + " and " + pts(o.nifty.typical[1]) + ".</div>" +
+      ". A typical day ends between " + pts(o.nifty.typical[0]) + " and " + pts(o.nifty.typical[1]) + " (measured from the last close).</div>" +
       '<div class="gbar" title="Chance the Nifty rises next session, from similar past overnight S&P moves"><i style="width:' + Math.round(L.p_up) + '%"></i><span class="gu">Up ' + Math.round(L.p_up) +
       '%</span><span class="gd">Down ' + (100 - Math.round(L.p_up)) + '%</span><em style="left:53%" title="On an ordinary day about 53% of sessions rise"></em></div>' +
       '<div class="gnote">The thin marker is the everyday baseline (about 53% of sessions rise). An edge of a few points is small: treat it as a tilt, not a call.</div></div>'
+    : G ? '<div class="glance"><div class="gtxt"><b>Tomorrow at a glance:</b> GIFT Nifty points to ' + G.word + " (" + sg(G.gap) + "). A typical day ends between " +
+      pts(o.nifty.typical[0]) + " and " + pts(o.nifty.typical[1]) + " (measured from the last close). The S&amp;P 500 lean is added once the US market has closed.</div></div>"
     : "";
 
-  box.innerHTML = '<div class="oh">Next session setup <span class="chip ' + chip[0] + '">' + chip[1] + "</span></div>" + glance +
+  const giftRow = G ? '<div class="orow"><span class="ok">GIFT Nifty</span><span>Trading at <b>' + pts(G.last) + "</b>" + (G.t ? " (as of " + G.t + " IST)" : "") + ", <b>" + sg(G.gap) +
+    "</b> from the Nifty's last close of " + pts(o.base_close) + ", pointing to <b>" + G.word + "</b>. It trades almost round the clock, so this keeps moving until the open. " +
+    "Unlike the S&amp;P 500 lean above, this has not been backtested (there is no free history), and the futures price carries a small premium or discount, so read it as a hint, not a call.</span></div>" : "";
+  const giftGlance = G ? " GIFT Nifty points to " + G.word + " (" + sg(G.gap) + ")." : "";
+
+  box.innerHTML = '<div class="oh">Next session setup <span class="chip ' + chip[0] + '">' + chip[1] + "</span></div>" + glance.replace("</div><div class=\"gbar\"", giftGlance + "</div><div class=\"gbar\"") +
     '<div class="ou">Updated ' + upd + " IST · Nifty 50 last closed at " + pts(o.base_close) + " (" + d(o.base_close_date) + ")</div>" +
     '<div class="orow"><span class="ok">Typical move</span><span>About <b>±' + o.sigma_pct.toFixed(2) + "%</b> on the Nifty (" + pts(o.nifty.typical[0]) + "–" + pts(o.nifty.typical[1]) + ")" +
       (p ? ", about <b>±" + inr(p.typical_rupees) + "</b> on your portfolio" : "") + ". The move lands inside this on roughly " + Math.round(c.within1_pct / 10) + " in 10 sessions.</span></div>" +
     '<div class="orow"><span class="ok">A wide day</span><span>±' + (2 * o.sigma_pct).toFixed(2) + "% (" + pts(o.nifty.wide[0]) + "–" + pts(o.nifty.wide[1]) + ")" +
       (p ? ", about ±" + inr(p.wide_rupees) : "") + " — covers about " + Math.round(c.within2_pct / 5) + " in 20 sessions.</span></div>" +
-    '<div class="orow"><span class="ok">Overnight lean</span><span>' + leanText + "</span></div>" +
+    '<div class="orow"><span class="ok">Overnight lean</span><span>' + leanText + "</span></div>" + giftRow +
     '<div class="orow"><span class="ok">Track record</span><span>' + (rec.sessions
       ? "Scored on " + rec.sessions + " real session" + (rec.sessions > 1 ? "s" : "") + ": the typical range held " + rec.range_1s_pct + "% of the time" +
         (rec.calls ? "; the lean was right " + rec.lean_hit_pct + "% of " + rec.calls + " call" + (rec.calls > 1 ? "s" : "") : "; no directional calls yet") + "."
@@ -1160,6 +1184,7 @@ function renderOutlook() {
 }
 async function loadOutlook() {
   OUTLOOK = await fetch("data/outlook.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => OUTLOOK);
+  GIFT = await loadJson("data/gift.json?t=" + Date.now(), isObj, GIFT);
   renderOutlook();
 }
 

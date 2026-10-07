@@ -31,6 +31,10 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - run: python src/outlook.py
+      - name: GIFT Nifty snapshot
+        continue-on-error: true
+        timeout-minutes: 3
+        run: python src/gift.py
       - name: Commit
         run: |
           git config user.name  "mf-pulse"

@@ -31,6 +31,12 @@ Behaviour: Refresh during market hours requests a fresh run and waits for the ne
 
 ## 2B. cron-job.org option (recommended)
 
+**One-command setup:** `python deploy/setup_cronjob.py` creates or updates all the jobs below, after
+checking your GitHub token against GitHub. It asks for two secrets with hidden prompts: the GitHub
+token and a cron-job.org API key (Console -> Settings -> API -> create key). Use `--dry-run` to preview
+and `--list` to see each job's last status. It is safe to re-run. The manual steps follow, in case you
+prefer the console.
+
 1. Sign up at https://cron-job.org (free). In Settings, set the timezone to **Asia/Kolkata**.
 2. Create **four** cron jobs. All use the same method, headers and token; only the URL, schedule and body differ.
 

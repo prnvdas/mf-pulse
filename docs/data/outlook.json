@@ -1,27 +1,34 @@
 {
-  "generated_at": "2026-10-07T23:04:10.306012+05:30",
-  "base_close_date": "2026-10-07",
-  "base_close": 22603.05,
-  "sigma_pct": 0.72,
+  "generated_at": "2026-10-08T00:20:18.389124+05:30",
+  "base_close_date": "2026-10-06",
+  "base_close": 22776.1,
+  "sigma_pct": 0.71,
   "nifty": {
     "typical": [
-      22440.9,
-      22765.3
+      22613.3,
+      22938.9
     ],
     "wide": [
-      22278.7,
-      22927.4
+      22450.5,
+      23101.7
     ]
   },
   "portfolio": {
-    "value": 10591104,
+    "value": 10550392,
     "sigma_pct": 0.8,
-    "typical_rupees": 84868,
-    "wide_rupees": 169736
+    "typical_rupees": 84550,
+    "wide_rupees": 169100
   },
   "lean": {
-    "status": "pending",
-    "reason": "The US market hasn't closed since the last Nifty close yet; this updates around 07:30 IST."
+    "status": "ok",
+    "label": "no clear lean",
+    "p_up": 59.3,
+    "n": 1027,
+    "bucket": "rose 0.3\u20131%",
+    "avg_next_pct": 0.17,
+    "sp_date": "2026-10-06",
+    "sp_move_pct": 0.58,
+    "us_sessions": 1
   },
   "buckets": [
     {
@@ -44,8 +51,8 @@
     },
     {
       "bucket": "rose 0.3\u20131%",
-      "n": 1028,
-      "p_up": 59.2,
+      "n": 1027,
+      "p_up": 59.3,
       "avg_next_pct": 0.17
     },
     {
@@ -58,12 +65,12 @@
   "calibration": {
     "within1_pct": 70.3,
     "within2_pct": 94.5,
-    "n": 4542
+    "n": 4541
   },
   "lean_out_of_sample": {
     "hit_pct": 62.2,
-    "always_up_pct": 54.0,
-    "n": 1618,
+    "always_up_pct": 54.1,
+    "n": 1617,
     "test_from": "2020-01-01"
   },
   "record": {

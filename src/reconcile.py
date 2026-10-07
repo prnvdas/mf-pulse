@@ -121,7 +121,10 @@ def main() -> None:
                 )
                 history.append(
                     {
-                        "date": today,
+                        # The session being graded (the NAV's own date), not the date this job
+                        # happened to run -- a late run past midnight IST used to label every row
+                        # a day after the session it scored.
+                        "date": graded_day.isoformat(),
                         "fund_id": fid,
                         "predicted_pct": predicted,
                         "actual_pct": round(actual_pct, 3),

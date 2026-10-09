@@ -1,33 +1,33 @@
 {
-  "generated_at": "2026-10-09T00:17:43.960429+05:30",
-  "base_close_date": "2026-10-07",
-  "base_close": 22603.05,
-  "sigma_pct": 0.72,
+  "generated_at": "2026-10-09T07:15:23.419952+05:30",
+  "base_close_date": "2026-10-08",
+  "base_close": 22231.8,
+  "sigma_pct": 0.8,
   "nifty": {
     "typical": [
-      22440.9,
-      22765.3
+      22053.1,
+      22410.5
     ],
     "wide": [
-      22278.7,
-      22927.4
+      21874.5,
+      22589.1
     ]
   },
   "portfolio": {
     "value": 10339046,
-    "sigma_pct": 0.78,
-    "typical_rupees": 80917,
-    "wide_rupees": 161835
+    "sigma_pct": 0.9,
+    "typical_rupees": 93426,
+    "wide_rupees": 186852
   },
   "lean": {
     "status": "ok",
     "label": "no clear lean",
-    "p_up": 55.2,
-    "n": 1485,
-    "bucket": "was flat (within 0.3%)",
-    "avg_next_pct": 0.09,
-    "sp_date": "2026-10-07",
-    "sp_move_pct": -0.22,
+    "p_up": 40.7,
+    "n": 755,
+    "bucket": "fell 0.3\u20131%",
+    "avg_next_pct": -0.22,
+    "sp_date": "2026-10-08",
+    "sp_move_pct": -0.47,
     "us_sessions": 1
   },
   "buckets": [
@@ -45,7 +45,7 @@
     },
     {
       "bucket": "was flat (within 0.3%)",
-      "n": 1485,
+      "n": 1486,
       "p_up": 55.2,
       "avg_next_pct": 0.09
     },
@@ -65,12 +65,12 @@
   "calibration": {
     "within1_pct": 70.3,
     "within2_pct": 94.5,
-    "n": 4542
+    "n": 4543
   },
   "lean_out_of_sample": {
-    "hit_pct": 62.2,
+    "hit_pct": 62.1,
     "always_up_pct": 54.0,
-    "n": 1618,
+    "n": 1619,
     "test_from": "2020-01-01"
   },
   "record": {

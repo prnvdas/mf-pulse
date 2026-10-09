@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T22:43:18.577102+05:30",
+  "generated_at": "2026-10-09T23:48:28.738288+05:30",
   "base_close_date": "2026-10-09",
   "base_close": 22520.45,
   "sigma_pct": 1.1,
@@ -22,35 +22,35 @@
     ],
     "centre_pct": 0.0,
     "gift_adjusted": {
-      "gap_pct": 0.17,
-      "last": 22558.5,
-      "quote_time": "09-Oct-2026 22:40:50",
-      "centre_pct": 0.16,
+      "gap_pct": 0.18,
+      "last": 22561.5,
+      "quote_time": "09-Oct-2026 23:02:42",
+      "centre_pct": 0.17,
       "typical": [
-        22379.2,
-        22726.7
+        22382.0,
+        22729.5
       ],
       "wide": [
-        22242.8,
-        22890.1
+        22245.6,
+        22892.9
       ],
       "typical_pct": [
-        -0.63,
-        0.92
+        -0.61,
+        0.93
       ],
       "wide_pct": [
-        -1.23,
-        1.64
+        -1.22,
+        1.65
       ],
       "validated": false,
       "assumptions": "gap passes through x0.94; intraday vol 0.81x; GIFT-to-open noise 0.15%"
     }
   },
   "portfolio": {
-    "value": 10339046,
+    "value": 10430697,
     "sigma_pct": 0.9,
-    "typical_rupees": 104280,
-    "wide_rupees": 194220
+    "typical_rupees": 105204,
+    "wide_rupees": 195941
   },
   "lean": {
     "status": "pending",

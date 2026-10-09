@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T16:23:00.170803+05:30",
+  "generated_at": "2026-10-09T16:55:51.009347+05:30",
   "base_close_date": "2026-10-09",
   "base_close": 22520.45,
   "sigma_pct": 1.1,
@@ -22,25 +22,25 @@
     ],
     "centre_pct": 0.0,
     "gift_adjusted": {
-      "gap_pct": 0.36,
-      "last": 22602.5,
-      "quote_time": "09-Oct-2026 15:49:37",
-      "centre_pct": 0.34,
+      "gap_pct": 0.3,
+      "last": 22589.0,
+      "quote_time": "09-Oct-2026 16:45:12",
+      "centre_pct": 0.29,
       "typical": [
-        22420.5,
-        22768.1
+        22407.8,
+        22755.4
       ],
       "wide": [
-        22284.2,
-        22931.5
+        22271.5,
+        22918.8
       ],
       "typical_pct": [
-        -0.44,
-        1.1
+        -0.5,
+        1.04
       ],
       "wide_pct": [
-        -1.05,
-        1.83
+        -1.11,
+        1.77
       ],
       "validated": false,
       "assumptions": "gap passes through x0.94; intraday vol 0.81x; GIFT-to-open noise 0.15%"

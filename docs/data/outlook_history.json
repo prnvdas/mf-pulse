@@ -48,6 +48,26 @@
     "made_at": "2026-10-09T07:15:23.419952+05:30",
     "sigma_pct": 0.804,
     "lean": "no clear lean",
-    "p_up": 40.7
+    "p_up": 40.7,
+    "actual_date": "2026-10-09",
+    "actual_pct": 1.3,
+    "inside_1s": false,
+    "inside_2s": true
+  },
+  {
+    "base_date": "2026-10-09",
+    "made_at": "2026-10-09T15:55:51.787179+05:30",
+    "method": "gjr-v2",
+    "sigma_pct": 1.098,
+    "mu_pct": 0.0,
+    "lo70_pct": -0.957,
+    "hi70_pct": 0.922,
+    "lo95_pct": -1.694,
+    "hi95_pct": 1.805,
+    "lean": null,
+    "p_up": null,
+    "gift_gap_pct": 0.364,
+    "gift_lo70_pct": -0.444,
+    "gift_hi70_pct": 1.1
   }
 ]

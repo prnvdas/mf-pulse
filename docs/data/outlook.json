@@ -1,48 +1,67 @@
 {
-  "generated_at": "2026-10-09T15:08:59.370939+05:30",
-  "base_close_date": "2026-10-08",
-  "base_close": 22231.8,
-  "sigma_pct": 1.14,
+  "generated_at": "2026-10-09T15:55:51.787179+05:30",
+  "base_close_date": "2026-10-09",
+  "base_close": 22520.45,
+  "sigma_pct": 1.1,
   "nifty": {
     "typical": [
-      21990.0,
-      22422.1
+      22304.9,
+      22728.0
     ],
     "wide": [
-      21820.3,
-      22625.7
+      22138.9,
+      22926.9
     ],
     "typical_pct": [
-      -1.09,
-      0.86
+      -0.96,
+      0.92
     ],
     "wide_pct": [
-      -1.85,
-      1.77
+      -1.69,
+      1.8
     ],
-    "centre_pct": -0.1
+    "centre_pct": 0.0,
+    "gift_adjusted": {
+      "gap_pct": 0.36,
+      "last": 22602.5,
+      "quote_time": "09-Oct-2026 15:49:37",
+      "centre_pct": 0.34,
+      "typical": [
+        22420.5,
+        22768.1
+      ],
+      "wide": [
+        22284.2,
+        22931.5
+      ],
+      "typical_pct": [
+        -0.44,
+        1.1
+      ],
+      "wide_pct": [
+        -1.05,
+        1.83
+      ],
+      "validated": false,
+      "assumptions": "gap passes through x0.94; intraday vol 0.81x; GIFT-to-open noise 0.15%"
+    }
   },
   "portfolio": {
     "value": 10339046,
     "sigma_pct": 0.9,
-    "typical_rupees": 112968,
-    "wide_rupees": 210590
+    "typical_rupees": 104280,
+    "wide_rupees": 194220
   },
   "lean": {
-    "status": "ok",
-    "label": "no clear lean",
-    "p_up": 48.3,
-    "mu_pct": -0.1,
-    "sp_date": "2026-10-08",
-    "sp_move_pct": -0.47,
-    "us_sessions": 1
+    "status": "pending",
+    "reason": "The US market hasn't closed since the last Nifty close yet; this updates around 07:15 IST."
   },
   "model": {
     "volatility": "GJR-GARCH(1,1) with Student-t errors",
     "signal": "S&P 500 last US session (ridge for the centre, logistic for P(up))",
     "band_errors_from": "model's own out-of-sample errors, last 5 years",
-    "fitted_sessions": 4603,
-    "ewma_sigma_pct": 0.8
+    "fitted_sessions": 4604,
+    "ewma_sigma_pct": 0.84
   },
   "backtest": {
     "generated_at": "2026-10-09T10:25:54.690498+05:30",
@@ -160,8 +179,8 @@
     "calls": 0,
     "lean_hit_pct": null,
     "earlier_model": {
-      "sessions": 4,
-      "range_1s_pct": 25.0
+      "sessions": 5,
+      "range_1s_pct": 20.0
     }
   }
 }

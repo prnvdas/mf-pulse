@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T23:30:40.510958+05:30",
+  "generated_at": "2026-10-10T03:23:28.368156+05:30",
   "risk_free_pct": 6.5,
   "portfolio_xirr_pct": null,
   "funds": [
@@ -58,7 +58,7 @@
       "scenarios": {
         "basis": "fund",
         "since": "2013-12-05",
-        "years": 12.8,
+        "years": 12.9,
         "worst": -14.8,
         "p25": 6.9,
         "median": 16.5,
@@ -67,9 +67,9 @@
         "share_positive": 89
       },
       "recovery": {
-        "nav_last": 131.44,
+        "nav_last": 132.26,
         "nav_peak_6m": 138.49,
-        "gap_pct": 5.4,
+        "gap_pct": 4.7,
         "peak_date": "2026-09-08"
       },
       "xirr": null
@@ -88,33 +88,33 @@
       },
       "returns": {
         "1M": {
-          "fund": -5.4,
-          "bench": -4.98,
-          "diff": -0.42
+          "fund": -7.29,
+          "bench": -6.49,
+          "diff": -0.8
         },
         "3M": {
-          "fund": -3.77,
-          "bench": -4.11,
-          "diff": 0.34
+          "fund": -6.62,
+          "bench": -6.42,
+          "diff": -0.2
         },
         "6M": {
-          "fund": 1.76,
-          "bench": -0.77,
-          "diff": 2.53
+          "fund": 0.21,
+          "bench": -2.54,
+          "diff": 2.75
         },
         "1Y": {
-          "fund": -1.49,
-          "bench": -4.79,
-          "diff": 3.3
+          "fund": -3.06,
+          "bench": -5.99,
+          "diff": 2.93
         }
       },
       "risk": {
         "window_days": 364,
         "beta": 0.85,
-        "alpha_pct": 2.12,
-        "vol_pct": 14.6,
-        "bench_vol_pct": 14.5,
-        "sharpe": -0.43,
+        "alpha_pct": 1.02,
+        "vol_pct": 14.8,
+        "bench_vol_pct": 14.6,
+        "sharpe": -0.62,
         "max_drawdown_pct": -14.4,
         "bench_max_drawdown_pct": -14.5
       },
@@ -124,23 +124,23 @@
         "fund_pb": 3.1,
         "bench_pe": 20.9
       },
-      "history_days": 582,
-      "as_of": "2026-10-07",
+      "history_days": 583,
+      "as_of": "2026-10-08",
       "scenarios": {
         "basis": "fund",
         "since": "2013-01-02",
         "years": 13.8,
         "worst": -27.4,
-        "p25": 6.2,
+        "p25": 6.1,
         "median": 16.9,
         "p75": 38.5,
         "best": 111.0,
         "share_positive": 88
       },
       "recovery": {
-        "nav_last": 165.402,
+        "nav_last": 167.333,
         "nav_peak_6m": 181.884,
-        "gap_pct": 10.0,
+        "gap_pct": 8.7,
         "peak_date": "2026-08-03"
       },
       "xirr": null
@@ -209,9 +209,9 @@
         "share_positive": 77
       },
       "recovery": {
-        "nav_last": 9.4252,
+        "nav_last": 9.5134,
         "nav_peak_6m": 10.2047,
-        "gap_pct": 8.3,
+        "gap_pct": 7.3,
         "peak_date": "2026-08-07"
       },
       "xirr": null

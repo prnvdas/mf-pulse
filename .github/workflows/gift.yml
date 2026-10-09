@@ -25,6 +25,11 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - run: python src/gift.py
+      # Re-run the outlook so the GIFT-adjusted range follows the new snapshot. Non-blocking.
+      - name: Outlook (GIFT-adjusted range)
+        continue-on-error: true
+        timeout-minutes: 6
+        run: pip install -q -r requirements-forecast.txt && python src/outlook.py
       - name: Commit
         run: |
           git config user.name  "mf-pulse"

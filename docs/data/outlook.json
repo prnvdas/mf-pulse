@@ -1,83 +1,167 @@
 {
-  "generated_at": "2026-10-09T07:15:23.419952+05:30",
+  "generated_at": "2026-10-09T10:32:14.906116+05:30",
   "base_close_date": "2026-10-08",
   "base_close": 22231.8,
-  "sigma_pct": 0.8,
+  "sigma_pct": 1.14,
   "nifty": {
     "typical": [
-      22053.1,
-      22410.5
+      21990.0,
+      22422.1
     ],
     "wide": [
-      21874.5,
-      22589.1
-    ]
+      21820.3,
+      22625.7
+    ],
+    "typical_pct": [
+      -1.09,
+      0.86
+    ],
+    "wide_pct": [
+      -1.85,
+      1.77
+    ],
+    "centre_pct": -0.1
   },
   "portfolio": {
     "value": 10339046,
     "sigma_pct": 0.9,
-    "typical_rupees": 93426,
-    "wide_rupees": 186852
+    "typical_rupees": 112968,
+    "wide_rupees": 210590
   },
   "lean": {
     "status": "ok",
     "label": "no clear lean",
-    "p_up": 40.7,
-    "n": 755,
-    "bucket": "fell 0.3\u20131%",
-    "avg_next_pct": -0.22,
+    "p_up": 48.3,
+    "mu_pct": -0.1,
     "sp_date": "2026-10-08",
     "sp_move_pct": -0.47,
     "us_sessions": 1
   },
-  "buckets": [
-    {
-      "bucket": "fell more than 1%",
-      "n": 571,
-      "p_up": 34.5,
-      "avg_next_pct": -0.51
-    },
-    {
-      "bucket": "fell 0.3\u20131%",
-      "n": 755,
-      "p_up": 40.7,
-      "avg_next_pct": -0.22
-    },
-    {
-      "bucket": "was flat (within 0.3%)",
-      "n": 1486,
-      "p_up": 55.2,
-      "avg_next_pct": 0.09
-    },
-    {
-      "bucket": "rose 0.3\u20131%",
-      "n": 1028,
-      "p_up": 59.2,
-      "avg_next_pct": 0.17
-    },
-    {
-      "bucket": "rose more than 1%",
-      "n": 635,
-      "p_up": 67.9,
-      "avg_next_pct": 0.5
-    }
-  ],
-  "calibration": {
-    "within1_pct": 70.3,
-    "within2_pct": 94.5,
-    "n": 4543
+  "model": {
+    "volatility": "GJR-GARCH(1,1) with Student-t errors",
+    "signal": "S&P 500 last US session (ridge for the centre, logistic for P(up))",
+    "band_errors_from": "model's own out-of-sample errors, last 5 years",
+    "fitted_sessions": 4603,
+    "ewma_sigma_pct": 0.8
   },
-  "lean_out_of_sample": {
-    "hit_pct": 62.1,
-    "always_up_pct": 54.0,
-    "n": 1619,
-    "test_from": "2020-01-01"
+  "backtest": {
+    "generated_at": "2026-10-09T10:25:54.690498+05:30",
+    "method": "walk-forward: fitted on years before each test year, tested on that year",
+    "test_period": [
+      "2015-01-02",
+      "2026-10-08"
+    ],
+    "n_sessions": 2897,
+    "range": {
+      "old_ewma_normal": {
+        "pinball_bp": 23.032,
+        "coverage70_pct": 70.2,
+        "width70_pct": 1.82,
+        "coverage95_pct": 94.8,
+        "width95_pct": 3.7
+      },
+      "new_gjr_sp500": {
+        "pinball_bp": 21.42,
+        "coverage70_pct": 70.3,
+        "width70_pct": 1.71,
+        "coverage95_pct": 94.7,
+        "width95_pct": 3.18
+      },
+      "pinball_improvement_pct": 7.0
+    },
+    "direction": {
+      "always_up_pct": 53.3,
+      "tiers": [
+        {
+          "tier": "leans up / leans down",
+          "rule": "P(up) \u2265 60% or \u2264 40%",
+          "hit_pct": 67.9,
+          "share_pct": 19.7,
+          "n": 570
+        },
+        {
+          "tier": "slight tilt or stronger",
+          "rule": "P(up) \u2265 55% or \u2264 45%",
+          "hit_pct": 64.3,
+          "share_pct": 45.8,
+          "n": 1326
+        },
+        {
+          "tier": "every session",
+          "rule": "any",
+          "hit_pct": 59.8,
+          "share_pct": 100.0,
+          "n": 2897
+        }
+      ],
+      "reliability": [
+        {
+          "bin": "0%\u201340%",
+          "n": 172,
+          "predicted_pct": 33.6,
+          "actual_pct": 32.0
+        },
+        {
+          "bin": "40%\u201345%",
+          "n": 175,
+          "predicted_pct": 42.7,
+          "actual_pct": 34.3
+        },
+        {
+          "bin": "45%\u201350%",
+          "n": 529,
+          "predicted_pct": 47.9,
+          "actual_pct": 43.5
+        },
+        {
+          "bin": "50%\u201355%",
+          "n": 1042,
+          "predicted_pct": 52.4,
+          "actual_pct": 55.7
+        },
+        {
+          "bin": "55%\u201360%",
+          "n": 581,
+          "predicted_pct": 57.3,
+          "actual_pct": 60.2
+        },
+        {
+          "bin": "60%\u201365%",
+          "n": 276,
+          "predicted_pct": 62.1,
+          "actual_pct": 66.7
+        },
+        {
+          "bin": "65%\u2013100%",
+          "n": 122,
+          "predicted_pct": 70.5,
+          "actual_pct": 70.5
+        }
+      ],
+      "brier": 0.2387,
+      "brier_base_rate": 0.2489
+    },
+    "gap": {
+      "slope": 0.94,
+      "r2": 0.34,
+      "intraday_to_total_vol": 0.81,
+      "note": "estimated from the actual open gap; GIFT Nifty only approximates it, so the dashboard adds noise (see outlook.py)"
+    }
+  },
+  "calibration": {
+    "within70_pct": 70.3,
+    "within95_pct": 94.7,
+    "n": 2897
   },
   "record": {
-    "sessions": 4,
-    "range_1s_pct": 25.0,
-    "range_2s_pct": 75.0,
+    "sessions": 0,
+    "range_70_pct": null,
+    "range_95_pct": null,
     "calls": 0,
-    "lean_hit_pct": null
+    "lean_hit_pct": null,
+    "earlier_model": {
+      "sessions": 4,
+      "range_1s_pct": 25.0
+    }
   }
 }

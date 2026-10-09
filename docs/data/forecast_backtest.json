@@ -1,0 +1,104 @@
+{
+  "generated_at": "2026-10-09T10:25:54.690498+05:30",
+  "method": "walk-forward: fitted on years before each test year, tested on that year",
+  "test_period": [
+    "2015-01-02",
+    "2026-10-08"
+  ],
+  "n_sessions": 2897,
+  "range": {
+    "old_ewma_normal": {
+      "pinball_bp": 23.032,
+      "coverage70_pct": 70.2,
+      "width70_pct": 1.82,
+      "coverage95_pct": 94.8,
+      "width95_pct": 3.7
+    },
+    "new_gjr_sp500": {
+      "pinball_bp": 21.42,
+      "coverage70_pct": 70.3,
+      "width70_pct": 1.71,
+      "coverage95_pct": 94.7,
+      "width95_pct": 3.18
+    },
+    "pinball_improvement_pct": 7.0
+  },
+  "direction": {
+    "always_up_pct": 53.3,
+    "tiers": [
+      {
+        "tier": "leans up / leans down",
+        "rule": "P(up) \u2265 60% or \u2264 40%",
+        "hit_pct": 67.9,
+        "share_pct": 19.7,
+        "n": 570
+      },
+      {
+        "tier": "slight tilt or stronger",
+        "rule": "P(up) \u2265 55% or \u2264 45%",
+        "hit_pct": 64.3,
+        "share_pct": 45.8,
+        "n": 1326
+      },
+      {
+        "tier": "every session",
+        "rule": "any",
+        "hit_pct": 59.8,
+        "share_pct": 100.0,
+        "n": 2897
+      }
+    ],
+    "reliability": [
+      {
+        "bin": "0%\u201340%",
+        "n": 172,
+        "predicted_pct": 33.6,
+        "actual_pct": 32.0
+      },
+      {
+        "bin": "40%\u201345%",
+        "n": 175,
+        "predicted_pct": 42.7,
+        "actual_pct": 34.3
+      },
+      {
+        "bin": "45%\u201350%",
+        "n": 529,
+        "predicted_pct": 47.9,
+        "actual_pct": 43.5
+      },
+      {
+        "bin": "50%\u201355%",
+        "n": 1042,
+        "predicted_pct": 52.4,
+        "actual_pct": 55.7
+      },
+      {
+        "bin": "55%\u201360%",
+        "n": 581,
+        "predicted_pct": 57.3,
+        "actual_pct": 60.2
+      },
+      {
+        "bin": "60%\u201365%",
+        "n": 276,
+        "predicted_pct": 62.1,
+        "actual_pct": 66.7
+      },
+      {
+        "bin": "65%\u2013100%",
+        "n": 122,
+        "predicted_pct": 70.5,
+        "actual_pct": 70.5
+      }
+    ],
+    "brier": 0.2387,
+    "brier_base_rate": 0.2489
+  },
+  "gap": {
+    "slope": 0.94,
+    "r2": 0.34,
+    "intraday_to_total_vol": 0.81,
+    "note": "estimated from the actual open gap; GIFT Nifty only approximates it, so the dashboard adds noise (see outlook.py)"
+  }
+}

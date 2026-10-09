@@ -1130,57 +1130,87 @@ function renderOutlook() {
   box.hidden = false;
   const d = x => new Date(x + "T00:00:00").toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
   const pts = n => n.toLocaleString("en-IN", { maximumFractionDigits: 0 });
-  const L = o.lean || {}, p = o.portfolio, c = o.calibration || {}, rec = o.record || {}, oos = o.lean_out_of_sample || {};
-  const tilt = L.status === "ok" ? (L.p_up >= 56 ? "slight tilt up" : L.p_up <= 44 ? "slight tilt down" : "no clear lean") : "";
-  const chip = L.status !== "ok" ? ["flat", "lean pending"] : L.label === "leans up" ? ["healthy", "leans up"] : L.label === "leans down" ? ["caution", "leans down"]
-    : [tilt === "slight tilt up" ? "healthy" : tilt === "slight tilt down" ? "caution" : "flat", tilt];
   const sg = (v, dd = 2) => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(dd) + "%";
+  const L = o.lean || {}, p = o.portfolio, rec = o.record || {}, bt = o.backtest || {}, N = o.nifty;
+  const btNew = (bt.range || {}).new_gjr_sp500 || {}, btOld = (bt.range || {}).old_ewma_normal || {}, dir = bt.direction || {};
+  const pct = (lv, base) => lv.map(x => (x / base - 1) * 100);
+  const typPct = N.typical_pct || pct(N.typical, o.base_close), widePct = N.wide_pct || pct(N.wide, o.base_close);
+  const label = L.status === "ok" ? L.label : "";
+  const chip = L.status !== "ok" ? ["flat", "lean pending"]
+    : /up$/.test(label) ? ["healthy", label] : /down$/.test(label) ? ["caution", label] : ["flat", label || "no clear lean"];
   const upd = new Date(o.generated_at).toLocaleString("en-IN", { weekday: "short", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" });
 
+  // GIFT Nifty: the client-side reading (G) and, when it is the same snapshot, the server's adjusted range (ga)
+  const G = giftInfo();
+  const ga = G && N.gift_adjusted && N.gift_adjusted.quote_time === (GIFT && GIFT.quote_time) ? N.gift_adjusted : null;
+  const rangeTxt = (lv, pc) => pts(lv[0]) + " and " + pts(lv[1]) + " (" + sg(pc[0]) + " to " + sg(pc[1]) + ")";
+
+  // what the backtest says about the probability the model gave today
+  const bins = [0, 40, 45, 50, 55, 60, 65, 101];
+  let relRow = null;
+  if (L.status === "ok" && (dir.reliability || []).length) {
+    const k = bins.findIndex((b, ix) => ix < bins.length - 1 && L.p_up >= b && L.p_up < bins[ix + 1]);
+    relRow = (dir.reliability || [])[k] || null;
+  }
+  const tierWord = { "leans up": "more likely to rise than fall", "leans down": "more likely to fall than rise", "slight tilt up": "slightly more likely to rise than fall",
+                     "slight tilt down": "slightly more likely to fall than rise", "no clear lean": "about as likely to rise as to fall" }[label] || "";
   const leanText = L.status === "ok"
-    ? "The S&P 500 " + (L.us_sessions > 1 ? "moved " : "") + sg(L.sp_move_pct) + (L.us_sessions > 1 ? " over the " + L.us_sessions + " US sessions" : "") + " since the Nifty's last close. In " + L.n.toLocaleString("en-IN") +
-      " past cases where it " + L.bucket + ", the Nifty rose in <b>" + Math.round(L.p_up) + "%</b> of next sessions (average " + sg(L.avg_next_pct) + "). " +
-      (L.label !== "no clear lean" ? "It is a lean, not a certainty."
-        : tilt === "no clear lean" ? "That is too close to the everyday ~53% to call a direction."
-        : "That is only a few points away from the everyday ~53%: a small tilt, not strong enough to count as a call.")
+    ? "The S&P 500 " + (L.us_sessions > 1 ? "moved " : "") + sg(L.sp_move_pct) + (L.us_sessions > 1 ? " over the " + L.us_sessions + " US sessions" : "") + " since the Nifty's last close. The model puts the chance the Nifty rises at <b>" +
+      Math.round(L.p_up) + "%</b> (a typical day is about 53%), with an expected move of " + sg(L.mu_pct) + "." +
+      (relRow ? " In the backtest, days with a probability in this band (" + relRow.bin + ") saw the Nifty rise <b>" + Math.round(relRow.actual_pct) + "%</b> of the time (" + relRow.n.toLocaleString("en-IN") + " days)." : "") +
+      (/leans/.test(label) ? " That is a real lean, but still far from certain." : /tilt/.test(label) ? " A small edge: treat it as a tilt, not a call." : " Too close to the everyday ~53% to call a direction.")
     : pendingLeanText();
 
-  // One plain line for the whole picture, with the odds drawn out; the baseline (~53% of
-  // sessions rise) is shown so nobody mistakes 59% for a sure thing.
-  const G = giftInfo();
-  const glance = L.status === "ok"
+  // One plain line for the whole picture, with the odds drawn out and the everyday baseline marked
+  const useR = ga ? [ga.typical, ga.typical_pct] : [N.typical, typPct];
+  const glance = (L.status === "ok" || G)
     ? '<div class="glance"><div class="gtxt"><b>Tomorrow at a glance:</b> ' +
-      (L.p_up >= 56 ? "slightly more likely to rise than fall" : L.p_up <= 44 ? "slightly more likely to fall than rise" : "about as likely to rise as to fall") +
-      ". A typical day ends between " + pts(o.nifty.typical[0]) + " and " + pts(o.nifty.typical[1]) + " (measured from the last close).</div>" +
-      '<div class="gbar" title="Chance the Nifty rises next session, from similar past overnight S&P moves"><i style="width:' + Math.round(L.p_up) + '%"></i><span class="gu">Up ' + Math.round(L.p_up) +
-      '%</span><span class="gd">Down ' + (100 - Math.round(L.p_up)) + '%</span><em style="left:53%" title="On an ordinary day about 53% of sessions rise"></em></div>' +
-      '<div class="gnote">The thin marker is the everyday baseline (about 53% of sessions rise). An edge of a few points is small: treat it as a tilt, not a call.</div></div>'
-    : G ? '<div class="glance"><div class="gtxt"><b>Tomorrow at a glance:</b> GIFT Nifty points to ' + G.word + " (" + sg(G.gap) + "). A typical day ends between " +
-      pts(o.nifty.typical[0]) + " and " + pts(o.nifty.typical[1]) + " (measured from the last close). The S&amp;P 500 lean is added once the US market has closed.</div></div>"
+      (L.status === "ok" ? "the US overnight move makes the Nifty " + tierWord + ". " : "") +
+      (G ? "GIFT Nifty points to " + G.word + " (" + sg(G.gap) + "). " : "") +
+      "Most likely it ends between " + rangeTxt(useR[0], useR[1]) + (ga ? ", narrowed using GIFT Nifty" : ", measured from the last close") + "." +
+      (L.status === "ok" ? "" : " The S&amp;P 500 lean is added once the US market has closed.") + "</div>" +
+      (L.status === "ok" ? '<div class="gbar" title="Model probability that the Nifty rises next session"><i style="width:' + Math.round(L.p_up) + '%"></i><span class="gu">Up ' + Math.round(L.p_up) +
+        '%</span><span class="gd">Down ' + (100 - Math.round(L.p_up)) + '%</span><em style="left:53%" title="On an ordinary day about 53% of sessions rise"></em></div>' +
+        '<div class="gnote">The thin marker is the everyday baseline (about 53% of sessions rise). A few points of edge is small: a tilt, not a call.</div>' : "") + "</div>"
     : "";
 
   const giftRow = G ? '<div class="orow"><span class="ok">GIFT Nifty</span><span>Trading at <b>' + pts(G.last) + "</b>" + (G.t ? " (as of " + G.t + " IST)" : "") + ", <b>" + sg(G.gap) +
-    "</b> from the Nifty's last close of " + pts(o.base_close) + ", pointing to <b>" + G.word + "</b>. It trades almost round the clock, so this keeps moving until the open. " +
-    "Unlike the S&amp;P 500 lean above, this has not been backtested (there is no free history), and the futures price carries a small premium or discount, so read it as a hint, not a call.</span></div>" : "";
-  const giftGlance = G ? " GIFT Nifty points to " + G.word + " (" + sg(G.gap) + ")." : "";
+    "</b> from the Nifty's last close of " + pts(o.base_close) + ", pointing to <b>" + G.word + "</b>." +
+    (ga ? " Once the opening gap is known only the intraday move is left, so the likely range narrows to <b>" + rangeTxt(ga.typical, ga.typical_pct) + "</b>." : "") +
+    " It trades almost round the clock, so this keeps moving until the open. <i>This part is not validated yet</i> (there is no free GIFT history); every reading is logged and scored, and the result will appear in the track record.</span></div>" : "";
 
-  box.innerHTML = '<div class="oh">Next session setup <span class="chip ' + chip[0] + '">' + chip[1] + "</span></div>" + glance.replace("</div><div class=\"gbar\"", giftGlance + "</div><div class=\"gbar\"") +
+  const recTxt = rec.sessions
+    ? "Scored on " + rec.sessions + " real session" + (rec.sessions > 1 ? "s" : "") + " with this model: the likely range held " + rec.range_70_pct + "% of the time (target 70%), the wide range " + rec.range_95_pct + "% (target 95%)" +
+      (rec.calls ? "; direction was right " + rec.lean_hit_pct + "% of " + rec.calls + " call" + (rec.calls > 1 ? "s" : "") : "; no directional calls scored yet") + "."
+    : "This model is new: scoring starts with the next session. Its backtest result is below.";
+  const early = (rec.earlier_model || {}).sessions ? " The earlier model scored " + (rec.earlier_model.sessions) + " sessions and its range held " + rec.earlier_model.range_1s_pct + "% of the time." : "";
+  const gRec = rec.gift ? " GIFT-adjusted range: held " + rec.gift.range_70_pct + "% over " + rec.gift.sessions + " session" + (rec.gift.sessions > 1 ? "s" : "") + "." : "";
+
+  const tbl = (head, rows) => "<table><thead><tr>" + head.map(h => "<th>" + h + "</th>").join("") + "</tr></thead><tbody>" +
+    rows.map(r => "<tr>" + r.map(c => "<td>" + c + "</td>").join("") + "</tr>").join("") + "</tbody></table>";
+  const detail = bt.range
+    ? "<details><summary>How this is worked out, and what was tested</summary>" +
+      "<p class=\"sub2\" style=\"margin:6px 0\">Tested the way it is used: for each year from " + (bt.test_period || ["2015"])[0].slice(0, 4) + " the models were fitted only on earlier years, then asked to forecast every session of that year (" +
+      (bt.n_sessions || 0).toLocaleString("en-IN") + " sessions). <b>Size of the move:</b> a GJR-GARCH volatility model (it reacts faster to falls than the old moving average); the bands come from the model's own recent errors, so they follow the current regime. " +
+      "<b>Direction:</b> only the S&amp;P 500's last session helped; Nasdaq, US VIX, crude, the rupee, the dollar index, India VIX and technical indicators were all tested and added nothing.</p>" +
+      tbl(["Range model", "Held (target 70%)", "Held (target 95%)", "Typical width", "Wide width", "Score*"],
+          [["Old: moving average", btOld.coverage70_pct + "%", btOld.coverage95_pct + "%", btOld.width70_pct + "%", btOld.width95_pct + "%", btOld.pinball_bp],
+           ["New: GARCH + S&amp;P", btNew.coverage70_pct + "%", btNew.coverage95_pct + "%", btNew.width70_pct + "%", btNew.width95_pct + "%", btNew.pinball_bp]]) +
+      "<p class=\"sub2\" style=\"margin:4px 0\">*Lower is better; " + (bt.range.pinball_improvement_pct || 0) + "% better overall. Narrower bands at the same coverage means a sharper forecast.</p>" +
+      tbl(["Direction call", "Right", "Share of days"], (dir.tiers || []).map(t => [t.tier + " (" + t.rule + ")", t.hit_pct + "%", t.share_pct + "%"])) +
+      "<p class=\"sub2\" style=\"margin:4px 0\">Always guessing &ldquo;up&rdquo; is right " + dir.always_up_pct + "% of the time.</p>" +
+      tbl(["Model said", "Days", "Nifty rose"], (dir.reliability || []).map(r => [r.bin + " up", r.n.toLocaleString("en-IN"), r.actual_pct + "%"])) +
+      "<p class=\"sub2\" style=\"margin:4px 0\">This is a probability, not a prediction: even the strongest signal is wrong about one day in three.</p></details>"
+    : "";
+
+  box.innerHTML = '<div class="oh">Next session setup <span class="chip ' + chip[0] + '">' + chip[1] + "</span></div>" + glance +
     '<div class="ou">Updated ' + upd + " IST · Nifty 50 last closed at " + pts(o.base_close) + " (" + d(o.base_close_date) + ")</div>" +
-    '<div class="orow"><span class="ok">Typical move</span><span>About <b>±' + o.sigma_pct.toFixed(2) + "%</b> on the Nifty (" + pts(o.nifty.typical[0]) + "–" + pts(o.nifty.typical[1]) + ")" +
-      (p ? ", about <b>±" + inr(p.typical_rupees) + "</b> on your portfolio" : "") + ". The move lands inside this on roughly " + Math.round(c.within1_pct / 10) + " in 10 sessions.</span></div>" +
-    '<div class="orow"><span class="ok">A wide day</span><span>±' + (2 * o.sigma_pct).toFixed(2) + "% (" + pts(o.nifty.wide[0]) + "–" + pts(o.nifty.wide[1]) + ")" +
-      (p ? ", about ±" + inr(p.wide_rupees) : "") + " — covers about " + Math.round(c.within2_pct / 5) + " in 20 sessions.</span></div>" +
+    '<div class="orow"><span class="ok">Likely range</span><span>Between <b>' + pts(N.typical[0]) + "</b> and <b>" + pts(N.typical[1]) + "</b> (" + sg(typPct[0]) + " to " + sg(typPct[1]) + ")" +
+      (p ? ", about <b>±" + inr(p.typical_rupees) + "</b> on your portfolio" : "") + ". About 7 in 10 sessions end inside" + (btNew.coverage70_pct ? " (backtest: " + btNew.coverage70_pct + "%)" : "") + ".</span></div>" +
+    '<div class="orow"><span class="ok">A wide day</span><span>Between ' + pts(N.wide[0]) + " and " + pts(N.wide[1]) + " (" + sg(widePct[0]) + " to " + sg(widePct[1]) + ")" +
+      (p ? ", about ±" + inr(p.wide_rupees) : "") + ". Covers about 19 in 20 sessions" + (btNew.coverage95_pct ? " (backtest: " + btNew.coverage95_pct + "%)" : "") + ".</span></div>" +
     '<div class="orow"><span class="ok">Overnight lean</span><span>' + leanText + "</span></div>" + giftRow +
-    '<div class="orow"><span class="ok">Track record</span><span>' + (rec.sessions
-      ? "Scored on " + rec.sessions + " real session" + (rec.sessions > 1 ? "s" : "") + ": the typical range held " + rec.range_1s_pct + "% of the time" +
-        (rec.calls ? "; the lean was right " + rec.lean_hit_pct + "% of " + rec.calls + " call" + (rec.calls > 1 ? "s" : "") : "; no directional calls yet") + "."
-      : "Building — each call is logged and checked against the real next close; results appear after the next session.") + "</span></div>" +
-    "<details><summary>How this is worked out, and what was tested</summary>" +
-    "<p class=\"sub2\" style=\"margin:6px 0\">The size comes from recent daily volatility (a decaying average of past moves). Over " + (c.n || 0).toLocaleString("en-IN") + " Nifty sessions that range held " + c.within1_pct + "% of the time at 1× and " + c.within2_pct + "% at 2×. " +
-    "The lean uses only the overnight S&P 500 move and plain historical frequencies. Learned on data before " + (oos.test_from || "2020").slice(0, 4) + " and tested on the years after, it called the direction " + oos.hit_pct + "% of the time against " + oos.always_up_pct + "% for always guessing up (" + (oos.n || 0).toLocaleString("en-IN") + " sessions). " +
-    "Technical indicators (RSI, MACD, moving averages, momentum) were backtested too and did no better than guessing, so none are used. This is a probability, not a prediction.</p>" +
-    '<table><thead><tr><th>If the S&amp;P 500…</th><th>Past cases</th><th>Nifty rose next session</th><th>Avg move</th></tr></thead><tbody>' +
-    (o.buckets || []).map(b => "<tr><td>" + b.bucket + "</td><td>" + b.n.toLocaleString("en-IN") + "</td><td>" + b.p_up.toFixed(0) + "%</td><td>" + sg(b.avg_next_pct) + "</td></tr>").join("") + "</tbody></table></details>";
+    '<div class="orow"><span class="ok">Track record</span><span>' + recTxt + early + gRec + "</span></div>" + detail;
 }
 async function loadOutlook() {
   OUTLOOK = await fetch("data/outlook.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => OUTLOOK);

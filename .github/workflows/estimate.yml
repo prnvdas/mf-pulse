@@ -86,8 +86,8 @@ jobs:
           github.event.schedule == '52 3 * * 1-5' ||
           github.event.schedule == '53 10 * * 1-5'
         continue-on-error: true
-        timeout-minutes: 4
-        run: python src/outlook.py
+        timeout-minutes: 6
+        run: pip install -q -r requirements-forecast.txt && python src/outlook.py
       - name: GIFT Nifty snapshot
         continue-on-error: true
         timeout-minutes: 3

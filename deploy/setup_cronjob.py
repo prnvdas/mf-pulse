@@ -42,6 +42,7 @@ PLAN = {
     "Nightly grading": ("reconcile.yml", [23], [30], WEEKDAYS, {"ref": "main"}),
     "GIFT Nifty evening": ("gift.yml", [18, 21, 23], [5], [0, 1, 2, 3, 4], {"ref": "main"}),
     "GIFT Nifty morning": ("gift.yml", [8], [35], WEEKDAYS, {"ref": "main"}),
+    "Monthly statement check": ("statement.yml", [20], [0], [-1], {"ref": "main"}, [3]),
     "Nightly grading retry": ("reconcile.yml", [3], [30], [2, 3, 4, 5, 6], {"ref": "main"}),
 }
 
@@ -90,7 +91,8 @@ def check_github_token(token: str) -> bool:
 
 
 def job_payload(title: str, token: str) -> dict:
-    wf, hours, minutes, wdays, body = PLAN[title]
+    wf, hours, minutes, wdays, body, *rest = PLAN[title]
+    mdays = rest[0] if rest else [-1]
     return {"job": {
         "title": title,
         "url": f"{GITHUB_API}/repos/{REPO}/actions/workflows/{wf}/dispatches",
@@ -99,7 +101,7 @@ def job_payload(title: str, token: str) -> dict:
         "requestMethod": 1,                                   # POST
         "requestTimeout": 30,
         "schedule": {"timezone": TZ, "expiresAt": 0, "hours": hours, "minutes": minutes,
-                     "mdays": [-1], "months": [-1], "wdays": wdays},
+                     "mdays": mdays, "months": [-1], "wdays": wdays},
         "extendedData": {"headers": {
             "Authorization": "Bearer " + token,
             "Accept": "application/vnd.github+json",
@@ -119,8 +121,8 @@ def main() -> int:
     args = ap.parse_args()
 
     if args.dry_run:
-        for title, (wf, hours, minutes, wdays, body) in PLAN.items():
-            print(f"- {title}: POST {wf}  hours={hours} minutes={minutes} weekdays={wdays} body={json.dumps(body)}")
+        for title, (wf, hours, minutes, wdays, body, *rest) in PLAN.items():
+            print(f"- {title}: POST {wf}  hours={hours} minutes={minutes} weekdays={wdays} days-of-month={rest[0] if rest else 'every'} body={json.dumps(body)}")
         return 0
 
     key = secret("CRONJOB_API_KEY", "cron-job.org API key")

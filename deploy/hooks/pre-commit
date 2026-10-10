@@ -1,0 +1,8 @@
+#!/bin/sh
+# Optional seatbelt: refuse to commit a plain statement (name, PAN, phone) to this PUBLIC repo.
+# Install once:  git config core.hooksPath deploy/hooks
+bad=$(git diff --cached --name-only --diff-filter=A | grep -Ei '(^|/)MF-Holding/|\.xlsx$|\.xls$|\.pdf$' | grep -v '^statements/.*\.enc$')
+if [ -n "$bad" ]; then
+  echo "Refusing to commit what looks like a plain statement:" >&2; echo "$bad" >&2
+  echo "Encrypt it first:  python src/encrypt_statement.py --push" >&2; exit 1
+fi

@@ -1,11 +1,10 @@
 name: monthly-reminder
 
-# Opens a GitHub issue on the 1st of every month (09:00 IST) assigned to the repo
-# owner, which GitHub turns into an email / mobile notification. Reminder to
-# re-sync the portfolio from a Groww or IndMoney screenshot.
+# Opens a GitHub issue on the 3rd of every month (10:00 IST) assigned to the repo owner, which GitHub turns into
+# an email / mobile notification: time to upload the Groww holdings statement (see STATEMENTS.md).
 on:
   schedule:
-    - cron: "30 3 1 * *"
+    - cron: "30 4 3 * *"
   workflow_dispatch:
 
 permissions:
@@ -22,20 +21,18 @@ jobs:
     steps:
       - name: Close last month's reminder, open this month's
         run: |
-          gh issue list -R "$REPO" --state open --search 'in:title "Refresh your portfolio"' --json number -q '.[].number' \
+          gh issue list -R "$REPO" --state open --search 'in:title "Upload your Groww statement"' --json number -q '.[].number' \
             | xargs -r -I{} gh issue close {} -R "$REPO" --comment "Superseded by this month's reminder."
           gh issue create -R "$REPO" --assignee "$OWNER" \
-            --title "Refresh your portfolio — $(date +'%B %Y')" \
+            --title "Upload your Groww statement — $(date +'%B %Y')" \
             --body "$(cat <<'BODY'
-          Time for the monthly portfolio check.
+          Your SIPs are allotted today, so once Groww shows them (usually the next day) it is time for the monthly sync.
 
-          1. Open Groww or IndMoney and go to your mutual funds holdings page (the one showing **Invested**, **Current Value** and **Gain/Loss** for each fund).
-          2. Take a screenshot (crop out your name and folio details).
-          3. In this repo: **Add file → Upload files** → put it in the `screenshots/` folder → commit to `main`.
-          4. The `sync-screenshot` workflow reads it, updates your invested amounts and units, and deletes the image. Check the Actions tab: a green run means it was applied; a red one means nothing was changed and the log says why.
+          1. In Groww: Mutual Funds, then Reports / Download, then the **holdings statement (.xlsx)**.
+          2. Save it into the `MF-Holding/` folder of this project on your computer.
+          3. Run `python src/encrypt_statement.py --push` (it asks for your passphrase, encrypts the file and pushes it).
+          4. The `statement` workflow imports it by itself within a couple of minutes. A green run in the Actions tab means it was applied.
 
-          Notes
-          - Your SIP is allocated on the 3rd, so a screenshot taken before then won't include this month's SIP; the system adds it automatically.
-          - Before the market opens or after a holiday is fine: this only corrects invested amount and units.
+          The plain statement holds your PAN and phone number and never goes to GitHub: only the encrypted copy does.
           BODY
           )"

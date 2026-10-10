@@ -1,0 +1,82 @@
+name: statement
+
+# Monthly holdings-statement import. You drop a Groww statement into MF-Holding/, run
+# `python src/encrypt_statement.py --push`, and this workflow decrypts it (STATEMENT_KEY secret), imports ONLY
+# the sanitised figures (units, invested, folios by last 4 digits) and recomputes the tax view. The plain
+# statement (name, PAN, phone) never enters git: it is encrypted before commit and decrypted only on the
+# runner's temporary disk.
+#
+# Runs: whenever a new file lands in statements/, and on the 3rd of each month. On the 3rd, if this month's
+# statement hasn't been uploaded yet, it opens an issue to remind you instead.
+on:
+  push:
+    paths:
+      - "statements/**"
+  schedule:
+    - cron: "30 14 3 * *"          # 20:00 IST on the 3rd (cron-job.org also triggers it: GitHub's scheduler is unreliable)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: statement
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      STATEMENT_KEY: ${{ secrets.STATEMENT_KEY }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Find the newest statement
+        id: find
+        run: |
+          f=$(ls -1 statements/*.xlsx.enc 2>/dev/null | sort | tail -1 || true)
+          echo "file=$f" >> "$GITHUB_OUTPUT"
+          this_month=$(date -u +%Y-%m)
+          if [ -z "$f" ]; then echo "state=none" >> "$GITHUB_OUTPUT"
+          elif [ "$(basename "$f" | cut -c1-7)" = "$this_month" ] || [ "${{ github.event_name }}" = "push" ]; then echo "state=current" >> "$GITHUB_OUTPUT"
+          else echo "state=old" >> "$GITHUB_OUTPUT"; fi
+      - name: Remind me (no statement for this month yet)
+        if: steps.find.outputs.state != 'current'
+        run: |
+          gh issue list -R "$GITHUB_REPOSITORY" --state open --search 'in:title "Upload your Groww statement"' --json number -q '.[].number' \
+            | xargs -r -I{} gh issue close {} -R "$GITHUB_REPOSITORY" --comment "Superseded."
+          gh issue create -R "$GITHUB_REPOSITORY" --assignee "$GITHUB_REPOSITORY_OWNER" \
+            --title "Upload your Groww statement — $(date +'%B %Y')" \
+            --body "No statement for this month yet. Download Groww's Mutual Funds holdings statement (.xlsx) into MF-Holding/, then run: python src/encrypt_statement.py --push. It imports itself within a couple of minutes."
+      - name: Decrypt and import
+        if: steps.find.outputs.state == 'current'
+        run: |
+          if [ -z "$STATEMENT_KEY" ]; then echo "::error::Add the STATEMENT_KEY repository secret (Settings > Secrets and variables > Actions)"; exit 1; fi
+          openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -in "${{ steps.find.outputs.file }}" -out "$RUNNER_TEMP/statement.xlsx" -pass env:STATEMENT_KEY
+          python src/import_statement.py "$RUNNER_TEMP/statement.xlsx"
+          rm -f "$RUNNER_TEMP/statement.xlsx"
+      - name: Recompute tax view and config
+        if: steps.find.outputs.state == 'current'
+        continue-on-error: true
+        run: |
+          python src/export_web.py
+          python src/tax.py
+      - name: Commit
+        if: steps.find.outputs.state == 'current'
+        run: |
+          git config user.name  "mf-pulse"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/data config/folios.json
+          git diff --staged --quiet || git commit -m "statement import $(date -u +%F)"
+          # Retry: another workflow may push between our pull and push. Our fresh data wins any conflict.
+          for n in 1 2 3 4; do
+            git pull --rebase --autostash -X theirs -q origin main && git push -q && exit 0
+            sleep $((n * 6))
+          done
+          echo "push failed after 4 attempts" >&2; exit 1

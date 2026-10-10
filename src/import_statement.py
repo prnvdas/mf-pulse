@@ -145,10 +145,17 @@ def main() -> None:
         print("[dry-run] nothing written")
         return
 
+    as_on = dt.date.fromisoformat(st["as_on"]) if st["as_on"] else now_ist().date()
+    sip_day = {x["fund_id"]: int(x["day_of_month"]) for x in cfg.get("sips", [])}
     for fid, p in per.items():
         e = state.setdefault(fid, {})
         e["units"] = round(p["units"], 4)
         e["seed_invested"] = round(p["invested"], 2)
+        # A statement dated before this month's SIP day does not contain that SIP yet: let reconcile add it later.
+        if fid in sip_day and as_on.day < sip_day[fid] and e.get("sip_applied_month") == as_on.strftime("%Y-%m"):
+            prev = (as_on.replace(day=1) - dt.timedelta(days=1)).strftime("%Y-%m")
+            e["sip_applied_month"] = prev
+            print(f"[info] {fid}: statement is dated before the SIP day ({sip_day[fid]}); this month's SIP will be added by reconcile")
     write_json("state.json", state)
     out = {"as_on": st["as_on"], "imported_at": now_ist().isoformat(), "source": "Groww holdings statement",
            "portfolio": {"invested": sm.get("invested"), "value": sm.get("value"), "xirr_pct": sm.get("xirr_pct")},

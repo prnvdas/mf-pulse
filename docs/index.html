@@ -1400,6 +1400,8 @@ function renderTax() {
   $("taxNote").textContent = "financial year to " + new Date(fy.end + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) + " · " + fy.days_left + " days left";
   let h = '<div class="hbanner" style="margin-top:6px"><span>' + (T.confidence === "estimated"
     ? "<b>Estimated.</b> Your purchase dates aren't on file, so lots are inferred from your monthly SIP (units bought in the last year are what decide short vs long term). For exact figures list every purchase in <code>config/transactions.csv</code>."
+    : T.confidence === "statement"
+    ? "<b>Built from your Groww statement of " + new Date(T.statement_as_on + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) + ".</b> Amounts and units are exact. Each folio's purchase date is inferred from its own XIRR, and a folio really holds many purchases, so ages are approximate (marked ≈). For exact lots add your transaction history in <code>config/transactions.csv</code>."
     : "Built from your <code>transactions.csv</code> purchase history.") + "</span></div>";
   h += '<div class="acc four" style="margin-top:14px">' +
     tile("Unrealised gain", signed(t.gain), "long-term " + cl(t.lt_gain) + " · short-term " + signed(t.st_gain), t.gain >= 0 ? "pos" : "neg") +
@@ -1408,7 +1410,7 @@ function renderTax() {
     tile("Worth harvesting", inr(hv.future_tax_saved), "of future tax saved each year you use the room", "pos") + "</div>";
 
   if ((hv.plan || []).length) {
-    h += '<div class="hv" style="margin-top:18px"><b>Tax-free harvest idea:</b> ' + hv.plan.map(p => "sell about <b>" + cl(p.value) + "</b> of " + esc(p.fund.replace(" Direct Growth", "")) + " (" + Math.round(p.units).toLocaleString("en-IN") + " units, oldest first) to book <b>" + cl(p.gain) + "</b> of long-term gain").join("; and ") +
+    h += '<div class="hv" style="margin-top:18px"><b>Tax-free harvest idea:</b> ' + hv.plan.map(p => "sell about <b>" + cl(p.value) + "</b> of " + esc(p.fund.replace(" Direct Growth", "")) + (p.folio ? " <b>folio " + esc(p.folio) + "</b>" : "") + " (" + Math.round(p.units).toLocaleString("en-IN") + " units, oldest first) to book <b>" + cl(p.gain) + "</b> of long-term gain").join("; and ") +
       ". That is inside this year's " + cl(rt.ltcg_exempt_inr) + " exemption, so no tax. Buy the same fund back straight away: your holding is unchanged, but your cost price resets higher, which lowers the tax on every future sale. " +
       "<span class=\"sub2\">Check exit load, the small STT on redemption, and which lots your platform sells (units are normally redeemed oldest first). Do it before " + new Date(fy.end + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" }) + ", because the room does not carry over.</span></div>";
   } else if (hv.remaining_exempt <= 0) {
@@ -1419,10 +1421,20 @@ function renderTax() {
     (T.funds || []).map(f => "<tr><td>" + esc(f.name.replace(" Direct Growth", "").replace(" Fund", "")) + "</td><td>" + inr(f.value) + "</td><td>" + inr(f.cost) + '</td><td class="' + (f.gain >= 0 ? "pos" : "neg") + '">' + signed(f.gain) + '</td><td class="' + (f.lt_gain >= 0 ? "pos" : "neg") + '">' + signed(f.lt_gain) + '</td><td class="' + (f.st_gain >= 0 ? "pos" : "neg") + '">' + signed(f.st_gain) + "</td></tr>").join("") + "</tbody></table></div>";
   (T.funds || []).forEach(f => (f.warnings || []).forEach(w => { h += '<p class="sub2" style="margin:4px 0">' + esc(f.name.replace(" Direct Growth", "")) + ": " + esc(w) + "</p>"; }));
 
+  const FL = (T.funds || []).flatMap(f => (f.lots || []).filter(l => l.folio).map(l => ({ fund: f.name, ...l })));
+  if (FL.length) {
+    h += '<div class="rr-sub">Your folios (each is bought and taxed on its own)</div><div class="scroll"><table><thead><tr><th>Folio</th><th>Invested</th><th>Value</th><th>Gain</th><th>Groww XIRR</th><th>Bought (≈)</th><th>Taxed as</th></tr></thead><tbody>' +
+      FL.map(l => "<tr><td>" + esc(l.fund.replace(" Direct Growth", "").replace(" Fund", "")) + " " + esc(l.folio) + "</td><td>" + inr(l.cost) + "</td><td>" + inr(l.value) + '</td><td class="' + (l.gain >= 0 ? "pos" : "neg") + '">' + signed(l.gain) + "</td><td>" + (l.xirr_pct != null ? pcs(l.xirr_pct, 2) : "—") + "</td><td>≈ " + (l.date ? dshort(l.date) : "older") + '</td><td><b>' + (l.term === "long" ? "long-term" : "short-term") + "</b></td></tr>").join("") + "</tbody></table></div>";
+  }
+  const LL = T.loss_lots || [];
+  if (LL.length) {
+    h += '<div class="hv" style="margin-top:16px"><b>Lots sitting at a loss:</b> ' + LL.map(l => esc(l.fund.replace(" Direct Growth", "").replace(" Fund", "")) + (l.folio ? " " + esc(l.folio) : "") + " (" + signed(l.loss) + ", " + (l.term === "long" ? "long-term" : "short-term") + ")").join("; ") +
+      ". Selling a loss-making lot books a capital loss that can offset gains made elsewhere this year (a short-term loss can offset both short- and long-term gains) and can be carried forward for 8 years if unused. It only helps if you also realise gains above the tax-free room; otherwise the loss is simply stored. <span class=\"sub2\">India has no formal wash-sale rule, but check this with a tax adviser before relying on it.</span></div>";
+  }
   const U = T.upcoming || [];
   if (U.length) {
     h += '<div class="rr-sub">Short-term units about to turn long-term</div><div class="scroll"><table><thead><tr><th>Fund</th><th>Bought</th><th>Turns long-term on</th><th>Days</th><th>Gain</th><th>Tax saved by waiting</th></tr></thead><tbody>' +
-      U.map(u => "<tr><td>" + esc(u.fund.replace(" Direct Growth", "").replace(" Fund", "")) + "</td><td>" + dshort(u.date) + "</td><td>" + new Date(u.turns_long_on + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) + "</td><td>" + u.days_left + "</td><td>" + signed(u.gain) + "</td><td>" + inr(u.tax_saved_by_waiting) + "</td></tr>").join("") + "</tbody></table></div>";
+      U.map(u => "<tr><td>" + esc(u.fund.replace(" Direct Growth", "").replace(" Fund", "")) + (u.folio ? " " + esc(u.folio) : "") + "</td><td>" + (u.approx ? "≈ " : "") + dshort(u.date) + "</td><td>" + new Date(u.turns_long_on + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) + "</td><td>" + u.days_left + "</td><td>" + signed(u.gain) + "</td><td>" + inr(u.tax_saved_by_waiting) + "</td></tr>").join("") + "</tbody></table></div>";
   }
   h += '<p class="note" style="margin-top:20px">Rates used: short-term ' + rt.stcg_pct + "%, long-term " + rt.ltcg_pct + "% above " + cl(rt.ltcg_exempt_inr) + " a year, plus " + rt.cess_pct + "% cess, for equity-oriented funds held more than " + Math.round(rt.long_term_days / 30) + " months for long-term. " +
     "These are the rules as last known to the author; <b>check the current year's rules</b> and edit <code>tax:</code> in config/portfolio.yaml if they changed. Surcharge, exit loads and gains or losses outside these funds are not included. A planning estimate, not tax advice.</p>";
@@ -1717,7 +1729,7 @@ function renderCompare() {
 
     const x = f.xirr;
     const xrow = "<tr><td>XIRR<br><span class=\"sub2\">" + (x && x.pct != null
-        ? (x.source === "transactions" ? "since " + x.since.slice(0, 7) : "as shown in the app") : "needs your dates") + "</span></td><td>" +
+        ? (x.source === "transactions" ? "since " + x.since.slice(0, 7) : x.source === "folios" ? "≈ from your Groww folios" : "as shown in the app") : "needs your dates") + "</span></td><td>" +
       (x && x.pct != null ? sg(x.pct) : "—") + "</td><td>" + (x && x.bench_pct != null ? sg(x.bench_pct) : "—") +
       '</td><td class="' + cls(x && x.bench_pct != null ? x.pct - x.bench_pct : null) + '">' +
       (x && x.pct != null && x.bench_pct != null ? sg(x.pct - x.bench_pct) : "—") + "</td></tr>";

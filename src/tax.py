@@ -24,7 +24,7 @@ import sys
 
 import pandas as pd
 
-from analytics import fetch_nav_series, load_transactions
+from analytics import fetch_nav_series, load_folios, load_transactions
 from common import load_portfolio, now_ist, read_json, write_json
 
 DEFAULT = {"stcg_pct": 20.0, "ltcg_pct": 12.5, "ltcg_exempt_inr": 125000.0, "cess_pct": 4.0, "long_term_days": 365,
@@ -117,12 +117,34 @@ def build_lots(fid: str, cfg: dict, tx: dict, nav: pd.Series, units: float, cost
     return lots, src, warns
 
 
+def folio_lots(fid: str, folios: dict | None, today: dt.date) -> list[dict]:
+    """One lot per folio, dated by the age its own XIRR implies (see analytics.folio_cohorts). Approximate,
+    because a folio holds many purchases; folios with no usable XIRR are treated as old (long-term)."""
+    import math
+    out = []
+    for f in (folios or {}).get("funds", []):
+        if f["fund_id"] != fid:
+            continue
+        for fo in f["folios"]:
+            r, inv, val = (fo.get("xirr_pct") or 0) / 100, fo["invested"], fo["value"]
+            age = math.log(val / inv) / math.log(1 + r) if abs(r) > 1e-4 and val != inv and inv > 0 and val > 0 else None
+            lot = {"units": fo["units"], "cost": inv, "nav": inv / fo["units"] if fo["units"] else 0, "folio": fo["label"], "approx": True,
+                   "xirr_pct": fo.get("xirr_pct")}
+            if age is not None and 0 < age < 40:
+                lot["date"] = today - dt.timedelta(days=round(age * 365.25))
+            else:
+                lot["date"], lot["opening"] = None, True
+            out.append(lot)
+    return out
+
+
 def main() -> None:
     cfg, ts = load_portfolio(), now_ist()
     today = ts.date()
     t = {**DEFAULT, **(cfg.get("tax") or {})}
     state = read_json("state.json", {})
     tx = load_transactions()
+    folios = load_folios()
     rate_st, rate_lt, cess = t["stcg_pct"] / 100, t["ltcg_pct"] / 100, 1 + t["cess_pct"] / 100
     fy_start, fy_end = fy_bounds(today)
 
@@ -141,13 +163,19 @@ def main() -> None:
         except (KeyError, ValueError):
             last_date = today
         nav_dates.append(last_date)
-        lots, src, warns = build_lots(f["id"], cfg, tx, nav, units, cost, last_date, t, today)
+        flots = folio_lots(f["id"], folios, today) if folios and not tx.get(f["id"]) else []
+        if flots:
+            lots, src, warns = flots, f"your Groww statement of {folios.get('as_on')} (folio ages inferred from each folio's XIRR)", []
+            cost = sum(x["cost"] for x in lots)                 # the statement is exact: use its cost, not the rounded config
+        else:
+            lots, src, warns = build_lots(f["id"], cfg, tx, nav, units, cost, last_date, t, today)
         rows = []
         for l in lots:
             held = (today - l["date"]).days if l["date"] else None
             lt = l.get("opening") or (held is not None and held > t["long_term_days"])
             val = l["units"] * nav_now
-            rows.append({"date": l["date"].isoformat() if l["date"] else None, "units": round(l["units"], 4), "cost": round(l["cost"], 2),
+            rows.append({"folio": l.get("folio"), "approx": bool(l.get("approx")), "xirr_pct": l.get("xirr_pct"),
+                         "date": l["date"].isoformat() if l["date"] else None, "units": round(l["units"], 4), "cost": round(l["cost"], 2),
                          "value": round(val, 2), "gain": round(val - l["cost"], 2), "term": "long" if lt else "short",
                          "opening": bool(l.get("opening")), "held_days": held,
                          "long_term_on": (l["date"] + dt.timedelta(days=t["long_term_days"] + 1)).isoformat() if l["date"] and not lt else None})
@@ -193,7 +221,8 @@ def main() -> None:
             gain_sell += r["gain"] * frac
             got += r["gain"] * frac
         if gain_sell > 0:
-            plan.append({"fund": fnd["name"], "units": round(units_sell, 3), "value": round(value_sell), "gain": round(gain_sell)})
+            folio = next((r["folio"] for r in fnd["lots"] if r["term"] == "long" and r["gain"] > 0 and r.get("folio")), None)
+            plan.append({"fund": fnd["name"], "folio": folio, "units": round(units_sell, 3), "value": round(value_sell), "gain": round(gain_sell)})
     harvest = {"remaining_exempt": round(remaining), "available_lt_gain": round(max(0.0, lt_gain)), "target_gain": round(target),
                "plan": plan, "sell_value": sum(p["value"] for p in plan),
                "future_tax_saved": round(target * rate_lt * cess)}
@@ -204,9 +233,14 @@ def main() -> None:
         if r["term"] == "short" and r["long_term_on"] and r["gain"] > 0:
             days = (dt.date.fromisoformat(r["long_term_on"]) - today).days
             if 0 < days <= 150:
-                upcoming.append({"fund": next(x["name"] for x in funds if x["id"] == fid), "date": r["date"], "turns_long_on": r["long_term_on"],
+                upcoming.append({"fund": next(x["name"] for x in funds if x["id"] == fid), "folio": r.get("folio"), "approx": r.get("approx"),
+                                 "value": r["value"], "date": r["date"], "turns_long_on": r["long_term_on"],
                                  "days_left": days, "gain": r["gain"], "tax_saved_by_waiting": round(r["gain"] * (rate_st - rate_lt) * cess)})
     upcoming.sort(key=lambda u: u["days_left"])
+
+    # lots sitting at a loss: booking one produces a capital loss that can offset gains (and carries forward if unused)
+    loss_lots = sorted([{"fund": x["name"], "folio": r.get("folio"), "date": r["date"], "term": r["term"], "value": r["value"], "loss": r["gain"]}
+                        for x in funds for r in x["lots"] if r["gain"] < -1000], key=lambda r: r["loss"])
 
     out = {"generated_at": ts.isoformat(), "as_of": max(nav_dates).isoformat(),
            "rates": {"stcg_pct": t["stcg_pct"], "ltcg_pct": t["ltcg_pct"], "ltcg_exempt_inr": t["ltcg_exempt_inr"], "cess_pct": t["cess_pct"],
@@ -219,7 +253,9 @@ def main() -> None:
                         "lt_taxable": round(lt_taxable), "tax": round(tax_all),
                         "effective_pct_of_gain": round(tax_all / tot("gain") * 100, 1) if tot("gain") > 0 else 0.0},
            "harvest": harvest, "upcoming": upcoming[:8], "funds": funds,
-           "confidence": "estimated" if any(x["source"].startswith("estimated") for x in funds) else "from your transactions"}
+           "loss_lots": loss_lots, "statement_as_on": (folios or {}).get("as_on") if folios else None,
+           "confidence": "estimated" if any(x["source"].startswith("estimated") for x in funds)
+                         else "statement" if any(x["source"].startswith("your Groww statement") for x in funds) else "transactions"}
     write_json("tax.json", out)
     print(f"[ok] tax.json: gain ₹{tot('gain'):,} (long ₹{lt_gain:,} / short ₹{st_gain:,}); tax if all sold ₹{tax_all:,.0f}; "
           f"harvestable tax-free gain ₹{target:,.0f}; {len(upcoming)} lots turn long-term within 150 days; {out['confidence']}")

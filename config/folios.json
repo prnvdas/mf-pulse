@@ -1,0 +1,79 @@
+{
+  "as_on": "2026-10-10",
+  "imported_at": "2026-10-10T16:57:20.516516+05:30",
+  "source": "Groww holdings statement",
+  "portfolio": {
+    "invested": 8386652.53,
+    "value": 10430514.32,
+    "xirr_pct": 11.57
+  },
+  "funds": [
+    {
+      "fund_id": "axis-small-cap",
+      "name": "Axis Small Cap Fund Direct Growth",
+      "units": 40083.881,
+      "invested": 4124793.89,
+      "value": 5301494.1,
+      "folios": [
+        {
+          "label": "…8052",
+          "units": 25974.724,
+          "invested": 2299885.26,
+          "value": 3435417.0,
+          "xirr_pct": 15.04,
+          "category": "Small Cap"
+        },
+        {
+          "label": "…5582",
+          "units": 14109.157,
+          "invested": 1824908.63,
+          "value": 1866077.1,
+          "xirr_pct": 3.04,
+          "category": "Small Cap"
+        }
+      ]
+    },
+    {
+      "fund_id": "mirae-large-midcap",
+      "name": "Mirae Asset Large & Midcap Fund Direct Growth",
+      "units": 29578.389,
+      "invested": 4074867.98,
+      "value": 4949440.57,
+      "folios": [
+        {
+          "label": "…1565",
+          "units": 14936.775,
+          "invested": 1579926.65,
+          "value": 2499415.37,
+          "xirr_pct": 12.71,
+          "category": "Large & MidCap"
+        },
+        {
+          "label": "…6633",
+          "units": 14641.614,
+          "invested": 2494941.33,
+          "value": 2450025.2,
+          "xirr_pct": -2.08,
+          "category": "Large & MidCap"
+        }
+      ]
+    },
+    {
+      "fund_id": "jioblackrock-flexicap",
+      "name": "JioBlackRock Flexi Cap Fund Direct Growth",
+      "units": 18876.495,
+      "invested": 186990.66,
+      "value": 179579.65,
+      "folios": [
+        {
+          "label": "…9183",
+          "units": 18876.495,
+          "invested": 186990.66,
+          "value": 179579.65,
+          "xirr_pct": -6.34,
+          "category": "Flexi Cap"
+        }
+      ]
+    }
+  ]
+}

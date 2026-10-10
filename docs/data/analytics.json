@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-10T04:48:16.933039+05:30",
+  "generated_at": "2026-10-10T16:58:42.404249+05:30",
   "risk_free_pct": 6.5,
-  "portfolio_xirr_pct": null,
+  "portfolio_xirr_pct": 11.57,
   "funds": [
     {
       "id": "axis-small-cap",
@@ -11,36 +11,36 @@
         "note": "index level (price return); P/E comes from the HDFC Nifty Smallcap 250 ETF, which holds the same basket"
       },
       "mine": {
-        "invested": 4125000.0,
-        "value": 5301578,
-        "gain_pct": 28.52
+        "invested": 4124793.89,
+        "value": 5301494,
+        "gain_pct": 28.53
       },
       "returns": {
         "1M": {
-          "fund": -5.09,
-          "bench": -5.61,
-          "diff": 0.52
+          "fund": -4.26,
+          "bench": -4.65,
+          "diff": 0.39
         },
         "3M": {
-          "fund": -0.06,
-          "bench": -2.17,
-          "diff": 2.11
+          "fund": -0.71,
+          "bench": -3.0,
+          "diff": 2.29
         },
         "6M": {
-          "fund": 13.86,
-          "bench": 12.8,
-          "diff": 1.06
+          "fund": 13.09,
+          "bench": 11.56,
+          "diff": 1.53
         },
         "1Y": {
-          "fund": 7.49,
-          "bench": 3.14,
-          "diff": 4.35
+          "fund": 8.12,
+          "bench": 3.33,
+          "diff": 4.79
         }
       },
       "risk": {
         "window_days": 364,
         "beta": 0.85,
-        "alpha_pct": 3.88,
+        "alpha_pct": 4.02,
         "vol_pct": 15.1,
         "bench_vol_pct": 17.4,
         "sharpe": 0.15,
@@ -53,8 +53,8 @@
         "fund_pb": 4.0,
         "bench_pe": 25.0
       },
-      "history_days": 4690,
-      "as_of": "2026-10-08",
+      "history_days": 4691,
+      "as_of": "2026-10-09",
       "scenarios": {
         "basis": "fund",
         "since": "2013-12-05",
@@ -72,7 +72,13 @@
         "gap_pct": 4.7,
         "peak_date": "2026-09-08"
       },
-      "xirr": null
+      "xirr": {
+        "pct": 13.4,
+        "source": "folios",
+        "approx": true,
+        "since": "2023-11-28",
+        "bench_pct": 11.1
+      }
     },
     {
       "id": "mirae-large-midcap",
@@ -82,8 +88,8 @@
         "note": "approx. 70/30 blend of the Nifty 100 and Nifty Midcap 150 ETFs (the index is Nifty 100 + Midcap 150, roughly 70% large-cap by weight); price return"
       },
       "mine": {
-        "invested": 4075000.0,
-        "value": 4949535,
+        "invested": 4074867.98,
+        "value": 4949441,
         "gain_pct": 21.46
       },
       "returns": {
@@ -143,7 +149,13 @@
         "gap_pct": 8.7,
         "peak_date": "2026-08-03"
       },
-      "xirr": null
+      "xirr": {
+        "pct": 9.6,
+        "source": "folios",
+        "approx": true,
+        "since": "2022-12-08",
+        "bench_pct": null
+      }
     },
     {
       "id": "jioblackrock-flexicap",
@@ -153,25 +165,25 @@
         "note": "index level (price return); benchmark P/E is approximated from a 75/15/10 large/mid/small ETF mix"
       },
       "mine": {
-        "invested": 187000.0,
-        "value": 179584,
-        "gain_pct": -3.97
+        "invested": 186990.66,
+        "value": 179580,
+        "gain_pct": -3.96
       },
       "returns": {
         "1M": {
-          "fund": -5.47,
-          "bench": -6.45,
-          "diff": 0.98
+          "fund": -3.98,
+          "bench": -4.76,
+          "diff": 0.78
         },
         "3M": {
-          "fund": -4.85,
+          "fund": -4.94,
           "bench": -6.35,
-          "diff": 1.5
+          "diff": 1.41
         },
         "6M": {
-          "fund": -1.0,
-          "bench": -1.91,
-          "diff": 0.91
+          "fund": -1.52,
+          "bench": -2.15,
+          "diff": 0.63
         },
         "1Y": {
           "fund": null,
@@ -180,12 +192,12 @@
         }
       },
       "risk": {
-        "window_days": 356,
+        "window_days": 357,
         "beta": 1.0,
-        "alpha_pct": 2.07,
+        "alpha_pct": 1.8,
         "vol_pct": 14.6,
         "bench_vol_pct": 14.5,
-        "sharpe": -0.85,
+        "sharpe": -0.78,
         "max_drawdown_pct": -14.3,
         "bench_max_drawdown_pct": -14.8
       },
@@ -195,8 +207,8 @@
         "fund_pb": 2.6,
         "bench_pe": 20.6
       },
-      "history_days": 356,
-      "as_of": "2026-10-08",
+      "history_days": 357,
+      "as_of": "2026-10-09",
       "scenarios": {
         "basis": "benchmark",
         "since": "2005-09-27",
@@ -214,7 +226,13 @@
         "gap_pct": 7.3,
         "peak_date": "2026-08-07"
       },
-      "xirr": null
+      "xirr": {
+        "pct": -6.3,
+        "source": "folios",
+        "approx": true,
+        "since": "2026-02-25",
+        "bench_pct": -10.4
+      }
     }
   ]
 }

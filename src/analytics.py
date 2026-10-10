@@ -247,10 +247,61 @@ def fund_xirr(fid: str, txns: dict, invested, value, as_of: dt.date, bench: pd.S
             rb = xirr([(d, -a) for d, a in rows] + [(as_of, units * bench_last)])
             out["bench_pct"] = None if rb is None else round(rb * 100, 1)
         return out
+    fx = folio_xirr(fid, load_folios(), as_of, bench, bench_last)
+    if fx:
+        return fx
     if screenshot.get("xirr_pct") is not None:
         return {"pct": screenshot["xirr_pct"], "source": "screenshot", "as_of": screenshot.get("xirr_date"),
                 "bench_pct": None}
     return None
+
+
+def load_folios() -> dict | None:
+    """config/folios.json, written by src/import_statement.py from a Groww holdings statement."""
+    path = CONFIG / "folios.json"
+    if not path.exists():
+        return None
+    try:
+        import json
+        return json.loads(path.read_text())
+    except ValueError:
+        return None
+
+
+def folio_cohorts(fid: str, folios: dict | None, as_of: dt.date) -> list[dict]:
+    """Each folio as one 'purchase': the single investment date that, with the folio's invested amount, value and
+    its own printed XIRR, is exactly consistent (V = I * (1 + xirr) ** age). Approximate, because a folio really
+    holds many purchases; rebuilt this way the portfolio XIRR lands within ~0.3 points of Groww's own figure."""
+    import math
+    out = []
+    for f in (folios or {}).get("funds", []):
+        if f["fund_id"] != fid:
+            continue
+        for fo in f["folios"]:
+            r, inv, val = (fo.get("xirr_pct") or 0) / 100, fo["invested"], fo["value"]
+            if abs(r) < 1e-4 or val == inv or inv <= 0 or val <= 0:
+                continue
+            age = math.log(val / inv) / math.log(1 + r)
+            if 0 < age < 40:
+                out.append({"label": fo["label"], "invested": inv, "value": val, "age_years": age,
+                            "date": as_of - dt.timedelta(days=round(age * 365.25))})
+    return out
+
+
+def folio_xirr(fid: str, folios: dict | None, as_of: dt.date, bench: pd.Series | None, bench_last: float | None) -> dict | None:
+    cohorts = folio_cohorts(fid, folios, as_of)
+    if not cohorts:
+        return None
+    flows = [(c["date"], -c["invested"]) for c in cohorts] + [(as_of, sum(c["value"] for c in cohorts))]
+    r = xirr(flows)
+    if r is None:
+        return None
+    out = {"pct": round(r * 100, 1), "source": "folios", "approx": True, "since": min(c["date"] for c in cohorts).isoformat(), "bench_pct": None}
+    if bench is not None and bench_last and min(c["date"] for c in cohorts) >= bench.index[0].date():
+        units = sum(c["invested"] / float(bench.asof(pd.Timestamp(c["date"]))) for c in cohorts)
+        rb = xirr([(c["date"], -c["invested"]) for c in cohorts] + [(as_of, units * bench_last)])
+        out["bench_pct"] = None if rb is None else round(rb * 100, 1)
+    return out
 
 
 # --- valuation ----------------------------------------------------------------
@@ -418,6 +469,9 @@ def main() -> None:
         r = xirr(flows)
         portfolio_xirr = None if r is None else round(r * 100, 1)
 
+    folios = load_folios()
+    if portfolio_xirr is None and folios and (folios.get("portfolio") or {}).get("xirr_pct") is not None:
+        portfolio_xirr = folios["portfolio"]["xirr_pct"]          # Groww's own figure, exact
     write_json("analytics.json", {
         "generated_at": ts.isoformat(), "risk_free_pct": rf, "portfolio_xirr_pct": portfolio_xirr,
         "funds": funds_out,

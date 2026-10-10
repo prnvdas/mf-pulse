@@ -6,3 +6,7 @@ node_modules/
 worker/.wrangler/
 config/nse_equity.csv
 .DS_Store
+
+# Personal statements (contain name, PAN, phone, folio numbers): never commit
+MF-Holding/
+*.xlsx

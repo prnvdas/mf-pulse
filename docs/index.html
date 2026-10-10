@@ -156,9 +156,10 @@
   .tk-lab{flex:none;color:var(--grey);font-size:10px;font-weight:600;letter-spacing:.14em;padding:0 18px 0 32px;display:flex;align-items:center;gap:7px;border-right:1px solid var(--rule);background:var(--wash);z-index:1}
   .tk-lab i{width:6px;height:6px;border-radius:50%;background:var(--green-deep)}
   .tk-lab i.off{background:var(--grey-light)}
-  .tk-track{flex:1;overflow-x:auto;overflow-y:hidden;white-space:nowrap;display:flex;align-items:center;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:grab}
-  .tk-track::-webkit-scrollbar{display:none}
-  .tk-run{display:inline-flex;align-items:center;white-space:nowrap}
+  .tk-track{flex:1;overflow:hidden;white-space:nowrap;display:flex;align-items:center}
+  /* One continuous loop that never pauses: it moves by exactly one copy of the content, so the seam is invisible. */
+  .tk-run{display:inline-flex;align-items:center;white-space:nowrap;will-change:transform;animation:tkscroll var(--tk-dur,60s) linear infinite}
+  @keyframes tkscroll{from{transform:translate3d(0,0,0)}to{transform:translate3d(var(--tk-shift,-50%),0,0)}}
   .tk-run>*,.tk-unit{flex:none}
   .tk-unit{display:inline-flex;align-items:center}
   .tk-idx{display:inline-flex;align-items:baseline;gap:8px;padding:9px 0}
@@ -170,8 +171,6 @@
   .tk-run .src{color:var(--grey-light);margin-left:8px;font-size:11px}
   .tk-run .dot{color:var(--rule);margin:0 22px}
   .tk-run .gap{width:36px}
-  .tk-btn{flex:none;background:var(--wash);color:var(--grey-light);border:0;border-left:1px solid var(--rule);padding:0 14px;font-size:10px;cursor:pointer}
-  .ticker .tk-btn:hover,.ticker .tk-btn:focus,.ticker .tk-btn:active{background:var(--wash);color:var(--ink);outline:none}
   @media(prefers-reduced-motion:reduce){.tk-lab i{animation:none}}
   .why ol{list-style:none;margin:18px 0 0;display:grid;gap:14px}
   .why li{display:grid;grid-template-columns:28px 1fr;gap:12px;font-size:14.5px;line-height:1.6}
@@ -199,11 +198,12 @@
   .pm{border-top:1px solid var(--rule);padding:12px 0}
   .pm .h{display:flex;justify-content:space-between;gap:12px;font-weight:600;font-size:14px;margin-bottom:6px}
   @media(max-width:760px){.sbars{grid-template-columns:1fr}.sb{grid-template-columns:104px 1fr 56px}}
-  .hbar{background:#fbf4e1;border-bottom:1px solid var(--rule);font-size:13.5px;line-height:1.5}
-  .hbar .in{max-width:1180px;margin:0 auto;padding:10px 32px;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
-  .hbar .tg{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:#c98a0a;color:#fff;padding:2px 8px;border-radius:99px;white-space:nowrap}
-  .hbar.soft{background:var(--wash)}.hbar.soft .tg{background:var(--grey-light)}
-  @media(max-width:760px){.hbar .in{padding:10px 16px}}
+  .hbar{margin:22px 0 0;padding:3px 0 3px 14px;border-left:3px solid #c98a0a;font-size:13.5px;line-height:1.6;color:var(--ink)}
+  .hbar+.hbar{margin-top:12px}
+  .hbar .in{display:block}
+  .hbar .tg{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8a5a00;margin-right:10px;white-space:nowrap}
+  .hbar.soft{border-left-color:var(--grey-light);color:var(--grey)}.hbar.soft .tg{color:var(--grey)}
+  .hbar code{font-size:12px}
   .stat .x{font-size:12px;color:var(--grey);margin-top:5px}
   .subrow td{font-size:12.5px;color:var(--grey);padding:8px 0;border-bottom:1px dashed var(--rule)}
   .subrow td:first-child{padding-left:18px}
@@ -297,16 +297,15 @@
   </div>
 </header>
 
-<div class="hbar" id="holidayBar" hidden role="status"></div>
-<div class="hbar" id="stmtBar" hidden role="status"></div>
 
 <div class="ticker" id="ticker" hidden aria-label="Market indices">
   <span class="tk-lab" id="tkLab"><i></i>LIVE</span>
   <div class="tk-track" id="tkTrack"><div class="tk-run" id="tkRun"></div></div>
-  <button class="tk-btn" id="tkBtn" aria-label="Pause index ticker">❚❚</button>
 </div>
 
 <main class="wrap">
+  <div class="hbar" id="holidayBar" hidden role="status"></div>
+  <div class="hbar" id="stmtBar" hidden role="status"></div>
 
 
   <div class="hero">
@@ -1105,43 +1104,8 @@ function renderWhy() {
 // than the screen, so it is repeated until it covers the strip and the loop wraps
 // by exactly one set's width -- seamless, with no empty gap.
 function makeTicker(ids, buildUnit, label) {
-  const st = { pos: 0, paused: false, off: false, resume: null, started: false, key: "", period: 0, items: [] };
+  const st = { dur: 0, key: "", items: [] };
   const g = k => document.getElementById(ids[k]);
-
-  function start(track) {
-    st.started = true;
-    const pause = () => { st.paused = true; clearTimeout(st.resume); };
-    const later = ms => { clearTimeout(st.resume); st.resume = setTimeout(() => { if (!st.off) { st.paused = false; st.pos = track.scrollLeft; } }, ms); };
-    g("btn").addEventListener("click", () => {
-      st.off = !st.off; st.paused = st.off; clearTimeout(st.resume); st.pos = track.scrollLeft;
-      g("btn").textContent = st.off ? "▶" : "❚❚";
-      g("btn").setAttribute("aria-label", (st.off ? "Play " : "Pause ") + ids.name);
-    });
-    // pause only while the pointer is on a link (so it can be clicked), not whenever the mouse rests over the strip
-    track.addEventListener("mouseover", e => { if (e.target.closest("a")) pause(); });
-    track.addEventListener("mouseout", e => { if (e.target.closest("a")) later(400); });
-    track.addEventListener("touchstart", pause, { passive: true });
-    track.addEventListener("touchend", () => later(3000));
-    track.addEventListener("wheel", () => { pause(); later(2500); }, { passive: true });
-    track.addEventListener("scroll", () => {
-      if (st.period > 0 && st.paused) {
-        if (track.scrollLeft >= st.period) track.scrollLeft -= st.period;
-        else if (track.scrollLeft <= 0) track.scrollLeft += st.period;
-      }
-    });
-    let last = performance.now();
-    const step = now => {
-      const dt = Math.min(0.1, (now - last) / 1000); last = now;
-      if (!st.paused && st.period > 0 && document.visibilityState === "visible") {
-        st.pos += 45 * dt;                       // px per second
-        if (st.pos >= st.period) st.pos -= st.period;
-        track.scrollLeft = st.pos;
-      }
-      requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }
-
   function render(items) {
     st.items = items;
     const bar = g("bar"), track = g("track"), run = g("run");
@@ -1152,18 +1116,22 @@ function makeTicker(ids, buildUnit, label) {
     run.innerHTML = unit;
     const w = run.firstChild.getBoundingClientRect().width;
     if (!w) return;
-    st.period = w;
-    const copies = Math.ceil(track.clientWidth / w) + 1, key = unit + copies;
-    if (st.key !== key) { run.innerHTML = unit.repeat(copies); st.key = key; }
-    if (!st.started) start(track);
+    const copies = Math.ceil(track.clientWidth / w) + 1;
+    // Always rebuild the full strip. (Skipping it when the numbers were unchanged, which is every refresh on a
+    // weekend or holiday, left a single copy behind and the ticker ran dry.) The animation lives on #tkRun itself,
+    // which is never replaced, so refreshing the content does not interrupt the scroll.
+    run.innerHTML = unit.repeat(copies);
+    run.style.setProperty("--tk-shift", "-" + (100 / copies) + "%");               // exactly one copy: a seamless loop
+    const dur = Math.max(20, Math.round(w / 45));                                   // about 45 px a second
+    if (Math.abs(dur - st.dur) >= 1) { st.dur = dur; run.style.setProperty("--tk-dur", dur + "s"); }
   }
-  window.addEventListener("resize", () => { if (st.started) render(st.items); });
+  window.addEventListener("resize", () => render(st.items));
   return { render };
 }
 
 const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 const INDEX_TICKER = makeTicker(
-  { bar: "ticker", track: "tkTrack", run: "tkRun", btn: "tkBtn", lab: "tkLab", name: "index ticker" },
+  { bar: "ticker", track: "tkTrack", run: "tkRun", lab: "tkLab", name: "index ticker" },
   items => items.map(m => {
     const up = m.move_pct >= 0, arrow = up ? "▲" : "▼";
     return '<span class="tk-idx"><b>' + esc(m.name) + '</b><span class="lv">' + m.level.toLocaleString("en-IN", { maximumFractionDigits: 2 }) +
@@ -1996,7 +1964,13 @@ function renderHolidayBar() {
   const reopen = () => { const n = nextTradingDay(todayIso); return n ? " It reopens " + (n === isoPlus(ist, 1) ? "tomorrow" : fmt(n)) + " at 09:15." : ""; };
   if (sp) { tag = "Special session"; msg = sp.name + " today, " + sp.start + "–" + sp.end + (sp.provisional ? " (timing to be confirmed by NSE)." : "."); }
   else if (calHolidayToday()) { tag = "Market closed today"; msg = "The NSE is shut for <b>" + esc(calHolidayToday()) + "</b>, so prices and your estimate won't move." + reopen(); }
-  else if (dow === 0 || dow === 6) { tag = "Weekend"; msg = "The market is closed" + (holAny(todayIso) ? " (it is also the NSE holiday for " + esc(holAny(todayIso)) + ")" : "") + "." + reopen(); soft = true; }
+  else if (dow === 0 || dow === 6) {
+    // A plain weekend is already in the status line above; only say more when something is unusual.
+    const n = nextTradingDay(todayIso), monday = (() => { const d = new Date(todayIso + "T00:00:00"); d.setDate(d.getDate() + ((8 - d.getDay()) % 7 || 1)); return istDate(d); })();
+    const gap = []; for (let i = 1; i < 12 && n; i++) { const iso = isoPlus(ist, i); if (iso >= n) break; const h = holName(iso); if (h) gap.push(h + " (" + fmt(iso) + ")"); }
+    if (n && n !== monday) { tag = "Long weekend"; msg = "The market stays shut for <b>" + esc(gap.join(", ") || "a holiday") + "</b> and reopens " + fmt(n) + " at 09:15."; soft = true; }
+    else if (holAny(todayIso)) { tag = "Holiday"; msg = "Today is also the NSE holiday for <b>" + esc(holAny(todayIso)) + "</b>." + reopen(); soft = true; }
+  }
   else {
     const tm = isoPlus(ist, 1), skipped = [];
     for (let i = 1; i < 12; i++) { const iso = isoPlus(ist, i); if (isTradingDay(iso)) break; const n = holName(iso); if (n) skipped.push([iso, n]); }

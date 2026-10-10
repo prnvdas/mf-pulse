@@ -220,6 +220,19 @@
   .gcard .gh b{font-size:16px}
   .gst{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:99px;color:#fff}
   .gst.ok{background:var(--green-deep)}.gst.mid{background:#c98a0a}.gst.bad{background:var(--red)}
+  .gline{font-size:14.5px;line-height:1.65;margin:10px 0 0}
+  .gprog{height:12px;background:var(--wash);margin:14px 0 4px;position:relative}.gprog i{position:absolute;left:0;top:0;bottom:0;background:var(--green)}
+  .gprogl{display:flex;justify-content:space-between;font-size:12px;color:var(--grey)}
+  .gfix{background:var(--wash);padding:14px 18px;margin:12px 0 0;font-size:14px;line-height:1.6}.gfix ul{margin:6px 0 0 18px;padding:0}.gfix li{margin:4px 0}
+  .gscen{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);margin:14px 0 4px}
+  .gscen>div{background:var(--paper);padding:12px 14px}.gscen .k{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--grey);margin-bottom:5px}.gscen .v{font-size:19px;font-weight:600}.gscen .n{font-size:11.5px;color:var(--grey);margin-top:3px}
+  .gnew{margin-top:8px;padding-top:6px}.gq{font-size:17px;font-weight:600;margin:6px 0 10px}
+  .gchips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}.gchip{font:inherit;font-size:13px;background:var(--paper);color:var(--ink);border:1px solid var(--rule);padding:8px 14px;cursor:pointer}.gchip:hover{border-color:var(--ink)}
+  .gform2{display:grid;gap:16px;max-width:520px}.gform2 label{font-size:14px;font-weight:600;display:grid;gap:6px}
+  .gform2 input,.gform2 select{font:inherit;font-size:15px;font-weight:400;padding:10px 11px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);width:100%;box-sizing:border-box}
+  .gamt{display:grid;grid-template-columns:1fr 120px;gap:8px}.ghint{font-size:12px;font-weight:400;color:var(--grey)}
+  .gadv{border:0;padding:0}.gadv summary{cursor:pointer;font-size:13px;color:var(--grey);margin-bottom:12px}.gadv label{margin-bottom:14px}
+  @media(max-width:760px){.gscen{grid-template-columns:1fr}}
   .gform{display:grid;grid-template-columns:2fr 1.2fr .8fr .8fr .8fr auto;gap:10px;align-items:end;margin:10px 0 0}
   .gform label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--grey);display:block;margin-bottom:4px}
   .gform input{width:100%;font:inherit;font-size:13.5px;padding:8px 9px;border:1px solid var(--rule);background:var(--paper);color:var(--ink)}
@@ -1548,6 +1561,10 @@ function goalFan(sim, T, tEnd) {
     '<text x="' + (W / 2) + '" y="' + (H - 6) + '" text-anchor="middle" font-size="10.5" fill="var(--grey)">shaded: the middle 8 in 10 outcomes · line: the median</text></svg>';
 }
 
+// Plain-language money: "₹1.47 lakh", "₹9.85 crore"
+const gw = n => n >= 1e7 ? "₹" + (n / 1e7).toFixed(2).replace(/\.?0+$/, "") + " crore" : n >= 1e5 ? "₹" + (n / 1e5).toFixed(2).replace(/\.?0+$/, "") + " lakh" : "₹" + Math.round(n).toLocaleString("en-IN");
+const GOAL_STARTS = [["Retirement", 20], ["Child's education", 12], ["Buy a house", 8], ["Buy a car", 4], ["Holiday or wedding", 3], ["Something else", 10]];
+
 function renderGoals() {
   const wrap = $("goalWrap"), last = PROJ && PROJ.last;
   if (!CFG || !last || !last.value) { wrap.hidden = true; return; }
@@ -1555,48 +1572,65 @@ function renderGoals() {
   const mine = goalsMine(), list = mine.length ? mine : (CFG.goals || []), usingMine = mine.length > 0;
   const scen = (CFG.goal_scenarios_pct && CFG.goal_scenarios_pct.length ? CFG.goal_scenarios_pct : [10, 12, 15]).map(x => x / 100);
   const base = scen[Math.floor(scen.length / 2)], sigma = RISK && RISK.risk ? RISK.risk.vol_3y_pct / 100 : 0.15;
-  const now = new Date(), totalShare = list.reduce((a, g) => a + (+g.share_pct || 0), 0);
-  $("goalNote").textContent = "your " + cx(last.value) + " + " + inr(CFG.monthly_sip_total || 0) + "/month SIP · base return " + Math.round(base * 100) + "% · volatility " + Math.round(sigma * 100) + "%";
-  let h = "";
-  if (totalShare > 100.5) h += '<div class="hbanner" style="margin-bottom:14px"><span>Your goals earmark <b>' + Math.round(totalShare) + "%</b> of your money: more than you have. Lower the shares so they add up to 100% or less.</span></div>";
-  if (!list.length) h += '<p class="rr-v">No goals yet. Add one below.</p>';
+  const names = ["Slower markets", "Normal markets", "Better markets"];
+  const now = new Date(), sipAll = CFG.monthly_sip_total || 0, totalShare = list.reduce((a, g) => a + (+g.share_pct || 0), 0);
+  $("goalNote").textContent = "your savings today: " + gw(last.value) + " · you invest " + gw(sipAll) + " every month";
+  let h = '<p class="rr-v" style="margin-top:0">Tell me what you are saving for and when you will need the money. I will show whether your current savings and monthly SIP get you there, and what to change if they don\'t.</p>';
+  if (totalShare > 100.5) h += '<div class="hbanner" style="margin-bottom:14px"><span>Your goals together use <b>' + Math.round(totalShare) + "%</b> of your money, which is more than you have. Lower the share on one of them.</span></div>";
+
   list.forEach((g, gi) => {
-    const months = Math.max(1, (g.target_year - now.getFullYear()) * 12 + (11 - now.getMonth())), yrs = months / 12;
-    const share = (+g.share_pct || 100) / 100, v0 = last.value * share, sip = (CFG.monthly_sip_total || 0) * share;
-    const T = g.target_today_inr * Math.pow(1 + (g.inflation_pct != null ? g.inflation_pct : 6) / 100, yrs);
-    const fvBase = gFV(v0, sip, base, months, 0), ratio = fvBase / T;
-    const st = ratio >= 1 ? ["ok", "On track"] : ratio >= 0.8 ? ["mid", "Close: a top-up needed"] : ["bad", "Behind"];
-    const sim = gSimulate(v0, sip, base, sigma, months, T, 2000);
+    const months = Math.max(1, (g.target_year - now.getFullYear()) * 12 + (11 - now.getMonth())), yrs = months / 12, infl = g.inflation_pct != null ? g.inflation_pct : 6;
+    const share = (+g.share_pct || 100) / 100, v0 = last.value * share, sip = sipAll * share;
+    const T = g.target_today_inr * Math.pow(1 + infl / 100, yrs);                   // the same goal in future rupees
+    const fvBase = gFV(v0, sip, base, months, 0), ratio = fvBase / T, pct = Math.min(100, Math.round(ratio * 100));
+    const st = ratio >= 1 ? ["ok", "On track"] : ratio >= 0.8 ? ["mid", "Almost there"] : ["bad", "Behind"];
+    const sim = gSimulate(v0, sip, base, sigma, months, T, 2000), tenth = Math.round(sim.pSuccess * 10);
     const need = gNeedSip(v0, T, base, months), step = gNeedStep(v0, sip, T, base, months);
+    const verdict = ratio >= 1
+      ? "Good news: at your current pace you would have about <b>" + gw(fvBase) + "</b> by " + g.target_year + ", which is more than the <b>" + gw(T) + "</b> you need. You can keep going as you are."
+      : "At your current pace you would have about <b>" + gw(fvBase) + "</b> by " + g.target_year + ", but you need <b>" + gw(T) + "</b>. You would be short by about <b>" + gw(T - fvBase) + "</b>.";
+    const fix = ratio >= 1 ? "" :
+      '<div class="gfix"><b>How to close the gap (pick one):</b><ul>' +
+      "<li>Raise your monthly SIP from <b>" + gw(sip) + "</b> to about <b>" + gw(need) + "</b>.</li>" +
+      "<li>" + (step == null ? "Or increase it every year (it would need more than 30% a year, so this one alone is not enough)." : "Or keep it as it is now and increase it by <b>" + (step * 100).toFixed(0) + "%</b> every year.") + "</li>" +
+      "<li>Or give yourself more time: even 1–2 more years helps a lot.</li></ul></div>";
     h += '<div class="gcard"><div class="gh"><b>' + esc(g.name) + '</b><span class="gst ' + st[0] + '">' + st[1] + "</span></div>" +
-      '<p class="sub2" style="margin:6px 0 12px">' + cx(g.target_today_inr) + " in today's money is about <b>" + cx(T) + "</b> in " + g.target_year + " at " + (g.inflation_pct != null ? g.inflation_pct : 6) + "% inflation · earmarks " + Math.round(share * 100) + "% of your portfolio and SIP" +
-      (g.example && !usingMine ? " · <b>example goal: add your own below</b>" : "") + "</p>" +
-      '<div class="acc four">' +
-      tile("Projected at " + Math.round(base * 100) + "%", cx(fvBase), Math.round(ratio * 100) + "% of the target", ratio >= 1 ? "pos" : "neg") +
-      tile("Chance of reaching it", Math.round(sim.pSuccess * 100) + "%", "2,000 simulated futures with ups and downs") +
-      tile("SIP needed (flat)", need > sip ? inr(need) : "none extra", "you put in " + inr(sip) + "/month towards it") +
-      tile("Or step the SIP up", step === 0 ? "not needed" : step == null ? "over 30% a year" : "+" + (step * 100).toFixed(1) + "% a year", "each year, from " + inr(sip) + "/month") + "</div>" +
-      '<div class="scroll"><table style="margin-top:14px"><thead><tr><th>Yearly return</th><th>Projected</th><th>vs target</th><th>SIP needed</th></tr></thead><tbody>' +
-      scen.map(r => { const f = gFV(v0, sip, r, months, 0); return "<tr><td>" + Math.round(r * 100) + "%</td><td>" + cx(f) + '</td><td class="' + (f >= T ? "pos" : "neg") + '">' + (f >= T ? "+" : "−") + cx(Math.abs(f - T)) + "</td><td>" + (gNeedSip(v0, T, r, months) > sip ? inr(gNeedSip(v0, T, r, months)) : "none extra") + "</td></tr>"; }).join("") + "</tbody></table></div>" +
-      '<div style="margin-top:14px">' + goalFan(sim, T, yrs) + "</div>" +
-      (usingMine ? '<p style="margin:6px 0 0;text-align:right"><button class="gdel" data-del="' + gi + '">remove this goal</button></p>' : "") + "</div>";
+      '<p class="gline">You need <b>' + gw(g.target_today_inr) + "</b> (in today's money) in <b>" + Math.round(yrs) + " years</b>, by " + g.target_year + ". Prices rise every year (about " + infl + "%), so that same goal will cost about <b>" + gw(T) + "</b> then.</p>" +
+      '<p class="sub2" style="margin:6px 0 0">This goal uses ' + (share >= 0.995 ? "<b>all</b>" : "<b>" + Math.round(share * 100) + "%</b> of") + " your savings (" + gw(v0) + ") and your monthly SIP (" + gw(sip) + ")" + (share >= 0.995 ? ". If you have more than one goal, give each a smaller share." : ".") + "</p>" +
+      '<div class="gprog" title="How much of the goal your current plan reaches"><i style="width:' + pct + '%"></i></div>' +
+      '<div class="gprogl"><span>Your plan covers <b>' + (ratio >= 2 ? ratio.toFixed(1) + " times" : Math.round(ratio * 100) + "%") + "</b> of what you need</span><span>needed then: " + gw(T) + "</span></div>" +
+      '<p class="gline">' + verdict + "</p>" + fix +
+      '<p class="gline" style="margin-top:12px">Markets go up and down, so nothing is certain. If I imagine 10 different futures for your money, about <b>' + tenth + " out of 10</b> reach this goal" +
+      (tenth <= 3 && ratio < 1 ? " (closing the gap above would make this much more likely)" : "") + ".</p>" +
+      '<div class="gscen">' + scen.map((r, k) => { const f = gFV(v0, sip, r, months, 0); return '<div><div class="k">' + (names[k] || "Markets") + " · " + Math.round(r * 100) + "% a year</div><div class=\"v " + (f >= T ? "pos" : "neg") + '">' + gw(f) + '</div><div class="n">' + (f >= T ? "reaches the goal" : "falls short by " + gw(T - f)) + "</div></div>"; }).join("") + "</div>" +
+      '<details><summary>Show the chart</summary><div style="margin-top:10px">' + goalFan(sim, T, yrs) + '<p class="sub2" style="margin:6px 0 0">The line is the likely path of your money. The shaded area is the range from a poor run to a good run (the middle 8 out of 10 futures). The dashed line is what you need.</p></div></details>' +
+      (usingMine ? '<p style="margin:10px 0 0;text-align:right"><button class="gdel" data-del="' + gi + '">remove this goal</button></p>' : "") + "</div>";
   });
-  h += '<div class="rr-sub" style="margin-top:8px">Add a goal <span class="sub2" style="text-transform:none;letter-spacing:0">(saved in this browser only)</span></div>' +
-    '<form id="goalForm" class="gform"><div><label>Goal</label><input name="name" required maxlength="60" placeholder="e.g. Child\'s education"></div>' +
-    '<div><label>Amount (₹ lakh, today\'s money)</label><input name="amt" type="number" min="1" step="any" required placeholder="e.g. 150"></div>' +
-    '<div><label>By year</label><input name="year" type="number" min="' + (now.getFullYear() + 1) + '" max="2100" required value="' + (now.getFullYear() + 10) + '"></div>' +
-    '<div><label>Share of money %</label><input name="share" type="number" min="1" max="100" value="100"></div>' +
-    '<div><label>Inflation %</label><input name="infl" type="number" min="0" max="15" step="0.5" value="6"></div>' +
-    '<div><button type="submit" style="margin-bottom:0">Add</button></div></form>' +
-    '<p class="note" style="margin-top:18px">Assumes your SIP continues unchanged, returns come at the stated yearly rate on average, and swings follow your portfolio\'s own volatility (a smooth bell curve: real markets have rarer, harder crashes). "Chance of reaching it" is the share of 2,000 simulated futures that get there. A planning aid, not a promise; the shaded band is the middle 8 in 10 outcomes, and the worst 1 in 10 is below it.</p>';
+
+  h += '<div class="gnew"><div class="gq">' + (list.length ? "Add another goal" : "What are you saving for?") + '</div>' +
+    '<div class="gchips">' + GOAL_STARTS.map(([n, y]) => '<button type="button" class="gchip" data-name="' + esc(n) + '" data-years="' + y + '">' + esc(n) + "</button>").join("") + "</div>" +
+    '<form id="goalForm" class="gform2">' +
+    '<label>1. What is it for?<input name="name" required maxlength="60" placeholder="e.g. Child\'s education"></label>' +
+    '<label>2. How much will you need? <span class="sub2">in today\'s prices</span><span class="gamt"><input name="amt" type="number" min="0.01" step="any" required placeholder="e.g. 1.5"><select name="unit"><option value="1e7">crore</option><option value="1e5">lakh</option></select></span><span class="ghint" id="goalAmtHint">for example 1.5 crore = ₹1,50,00,000</span></label>' +
+    '<label>3. In how many years will you need it?<input name="years" type="number" min="1" max="60" required value="10"><span class="ghint" id="goalYearHint"></span></label>' +
+    '<label>4. How much of your savings and SIP is for this goal?<select name="share"><option value="100">All of it</option><option value="75">Three quarters</option><option value="50">Half</option><option value="25">A quarter</option><option value="10">A tenth</option></select><span class="ghint">If you are saving for more than one thing, pick a share for each so they add up to all of it.</span></label>' +
+    '<details class="gadv"><summary>More options (you can skip this)</summary>' +
+    '<label>How fast do prices rise each year? <span class="sub2">inflation</span><input name="infl" type="number" min="0" max="15" step="0.5" value="6"><span class="ghint">6% is a sensible long-term guess for India. It makes your goal cost more in the future.</span></label></details>' +
+    '<button type="submit">Check my goal</button></form></div>' +
+    '<p class="note" style="margin-top:18px">This is an estimate, not a promise. It assumes you keep your SIP going and that markets grow by the stated amount on average (the "markets" boxes show slower and better cases). Goals you add are saved in this browser only.</p>';
   $("goalBody").innerHTML = h;
-  const f = $("goalForm");
-  if (f) f.onsubmit = e => {
+
+  const f = $("goalForm"), yrHint = () => { const y = +f.years.value; $("goalYearHint").textContent = y > 0 ? "that is the year " + (now.getFullYear() + y) : ""; },
+    amtHint = () => { const a = +f.amt.value * +f.unit.value; $("goalAmtHint").textContent = a > 0 ? "= " + gw(a) + " (₹" + Math.round(a).toLocaleString("en-IN") + ")" : "for example 1.5 crore = ₹1,50,00,000"; };
+  f.years.oninput = yrHint; f.amt.oninput = amtHint; f.unit.onchange = amtHint; yrHint();
+  wrap.querySelectorAll(".gchip").forEach(b => b.onclick = () => { f.name.value = b.dataset.name === "Something else" ? "" : b.dataset.name; f.years.value = b.dataset.years; yrHint(); (b.dataset.name === "Something else" ? f.name : f.amt).focus(); });
+  f.onsubmit = e => {
     e.preventDefault();
-    const d = new FormData(f), g = { id: "g" + Date.now(), name: String(d.get("name")).trim(), target_today_inr: Math.round(+d.get("amt") * 1e5), target_year: +d.get("year"),
-      inflation_pct: +d.get("infl"), share_pct: +d.get("share") };
-    if (!g.name || !(g.target_today_inr > 0) || !(g.target_year > now.getFullYear())) return;
+    const d = new FormData(f), amount = Math.round(+d.get("amt") * +d.get("unit")), years = Math.round(+d.get("years"));
+    const g = { id: "g" + Date.now(), name: String(d.get("name")).trim(), target_today_inr: amount, target_year: now.getFullYear() + years, inflation_pct: +d.get("infl"), share_pct: +d.get("share") };
+    if (!g.name || !(amount > 0) || !(years >= 1)) return;
     goalsSave(goalsMine().concat([g])); renderGoals();
+    setTimeout(() => { const c = $("goalBody").querySelector(".gcard:last-of-type"); if (c) c.scrollIntoView({ behavior: "smooth", block: "center" }); }, 50);
   };
   wrap.querySelectorAll("[data-del]").forEach(b => b.onclick = () => { const m = goalsMine(); m.splice(+b.dataset.del, 1); goalsSave(m); renderGoals(); });
 }

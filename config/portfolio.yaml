@@ -140,15 +140,8 @@ tax:
   realized_stcg_this_fy: 0
   sip_months_assumed: 13     # lots are estimated from this many months of SIPs unless config/transactions.csv exists
 
-# Goals (Goal tracker panel). Amounts are in TODAY's rupees; the tracker inflates them to the target date.
-# `share_pct` is how much of the whole portfolio AND of the monthly SIP is earmarked for the goal.
-# You can also add goals directly on the dashboard (saved in that browser only).
-goals:
-  - id: example-independence
-    name: "Example: financial independence"
-    example: true            # delete this entry (or the word `example`) once you add your own
-    target_today_inr: 50000000   # Rs 5 crore in today's money
-    target_year: 2040
-    inflation_pct: 6
-    share_pct: 100
-goal_scenarios_pct: [10, 12, 15]   # yearly return assumptions the tracker compares (conservative / base / optimistic)
+# Goals (Goal tracker panel). You normally add goals on the dashboard itself ("What are you saving for?", saved in that
+# browser). To keep some permanently for every device, list them here; amounts are in TODAY's rupees:
+#   - {id: house, name: "Buy a house", target_today_inr: 10000000, target_year: 2034, inflation_pct: 6, share_pct: 50}
+goals: []
+goal_scenarios_pct: [10, 12, 15]   # yearly return cases shown as slower / normal / better markets

@@ -199,6 +199,9 @@
   .pm{border-top:1px solid var(--rule);padding:12px 0}
   .pm .h{display:flex;justify-content:space-between;gap:12px;font-weight:600;font-size:14px;margin-bottom:6px}
   @media(max-width:760px){.sbars{grid-template-columns:1fr}.sb{grid-template-columns:104px 1fr 56px}}
+  .stat .x{font-size:12px;color:var(--grey);margin-top:5px}
+  .subrow td{font-size:12.5px;color:var(--grey);padding:8px 0;border-bottom:1px dashed var(--rule)}
+  .subrow td:first-child{padding-left:18px}
   .rr-v{font-size:14.5px;line-height:1.6;margin:0 0 6px}
   .rr-sub{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin:28px 0 10px;font-weight:600}
   .rbar{display:grid;grid-template-columns:110px 1fr 140px;gap:12px;align-items:center;font-size:13px;margin:7px 0}
@@ -323,7 +326,7 @@
     <div class="stat"><div class="k">Current value</div><div class="v" id="cv">—</div></div>
     <div class="stat"><div class="k">Invested</div><div class="v" id="iv">—</div></div>
     <div class="stat"><div class="k">Total returns</div><div class="v pos" id="tr">—</div></div>
-    <div class="stat"><div class="k">Return</div><div class="v pos" id="trp">—</div></div>
+    <div class="stat"><div class="k">Return</div><div class="v pos" id="trp">—</div><div class="x" id="trx"></div></div>
   </div>
 
   <section id="briefWrap" class="brief" hidden>
@@ -412,6 +415,11 @@
       still to come. 12% is a common long-run planning assumption; 15%, 18% and 22% are optimistic scenarios,
       and holding 22% for decades would be exceptional. Real markets move unevenly and results can differ a
       lot. Edit the scenarios under <code>projection</code> in <code>config/portfolio.yaml</code>.</p>
+  </section>
+
+  <section id="retWrap" hidden>
+    <h2>Returns: XIRR <span id="retNote"></span></h2>
+    <div id="retBody"></div>
   </section>
 
   <section id="riskWrap" hidden>
@@ -1336,6 +1344,40 @@ const pcs = (v, d = 1) => v == null ? "—" : (v >= 0 ? "+" : "−") + Math.abs(
 const cl = n => n >= 1e7 ? "₹" + (n / 1e7).toFixed(2).replace(/\.?0+$/, "") + " Cr" : n >= 1e5 ? "₹" + (n / 1e5).toFixed(2).replace(/\.?0+$/, "") + " L" : inr(n);
 const dshort = iso => iso ? new Date(iso + "T00:00:00").toLocaleDateString("en-IN", { month: "short", year: "numeric" }) : "—";
 const tile = (k, v, n, cls) => '<div><div class="k">' + k + '</div><div class="v ' + (cls || "") + '">' + v + '</div><div class="n">' + (n || "") + "</div></div>";
+
+function renderReturns() {
+  const A = ANALYTICS, wrap = $("retWrap"), P = A && A.portfolio_returns;
+  const funds = (A && A.funds || []).filter(f => f.xirr && f.xirr.pct != null);
+  if (!A || (!P && !funds.length)) { wrap.hidden = true; if ($("trx")) $("trx").textContent = ""; return; }
+  wrap.hidden = false;
+  const x = P && P.xirr_pct != null ? P.xirr_pct : A.portfolio_xirr_pct;
+  if ($("trx")) $("trx").textContent = x != null ? "XIRR " + pcs(x, 2) + " a year" : "";
+  const asOn = P && P.as_on ? new Date(P.as_on + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "";
+  $("retNote").textContent = asOn ? "as on " + asOn + " · from your Groww statement" : "";
+  let h = '<div class="hv" style="margin-top:6px"><b>XIRR in one line:</b> the yearly return that counts <i>when</i> each rupee went in. A fund you bought last month and one you have held for years can show the same total gain, but very different XIRRs. It is the fair way to compare your returns with an FD or an index.</div>';
+  if (P && x != null) {
+    const n50 = P.nifty50_same_flows_pct, fd = P.fd_pct;
+    h += '<div class="acc four" style="margin-top:14px">' +
+      tile("Portfolio XIRR", pcs(x, 2), "a year, exact (Groww, " + asOn + ")", x >= 0 ? "pos" : "neg") +
+      tile("Total return", pcs(P.absolute_pct, 2), inr(P.invested) + " put in → " + inr(P.value) + " now (ignores timing)", P.absolute_pct >= 0 ? "pos" : "neg") +
+      tile("Against the Nifty 50", n50 != null ? pcs(x - n50, 1) + " pts" : "—", n50 != null ? "same money on the same dates in the index would have earned ≈ " + pcs(n50, 1) + " a year (price index, no dividends)" : "needs more history", n50 != null && x - n50 >= 0 ? "pos" : "neg") +
+      tile("Against a fixed deposit", pcs(x - fd, 1) + " pts", "a " + fd + "% FD would have earned " + fd + "% a year on the same money", x - fd >= 0 ? "pos" : "neg") + "</div>";
+  }
+  if (funds.length) {
+    const rows = [];
+    funds.forEach(f => {
+      const xr = f.xirr, d = xr.bench_pct != null ? xr.pct - xr.bench_pct : null, gp = f.mine && f.mine.gain_pct;
+      rows.push("<tr><td>" + esc(f.name.replace(" Direct Growth", "").replace(" Fund", "")) + "</td><td>" + (f.mine && f.mine.invested ? inr(f.mine.invested) : "—") + "</td><td>" + (f.mine && f.mine.value ? inr(f.mine.value) : "—") + "</td><td>" + (gp != null ? pcs(gp, 1) : "—") +
+        '</td><td class="' + (xr.pct >= 0 ? "pos" : "neg") + '"><b>' + pcs(xr.pct, 1) + "</b>" + (xr.approx ? " ≈" : "") + "</td><td>" + (xr.bench_pct != null ? pcs(xr.bench_pct, 1) + " ≈" : "—") + '</td><td class="' + (d == null ? "" : d >= 0 ? "pos" : "neg") + '">' + (d != null ? pcs(d, 1) + " pts" : "—") + "</td></tr>");
+      (f.folios || []).forEach(fo => rows.push('<tr class="subrow"><td>folio ' + esc(fo.label) + "</td><td>" + inr(fo.invested) + "</td><td>" + inr(fo.value) + "</td><td>" + pcs((fo.value / fo.invested - 1) * 100, 1) + "</td><td>" + (fo.xirr_pct != null ? pcs(fo.xirr_pct, 2) : "—") + " (Groww)</td><td></td><td></td></tr>"));
+    });
+    h += '<div class="rr-sub">By fund and folio</div><div class="scroll"><table><thead><tr><th>Fund</th><th>Invested</th><th>Value</th><th>Total return</th><th>XIRR</th><th>Benchmark XIRR</th><th>Difference</th></tr></thead><tbody>' + rows.join("") + "</tbody></table></div>";
+  }
+  const rb = P && P.rebuilt_xirr_pct;
+  h += '<p class="note" style="margin-top:18px">Portfolio and folio XIRRs are Groww\'s exact figures. Fund-level XIRRs (marked ≈) are estimated by rebuilding when each folio\'s money went in; doing that for the whole portfolio gives ' + (rb != null ? pcs(rb, 2) : "about the same") + " against Groww's " + (x != null ? pcs(x, 2) : "figure") +
+    ", so read the fund-level ones as good to about half a point. Benchmark XIRR invests the same amounts on the same dates in the fund's benchmark index (price index, so it leaves out about 1% a year of dividends, which makes the benchmark look slightly worse than it is). For exact per-fund figures, add your purchase history in <code>config/transactions.csv</code>.</p>";
+  $("retBody").innerHTML = h;
+}
 
 function renderRisk() {
   const R = RISK, wrap = $("riskWrap");
@@ -2387,7 +2429,7 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
     .then(r => r.ok ? r.json() : null).catch(() => null);
   RISK = await loadJson("data/risk.json", isObj, null);
   TAX = await loadJson("data/tax.json", isObj, null);
-  renderRisk(); renderTax(); renderGoals();
+  renderReturns(); renderRisk(); renderTax(); renderGoals();
   renderCompare();
   loadNews();
   loadOutlook();

@@ -1,7 +1,19 @@
 {
-  "generated_at": "2026-10-10T16:58:42.404249+05:30",
+  "generated_at": "2026-10-10T17:58:19.701198+05:30",
   "risk_free_pct": 6.5,
   "portfolio_xirr_pct": 11.57,
+  "portfolio_returns": {
+    "as_on": "2026-10-10",
+    "invested": 8386652.53,
+    "value": 10430514.32,
+    "absolute_pct": 24.37,
+    "xirr_pct": 11.57,
+    "xirr_source": "Groww statement (exact)",
+    "rebuilt_xirr_pct": 11.35,
+    "nifty50_same_flows_pct": 0.1,
+    "fd_pct": 7.0,
+    "since": "2022-12-10"
+  },
   "funds": [
     {
       "id": "axis-small-cap",
@@ -78,7 +90,21 @@
         "approx": true,
         "since": "2023-11-28",
         "bench_pct": 11.1
-      }
+      },
+      "folios": [
+        {
+          "label": "\u20268052",
+          "invested": 2299885.26,
+          "value": 3435417.0,
+          "xirr_pct": 15.04
+        },
+        {
+          "label": "\u20265582",
+          "invested": 1824908.63,
+          "value": 1866077.1,
+          "xirr_pct": 3.04
+        }
+      ]
     },
     {
       "id": "mirae-large-midcap",
@@ -154,8 +180,22 @@
         "source": "folios",
         "approx": true,
         "since": "2022-12-08",
-        "bench_pct": null
-      }
+        "bench_pct": 3.5
+      },
+      "folios": [
+        {
+          "label": "\u20261565",
+          "invested": 1579926.65,
+          "value": 2499415.37,
+          "xirr_pct": 12.71
+        },
+        {
+          "label": "\u20266633",
+          "invested": 2494941.33,
+          "value": 2450025.2,
+          "xirr_pct": -2.08
+        }
+      ]
     },
     {
       "id": "jioblackrock-flexicap",
@@ -232,7 +272,15 @@
         "approx": true,
         "since": "2026-02-25",
         "bench_pct": -10.4
-      }
+      },
+      "folios": [
+        {
+          "label": "\u20269183",
+          "invested": 186990.66,
+          "value": 179579.65,
+          "xirr_pct": -6.34
+        }
+      ]
     }
   ]
 }

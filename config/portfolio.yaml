@@ -57,6 +57,9 @@ funds:
       name: Nifty LargeMidcap 250
       note: approx. 70/30 blend of the Nifty 100 and Nifty Midcap 150 ETFs (the index is Nifty 100 + Midcap 150, roughly 70% large-cap by weight); price return
       returns: [{ticker: "HDFCNIF100.NS", weight: 0.7}, {ticker: "HDFCMID150.NS", weight: 0.3}]
+      # longer-history proxy (large + midcap indices) used only for the XIRR comparison, because the HDFC
+      # midcap ETF above only exists since Mar 2025 and some purchases are older
+      xirr_returns: [{ticker: "^NSEI", weight: 0.7}, {ticker: "^NSEMDCP50", weight: 0.3}]
       pe: [{ticker: "HDFCNIF100.NS", weight: 0.7}, {ticker: "HDFCMID150.NS", weight: 0.3}]
     units: null
     seed_value: 4959000    # synced from IndMoney 2026-10-03

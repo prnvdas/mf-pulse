@@ -383,8 +383,9 @@ def main() -> None:
     bench_tickers = sorted({
         p["ticker"] for f in cfg["funds"]
         for p in (f.get("analytics_benchmark", {}).get("returns", [])
-                  + f.get("analytics_benchmark", {}).get("pe", []))
-    })
+                  + f.get("analytics_benchmark", {}).get("pe", [])
+                  + f.get("analytics_benchmark", {}).get("xirr_returns", []))
+    } | {"^NSEI"})
     prices = fetch_prices(bench_tickers)
 
     holdings = {f["id"]: load_holdings(f["id"]).get("holdings") or [] for f in cfg["funds"]}
@@ -437,8 +438,15 @@ def main() -> None:
         try:
             b = out.pop("_bench", None)
             as_of = (pd.Timestamp(out["as_of"]).date() if out.get("as_of") else ts.date())
-            out["xirr"] = fund_xirr(fid, txns, invested, value, as_of, b[0] if b else None,
-                                    b[1] if b else None, st)
+            bser, blast = (b[0], b[1]) if b else (None, None)
+            oldest = min([c["date"] for c in folio_cohorts(fid, load_folios(), as_of)] + [as_of])
+            if ab.get("xirr_returns") and (bser is None or bser.index[0].date() > oldest):
+                alt = blended_level(ab["xirr_returns"], prices)       # long-history proxy, XIRR comparison only
+                if alt is not None:
+                    bser, blast = alt, float(alt.iloc[-1])
+            out["xirr"] = fund_xirr(fid, txns, invested, value, as_of, bser, blast, st)
+            out["folios"] = [{"label": fo["label"], "invested": fo["invested"], "value": fo["value"], "xirr_pct": fo.get("xirr_pct")}
+                             for ff in (load_folios() or {}).get("funds", []) if ff["fund_id"] == fid for fo in ff["folios"]]
         except Exception as exc:  # noqa: BLE001
             print(f"[warn] {fid}: xirr failed: {exc}", file=sys.stderr)
             out.pop("_bench", None)
@@ -470,10 +478,32 @@ def main() -> None:
         portfolio_xirr = None if r is None else round(r * 100, 1)
 
     folios = load_folios()
-    if portfolio_xirr is None and folios and (folios.get("portfolio") or {}).get("xirr_pct") is not None:
-        portfolio_xirr = folios["portfolio"]["xirr_pct"]          # Groww's own figure, exact
+    portfolio_returns = None
+    if folios:
+        sm = folios.get("portfolio") or {}
+        if portfolio_xirr is None and sm.get("xirr_pct") is not None:
+            portfolio_xirr = sm["xirr_pct"]                        # Groww's own figure, exact
+        as_on = dt.date.fromisoformat(folios["as_on"]) if folios.get("as_on") else ts.date()
+        cohorts = [c for f in cfg["funds"] for c in folio_cohorts(f["id"], folios, as_on)]
+        total_val = sum(c["value"] for c in cohorts)
+        rebuilt = xirr([(c["date"], -c["invested"]) for c in cohorts] + [(as_on, total_val)]) if cohorts else None
+        nifty = prices.get("^NSEI")
+        nifty_x = None
+        if cohorts and nifty is not None and min(c["date"] for c in cohorts) >= nifty.index[0].date():
+            units = sum(c["invested"] / float(nifty.asof(pd.Timestamp(c["date"]))) for c in cohorts)
+            nifty_x = xirr([(c["date"], -c["invested"]) for c in cohorts] + [(as_on, units * float(nifty.asof(pd.Timestamp(as_on))))])
+        portfolio_returns = {
+            "as_on": folios.get("as_on"), "invested": sm.get("invested"), "value": sm.get("value"),
+            "absolute_pct": round((sm["value"] / sm["invested"] - 1) * 100, 2) if sm.get("invested") else None,
+            "xirr_pct": sm.get("xirr_pct"), "xirr_source": "Groww statement (exact)",
+            "rebuilt_xirr_pct": None if rebuilt is None else round(rebuilt * 100, 2),
+            "nifty50_same_flows_pct": None if nifty_x is None else round(nifty_x * 100, 1),
+            "fd_pct": float((cfg.get("profile") or {}).get("fd_rate_pct", 7)),
+            "since": min((c["date"] for c in cohorts), default=None).isoformat() if cohorts else None,
+        }
     write_json("analytics.json", {
         "generated_at": ts.isoformat(), "risk_free_pct": rf, "portfolio_xirr_pct": portfolio_xirr,
+        "portfolio_returns": portfolio_returns,
         "funds": funds_out,
     })
     for o in funds_out:

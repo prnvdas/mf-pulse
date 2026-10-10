@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-10T16:59:18.961848+05:30",
+  "generated_at": "2026-10-10T17:16:38.669847+05:30",
   "as_of": "2026-10-09",
   "rates": {
     "stcg_pct": 20,
@@ -31,6 +31,7 @@
     "exempt_used": 125000,
     "lt_taxable": 1918862,
     "tax": 249452,
+    "tax_if_newer_long": 249452,
     "effective_pct_of_gain": 12.2
   },
   "harvest": {
@@ -49,25 +50,13 @@
     "sell_value": 339783,
     "future_tax_saved": 16250
   },
-  "upcoming": [
-    {
-      "fund": "Axis Small Cap Fund Direct Growth",
-      "folio": "\u20265582",
-      "approx": true,
-      "value": 1866077.1,
-      "date": "2026-01-11",
-      "turns_long_on": "2027-01-12",
-      "days_left": 94,
-      "gain": 41168.47,
-      "tax_saved_by_waiting": 3211
-    }
-  ],
+  "upcoming": [],
   "funds": [
     {
       "id": "axis-small-cap",
       "name": "Axis Small Cap Fund Direct Growth",
       "nav": 132.26,
-      "source": "your Groww statement of 2026-10-10 (folio ages inferred from each folio's XIRR)",
+      "source": "your Groww statement of 2026-10-10",
       "warnings": [],
       "value": 5301494,
       "cost": 4124794,
@@ -79,31 +68,31 @@
       "lots": [
         {
           "folio": "\u20268052",
-          "approx": true,
+          "kind": "older",
           "xirr_pct": 15.04,
-          "date": "2023-11-29",
+          "date": null,
           "units": 25974.724,
           "cost": 2299885.26,
           "value": 3435417.0,
           "gain": 1135531.74,
           "term": "long",
-          "opening": false,
-          "held_days": 1046,
+          "opening": true,
+          "held_days": null,
           "long_term_on": null
         },
         {
           "folio": "\u20265582",
-          "approx": true,
+          "kind": "newer",
           "xirr_pct": 3.04,
-          "date": "2026-01-11",
+          "date": null,
           "units": 14109.157,
           "cost": 1824908.63,
           "value": 1866077.1,
           "gain": 41168.47,
           "term": "short",
           "opening": false,
-          "held_days": 272,
-          "long_term_on": "2027-01-12"
+          "held_days": null,
+          "long_term_on": null
         }
       ]
     },
@@ -111,7 +100,7 @@
       "id": "mirae-large-midcap",
       "name": "Mirae Asset Large & Midcap Fund Direct Growth",
       "nav": 167.333,
-      "source": "your Groww statement of 2026-10-10 (folio ages inferred from each folio's XIRR)",
+      "source": "your Groww statement of 2026-10-10",
       "warnings": [],
       "value": 4949441,
       "cost": 4074868,
@@ -123,31 +112,31 @@
       "lots": [
         {
           "folio": "\u20261565",
-          "approx": true,
+          "kind": "older",
           "xirr_pct": 12.71,
-          "date": "2022-12-10",
+          "date": null,
           "units": 14936.775,
           "cost": 1579926.65,
           "value": 2499415.37,
           "gain": 919488.72,
           "term": "long",
-          "opening": false,
-          "held_days": 1400,
+          "opening": true,
+          "held_days": null,
           "long_term_on": null
         },
         {
           "folio": "\u20266633",
-          "approx": true,
+          "kind": "newer",
           "xirr_pct": -2.08,
-          "date": "2025-11-28",
+          "date": null,
           "units": 14641.614,
           "cost": 2494941.33,
           "value": 2450025.2,
           "gain": -44916.13,
           "term": "short",
           "opening": false,
-          "held_days": 316,
-          "long_term_on": "2026-11-29"
+          "held_days": null,
+          "long_term_on": null
         }
       ]
     },
@@ -155,8 +144,10 @@
       "id": "jioblackrock-flexicap",
       "name": "JioBlackRock Flexi Cap Fund Direct Growth",
       "nav": 9.5134,
-      "source": "your Groww statement of 2026-10-10 (folio ages inferred from each folio's XIRR)",
-      "warnings": [],
+      "source": "estimated from your SIP",
+      "warnings": [
+        "fund launched 2025-10-17: units not explained by your SIP are dated at launch"
+      ],
       "value": 179580,
       "cost": 186991,
       "gain": -7411,
@@ -166,18 +157,186 @@
       "st_value": 179580,
       "lots": [
         {
-          "folio": "\u20269183",
-          "approx": true,
-          "xirr_pct": -6.34,
-          "date": "2026-02-26",
-          "units": 18876.495,
-          "cost": 186990.66,
-          "value": 179579.65,
-          "gain": -7411.01,
+          "folio": null,
+          "kind": null,
+          "xirr_pct": null,
+          "date": "2025-10-17",
+          "units": 6748.9073,
+          "cost": 66990.66,
+          "value": 64205.05,
+          "gain": -2785.61,
           "term": "short",
           "opening": false,
-          "held_days": 226,
-          "long_term_on": "2027-02-27"
+          "held_days": 358,
+          "long_term_on": "2026-10-18"
+        },
+        {
+          "folio": null,
+          "kind": null,
+          "xirr_pct": null,
+          "date": "2025-11-03",
+          "units": 979.4319,
+          "cost": 10000.0,
+          "value": 9317.73,
+          "gain": -682.27,
+          "term": "short",
+          "opening": false,
+          "held_days": 341,
+          "long_term_on": "2026-11-04"
+        },
+        {
+          "folio": null,
+          "kind": null,
+          "xirr_pct": null,
+          "date": "2025-12-03",
+          "units": 982.3183,
+          "cost": 10000.0,
+          "value": 9345.19,
+          "gain": -654.81,
+          "term": "short",
+          "opening": false,
+          "held_days": 311,
+          "long_term_on": "2026-12-04"
+        },
+        {
+          "folio": null,
+          "kind": null,
+          "xirr_pct": null,
+          "date": "2026-01-03",
+          "units": 968.9922,
+          "cost": 10000.0,
+          "value": 9218.41,
+          "gain": -781.59,
+          "term": "short",
+          "opening": false,
+          "held_days": 280,
+          "long_term_on": "2027-01-04"
+        },
+        {
+          "folio": null,
+          "kind": null,
+          "xirr_pct": null,
+          "date": "2026-02-03",
+          "units": 983.2842,
+          "cost": 10000.0,
+          "value": 9354.38,
+          "gain": -645.62,
+          "term": "short",
+          "opening": false,
+          "held_days": 249,
+          "long_term_on": "2027-02-04"
+        },
+        {
+          "folio": null,
+          "kind": null,
+          "xirr_pct": null,
+          "date": "2026-03-03",
+          "units": 1026.694,
+          "cost": 10000.0,
+          "value": 9767.35,
+          "gain": -232.65,
+          "term": "short",
+          "opening": false,
+          "held_days": 221,
+          "long_term_on": "2027-03-04"
+        },
+        {
+          "folio": null,
+          "kind": null,
+          "xirr_pct": null,
+          "date": "2026-04-03",
+          "units": 1090.5125,
+          "cost": 10000.0,
+          "value": 10374.48,
+          "gain": 374.48,
+          "term": "short",
+          "opening": false,
+          "held_days": 190,
+          "long_term_on": "2027-04-04"
+        },
+        {
+          "folio": null,
+          "kind": null,
+          "xirr_pct": null,
+          "date": "2026-05-03",
+          "units": 1025.5358,
+          "cost": 10000.0,
+          "value": 9756.33,
+          "gain": -243.67,
+          "term": "short",
+          "opening": false,
+          "held_days": 160,
+          "long_term_on": "2027-05-04"
+        },
+        {
+          "folio": null,
+          "kind": null,
+          "xirr_pct": null,
+          "date": "2026-06-03",
+          "units": 1042.916,
+          "cost": 10000.0,
+          "value": 9921.68,
+          "gain": -78.32,
+          "term": "short",
+          "opening": false,
+          "held_days": 129,
+          "long_term_on": "2027-06-04"
+        },
+        {
+          "folio": null,
+          "kind": null,
+          "xirr_pct": null,
+          "date": "2026-07-03",
+          "units": 1003.9959,
+          "cost": 10000.0,
+          "value": 9551.41,
+          "gain": -448.59,
+          "term": "short",
+          "opening": false,
+          "held_days": 99,
+          "long_term_on": "2027-07-04"
+        },
+        {
+          "folio": null,
+          "kind": null,
+          "xirr_pct": null,
+          "date": "2026-08-03",
+          "units": 982.4823,
+          "cost": 10000.0,
+          "value": 9346.75,
+          "gain": -653.25,
+          "term": "short",
+          "opening": false,
+          "held_days": 68,
+          "long_term_on": "2027-08-04"
+        },
+        {
+          "folio": null,
+          "kind": null,
+          "xirr_pct": null,
+          "date": "2026-09-03",
+          "units": 996.3831,
+          "cost": 10000.0,
+          "value": 9478.99,
+          "gain": -521.01,
+          "term": "short",
+          "opening": false,
+          "held_days": 37,
+          "long_term_on": "2027-09-04"
+        },
+        {
+          "folio": null,
+          "kind": null,
+          "xirr_pct": null,
+          "date": "2026-10-03",
+          "units": 1045.0413,
+          "cost": 10000.0,
+          "value": 9941.9,
+          "gain": -58.1,
+          "term": "short",
+          "opening": false,
+          "held_days": 7,
+          "long_term_on": "2027-10-04"
         }
       ]
     }
@@ -186,18 +345,18 @@
     {
       "fund": "Mirae Asset Large & Midcap Fund Direct Growth",
       "folio": "\u20266633",
-      "date": "2025-11-28",
+      "date": null,
       "term": "short",
       "value": 2450025.2,
       "loss": -44916.13
     },
     {
       "fund": "JioBlackRock Flexi Cap Fund Direct Growth",
-      "folio": "\u20269183",
-      "date": "2026-02-26",
+      "folio": null,
+      "date": "2025-10-17",
       "term": "short",
-      "value": 179579.65,
-      "loss": -7411.01
+      "value": 64205.05,
+      "loss": -2785.61
     }
   ],
   "statement_as_on": "2026-10-10",

@@ -1,0 +1,597 @@
+{
+  "generated_at": "2026-10-10T15:45:44.617135+05:30",
+  "as_of": "2026-10-09",
+  "rates": {
+    "stcg_pct": 20,
+    "ltcg_pct": 12.5,
+    "ltcg_exempt_inr": 125000,
+    "cess_pct": 4,
+    "long_term_days": 365,
+    "note": "As last known to the author; edit `tax:` in config/portfolio.yaml if the law changed."
+  },
+  "fy": {
+    "start": "2026-04-01",
+    "end": "2027-03-31",
+    "days_left": 172,
+    "realized_ltcg": 0,
+    "realized_stcg": 0
+  },
+  "totals": {
+    "value": 10430697,
+    "cost": 8387000,
+    "gain": 2043697,
+    "lt_gain": 2035387,
+    "st_gain": 8310,
+    "lt_value": 9035387,
+    "st_value": 1395310
+  },
+  "sell_all": {
+    "lt_gain_after_setoff": 2035387,
+    "st_gain_after_setoff": 8310,
+    "exempt_used": 125000,
+    "lt_taxable": 1910387,
+    "tax": 250079,
+    "effective_pct_of_gain": 12.2
+  },
+  "harvest": {
+    "remaining_exempt": 125000,
+    "available_lt_gain": 2035387,
+    "target_gain": 125000,
+    "plan": [
+      {
+        "fund": "Axis Small Cap Fund Direct Growth",
+        "units": 3837.144,
+        "value": 507501,
+        "gain": 125000
+      }
+    ],
+    "sell_value": 507501,
+    "future_tax_saved": 16250
+  },
+  "upcoming": [
+    {
+      "fund": "Axis Small Cap Fund Direct Growth",
+      "date": "2025-11-03",
+      "turns_long_on": "2026-11-04",
+      "days_left": 25,
+      "gain": 2342.88,
+      "tax_saved_by_waiting": 183
+    },
+    {
+      "fund": "Axis Small Cap Fund Direct Growth",
+      "date": "2025-12-03",
+      "turns_long_on": "2026-12-04",
+      "days_left": 55,
+      "gain": 4023.36,
+      "tax_saved_by_waiting": 314
+    },
+    {
+      "fund": "Axis Small Cap Fund Direct Growth",
+      "date": "2026-01-03",
+      "turns_long_on": "2027-01-04",
+      "days_left": 86,
+      "gain": 3620.37,
+      "tax_saved_by_waiting": 282
+    },
+    {
+      "fund": "Axis Small Cap Fund Direct Growth",
+      "date": "2026-02-03",
+      "turns_long_on": "2027-02-04",
+      "days_left": 117,
+      "gain": 5730.66,
+      "tax_saved_by_waiting": 447
+    },
+    {
+      "fund": "Axis Small Cap Fund Direct Growth",
+      "date": "2026-03-03",
+      "turns_long_on": "2027-03-04",
+      "days_left": 145,
+      "gain": 7816.05,
+      "tax_saved_by_waiting": 610
+    }
+  ],
+  "funds": [
+    {
+      "id": "axis-small-cap",
+      "name": "Axis Small Cap Fund Direct Growth",
+      "nav": 132.26,
+      "source": "estimated from your SIP",
+      "warnings": [],
+      "value": 5301578,
+      "cost": 4125000,
+      "gain": 1176578,
+      "lt_gain": 1139731,
+      "st_gain": 36847,
+      "lt_value": 4664731,
+      "st_value": 636847,
+      "lots": [
+        {
+          "date": null,
+          "units": 34860.2671,
+          "cost": 3475000.0,
+          "value": 4610618.92,
+          "gain": 1135618.92,
+          "term": "long",
+          "opening": true,
+          "held_days": null,
+          "long_term_on": null
+        },
+        {
+          "date": "2025-10-03",
+          "units": 409.1318,
+          "cost": 50000.0,
+          "value": 54111.77,
+          "gain": 4111.77,
+          "term": "long",
+          "opening": false,
+          "held_days": 372,
+          "long_term_on": null
+        },
+        {
+          "date": "2025-11-03",
+          "units": 395.7575,
+          "cost": 50000.0,
+          "value": 52342.88,
+          "gain": 2342.88,
+          "term": "short",
+          "opening": false,
+          "held_days": 341,
+          "long_term_on": "2026-11-04"
+        },
+        {
+          "date": "2025-12-03",
+          "units": 408.4634,
+          "cost": 50000.0,
+          "value": 54023.36,
+          "gain": 4023.36,
+          "term": "short",
+          "opening": false,
+          "held_days": 311,
+          "long_term_on": "2026-12-04"
+        },
+        {
+          "date": "2026-01-03",
+          "units": 405.4164,
+          "cost": 50000.0,
+          "value": 53620.37,
+          "gain": 3620.37,
+          "term": "short",
+          "opening": false,
+          "held_days": 280,
+          "long_term_on": "2027-01-04"
+        },
+        {
+          "date": "2026-02-03",
+          "units": 421.372,
+          "cost": 50000.0,
+          "value": 55730.66,
+          "gain": 5730.66,
+          "term": "short",
+          "opening": false,
+          "held_days": 249,
+          "long_term_on": "2027-02-04"
+        },
+        {
+          "date": "2026-03-03",
+          "units": 437.1394,
+          "cost": 50000.0,
+          "value": 57816.05,
+          "gain": 7816.05,
+          "term": "short",
+          "opening": false,
+          "held_days": 221,
+          "long_term_on": "2027-03-04"
+        },
+        {
+          "date": "2026-04-03",
+          "units": 448.2697,
+          "cost": 50000.0,
+          "value": 59288.15,
+          "gain": 9288.15,
+          "term": "short",
+          "opening": false,
+          "held_days": 190,
+          "long_term_on": "2027-04-04"
+        },
+        {
+          "date": "2026-05-03",
+          "units": 402.9009,
+          "cost": 50000.0,
+          "value": 53287.67,
+          "gain": 3287.67,
+          "term": "short",
+          "opening": false,
+          "held_days": 160,
+          "long_term_on": "2027-05-04"
+        },
+        {
+          "date": "2026-06-03",
+          "units": 404.5635,
+          "cost": 50000.0,
+          "value": 53507.57,
+          "gain": 3507.57,
+          "term": "short",
+          "opening": false,
+          "held_days": 129,
+          "long_term_on": "2027-06-04"
+        },
+        {
+          "date": "2026-07-03",
+          "units": 379.8815,
+          "cost": 50000.0,
+          "value": 50243.12,
+          "gain": 243.12,
+          "term": "short",
+          "opening": false,
+          "held_days": 99,
+          "long_term_on": "2027-07-04"
+        },
+        {
+          "date": "2026-08-03",
+          "units": 371.6643,
+          "cost": 50000.0,
+          "value": 49156.32,
+          "gain": -843.68,
+          "term": "short",
+          "opening": false,
+          "held_days": 68,
+          "long_term_on": "2027-08-04"
+        },
+        {
+          "date": "2026-09-03",
+          "units": 362.529,
+          "cost": 50000.0,
+          "value": 47948.09,
+          "gain": -2051.91,
+          "term": "short",
+          "opening": false,
+          "held_days": 37,
+          "long_term_on": "2027-09-04"
+        },
+        {
+          "date": "2026-10-03",
+          "units": 377.1592,
+          "cost": 50000.0,
+          "value": 49883.08,
+          "gain": -116.92,
+          "term": "short",
+          "opening": false,
+          "held_days": 7,
+          "long_term_on": "2027-10-04"
+        }
+      ]
+    },
+    {
+      "id": "mirae-large-midcap",
+      "name": "Mirae Asset Large & Midcap Fund Direct Growth",
+      "nav": 167.333,
+      "source": "estimated from your SIP",
+      "warnings": [],
+      "value": 4949535,
+      "cost": 4075000,
+      "gain": 874535,
+      "lt_gain": 895656,
+      "st_gain": -21121,
+      "lt_value": 4370656,
+      "st_value": 578879,
+      "lots": [
+        {
+          "date": null,
+          "units": 25825.8889,
+          "cost": 3425000.0,
+          "value": 4321523.47,
+          "gain": 896523.47,
+          "term": "long",
+          "opening": true,
+          "held_days": null,
+          "long_term_on": null
+        },
+        {
+          "date": "2025-10-03",
+          "units": 293.6185,
+          "cost": 50000.0,
+          "value": 49132.06,
+          "gain": -867.94,
+          "term": "long",
+          "opening": false,
+          "held_days": 372,
+          "long_term_on": null
+        },
+        {
+          "date": "2025-11-03",
+          "units": 282.019,
+          "cost": 50000.0,
+          "value": 47191.09,
+          "gain": -2808.91,
+          "term": "short",
+          "opening": false,
+          "held_days": 341,
+          "long_term_on": "2026-11-04"
+        },
+        {
+          "date": "2025-12-03",
+          "units": 282.1877,
+          "cost": 50000.0,
+          "value": 47219.32,
+          "gain": -2780.68,
+          "term": "short",
+          "opening": false,
+          "held_days": 311,
+          "long_term_on": "2026-12-04"
+        },
+        {
+          "date": "2026-01-03",
+          "units": 278.8358,
+          "cost": 50000.0,
+          "value": 46658.43,
+          "gain": -3341.57,
+          "term": "short",
+          "opening": false,
+          "held_days": 280,
+          "long_term_on": "2027-01-04"
+        },
+        {
+          "date": "2026-02-03",
+          "units": 285.8025,
+          "cost": 50000.0,
+          "value": 47824.19,
+          "gain": -2175.81,
+          "term": "short",
+          "opening": false,
+          "held_days": 249,
+          "long_term_on": "2027-02-04"
+        },
+        {
+          "date": "2026-03-03",
+          "units": 297.6687,
+          "cost": 50000.0,
+          "value": 49809.79,
+          "gain": -190.21,
+          "term": "short",
+          "opening": false,
+          "held_days": 221,
+          "long_term_on": "2027-03-04"
+        },
+        {
+          "date": "2026-04-03",
+          "units": 313.8693,
+          "cost": 50000.0,
+          "value": 52520.68,
+          "gain": 2520.68,
+          "term": "short",
+          "opening": false,
+          "held_days": 190,
+          "long_term_on": "2027-04-04"
+        },
+        {
+          "date": "2026-05-03",
+          "units": 292.1977,
+          "cost": 50000.0,
+          "value": 48894.32,
+          "gain": -1105.68,
+          "term": "short",
+          "opening": false,
+          "held_days": 160,
+          "long_term_on": "2027-05-04"
+        },
+        {
+          "date": "2026-06-03",
+          "units": 295.2274,
+          "cost": 50000.0,
+          "value": 49401.28,
+          "gain": -598.72,
+          "term": "short",
+          "opening": false,
+          "held_days": 129,
+          "long_term_on": "2027-06-04"
+        },
+        {
+          "date": "2026-07-03",
+          "units": 280.6671,
+          "cost": 50000.0,
+          "value": 46964.87,
+          "gain": -3035.13,
+          "term": "short",
+          "opening": false,
+          "held_days": 99,
+          "long_term_on": "2027-07-04"
+        },
+        {
+          "date": "2026-08-03",
+          "units": 274.9005,
+          "cost": 50000.0,
+          "value": 45999.92,
+          "gain": -4000.08,
+          "term": "short",
+          "opening": false,
+          "held_days": 68,
+          "long_term_on": "2027-08-04"
+        },
+        {
+          "date": "2026-09-03",
+          "units": 278.5577,
+          "cost": 50000.0,
+          "value": 46611.9,
+          "gain": -3388.1,
+          "term": "short",
+          "opening": false,
+          "held_days": 37,
+          "long_term_on": "2027-09-04"
+        },
+        {
+          "date": "2026-10-03",
+          "units": 297.511,
+          "cost": 50000.0,
+          "value": 49783.41,
+          "gain": -216.59,
+          "term": "short",
+          "opening": false,
+          "held_days": 7,
+          "long_term_on": "2027-10-04"
+        }
+      ]
+    },
+    {
+      "id": "jioblackrock-flexicap",
+      "name": "JioBlackRock Flexi Cap Fund Direct Growth",
+      "nav": 9.5134,
+      "source": "estimated from your SIP",
+      "warnings": [
+        "fund launched 2025-10-17: units not explained by your SIP are dated at launch"
+      ],
+      "value": 179584,
+      "cost": 187000,
+      "gain": -7416,
+      "lt_gain": 0,
+      "st_gain": -7416,
+      "lt_value": 0,
+      "st_value": 179584,
+      "lots": [
+        {
+          "date": "2025-10-17",
+          "units": 6749.3688,
+          "cost": 67000.0,
+          "value": 64209.45,
+          "gain": -2790.55,
+          "term": "short",
+          "opening": false,
+          "held_days": 358,
+          "long_term_on": "2026-10-18"
+        },
+        {
+          "date": "2025-11-03",
+          "units": 979.4319,
+          "cost": 10000.0,
+          "value": 9317.73,
+          "gain": -682.27,
+          "term": "short",
+          "opening": false,
+          "held_days": 341,
+          "long_term_on": "2026-11-04"
+        },
+        {
+          "date": "2025-12-03",
+          "units": 982.3183,
+          "cost": 10000.0,
+          "value": 9345.19,
+          "gain": -654.81,
+          "term": "short",
+          "opening": false,
+          "held_days": 311,
+          "long_term_on": "2026-12-04"
+        },
+        {
+          "date": "2026-01-03",
+          "units": 968.9922,
+          "cost": 10000.0,
+          "value": 9218.41,
+          "gain": -781.59,
+          "term": "short",
+          "opening": false,
+          "held_days": 280,
+          "long_term_on": "2027-01-04"
+        },
+        {
+          "date": "2026-02-03",
+          "units": 983.2842,
+          "cost": 10000.0,
+          "value": 9354.38,
+          "gain": -645.62,
+          "term": "short",
+          "opening": false,
+          "held_days": 249,
+          "long_term_on": "2027-02-04"
+        },
+        {
+          "date": "2026-03-03",
+          "units": 1026.694,
+          "cost": 10000.0,
+          "value": 9767.35,
+          "gain": -232.65,
+          "term": "short",
+          "opening": false,
+          "held_days": 221,
+          "long_term_on": "2027-03-04"
+        },
+        {
+          "date": "2026-04-03",
+          "units": 1090.5125,
+          "cost": 10000.0,
+          "value": 10374.48,
+          "gain": 374.48,
+          "term": "short",
+          "opening": false,
+          "held_days": 190,
+          "long_term_on": "2027-04-04"
+        },
+        {
+          "date": "2026-05-03",
+          "units": 1025.5358,
+          "cost": 10000.0,
+          "value": 9756.33,
+          "gain": -243.67,
+          "term": "short",
+          "opening": false,
+          "held_days": 160,
+          "long_term_on": "2027-05-04"
+        },
+        {
+          "date": "2026-06-03",
+          "units": 1042.916,
+          "cost": 10000.0,
+          "value": 9921.68,
+          "gain": -78.32,
+          "term": "short",
+          "opening": false,
+          "held_days": 129,
+          "long_term_on": "2027-06-04"
+        },
+        {
+          "date": "2026-07-03",
+          "units": 1003.9959,
+          "cost": 10000.0,
+          "value": 9551.41,
+          "gain": -448.59,
+          "term": "short",
+          "opening": false,
+          "held_days": 99,
+          "long_term_on": "2027-07-04"
+        },
+        {
+          "date": "2026-08-03",
+          "units": 982.4823,
+          "cost": 10000.0,
+          "value": 9346.75,
+          "gain": -653.25,
+          "term": "short",
+          "opening": false,
+          "held_days": 68,
+          "long_term_on": "2027-08-04"
+        },
+        {
+          "date": "2026-09-03",
+          "units": 996.3831,
+          "cost": 10000.0,
+          "value": 9478.99,
+          "gain": -521.01,
+          "term": "short",
+          "opening": false,
+          "held_days": 37,
+          "long_term_on": "2027-09-04"
+        },
+        {
+          "date": "2026-10-03",
+          "units": 1045.0413,
+          "cost": 10000.0,
+          "value": 9941.9,
+          "gain": -58.1,
+          "term": "short",
+          "opening": false,
+          "held_days": 7,
+          "long_term_on": "2027-10-04"
+        }
+      ]
+    }
+  ],
+  "confidence": "estimated"
+}

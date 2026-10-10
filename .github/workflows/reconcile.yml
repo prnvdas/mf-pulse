@@ -42,6 +42,15 @@ jobs:
         continue-on-error: true
         timeout-minutes: 6
         run: python src/analytics.py
+      # Risk/reward and capital-gains views. Each non-blocking and time-boxed: they lean on a NAV-history API.
+      - name: Portfolio risk
+        continue-on-error: true
+        timeout-minutes: 5
+        run: python src/risk.py
+      - name: Capital-gains view
+        continue-on-error: true
+        timeout-minutes: 5
+        run: python src/tax.py
       - name: Commit reconciliation
         run: |
           git config user.name  "mf-pulse"

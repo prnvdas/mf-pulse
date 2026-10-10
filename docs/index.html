@@ -199,6 +199,24 @@
   .pm{border-top:1px solid var(--rule);padding:12px 0}
   .pm .h{display:flex;justify-content:space-between;gap:12px;font-weight:600;font-size:14px;margin-bottom:6px}
   @media(max-width:760px){.sbars{grid-template-columns:1fr}.sb{grid-template-columns:104px 1fr 56px}}
+  .rr-v{font-size:14.5px;line-height:1.6;margin:0 0 6px}
+  .rr-sub{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin:28px 0 10px;font-weight:600}
+  .rbar{display:grid;grid-template-columns:110px 1fr 140px;gap:12px;align-items:center;font-size:13px;margin:7px 0}
+  .rbar .t{height:12px;background:var(--wash);position:relative}.rbar .t i{position:absolute;left:0;top:0;bottom:0;background:var(--red);opacity:.85}
+  .rbar b{text-align:right;font-variant-numeric:tabular-nums}
+  .tagc{display:inline-block;font-size:10.5px;color:var(--grey);border:1px solid var(--rule);padding:1px 7px;margin:0 4px 0 0}
+  .hv{background:var(--wash);padding:16px 20px;margin:12px 0;font-size:14px;line-height:1.6}
+  .hv b{font-weight:600}
+  .gcard{border:1px solid var(--rule);padding:20px 22px;margin:0 0 18px}
+  .gcard .gh{display:flex;justify-content:space-between;gap:14px;align-items:baseline;flex-wrap:wrap}
+  .gcard .gh b{font-size:16px}
+  .gst{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:99px;color:#fff}
+  .gst.ok{background:var(--green-deep)}.gst.mid{background:#c98a0a}.gst.bad{background:var(--red)}
+  .gform{display:grid;grid-template-columns:2fr 1.2fr .8fr .8fr .8fr auto;gap:10px;align-items:end;margin:10px 0 0}
+  .gform label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--grey);display:block;margin-bottom:4px}
+  .gform input{width:100%;font:inherit;font-size:13.5px;padding:8px 9px;border:1px solid var(--rule);background:var(--paper);color:var(--ink)}
+  .gdel{font:inherit;font-size:12px;background:none;border:0;color:var(--grey);cursor:pointer;text-decoration:underline}
+  @media(max-width:760px){.rbar{grid-template-columns:90px 1fr 110px}.gform{grid-template-columns:1fr 1fr}.acc.four{grid-template-columns:1fr 1fr}}
   .why .ev{display:block;font-size:12px;color:var(--grey);margin-top:3px}
   .why .ev a{color:inherit}
   .mvgrid{display:grid;grid-template-columns:1fr 1fr;gap:36px}
@@ -396,6 +414,21 @@
       lot. Edit the scenarios under <code>projection</code> in <code>config/portfolio.yaml</code>.</p>
   </section>
 
+  <section id="riskWrap" hidden>
+    <h2>Risk and reward <span id="riskNote"></span></h2>
+    <div id="riskBody"></div>
+  </section>
+
+  <section id="taxWrap" hidden>
+    <h2>Tax view <span id="taxNote"></span></h2>
+    <div id="taxBody"></div>
+  </section>
+
+  <section id="goalWrap" hidden>
+    <h2>Goal tracker <span id="goalNote"></span></h2>
+    <div id="goalBody"></div>
+  </section>
+
   <details id="odBox" class="od">
     <summary>Reliable updates (optional)</summary>
     <p>GitHub's schedule can run late or skip runs. With a token saved <b>in this browser only</b>, Refresh can ask GitHub to run the update right away, and this page will request one itself if market-hours data goes stale.
@@ -464,7 +497,7 @@ const DEMO = {
   ]
 };
 
-let MARKET = [], OUTLOOK = null, GIFT = null, BRIEF_PHASE = null, CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, timer = null;
+let MARKET = [], OUTLOOK = null, GIFT = null, RISK = null, TAX = null, BRIEF_PHASE = null, CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, timer = null;
 
 const $ = id => document.getElementById(id);
 const inr = n => "₹" + Math.round(Math.abs(n)).toLocaleString("en-IN");
@@ -873,6 +906,7 @@ function renderProjection(value, invested) {
     '</td><td class="pos">' + signed(p.v - p.inv) + '</td><td class="' + (p.ret >= 0 ? "pos" : "neg") + '">' + signed(p.ret) + ' <span class="sub2">(' + (p.retPct >= 0 ? "+" : "−") + Math.abs(p.retPct).toFixed(1) + "%)</span></td></tr>").join("");
 
   drawProjectionChart(all, rates, PROJ.sel, last);
+  renderGoals();
 }
 
 // SVG chart. It scales to the selected return, so the faint lines for higher
@@ -1292,6 +1326,216 @@ async function loadOutlook() {
   OUTLOOK = await fetch("data/outlook.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => OUTLOOK);
   GIFT = await loadJson("data/gift.json?t=" + Date.now(), isObj, GIFT);
   renderOutlook();
+}
+
+// ======================================================================================
+// Risk and reward / Tax view / Goal tracker.  Data: data/risk.json and data/tax.json are built
+// nightly (src/risk.py, src/tax.py); goals and their maths run here in the browser.
+// ======================================================================================
+const pcs = (v, d = 1) => v == null ? "—" : (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d) + "%";
+const cl = n => n >= 1e7 ? "₹" + (n / 1e7).toFixed(2).replace(/\.?0+$/, "") + " Cr" : n >= 1e5 ? "₹" + (n / 1e5).toFixed(2).replace(/\.?0+$/, "") + " L" : inr(n);
+const dshort = iso => iso ? new Date(iso + "T00:00:00").toLocaleDateString("en-IN", { month: "short", year: "numeric" }) : "—";
+const tile = (k, v, n, cls) => '<div><div class="k">' + k + '</div><div class="v ' + (cls || "") + '">' + v + '</div><div class="n">' + (n || "") + "</div></div>";
+
+function renderRisk() {
+  const R = RISK, wrap = $("riskWrap");
+  if (!R || !R.risk) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  const k = R.risk, w = R.reward || {}, eps = R.episodes || [], val = R.value || 0;
+  $("riskNote").textContent = "today's mix, replayed on each fund's real history (" + (R.basis.match(/since (\d{4})/) || ["", ""])[1] + " onward)";
+  const lvl = k.vol_3y_pct >= 18 ? "Very high" : k.vol_3y_pct >= 13 ? "High" : k.vol_3y_pct >= 9 ? "Moderate" : "Low";
+  const worst = eps[0];
+  const r3 = (w.rolling || []).find(x => x.years === 3), r1 = (w.rolling || []).find(x => x.years === 1);
+  const nifty3 = (w.nifty_cagr || {})["3y"];
+
+  let h = '<div class="hv"><b>In plain words:</b> on a typical bad day (1 in 20) this mix loses about <b>' + inr(k.var95_rupees) + "</b> (" + k.var95_pct + "%). " +
+    (worst ? "In its worst stretch since " + dshort(R.basis.match(/since (\d{4}-\d{2}-\d{2})/)[1]) + " (" + dshort(worst.peak) + " to " + dshort(worst.trough) + ") it fell <b>" + Math.abs(worst.depth_pct) + "%</b>, which on today's money is about <b>" + cx(Math.abs(worst.rupees_today)) + "</b>" +
+      (worst.days_to_recover != null ? ", and it took " + Math.round(worst.days_to_recover / 30) + " months to win it back. " : ", and it has not fully recovered yet. ") : "") +
+    (r3 ? "Over every 3-year stretch in the record it " + (r3.positive_pct >= 100 ? "never lost money" : "made money " + r3.positive_pct + "% of the time") + " (worst " + pcs(r3.worst) + " a year, median " + pcs(r3.median) + ")." : "") + "</div>";
+
+  h += '<div class="acc four">' +
+    tile("Returns (a year)", pcs(w.cagr_3y) + '<span class="sub2"> 3-yr</span>', "5-yr " + pcs(w.cagr_5y) + " · Nifty 50 3-yr " + pcs(nifty3) + " · FD " + pcs(R.fd_rate_pct), w.cagr_3y >= R.fd_rate_pct ? "pos" : "neg") +
+    tile("Typical bad day", "−" + inr(k.var95_rupees), "1 in 20 days or worse · 1 in 100: −" + inr(k.var99_rupees)) +
+    tile("Worst fall so far", pcs(k.max_drawdown_pct), "now " + pcs(k.current_drawdown_pct) + " from its peak", "neg") +
+    tile("Risk level", lvl, "volatility " + k.vol_3y_pct + "% a year · beta " + (k.beta != null ? k.beta : "—") + " (falls: " + (k.downside_beta != null ? k.downside_beta : "—") + ")") + "</div>";
+
+  // reward spread
+  h += '<div class="rr-sub">Reward: what 1, 3 and 5-year stretches have delivered (per year)</div><div class="scroll"><table><thead><tr><th>Holding for</th><th>Worst</th><th>Bad (1 in 20)</th><th>Median</th><th>Best</th><th>Ended positive</th><th>Beat FD ' + Math.round(R.fd_rate_pct) + '%</th></tr></thead><tbody>' +
+    (w.rolling || []).map(x => "<tr><td>" + x.years + " year" + (x.years > 1 ? "s" : "") + "</td><td class=\"" + (x.worst < 0 ? "neg" : "") + '">' + pcs(x.worst) + "</td><td>" + pcs(x.p5) + "</td><td><b>" + pcs(x.median) + "</b></td><td>" + pcs(x.best) + "</td><td>" + x.positive_pct + "%</td><td>" + x.beat_fd_pct + "%</td></tr>").join("") +
+    "</tbody></table></div>";
+
+  // stress tests
+  const S = R.stress || [];
+  if (S.length) {
+    const mx = Math.max(...S.map(x => Math.abs(x.rupees)));
+    h += '<div class="rr-sub">Stress test: if the Nifty 50 fell…</div>' + S.map(x => '<div class="rbar"><span>Nifty ' + x.nifty_pct + '%</span><span class="t"><i style="width:' + Math.round(Math.abs(x.rupees) / mx * 100) + '%"></i></span><b>−' + cx(Math.abs(x.rupees)) + " (" + x.portfolio_pct + "%)</b></div>").join("") +
+      '<p class="sub2" style="margin:6px 0 0">Using how your funds behaved in the Nifty\'s falling weeks over three years (downside beta ' + k.downside_beta + "): they have tended to fall slightly more than the market. Not a forecast of a fall.</p>";
+  }
+
+  // worst episodes replayed on today's money
+  if (eps.length) {
+    h += '<div class="rr-sub">Your mix\'s worst episodes, replayed on today\'s money</div><div class="scroll"><table><thead><tr><th>Peak to trough</th><th>Fall</th><th>Would cost today</th><th>Time to bottom</th><th>Time to recover</th></tr></thead><tbody>' +
+      eps.map(e => "<tr><td>" + dshort(e.peak) + " → " + dshort(e.trough) + '</td><td class="neg">' + pcs(e.depth_pct) + '</td><td class="neg">−' + cx(Math.abs(e.rupees_today)) + "</td><td>" + Math.round(e.days_to_trough / 30) + " mo</td><td>" + (e.days_to_recover != null ? Math.round(e.days_to_recover / 30) + " mo" : "not yet") + "</td></tr>").join("") + "</tbody></table></div>";
+  }
+
+  // where the risk sits
+  const F = R.funds || [];
+  h += '<div class="rr-sub">Where your risk sits</div><div class="scroll"><table><thead><tr><th>Fund</th><th>Share of money</th><th>Volatility</th><th>Worst fall</th><th>Downside beta</th><th>Share of risk</th></tr></thead><tbody>' +
+    F.map(f => "<tr><td>" + esc(f.name.replace(" Direct Growth", "").replace(" Fund", "")) + (f.history_years < 2 ? ' <span class="sub2">(' + f.history_years + " yr history)</span>" : "") + "</td><td>" + f.weight_pct + "%</td><td>" + f.vol_pct + "%</td><td>" + pcs(f.max_drawdown_pct) + "</td><td>" + (f.downside_beta != null ? f.downside_beta : "—") + "</td><td>" + (f.risk_share_pct != null ? f.risk_share_pct + "%" : "—") + "</td></tr>").join("") + "</tbody></table></div>";
+  const C = R.concentration || {};
+  if ((C.top || []).length) {
+    const mx = Math.max(...C.top.map(x => x.pct));
+    h += '<p class="rr-v" style="margin-top:14px">Your three funds hold <b>' + C.stocks + "</b> different stocks. The top 10 are <b>" + C.top10_pct + "%</b> of your money; <b>" + C.overlap_stocks + "</b> stocks are held by two or more funds (<b>" + C.overlap_pct + "%</b> of your money), and about <b>" + C.cash_pct + "%</b> sits in cash.</p>" +
+      C.top.map(x => '<div class="rbar" style="grid-template-columns:170px 1fr 150px"><span>' + esc(x.name.replace(/ Ltd\.?$/, "")) + '</span><span class="t"><i style="background:var(--ink);opacity:.75;width:' + Math.round(x.pct / mx * 100) + '%"></i></span><b>' + x.pct + "% · " + cx(x.value) + "</b></div>").join("");
+  }
+  h += '<p class="note" style="margin-top:20px">Built from each fund\'s real daily NAV history with today\'s weights, so it answers "how risky is the mix I hold now". Past behaviour is not a promise: a future fall can be deeper or longer than any in the record. Stock holdings are as of each fund\'s last monthly disclosure.</p>';
+  $("riskBody").innerHTML = h;
+}
+
+function renderTax() {
+  const T = TAX, wrap = $("taxWrap");
+  if (!T || !T.totals) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  const t = T.totals, sa = T.sell_all, hv = T.harvest, fy = T.fy, rt = T.rates;
+  $("taxNote").textContent = "financial year to " + new Date(fy.end + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) + " · " + fy.days_left + " days left";
+  let h = '<div class="hbanner" style="margin-top:6px"><span>' + (T.confidence === "estimated"
+    ? "<b>Estimated.</b> Your purchase dates aren't on file, so lots are inferred from your monthly SIP (units bought in the last year are what decide short vs long term). For exact figures list every purchase in <code>config/transactions.csv</code>."
+    : "Built from your <code>transactions.csv</code> purchase history.") + "</span></div>";
+  h += '<div class="acc four" style="margin-top:14px">' +
+    tile("Unrealised gain", signed(t.gain), "long-term " + cl(t.lt_gain) + " · short-term " + signed(t.st_gain), t.gain >= 0 ? "pos" : "neg") +
+    tile("Tax if you sold everything today", inr(sa.tax), sa.effective_pct_of_gain + "% of the gain (after the " + cl(rt.ltcg_exempt_inr) + " exemption)") +
+    tile("Tax-free room this year", cl(hv.remaining_exempt), "long-term gain you can book at ₹0 tax before " + new Date(fy.end + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" })) +
+    tile("Worth harvesting", inr(hv.future_tax_saved), "of future tax saved each year you use the room", "pos") + "</div>";
+
+  if ((hv.plan || []).length) {
+    h += '<div class="hv" style="margin-top:18px"><b>Tax-free harvest idea:</b> ' + hv.plan.map(p => "sell about <b>" + cl(p.value) + "</b> of " + esc(p.fund.replace(" Direct Growth", "")) + " (" + Math.round(p.units).toLocaleString("en-IN") + " units, oldest first) to book <b>" + cl(p.gain) + "</b> of long-term gain").join("; and ") +
+      ". That is inside this year's " + cl(rt.ltcg_exempt_inr) + " exemption, so no tax. Buy the same fund back straight away: your holding is unchanged, but your cost price resets higher, which lowers the tax on every future sale. " +
+      "<span class=\"sub2\">Check exit load, the small STT on redemption, and which lots your platform sells (units are normally redeemed oldest first). Do it before " + new Date(fy.end + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" }) + ", because the room does not carry over.</span></div>";
+  } else if (hv.remaining_exempt <= 0) {
+    h += '<div class="hv" style="margin-top:18px">You have already used this year\'s tax-free long-term room, so there is nothing more to harvest until 1 April.</div>';
+  }
+
+  h += '<div class="rr-sub">By fund</div><div class="scroll"><table><thead><tr><th>Fund</th><th>Value</th><th>Cost</th><th>Gain</th><th>Long-term gain</th><th>Short-term gain</th></tr></thead><tbody>' +
+    (T.funds || []).map(f => "<tr><td>" + esc(f.name.replace(" Direct Growth", "").replace(" Fund", "")) + "</td><td>" + inr(f.value) + "</td><td>" + inr(f.cost) + '</td><td class="' + (f.gain >= 0 ? "pos" : "neg") + '">' + signed(f.gain) + '</td><td class="' + (f.lt_gain >= 0 ? "pos" : "neg") + '">' + signed(f.lt_gain) + '</td><td class="' + (f.st_gain >= 0 ? "pos" : "neg") + '">' + signed(f.st_gain) + "</td></tr>").join("") + "</tbody></table></div>";
+  (T.funds || []).forEach(f => (f.warnings || []).forEach(w => { h += '<p class="sub2" style="margin:4px 0">' + esc(f.name.replace(" Direct Growth", "")) + ": " + esc(w) + "</p>"; }));
+
+  const U = T.upcoming || [];
+  if (U.length) {
+    h += '<div class="rr-sub">Short-term units about to turn long-term</div><div class="scroll"><table><thead><tr><th>Fund</th><th>Bought</th><th>Turns long-term on</th><th>Days</th><th>Gain</th><th>Tax saved by waiting</th></tr></thead><tbody>' +
+      U.map(u => "<tr><td>" + esc(u.fund.replace(" Direct Growth", "").replace(" Fund", "")) + "</td><td>" + dshort(u.date) + "</td><td>" + new Date(u.turns_long_on + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) + "</td><td>" + u.days_left + "</td><td>" + signed(u.gain) + "</td><td>" + inr(u.tax_saved_by_waiting) + "</td></tr>").join("") + "</tbody></table></div>";
+  }
+  h += '<p class="note" style="margin-top:20px">Rates used: short-term ' + rt.stcg_pct + "%, long-term " + rt.ltcg_pct + "% above " + cl(rt.ltcg_exempt_inr) + " a year, plus " + rt.cess_pct + "% cess, for equity-oriented funds held more than " + Math.round(rt.long_term_days / 30) + " months for long-term. " +
+    "These are the rules as last known to the author; <b>check the current year's rules</b> and edit <code>tax:</code> in config/portfolio.yaml if they changed. Surcharge, exit loads and gains or losses outside these funds are not included. A planning estimate, not tax advice.</p>";
+  $("taxBody").innerHTML = h;
+}
+
+// ---------------------------------------------------------------- Goal tracker
+const GKEY = "mfp_goals";
+function goalsMine() { try { const g = JSON.parse(localStorage.getItem(GKEY) || "[]"); return Array.isArray(g) ? g : []; } catch (e) { return []; } }
+function goalsSave(list) { try { localStorage.setItem(GKEY, JSON.stringify(list)); } catch (e) {} }
+function mulberry(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const gMonthly = r => Math.pow(1 + r, 1 / 12) - 1;
+function gFV(v0, sip, r, months, step) {            // deterministic: SIP paid at the start of each month, optional yearly step-up
+  const i = gMonthly(r); let v = v0, s = sip;
+  for (let m = 0; m < months; m++) { if (m > 0 && m % 12 === 0) s *= 1 + (step || 0); v = (v + s) * (1 + i); }
+  return v;
+}
+function gNeedSip(v0, T, r, months) {                // flat SIP needed so that value at the target date reaches T
+  const i = gMonthly(r), g = Math.pow(1 + i, months), ann = (g - 1) / i * (1 + i);
+  return Math.max(0, (T - v0 * g) / ann);
+}
+function gNeedStep(v0, sip, T, r, months) {          // yearly SIP step-up (as a fraction) that reaches T; null if even 30% a year is not enough
+  if (gFV(v0, sip, r, months, 0) >= T) return 0;
+  if (gFV(v0, sip, r, months, 0.3) < T) return null;
+  let lo = 0, hi = 0.3;
+  for (let k = 0; k < 40; k++) { const mid = (lo + hi) / 2; if (gFV(v0, sip, r, months, mid) >= T) hi = mid; else lo = mid; }
+  return hi;
+}
+function gSimulate(v0, sip, r, sigma, months, T, paths) {   // seeded Monte Carlo: lognormal monthly returns, SIP at the start of each month
+  const rnd = mulberry(20260101), mu = (Math.log(1 + r) - sigma * sigma / 2) / 12, sd = sigma / Math.sqrt(12);
+  const years = Math.ceil(months / 12), grid = Array.from({ length: years + 1 }, () => []);
+  let ok = 0;
+  for (let p = 0; p < paths; p++) {
+    let v = v0;
+    grid[0].push(v);
+    for (let m = 0; m < months; m++) {
+      const z = Math.sqrt(-2 * Math.log(1 - rnd())) * Math.cos(2 * Math.PI * rnd());
+      v = (v + sip) * Math.exp(mu + sd * z);
+      if ((m + 1) % 12 === 0) grid[(m + 1) / 12].push(v);
+    }
+    if (months % 12) grid[years].push(v);
+    if (v >= T) ok++;
+  }
+  const q = (a, f) => { const b = a.slice().sort((x, y) => x - y); return b[Math.min(b.length - 1, Math.floor(f * b.length))]; };
+  return { pSuccess: ok / paths, band: grid.map((a, i) => ({ y: i, p10: q(a, .1), p50: q(a, .5), p90: q(a, .9) })) };
+}
+function goalFan(sim, T, tEnd) {
+  const years = tEnd;
+  const W = 640, H = 210, pad = { l: 8, r: 8, t: 12, b: 24 };
+  const mx = Math.max(T * 1.1, ...sim.band.map(b => b.p90)), x = i => pad.l + Math.min(i, tEnd) / tEnd * (W - pad.l - pad.r), y = v => pad.t + (1 - v / mx) * (H - pad.t - pad.b);
+  const up = sim.band.map((b, i) => x(i) + "," + y(b.p90)), dn = sim.band.slice().reverse().map((b, i) => x(sim.band.length - 1 - i) + "," + y(b.p10));
+  const line = k => sim.band.map((b, i) => (i ? "L" : "M") + x(i) + " " + y(b[k])).join("");
+  const yr0 = new Date().getFullYear();
+  return '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Range of possible outcomes against the target" style="width:100%;display:block">' +
+    '<polygon points="' + up.concat(dn).join(" ") + '" fill="var(--green)" opacity=".16"></polygon>' +
+    '<path d="' + line("p50") + '" fill="none" stroke="var(--green-deep)" stroke-width="2"></path>' +
+    '<line x1="' + pad.l + '" x2="' + (W - pad.r) + '" y1="' + y(T) + '" y2="' + y(T) + '" stroke="var(--ink)" stroke-dasharray="5 4"></line>' +
+    '<text x="' + (W - pad.r) + '" y="' + (y(T) - 5) + '" text-anchor="end" font-size="11" fill="var(--ink)">target ' + cx(T) + "</text>" +
+    '<text x="' + pad.l + '" y="' + (H - 6) + '" font-size="10.5" fill="var(--grey)">' + yr0 + '</text><text x="' + (W - pad.r) + '" y="' + (H - 6) + '" text-anchor="end" font-size="10.5" fill="var(--grey)">' + (yr0 + Math.round(tEnd)) + "</text>" +
+    '<text x="' + (W / 2) + '" y="' + (H - 6) + '" text-anchor="middle" font-size="10.5" fill="var(--grey)">shaded: the middle 8 in 10 outcomes · line: the median</text></svg>';
+}
+
+function renderGoals() {
+  const wrap = $("goalWrap"), last = PROJ && PROJ.last;
+  if (!CFG || !last || !last.value) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  const mine = goalsMine(), list = mine.length ? mine : (CFG.goals || []), usingMine = mine.length > 0;
+  const scen = (CFG.goal_scenarios_pct && CFG.goal_scenarios_pct.length ? CFG.goal_scenarios_pct : [10, 12, 15]).map(x => x / 100);
+  const base = scen[Math.floor(scen.length / 2)], sigma = RISK && RISK.risk ? RISK.risk.vol_3y_pct / 100 : 0.15;
+  const now = new Date(), totalShare = list.reduce((a, g) => a + (+g.share_pct || 0), 0);
+  $("goalNote").textContent = "your " + cx(last.value) + " + " + inr(CFG.monthly_sip_total || 0) + "/month SIP · base return " + Math.round(base * 100) + "% · volatility " + Math.round(sigma * 100) + "%";
+  let h = "";
+  if (totalShare > 100.5) h += '<div class="hbanner" style="margin-bottom:14px"><span>Your goals earmark <b>' + Math.round(totalShare) + "%</b> of your money: more than you have. Lower the shares so they add up to 100% or less.</span></div>";
+  if (!list.length) h += '<p class="rr-v">No goals yet. Add one below.</p>';
+  list.forEach((g, gi) => {
+    const months = Math.max(1, (g.target_year - now.getFullYear()) * 12 + (11 - now.getMonth())), yrs = months / 12;
+    const share = (+g.share_pct || 100) / 100, v0 = last.value * share, sip = (CFG.monthly_sip_total || 0) * share;
+    const T = g.target_today_inr * Math.pow(1 + (g.inflation_pct != null ? g.inflation_pct : 6) / 100, yrs);
+    const fvBase = gFV(v0, sip, base, months, 0), ratio = fvBase / T;
+    const st = ratio >= 1 ? ["ok", "On track"] : ratio >= 0.8 ? ["mid", "Close: a top-up needed"] : ["bad", "Behind"];
+    const sim = gSimulate(v0, sip, base, sigma, months, T, 2000);
+    const need = gNeedSip(v0, T, base, months), step = gNeedStep(v0, sip, T, base, months);
+    h += '<div class="gcard"><div class="gh"><b>' + esc(g.name) + '</b><span class="gst ' + st[0] + '">' + st[1] + "</span></div>" +
+      '<p class="sub2" style="margin:6px 0 12px">' + cx(g.target_today_inr) + " in today's money is about <b>" + cx(T) + "</b> in " + g.target_year + " at " + (g.inflation_pct != null ? g.inflation_pct : 6) + "% inflation · earmarks " + Math.round(share * 100) + "% of your portfolio and SIP" +
+      (g.example && !usingMine ? " · <b>example goal: add your own below</b>" : "") + "</p>" +
+      '<div class="acc four">' +
+      tile("Projected at " + Math.round(base * 100) + "%", cx(fvBase), Math.round(ratio * 100) + "% of the target", ratio >= 1 ? "pos" : "neg") +
+      tile("Chance of reaching it", Math.round(sim.pSuccess * 100) + "%", "2,000 simulated futures with ups and downs") +
+      tile("SIP needed (flat)", need > sip ? inr(need) : "none extra", "you put in " + inr(sip) + "/month towards it") +
+      tile("Or step the SIP up", step === 0 ? "not needed" : step == null ? "over 30% a year" : "+" + (step * 100).toFixed(1) + "% a year", "each year, from " + inr(sip) + "/month") + "</div>" +
+      '<div class="scroll"><table style="margin-top:14px"><thead><tr><th>Yearly return</th><th>Projected</th><th>vs target</th><th>SIP needed</th></tr></thead><tbody>' +
+      scen.map(r => { const f = gFV(v0, sip, r, months, 0); return "<tr><td>" + Math.round(r * 100) + "%</td><td>" + cx(f) + '</td><td class="' + (f >= T ? "pos" : "neg") + '">' + (f >= T ? "+" : "−") + cx(Math.abs(f - T)) + "</td><td>" + (gNeedSip(v0, T, r, months) > sip ? inr(gNeedSip(v0, T, r, months)) : "none extra") + "</td></tr>"; }).join("") + "</tbody></table></div>" +
+      '<div style="margin-top:14px">' + goalFan(sim, T, yrs) + "</div>" +
+      (usingMine ? '<p style="margin:6px 0 0;text-align:right"><button class="gdel" data-del="' + gi + '">remove this goal</button></p>' : "") + "</div>";
+  });
+  h += '<div class="rr-sub" style="margin-top:8px">Add a goal <span class="sub2" style="text-transform:none;letter-spacing:0">(saved in this browser only)</span></div>' +
+    '<form id="goalForm" class="gform"><div><label>Goal</label><input name="name" required maxlength="60" placeholder="e.g. Child\'s education"></div>' +
+    '<div><label>Amount (₹ lakh, today\'s money)</label><input name="amt" type="number" min="1" step="any" required placeholder="e.g. 150"></div>' +
+    '<div><label>By year</label><input name="year" type="number" min="' + (now.getFullYear() + 1) + '" max="2100" required value="' + (now.getFullYear() + 10) + '"></div>' +
+    '<div><label>Share of money %</label><input name="share" type="number" min="1" max="100" value="100"></div>' +
+    '<div><label>Inflation %</label><input name="infl" type="number" min="0" max="15" step="0.5" value="6"></div>' +
+    '<div><button type="submit" style="margin-bottom:0">Add</button></div></form>' +
+    '<p class="note" style="margin-top:18px">Assumes your SIP continues unchanged, returns come at the stated yearly rate on average, and swings follow your portfolio\'s own volatility (a smooth bell curve: real markets have rarer, harder crashes). "Chance of reaching it" is the share of 2,000 simulated futures that get there. A planning aid, not a promise; the shaded band is the middle 8 in 10 outcomes, and the worst 1 in 10 is below it.</p>';
+  $("goalBody").innerHTML = h;
+  const f = $("goalForm");
+  if (f) f.onsubmit = e => {
+    e.preventDefault();
+    const d = new FormData(f), g = { id: "g" + Date.now(), name: String(d.get("name")).trim(), target_today_inr: Math.round(+d.get("amt") * 1e5), target_year: +d.get("year"),
+      inflation_pct: +d.get("infl"), share_pct: +d.get("share") };
+    if (!g.name || !(g.target_today_inr > 0) || !(g.target_year > now.getFullYear())) return;
+    goalsSave(goalsMine().concat([g])); renderGoals();
+  };
+  wrap.querySelectorAll("[data-del]").forEach(b => b.onclick = () => { const m = goalsMine(); m.splice(+b.dataset.del, 1); goalsSave(m); renderGoals(); });
 }
 
 // Daily greeting: a motivation line that changes each day, an honest read of how
@@ -2128,6 +2372,9 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   HIST = await loadJson("data/history.json", Array.isArray, []);
   ANALYTICS = await fetch("data/analytics.json", { cache: "no-store" })
     .then(r => r.ok ? r.json() : null).catch(() => null);
+  RISK = await loadJson("data/risk.json", isObj, null);
+  TAX = await loadJson("data/tax.json", isObj, null);
+  renderRisk(); renderTax(); renderGoals();
   renderCompare();
   loadNews();
   loadOutlook();

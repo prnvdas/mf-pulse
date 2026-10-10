@@ -106,90 +106,7 @@ def public(rows: list[dict]) -> list[dict]:
              "published": r["published"].astimezone(dt.timezone.utc).isoformat()} for r in rows]
 
 
-# --- "what the news is saying" ---------------------------------------------------
-
-DOWN_WORDS = ["fall", "drop", "slump", "tumble", "sell-off", "selloff", "slide", "plunge",
-              "weak", "declin", "lower", "crash", "tank", "slip"]
-UP_WORDS = ["rally", "gain", "surge", "jump", "rise", "rises", "climb", "higher", "record",
-            "upbeat", "soar", "rebound", "recover", "green"]
-
-# up/down words are checked against the headline to decide which way each cause
-# pushed things; a theme with no up/down text is neutral ("in focus").
-THEMES = [
-    {"id": "fii", "kw": ["fii", "fpi", "foreign investor", "foreign portfolio", "foreign fund"],
-     "down_w": ["sell", "selling", "sold", "outflow", "pull", "dump", "exit", "withdr"],
-     "up_w": ["buy", "bought", "inflow", "pour", "infus"],
-     "down": "Foreign investors were reported selling Indian shares. Big overseas funds own a lot of the market, so when they sell, prices tend to fall.",
-     "up": "Foreign investors were reported buying Indian shares. When big overseas funds buy, prices tend to rise."},
-    {"id": "global", "kw": ["wall street", "us market", "us stocks", "dow ", "nasdaq", "s&p 500",
-                            "global cues", "global market", "asian market", "federal reserve", "us fed",
-                            "treasury yield", "asian stocks"],
-     "down_w": DOWN_WORDS, "up_w": UP_WORDS,
-     "down": "Shares fell in other big markets (like the US and Asia) and India followed. Markets around the world often move together.",
-     "up": "Shares rose in other big markets (like the US and Asia), which usually lifts the mood in India too."},
-    {"id": "crude", "kw": ["crude", "brent", "oil price"],
-     "down_w": ["surge", "jump", "rise", "rises", "spike", "climb", "higher", "soar", "hike"],
-     "up_w": ["fall", "drop", "slip", "cool", "ease", "lower", "slump", "decline"],
-     "down": "Crude oil got costlier. India buys most of its oil from abroad, so pricier oil hurts company profits and the rupee.",
-     "up": "Crude oil got cheaper, which helps India because we import most of our oil."},
-    {"id": "rupee", "kw": ["rupee"],
-     "down_w": ["fall", "weak", "slip", "slide", "record low", "depreciat", "drop", "lower"],
-     "up_w": ["gain", "strong", "rise", "appreciat", "recover", "higher"],
-     "down": "The rupee weakened against the dollar. That makes imports costlier and can make foreign investors nervous.",
-     "up": "The rupee strengthened against the dollar, which usually helps sentiment."},
-    {"id": "geo", "kw": ["war", "tension", "tariff", "trade deal", "sanction", "geopolit", "conflict", "attack"],
-     "down_w": ["tension", "tariff", "war", "sanction", "conflict", "attack", "fear", "worry", "worries"],
-     "up_w": ["deal", "ceasefire", "truce", "ease", "talks", "relief"],
-     "down": "Global tension or trade worries (like tariffs or conflict) made investors cautious. When people are nervous they sell shares and move money somewhere safer.",
-     "up": "Easing global tension or hopes of a trade deal lifted the mood."},
-    {"id": "profit", "kw": ["profit booking", "profit-taking", "profit taking", "overvalued", "expensive valuation", "stretched valuation"],
-     "down_w": ["profit", "valuation", "overvalued", "expensive", "stretched"], "up_w": [],
-     "down": "After a rise, many investors sold to lock in their gains (\"profit booking\"), or felt prices had become too expensive.",
-     "up": ""},
-    {"id": "rates", "kw": ["rbi", "repo rate", "interest rate", "inflation", "cpi", "mpc"],
-     "neutral": "Interest rates or inflation are in the news. Higher rates make loans costlier and can pull money out of shares; lower rates usually help."},
-    {"id": "results", "kw": ["q1 result", "q2 result", "q3 result", "q4 result", "earnings", "quarterly result",
-                             "net profit", "revenue rises", "q2 revenue", "q2 update"],
-     "neutral": "Companies are reporting results. A share usually jumps when profits beat expectations and drops when they disappoint."},
-    {"id": "policy", "kw": ["sebi", "budget", " gst", "tax rule", "new rules"],
-     "neutral": "A rule or policy announcement (regulator, tax or government) is in the news and can move the shares it affects."},
-]
-
-
-def has(text: str, words: list[str]) -> bool:
-    """True if any word appears starting at a word boundary (so 'cut' won't match 'execute')."""
-    return any(re.search(r"\b" + re.escape(w), text) for w in words if w)
-
-
-def reasons(direction: str, headlines: list[dict]) -> list[dict]:
-    scored = []
-    for th in THEMES:
-        hits = []
-        for h in headlines:
-            t = " " + h["title"].lower() + " "
-            if not any(k in t for k in th["kw"]):
-                continue
-            if "neutral" in th:
-                hits.append(h)
-                continue
-            d = "down" if has(t, th["down_w"]) else "up" if has(t, th["up_w"]) else None
-            if d == direction and th.get(d):
-                hits.append(h)
-        if hits:
-            neutral = "neutral" in th
-            scored.append((0 if neutral else 1, len(hits), th, hits))
-    scored.sort(key=lambda x: (-x[0], -x[1]))
-    out, neutral_used = [], 0
-    for _, _, th, hits in scored:
-        if len(out) == 4 or ("neutral" in th and neutral_used == 2):
-            continue
-        neutral_used += "neutral" in th
-        text = th["neutral"] if "neutral" in th else th[direction]
-        out.append({"kind": "reason", "text": text,
-                    "evidence": [{"title": h["title"], "link": h["link"], "source": h["source"]}
-                                 for h in hits[:2]]})
-    return out
-
+# --- explainer articles ------------------------------------------------------------
 
 def explainers(headlines: list[dict]) -> list[dict]:
     """Articles whose own headline asks 'why did the market ...'."""
@@ -225,8 +142,11 @@ def pick_session(latest: dict | None, movers_hist: list[dict]) -> tuple[dict | N
         m.setdefault("breadth", latest.get("breadth"))
         m.setdefault("portfolio_pct", latest["totals"]["today_pct"])
         m.setdefault("portfolio_impact", latest["totals"]["today_impact"])
-        m["funds"] = [{"id": f["id"], "name": f["name"], "nav_move_pct": f["nav_move_pct"],
-                       "impact": round(f["rupee_impact"])} for f in latest["funds"]]
+        # After the overnight NAV settle, latest.json's own per-fund move is reset to 0; the session's
+        # real per-fund figures live in the movers block written at the close, so prefer those.
+        if not m.get("funds"):
+            m["funds"] = [{"id": f["id"], "name": f["name"], "nav_move_pct": f["nav_move_pct"],
+                           "impact": round(f["rupee_impact"])} for f in latest["funds"]]
         return m, "today", m.get("date")
     if movers_hist:
         m = sorted(movers_hist, key=lambda x: x["date"])[-1]
@@ -306,7 +226,6 @@ def build_why(latest, movers_hist, headlines, now) -> dict | None:
     if not m:
         return None
     pts, direction = facts(m)
-    rs = reasons(direction, headlines) if direction != "flat" else []
     day = dt.date.fromisoformat(date).strftime("%a %-d %b") if date else ""
     word = {"up": "rose", "down": "fell", "flat": "was flat"}[direction]
     if which == "today":
@@ -314,13 +233,28 @@ def build_why(latest, movers_hist, headlines, now) -> dict | None:
         session = "Today"
     else:
         title = f"Why the market {word} in the last session ({day})" if direction != "flat" else f"How the market did in the last session ({day})"
-        session = f"Last trading session ({day}) — the market is closed today"
-    top = rs[0]["text"].split(".")[0] if rs else None
-    summary = (f"In plain words: the market {word}" +
-               (f", mainly because: {top[0].lower() + top[1:]}." if top else ".") +
-               " The news reasons below are matched automatically from headlines, so treat them as what's being reported, not proof.")
-    return {"session": session, "date": date, "direction": direction, "title": title,
-            "summary": summary, "points": (pts + rs)[:10], "reads": explainers(headlines)}
+        session = f"Last trading session ({day})"
+    nifty = next((x for x in (m.get("market") or []) if x["name"] == "Nifty 50"), None)
+    rich: dict = {}
+    prev = (read_json("news.json", {}) or {}).get("why") or {}
+    RICH = ("sectors", "broad", "breadth", "flows", "macro", "portfolio", "headlines", "summary", "sources_ok", "rich_at")
+    try:
+        # The heavy layers (NSE, Yahoo, ~10 Google News queries) are reused for 30 min (10 min if a source
+        # failed last time), since this step runs with every 15-minute estimate.
+        age = (now - dt.datetime.fromisoformat(prev["rich_at"])).total_seconds() / 60 if prev.get("rich_at") else 1e9
+        ttl = 30 if all((prev.get("sources_ok") or {"x": False}).values()) else 10
+        if prev.get("date") == date and age < ttl and prev.get("sectors") is not None:
+            rich = {k: prev[k] for k in RICH if k in prev}
+        else:
+            import why                               # measured sectors/flows/macro + real headlines
+            rich = why.build(m, date, direction, nifty["move_pct"] if nifty else None, headlines, now)
+            rich["rich_at"] = now.isoformat()
+    except Exception as exc:  # noqa: BLE001 -- the card must degrade, never disappear
+        print(f"[warn] rich 'why' layers failed: {exc}", file=sys.stderr)
+        rich = {k: prev[k] for k in RICH if k in prev and prev.get("date") == date}
+    summary = rich.get("summary") or f"The market {word}."
+    return {"session": session, "date": date, "direction": direction, "title": title, "summary": summary,
+            "points": pts, "reads": explainers(headlines), **{k: v for k, v in rich.items() if k != "summary"}}
 
 
 # --- main -------------------------------------------------------------------------

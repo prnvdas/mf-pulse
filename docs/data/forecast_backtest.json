@@ -1,27 +1,75 @@
 {
-  "generated_at": "2026-10-09T10:25:54.690498+05:30",
+  "generated_at": "2026-10-10T13:03:50.456531+05:30",
   "method": "walk-forward: fitted on years before each test year, tested on that year",
   "test_period": [
     "2015-01-02",
-    "2026-10-08"
+    "2026-10-09"
   ],
-  "n_sessions": 2897,
+  "n_sessions": 2898,
+  "calls": {
+    "us": {
+      "strong": {
+        "hit_pct": 67.9,
+        "share_pct": 19.7,
+        "n": 570
+      },
+      "moderate": {
+        "hit_pct": 61.5,
+        "share_pct": 26.1,
+        "n": 756
+      },
+      "weak": {
+        "hit_pct": 55.9,
+        "share_pct": 54.2,
+        "n": 1572
+      },
+      "all": {
+        "hit_pct": 59.7,
+        "share_pct": 100.0,
+        "n": 2898
+      }
+    },
+    "gift": {
+      "very high": {
+        "hit_pct": 84.8,
+        "share_pct": 15.2,
+        "n": 440
+      },
+      "good": {
+        "hit_pct": 72.3,
+        "share_pct": 38.9,
+        "n": 1127
+      },
+      "weak": {
+        "hit_pct": 54.6,
+        "share_pct": 45.9,
+        "n": 1331
+      },
+      "all": {
+        "hit_pct": 66.1,
+        "share_pct": 100.0,
+        "n": 2898
+      }
+    },
+    "gift_noise_assumed_pct": 0.15,
+    "note": "gift: trained and tested on the Nifty's real opening gap blurred by the assumed noise; the live GIFT-to-open error will be measured from the log"
+  },
   "range": {
     "old_ewma_normal": {
-      "pinball_bp": 23.032,
-      "coverage70_pct": 70.2,
-      "width70_pct": 1.82,
-      "coverage95_pct": 94.8,
-      "width95_pct": 3.7
+      "pinball_bp": 23.028,
+      "coverage70_pct": 69.6,
+      "width70_pct": 1.79,
+      "coverage95_pct": 94.4,
+      "width95_pct": 3.63
     },
     "new_gjr_sp500": {
-      "pinball_bp": 21.42,
-      "coverage70_pct": 70.3,
-      "width70_pct": 1.71,
-      "coverage95_pct": 94.7,
+      "pinball_bp": 21.39,
+      "coverage70_pct": 70.0,
+      "width70_pct": 1.7,
+      "coverage95_pct": 95.0,
       "width95_pct": 3.18
     },
-    "pinball_improvement_pct": 7.0
+    "pinball_improvement_pct": 7.1
   },
   "direction": {
     "always_up_pct": 53.3,
@@ -43,9 +91,9 @@
       {
         "tier": "every session",
         "rule": "any",
-        "hit_pct": 59.8,
+        "hit_pct": 59.7,
         "share_pct": 100.0,
-        "n": 2897
+        "n": 2898
       }
     ],
     "reliability": [
@@ -63,9 +111,9 @@
       },
       {
         "bin": "45%\u201350%",
-        "n": 529,
+        "n": 530,
         "predicted_pct": 47.9,
-        "actual_pct": 43.5
+        "actual_pct": 43.6
       },
       {
         "bin": "50%\u201355%",

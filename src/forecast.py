@@ -93,6 +93,48 @@ def fit_signal(x: np.ndarray, y_ret: np.ndarray) -> dict:
     return {"mx": mx, "sx": sx, "ybar": ybar, "ridge_slope": slope, "b0": float(b0), "b1": float(b1), "n": int(ok.sum())}
 
 
+def fit_logit(x: np.ndarray, up: np.ndarray, C: float) -> dict:
+    """L2 logistic regression of 'closed up' on one standardised feature (intercept unpenalised)."""
+    x = np.asarray(x, float); up = np.asarray(up, float)
+    mx, sx = float(x.mean()), float(x.std()) or 1.0
+    xs = (x - mx) / sx
+    b0, b1 = float(np.log(up.mean() / (1 - up.mean()))), 0.0
+    for _ in range(50):
+        p = 1.0 / (1.0 + np.exp(-(b0 + b1 * xs)))
+        g0, g1 = C * np.sum(p - up), b1 + C * np.sum((p - up) * xs)
+        w = p * (1 - p)
+        h00, h01, h11 = C * np.sum(w), C * np.sum(w * xs), 1.0 + C * np.sum(w * xs ** 2)
+        det = h00 * h11 - h01 ** 2
+        d0, d1 = (h11 * g0 - h01 * g1) / det, (-h01 * g0 + h00 * g1) / det
+        b0, b1 = b0 - d0, b1 - d1
+        if abs(d0) + abs(d1) < 1e-10:
+            break
+    return {"mx": mx, "sx": sx, "b0": float(b0), "b1": float(b1)}
+
+
+def logit_p(m: dict, x) -> np.ndarray:
+    xs = (np.asarray(x, float) - m["mx"]) / m["sx"]
+    return 1.0 / (1.0 + np.exp(-(m["b0"] + m["b1"] * xs)))
+
+
+def fit_gap_call(gap_pct: np.ndarray, up: np.ndarray, noise_pct: float, draws: int = 5, seed: int = 7) -> dict:
+    """P(Nifty closes up) from the opening gap (in %), trained on gaps blurred by `noise_pct` so that it
+    expects GIFT Nifty's imperfect view of the true gap, not the gap itself."""
+    rng = np.random.default_rng(seed)
+    g = np.concatenate([gap_pct + rng.normal(0, noise_pct, len(gap_pct)) for _ in range(draws)])
+    return fit_logit(g, np.tile(up, draws), C=1.0 * draws)
+
+
+def call_tier(basis: str, p_up: float) -> str:
+    """Confidence tier for a red/green call. Thresholds are on |P(up) - 0.5|."""
+    d = abs(p_up - 0.5)
+    if basis == "gift":
+        return "very high" if d >= 0.25 else "good" if d >= 0.10 else "weak"
+    if basis == "us":
+        return "strong" if d >= 0.10 else "moderate" if d >= 0.05 else "weak"
+    return "weak"
+
+
 def predict_signal(m: dict, x) -> tuple[np.ndarray, np.ndarray]:
     xs = (np.asarray(x, float) - m["mx"]) / m["sx"]
     return m["ybar"] + m["ridge_slope"] * xs, 1.0 / (1.0 + np.exp(-(m["b0"] + m["b1"] * xs)))

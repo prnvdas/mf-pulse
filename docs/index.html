@@ -21,6 +21,14 @@
 
   header{border-bottom:1px solid var(--ink);padding:22px 0 16px}
   #histTableEl{display:block;max-width:100%;overflow-x:auto}
+  .call{display:flex;align-items:center;gap:20px;margin:14px 0 6px;padding:16px 20px;border-left:7px solid var(--grey-light);background:var(--wash)}
+  .call .cw{font-size:30px;font-weight:700;letter-spacing:.07em;line-height:1;min-width:112px}
+  .call.c-green{border-left-color:var(--green)}.call.c-green .cw{color:var(--green-deep)}
+  .call.c-red{border-left-color:var(--red)}.call.c-red .cw{color:var(--red)}
+  .call .ct{font-size:14.5px;line-height:1.55}
+  .call .ct .sub{display:block;font-size:12.5px;color:var(--grey);margin-top:3px}
+  .call .prov{display:inline-block;margin-left:6px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8a5a00;background:#fdf0d5;padding:2px 7px;border-radius:99px}
+  @media(max-width:760px){.call{flex-direction:column;align-items:flex-start;gap:8px}}
   .glance{margin:14px 0 4px}
   .gtxt{font-size:15px;line-height:1.5}
   .gbar{position:relative;display:flex;justify-content:space-between;align-items:center;height:30px;margin:10px 0 6px;background:#f1d5d2;font-size:12px;font-weight:600;letter-spacing:.02em}
@@ -170,6 +178,27 @@
   .why .n{width:24px;height:24px;border-radius:50%;background:var(--wash);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:2px}
   .tag{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:99px;margin-right:8px;vertical-align:1px}
   .tag.fact{background:#e8f1d6;color:var(--green-deep)}.tag.reason{background:#fdf0d5;color:#8a5a00}
+  .wsec{margin:24px 0 0}
+  .wsec h3{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin:0 0 10px;font-weight:600}
+  .sbars{display:grid;grid-template-columns:1fr 1fr;gap:7px 32px}
+  .sb{display:grid;grid-template-columns:118px 1fr 58px;align-items:center;gap:10px;font-size:13px}
+  .sb .bar{height:9px;background:var(--wash);position:relative;display:block}
+  .sb .bar i{position:absolute;left:0;top:0;bottom:0}
+  .sb.up .bar i{background:var(--green)}.sb.dn .bar i{background:var(--red)}
+  .sb b{font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip2{border:1px solid var(--rule);padding:6px 11px;font-size:12.5px;line-height:1.4}
+  .chip2.notable{border-color:var(--ink)}
+  .chip2 b{font-weight:600;margin-right:3px}
+  .hl{list-style:none;margin:0;padding:0;display:grid;gap:11px}
+  .why .hl li{display:block;grid-template-columns:none;font-size:14px;line-height:1.5}
+  .hl a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--grey-light)}
+  .hl a:hover{border-bottom-color:var(--ink)}
+  .hl .m{display:block;font-size:11.5px;color:var(--grey);margin-top:2px}
+  .hl.facts{margin-bottom:6px}
+  .pm{border-top:1px solid var(--rule);padding:12px 0}
+  .pm .h{display:flex;justify-content:space-between;gap:12px;font-weight:600;font-size:14px;margin-bottom:6px}
+  @media(max-width:760px){.sbars{grid-template-columns:1fr}.sb{grid-template-columns:104px 1fr 56px}}
   .why .ev{display:block;font-size:12px;color:var(--grey);margin-top:3px}
   .why .ev a{color:inherit}
   .mvgrid{display:grid;grid-template-columns:1fr 1fr;gap:36px}
@@ -977,7 +1006,7 @@ function renderHitMiss() {
 // causes being reported in headlines, matched automatically -- labelled as such.
 function renderWhy() {
   const w = NEWS && NEWS.why, wrap = $("whyWrap");
-  if (!w || !(w.points || []).length) { wrap.hidden = true; return; }
+  if (!w || !(w.summary || (w.points || []).length)) { wrap.hidden = true; return; }
   wrap.hidden = false;
   // The server bakes "the market is closed today" into the label when it runs; judge that
   // against the live IST clock instead, so a stale file can never claim it on a trading day.
@@ -986,21 +1015,50 @@ function renderWhy() {
   if (w.date === todayIso) sess = "Today";
   else if (!closedAllDay()) sess = sess.replace(/ — the market is closed today/, "") + (marketOpen() ? " — today's session is still in progress" : "");
   $("whyTitle").innerHTML = w.title + ' <span>' + sess + "</span>";
-  const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;");
-  const SHOW = 5, more = w.points.length - SHOW;
-  const item = (p, i) => '<li' + (i >= SHOW ? ' class="whymore" hidden' : "") + '><span class="n">' + (i + 1) + "</span><div><span class=\"tag " + p.kind + "\">" +
-    (p.kind === "fact" ? "From your data" : "In the news") + "</span>" + esc(p.text) +
-    (p.evidence || []).slice(0, 1).map(e => '<span class="ev">↳ <a href="' + e.link + '" target="_blank" rel="noopener noreferrer">' + esc(e.title) +
-      "</a> — " + esc(e.source) + "</span>").join("") + "</div></li>";
-  $("whyBody").innerHTML = '<div class="hbanner" style="margin-top:14px"><span>' + esc(w.summary) + "</span></div><ol>" +
-    w.points.map(item).join("") + "</ol>" +
-    (more > 0 ? '<button class="ghost" id="whyToggle" style="margin-top:14px">Show ' + more + " more</button>" : "");
-  const t = $("whyToggle");
-  if (t) t.onclick = () => {
-    const open = t.dataset.open !== "1";
-    wrap.querySelectorAll(".whymore").forEach(li => li.hidden = !open);
-    t.dataset.open = open ? "1" : "0"; t.textContent = open ? "Show fewer" : "Show " + more + " more";
-  };
+  const esc = t => String(t == null ? "" : t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+  const sgn = (v, dd = 1) => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(dd) + "%";
+  const when = iso => new Date(iso).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }) + " IST";
+  const news = h => '<a href="' + esc(h.link) + '" target="_blank" rel="noopener noreferrer">' + esc(h.title) + '</a><span class="m">' + esc(h.source) + " · " + when(h.published) + "</span>";
+  const sec = (title, body) => body ? '<div class="wsec"><h3>' + title + "</h3>" + body + "</div>" : "";
+
+  let html = '<div class="hbanner" style="margin-top:14px"><span>' + esc(w.summary) + "</span></div>";
+
+  // 1. sectors: every sectoral index's move that session (NSE), bars scaled to the biggest move
+  const S = w.sectors || [];
+  if (S.length) {
+    const mx = Math.max(0.5, ...S.map(x => Math.abs(x.pct)));
+    html += sec("Sectors", '<div class="sbars">' + S.map(x => '<div class="sb ' + (x.pct >= 0 ? "up" : "dn") + '"><span>' + esc(x.name) + '</span><span class="bar"><i style="width:' +
+      Math.max(2, Math.round(Math.abs(x.pct) / mx * 100)) + '%"></i></span><b>' + sgn(x.pct, 2) + "</b></div>").join("") + "</div>" +
+      (w.breadth ? '<p class="sub2" style="margin:8px 0 0">' + w.breadth.up + " of " + (w.breadth.up + w.breadth.down) + " Nifty 50 stocks rose, " + w.breadth.down + " fell.</p>" : ""));
+  }
+
+  // 2. money flows and global cues, with their actual numbers
+  const chips = [];
+  const F = w.flows || {};
+  const cr = v => "₹" + Math.abs(v).toLocaleString("en-IN") + " cr";
+  if (F.fii != null) chips.push('<span class="chip2 notable"><b>FIIs</b> ' + (F.fii >= 0 ? "bought " : "sold ") + cr(F.fii) + "</span>");
+  if (F.dii != null) chips.push('<span class="chip2 notable"><b>DIIs</b> ' + (F.dii >= 0 ? "bought " : "sold ") + cr(F.dii) + "</span>");
+  (w.macro || []).forEach(m => chips.push('<span class="chip2' + (m.notable ? " notable" : "") + '" title="' + (m.notable ? "A bigger move than usual for this series" : "An ordinary move") + '"><b>' + esc(m.name) + "</b> " +
+    esc(m.unit === "$" || m.unit === "₹" ? m.unit : "") + m.level.toLocaleString("en-IN", { maximumFractionDigits: 2 }) + (m.unit === "%" ? "%" : "") + ' <span class="' + (m.pct >= 0 ? "pos" : "neg") + '">' + sgn(m.pct, 2) + "</span></span>"));
+  html += sec("Money flows and global cues", chips.length ? '<div class="chips">' + chips.join("") + '</div><p class="sub2" style="margin:8px 0 0">Outlined chips are the ones that moved more than usual. FII/DII figures are NSE\'s provisional net numbers for the day.</p>' : "");
+
+  // 3. your biggest movers, each with the real headlines found for that company
+  const mine = (w.points || []).filter(p => /\byour\b|\byou\b/i.test(p.text)).map(p => "<li>" + esc(p.text) + "</li>").join("");
+  const P = w.portfolio || [];
+  const movers = P.map(m => '<div class="pm"><div class="h"><span>' + esc(m.name) + '</span><span class="' + (m.move_pct >= 0 ? "pos" : "neg") + '">' + sgn(m.move_pct) + " · " + (m.impact >= 0 ? "+" : "−") + inr(Math.abs(m.impact)) + "</span></div>" +
+    ((m.headlines || []).length ? '<ul class="hl">' + m.headlines.map(h => "<li>" + news(h) + "</li>").join("") + "</ul>" : '<p class="sub2" style="margin:4px 0 0">No company-specific headline found for this session.</p>') + "</div>").join("");
+  html += sec("In your portfolio", (mine ? '<ul class="hl facts">' + mine + "</ul>" : "") + movers);
+
+  // 4. what the press reported that session (market-wrap headlines, shown verbatim)
+  const H = w.headlines || [];
+  html += sec("What the press reported", H.length ? '<ul class="hl">' + H.map(h => "<li>" + news(h) + "</li>").join("") + "</ul>" : "");
+  const R = (w.reads || []);
+  if (R.length) html += sec("Explainers", '<ul class="hl">' + R.map(h => '<li><a href="' + esc(h.link) + '" target="_blank" rel="noopener noreferrer">' + esc(h.title) + '</a><span class="m">' + esc(h.source) + "</span></li>").join("") + "</ul>");
+
+  const ok = w.sources_ok || {}, missing = Object.keys(ok).filter(k => !ok[k] && !/fallback/.test(k));
+  html += '<p class="sub2" style="margin:18px 0 0">Numbers come from NSE and Yahoo Finance; headlines are shown exactly as published, with their source and time. ' +
+    "A headline is what was reported, not proof of why prices moved." + (missing.length ? " Not available this time: " + esc(missing.join(", ")) + "." : "") + "</p>";
+  $("whyBody").innerHTML = html;
 }
 
 // Scrolling ticker bars (indices, AI headlines). Each is a normal horizontally
@@ -1163,14 +1221,16 @@ function renderOutlook() {
 
   // One plain line for the whole picture, with the odds drawn out and the everyday baseline marked
   const useR = ga ? [ga.typical, ga.typical_pct] : [N.typical, typPct];
-  const glance = (L.status === "ok" || G)
+  const Cc = o.call && o.call.colour ? o.call : null;       // the one call the whole card follows
+  const pBar = Cc ? Cc.p_up : L.p_up;
+  const glance = (L.status === "ok" || G || Cc)
     ? '<div class="glance"><div class="gtxt"><b>Tomorrow at a glance:</b> ' +
-      (L.status === "ok" ? "the US overnight move makes the Nifty " + tierWord + ". " : "") +
+      (!Cc && L.status === "ok" ? "the US overnight move makes the Nifty " + tierWord + ". " : "") +
       (G ? "GIFT Nifty points to " + G.word + " (" + sg(G.gap) + "). " : "") +
       "Most likely it ends between " + rangeTxt(useR[0], useR[1]) + (ga ? ", narrowed using GIFT Nifty" : ", measured from the last close") + "." +
       (L.status === "ok" ? "" : " The S&amp;P 500 lean is added once the US market has closed.") + "</div>" +
-      (L.status === "ok" ? '<div class="gbar" title="Model probability that the Nifty rises next session"><i style="width:' + Math.round(L.p_up) + '%"></i><span class="gu">Up ' + Math.round(L.p_up) +
-        '%</span><span class="gd">Down ' + (100 - Math.round(L.p_up)) + '%</span><em style="left:53%" title="On an ordinary day about 53% of sessions rise"></em></div>' +
+      (L.status === "ok" || Cc ? '<div class="gbar" title="Probability that the Nifty rises next session"><i style="width:' + Math.round(pBar) + '%"></i><span class="gu">Up ' + Math.round(pBar) +
+        '%</span><span class="gd">Down ' + (100 - Math.round(pBar)) + '%</span><em style="left:53%" title="On an ordinary day about 53% of sessions rise"></em></div>' +
         '<div class="gnote">The thin marker is the everyday baseline (about 53% of sessions rise). A few points of edge is small: a tilt, not a call.</div>' : "") + "</div>"
     : "";
 
@@ -1183,9 +1243,17 @@ function renderOutlook() {
     ? "Scored on " + rec.sessions + " real session" + (rec.sessions > 1 ? "s" : "") + " with this model: the likely range held " + rec.range_70_pct + "% of the time (target 70%), the wide range " + rec.range_95_pct + "% (target 95%)" +
       (rec.calls ? "; direction was right " + rec.lean_hit_pct + "% of " + rec.calls + " call" + (rec.calls > 1 ? "s" : "") : "; no directional calls scored yet") + "."
     : "This model is new: scoring starts with the next session. Its backtest result is below.";
+  const ca = rec.calls_all || {};
+  const callRec = ca.sessions ? " Red/green calls: right " + ca.hit_pct + "% of " + ca.sessions + " session" + (ca.sessions > 1 ? "s" : "") + " so far." : "";
   const early = (rec.earlier_model || {}).sessions ? " The earlier model scored " + (rec.earlier_model.sessions) + " sessions and its range held " + rec.earlier_model.range_1s_pct + "% of the time." : "";
   const gRec = rec.gift ? " GIFT-adjusted range: held " + rec.gift.range_70_pct + "% over " + rec.gift.sessions + " session" + (rec.gift.sessions > 1 ? "s" : "") + "." : "";
 
+  // The headline: one colour, one probability, and how often calls like it were right in the backtest
+  const tierTxt = { "very high": "very high", good: "good", strong: "strong", moderate: "moderate", weak: "weak" };
+  const callBox = Cc && Cc.colour ? '<div class="call c-' + Cc.colour + '"><div class="cw">' + (Cc.colour === "green" ? "GREEN" : "RED") + '</div><div class="ct"><b>' + Math.round(Cc.p_call) +
+    "% chance the Nifty ends " + (Cc.colour === "green" ? "higher" : "lower") + " than its last close of " + pts(o.base_close) + "</b>" + (Cc.provisional ? '<span class="prov">provisional</span>' : "") +
+    '<span class="sub">Because ' + esc(Cc.why) + ". Confidence: <b>" + (tierTxt[Cc.tier] || Cc.tier) + "</b>" +
+    (Cc.hit_pct ? " &mdash; in the backtest, calls like this were right " + Math.round(Cc.hit_pct) + "% of the time" : "") + ". " + esc(Cc.note || "") + "</span></div></div>" : "";
   const tbl = (head, rows) => "<table><thead><tr>" + head.map(h => "<th>" + h + "</th>").join("") + "</tr></thead><tbody>" +
     rows.map(r => "<tr>" + r.map(c => "<td>" + c + "</td>").join("") + "</tr>").join("") + "</tbody></table>";
   const detail = bt.range
@@ -1197,20 +1265,28 @@ function renderOutlook() {
           [["Old: moving average", btOld.coverage70_pct + "%", btOld.coverage95_pct + "%", btOld.width70_pct + "%", btOld.width95_pct + "%", btOld.pinball_bp],
            ["New: GARCH + S&amp;P", btNew.coverage70_pct + "%", btNew.coverage95_pct + "%", btNew.width70_pct + "%", btNew.width95_pct + "%", btNew.pinball_bp]]) +
       "<p class=\"sub2\" style=\"margin:4px 0\">*Lower is better; " + (bt.range.pinball_improvement_pct || 0) + "% better overall. Narrower bands at the same coverage means a sharper forecast.</p>" +
+      ((bt.calls || {}).gift ? tbl(["Red/green call, by basis and confidence", "Right", "Share of days"],
+          [["After the open gap is known (GIFT Nifty), very high", bt.calls.gift["very high"].hit_pct + "%", bt.calls.gift["very high"].share_pct + "%"],
+           ["After the open gap is known (GIFT Nifty), good", bt.calls.gift.good.hit_pct + "%", bt.calls.gift.good.share_pct + "%"],
+           ["After the open gap is known (GIFT Nifty), weak", bt.calls.gift.weak.hit_pct + "%", bt.calls.gift.weak.share_pct + "%"],
+           ["From the US close alone, strong", bt.calls.us.strong.hit_pct + "%", bt.calls.us.strong.share_pct + "%"],
+           ["From the US close alone, moderate", bt.calls.us.moderate.hit_pct + "%", bt.calls.us.moderate.share_pct + "%"],
+           ["From the US close alone, weak", bt.calls.us.weak.hit_pct + "%", bt.calls.us.weak.share_pct + "%"]]) +
+        "<p class=\"sub2\" style=\"margin:4px 0\">GIFT rows use the Nifty's real opening gap blurred by " + bt.calls.gift_noise_assumed_pct + "% of noise to mimic GIFT being only an approximation; the live error is being measured.</p>" : "") +
       tbl(["Direction call", "Right", "Share of days"], (dir.tiers || []).map(t => [t.tier + " (" + t.rule + ")", t.hit_pct + "%", t.share_pct + "%"])) +
       "<p class=\"sub2\" style=\"margin:4px 0\">Always guessing &ldquo;up&rdquo; is right " + dir.always_up_pct + "% of the time.</p>" +
       tbl(["Model said", "Days", "Nifty rose"], (dir.reliability || []).map(r => [r.bin + " up", r.n.toLocaleString("en-IN"), r.actual_pct + "%"])) +
       "<p class=\"sub2\" style=\"margin:4px 0\">This is a probability, not a prediction: even the strongest signal is wrong about one day in three.</p></details>"
     : "";
 
-  box.innerHTML = '<div class="oh">Next session setup <span class="chip ' + chip[0] + '">' + chip[1] + "</span></div>" + glance +
+  box.innerHTML = '<div class="oh">Next session setup' + (Cc ? "" : ' <span class="chip ' + chip[0] + '">' + chip[1] + "</span>") + "</div>" + callBox + glance +
     '<div class="ou">Updated ' + upd + " IST · Nifty 50 last closed at " + pts(o.base_close) + " (" + d(o.base_close_date) + ")</div>" +
     '<div class="orow"><span class="ok">Likely range</span><span>Between <b>' + pts(N.typical[0]) + "</b> and <b>" + pts(N.typical[1]) + "</b> (" + sg(typPct[0]) + " to " + sg(typPct[1]) + ")" +
       (p ? ", about <b>±" + inr(p.typical_rupees) + "</b> on your portfolio" : "") + ". About 7 in 10 sessions end inside" + (btNew.coverage70_pct ? " (backtest: " + btNew.coverage70_pct + "%)" : "") + ".</span></div>" +
     '<div class="orow"><span class="ok">A wide day</span><span>Between ' + pts(N.wide[0]) + " and " + pts(N.wide[1]) + " (" + sg(widePct[0]) + " to " + sg(widePct[1]) + ")" +
       (p ? ", about ±" + inr(p.wide_rupees) : "") + ". Covers about 19 in 20 sessions" + (btNew.coverage95_pct ? " (backtest: " + btNew.coverage95_pct + "%)" : "") + ".</span></div>" +
     '<div class="orow"><span class="ok">Overnight lean</span><span>' + leanText + "</span></div>" + giftRow +
-    '<div class="orow"><span class="ok">Track record</span><span>' + recTxt + early + gRec + "</span></div>" + detail;
+    '<div class="orow"><span class="ok">Track record</span><span>' + recTxt + callRec + early + gRec + "</span></div>" + detail;
 }
 async function loadOutlook() {
   OUTLOOK = await fetch("data/outlook.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => OUTLOOK);

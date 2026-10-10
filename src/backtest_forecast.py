@@ -71,8 +71,36 @@ def main() -> None:
     gap = (opn / cl.shift(1) - 1).dropna(); r_cc = cl.pct_change().dropna(); roc = (cl / opn - 1)
     idx = gap.index.intersection(r_cc.index); idx = idx[idx.year >= FIRST_TEST]
     slope = float(np.polyfit(gap[idx], r_cc[idx], 1)[0]); r2 = float(np.corrcoef(gap[idx], r_cc[idx])[0, 1] ** 2)
+    # ---- red/green call evidence, per basis and confidence tier (walk-forward, same discipline)
+    def tier_stats(p_arr, up_arr, basis):
+        res = {}
+        for name in (("very high", "good", "weak") if basis == "gift" else ("strong", "moderate", "weak")):
+            mask = np.array([fc.call_tier(basis, q) == name for q in p_arr])
+            if mask.sum() >= 30:
+                res[name] = {"hit_pct": round(float(((p_arr[mask] > .5) == up_arr[mask]).mean() * 100), 1),
+                             "share_pct": round(float(mask.mean() * 100), 1), "n": int(mask.sum())}
+        res["all"] = {"hit_pct": round(float(((p_arr > .5) == up_arr).mean() * 100), 1), "share_pct": 100.0, "n": int(len(p_arr))}
+        return res
+    cc = nifty_ohlc["Close"].pct_change().dropna()
+    gp_all = (nifty_ohlc["Open"] / nifty_ohlc["Close"].shift(1) - 1).reindex(cc.index) * 100
+    yrs_all = cc.index.year.values; up_all = (cc.values > 0).astype(float)
+    gift_p = np.full(len(cc), np.nan)
+    NOISE = 0.15
+    for Y in range(FIRST_TEST, int(yrs_all.max()) + 1):
+        tr, te = (yrs_all < Y) & np.isfinite(gp_all.values), yrs_all == Y
+        if te.sum() == 0:
+            continue
+        gm = fc.fit_gap_call(gp_all.values[tr], up_all[tr], NOISE)
+        rng = np.random.default_rng(100 + Y)
+        gift_p[te] = fc.logit_p(gm, np.nan_to_num(gp_all.values[te]) + rng.normal(0, NOISE, te.sum()))
+    ok = np.isfinite(gift_p)
+    call_evidence = {"us": tier_stats(p, up, "us"),
+                     "gift": tier_stats(gift_p[ok], up_all[ok], "gift"),
+                     "gift_noise_assumed_pct": NOISE,
+                     "note": "gift: trained and tested on the Nifty's real opening gap blurred by the assumed noise; the live GIFT-to-open error will be measured from the log"}
     out = {"generated_at": now_ist().isoformat(), "method": "walk-forward: fitted on years before each test year, tested on that year",
            "test_period": [wf.index[0].date().isoformat(), wf.index[-1].date().isoformat()], "n_sessions": n,
+           "calls": call_evidence,
            "range": {"old_ewma_normal": old, "new_gjr_sp500": new,
                      "pinball_improvement_pct": round((1 - new["pinball_bp"] / old["pinball_bp"]) * 100, 1)},
            "direction": {"always_up_pct": round(float(up.mean() * 100), 1), "tiers": tiers, "reliability": rel,

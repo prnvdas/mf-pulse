@@ -1,60 +1,52 @@
 {
-  "generated_at": "2026-10-09T23:48:28.738288+05:30",
+  "generated_at": "2026-10-10T13:04:15.477123+05:30",
   "base_close_date": "2026-10-09",
   "base_close": 22520.45,
   "sigma_pct": 1.1,
   "nifty": {
     "typical": [
-      22304.9,
-      22728.0
+      22345.2,
+      22768.3
     ],
     "wide": [
-      22138.9,
-      22926.9
+      22179.2,
+      22967.2
     ],
     "typical_pct": [
-      -0.96,
-      0.92
+      -0.78,
+      1.1
     ],
     "wide_pct": [
-      -1.69,
-      1.8
+      -1.52,
+      1.98
     ],
-    "centre_pct": 0.0,
-    "gift_adjusted": {
-      "gap_pct": 0.18,
-      "last": 22561.5,
-      "quote_time": "09-Oct-2026 23:02:42",
-      "centre_pct": 0.17,
-      "typical": [
-        22382.0,
-        22729.5
-      ],
-      "wide": [
-        22245.6,
-        22892.9
-      ],
-      "typical_pct": [
-        -0.61,
-        0.93
-      ],
-      "wide_pct": [
-        -1.22,
-        1.65
-      ],
-      "validated": false,
-      "assumptions": "gap passes through x0.94; intraday vol 0.81x; GIFT-to-open noise 0.15%"
-    }
+    "centre_pct": 0.18
   },
   "portfolio": {
     "value": 10430697,
     "sigma_pct": 0.9,
-    "typical_rupees": 105204,
-    "wide_rupees": 195941
+    "typical_rupees": 105091,
+    "wide_rupees": 195729
   },
   "lean": {
-    "status": "pending",
-    "reason": "The US market hasn't closed since the last Nifty close yet; this updates around 07:15 IST."
+    "status": "ok",
+    "label": "slight tilt up",
+    "p_up": 57.8,
+    "mu_pct": 0.18,
+    "sp_date": "2026-10-09",
+    "sp_move_pct": 0.59,
+    "us_sessions": 1
+  },
+  "call": {
+    "colour": "green",
+    "p_up": 57.8,
+    "p_call": 57.8,
+    "basis": "us",
+    "tier": "moderate",
+    "hit_pct": 61.5,
+    "why": "the S&P 500 moved +0.59% overnight",
+    "provisional": true,
+    "note": "Provisional: it firms up once GIFT Nifty's pre-open price is in (about 08:45 IST)."
   },
   "model": {
     "volatility": "GJR-GARCH(1,1) with Student-t errors",
@@ -64,29 +56,77 @@
     "ewma_sigma_pct": 0.84
   },
   "backtest": {
-    "generated_at": "2026-10-09T10:25:54.690498+05:30",
+    "generated_at": "2026-10-10T13:03:50.456531+05:30",
     "method": "walk-forward: fitted on years before each test year, tested on that year",
     "test_period": [
       "2015-01-02",
-      "2026-10-08"
+      "2026-10-09"
     ],
-    "n_sessions": 2897,
+    "n_sessions": 2898,
+    "calls": {
+      "us": {
+        "strong": {
+          "hit_pct": 67.9,
+          "share_pct": 19.7,
+          "n": 570
+        },
+        "moderate": {
+          "hit_pct": 61.5,
+          "share_pct": 26.1,
+          "n": 756
+        },
+        "weak": {
+          "hit_pct": 55.9,
+          "share_pct": 54.2,
+          "n": 1572
+        },
+        "all": {
+          "hit_pct": 59.7,
+          "share_pct": 100.0,
+          "n": 2898
+        }
+      },
+      "gift": {
+        "very high": {
+          "hit_pct": 84.8,
+          "share_pct": 15.2,
+          "n": 440
+        },
+        "good": {
+          "hit_pct": 72.3,
+          "share_pct": 38.9,
+          "n": 1127
+        },
+        "weak": {
+          "hit_pct": 54.6,
+          "share_pct": 45.9,
+          "n": 1331
+        },
+        "all": {
+          "hit_pct": 66.1,
+          "share_pct": 100.0,
+          "n": 2898
+        }
+      },
+      "gift_noise_assumed_pct": 0.15,
+      "note": "gift: trained and tested on the Nifty's real opening gap blurred by the assumed noise; the live GIFT-to-open error will be measured from the log"
+    },
     "range": {
       "old_ewma_normal": {
-        "pinball_bp": 23.032,
-        "coverage70_pct": 70.2,
-        "width70_pct": 1.82,
-        "coverage95_pct": 94.8,
-        "width95_pct": 3.7
+        "pinball_bp": 23.028,
+        "coverage70_pct": 69.6,
+        "width70_pct": 1.79,
+        "coverage95_pct": 94.4,
+        "width95_pct": 3.63
       },
       "new_gjr_sp500": {
-        "pinball_bp": 21.42,
-        "coverage70_pct": 70.3,
-        "width70_pct": 1.71,
-        "coverage95_pct": 94.7,
+        "pinball_bp": 21.39,
+        "coverage70_pct": 70.0,
+        "width70_pct": 1.7,
+        "coverage95_pct": 95.0,
         "width95_pct": 3.18
       },
-      "pinball_improvement_pct": 7.0
+      "pinball_improvement_pct": 7.1
     },
     "direction": {
       "always_up_pct": 53.3,
@@ -108,9 +148,9 @@
         {
           "tier": "every session",
           "rule": "any",
-          "hit_pct": 59.8,
+          "hit_pct": 59.7,
           "share_pct": 100.0,
-          "n": 2897
+          "n": 2898
         }
       ],
       "reliability": [
@@ -128,9 +168,9 @@
         },
         {
           "bin": "45%\u201350%",
-          "n": 529,
+          "n": 530,
           "predicted_pct": 47.9,
-          "actual_pct": 43.5
+          "actual_pct": 43.6
         },
         {
           "bin": "50%\u201355%",
@@ -168,9 +208,9 @@
     }
   },
   "calibration": {
-    "within70_pct": 70.3,
-    "within95_pct": 94.7,
-    "n": 2897
+    "within70_pct": 70.0,
+    "within95_pct": 95.0,
+    "n": 2898
   },
   "record": {
     "sessions": 0,
@@ -181,6 +221,10 @@
     "earlier_model": {
       "sessions": 5,
       "range_1s_pct": 20.0
+    },
+    "calls_all": {
+      "sessions": 0,
+      "hit_pct": null
     }
   }
 }

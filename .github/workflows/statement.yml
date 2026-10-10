@@ -47,7 +47,7 @@ jobs:
           elif [ "$(basename "$f" | cut -c1-7)" = "$this_month" ] || [ "${{ github.event_name }}" = "push" ]; then echo "state=current" >> "$GITHUB_OUTPUT"
           else echo "state=old" >> "$GITHUB_OUTPUT"; fi
       - name: Remind me (no statement for this month yet)
-        if: steps.find.outputs.state != 'current'
+        if: steps.find.outputs.state != 'current' && github.event_name != 'push'
         run: |
           gh issue list -R "$GITHUB_REPOSITORY" --state open --search 'in:title "Upload your Groww statement"' --json number -q '.[].number' \
             | xargs -r -I{} gh issue close {} -R "$GITHUB_REPOSITORY" --comment "Superseded."

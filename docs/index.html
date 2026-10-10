@@ -199,6 +199,11 @@
   .pm{border-top:1px solid var(--rule);padding:12px 0}
   .pm .h{display:flex;justify-content:space-between;gap:12px;font-weight:600;font-size:14px;margin-bottom:6px}
   @media(max-width:760px){.sbars{grid-template-columns:1fr}.sb{grid-template-columns:104px 1fr 56px}}
+  .hbar{background:#fbf4e1;border-bottom:1px solid var(--rule);font-size:13.5px;line-height:1.5}
+  .hbar .in{max-width:1180px;margin:0 auto;padding:10px 32px;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+  .hbar .tg{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:#c98a0a;color:#fff;padding:2px 8px;border-radius:99px;white-space:nowrap}
+  .hbar.soft{background:var(--wash)}.hbar.soft .tg{background:var(--grey-light)}
+  @media(max-width:760px){.hbar .in{padding:10px 16px}}
   .stat .x{font-size:12px;color:var(--grey);margin-top:5px}
   .subrow td{font-size:12.5px;color:var(--grey);padding:8px 0;border-bottom:1px dashed var(--rule)}
   .subrow td:first-child{padding-left:18px}
@@ -300,6 +305,8 @@
     </div>
   </div>
 </header>
+
+<div class="hbar" id="holidayBar" hidden role="status"></div>
 
 <div class="ticker" id="ticker" hidden aria-label="Market indices">
   <span class="tk-lab" id="tkLab"><i></i>LIVE</span>
@@ -505,7 +512,7 @@ const DEMO = {
   ]
 };
 
-let MARKET = [], OUTLOOK = null, GIFT = null, RISK = null, TAX = null, BRIEF_PHASE = null, CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, timer = null;
+let MARKET = [], OUTLOOK = null, GIFT = null, RISK = null, TAX = null, HOLS = {}, BRIEF_PHASE = null, CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, timer = null;
 
 const $ = id => document.getElementById(id);
 const inr = n => "₹" + Math.round(Math.abs(n)).toLocaleString("en-IN");
@@ -525,6 +532,7 @@ function marketOpen() {
   const ist = istNow(), m = ist.getHours() * 60 + ist.getMinutes(), sp = specialToday();
   if (sp && m >= hmToMin(sp.start) && m <= hmToMin(sp.end)) return true;   // open even on a weekend / holiday
   if (ist.getDay() === 0 || ist.getDay() === 6) return false;
+  if (holName(istDate(ist))) return false;  // an NSE trading holiday (data/holidays.json)
   return m >= 555 && m <= 930;             // 09:15 - 15:30 IST
 }
 
@@ -1964,7 +1972,19 @@ function ageMinutes(iso) {
 let LAST_BATCH = null;
 function istNow() { return new Date(Date.now() + (new Date().getTimezoneOffset() + 330) * 60000); }
 
+// NSE's own trading-holiday calendar (data/holidays.json): the authoritative source of WHY the market is shut.
+function holName(iso) { const h = HOLS[iso]; return h && !h.weekend ? h.name : null; }          // a weekday closure
+function holAny(iso) { const h = HOLS[iso]; return h ? h.name : null; }                        // also holidays that fall on a weekend
+function isoPlus(ist, n) { const d = new Date(ist.getFullYear(), ist.getMonth(), ist.getDate() + n); return istDate(d); }
+function isTradingDay(iso) {
+  const d = new Date(iso + "T00:00:00"), sp = ((CFG && CFG.special_sessions) || []).some(x => String(x.date) === iso);
+  return sp || (d.getDay() >= 1 && d.getDay() <= 5 && !holName(iso));
+}
+function nextTradingDay(fromIso) { for (let i = 1; i < 15; i++) { const iso = isoPlus(new Date(fromIso + "T00:00:00"), i); if (isTradingDay(iso)) return iso; } return null; }
+function calHolidayToday() { return holName(istDate(istNow())); }
+
 function holidayToday() {
+  if (calHolidayToday() && !specialToday()) return true;
   // the job found no new trading data and flagged today (IST) as a holiday
   const ist = istNow(), gen = LAST_BATCH && LAST_BATCH.generatedAt ? new Date(Date.parse(LAST_BATCH.generatedAt) + 330 * 60000) : null;
   return !!(LAST_BATCH && LAST_BATCH.phase === "holiday" && gen && gen.getUTCFullYear() === ist.getFullYear() &&
@@ -1990,7 +2010,7 @@ function marketStatus() {
   }
   if (LAST_BATCH && liveBatchOutsideRegularHours({ phase: LAST_BATCH.phase, generatedAt: LAST_BATCH.generatedAt })) return "Special session in progress";
   if (dow === 0 || dow === 6) return "Market closed · weekend";
-  if (holidayToday()) return "Market holiday today";
+  if (holidayToday()) return calHolidayToday() ? "Market closed · " + calHolidayToday() : "Market holiday today";
   if (marketOpen()) return "Market open";
   if (mins < 555) return "Market opens at 09:15";
   return mins <= 960 ? "Market closed · final read pending" : "Market closed";
@@ -2015,7 +2035,7 @@ function paintStamp() {
   const tl = $("tkLab"); if (tl) tl.innerHTML = tickerLabel();
   const of = $("odFix"); if (of) of.onclick = () => { const b = $("odBox"); if (b) { b.open = true; b.scrollIntoView({ behavior: "smooth", block: "center" }); } return false; };
 }
-setInterval(paintStamp, 30000);        // keep the clock and the data age moving
+setInterval(() => { paintStamp(); renderHolidayBar(); }, 30000);        // keep the clock and the data age moving
 
 function stampBatch(a) { LAST_BATCH = a; paintStamp(); }
 
@@ -2059,18 +2079,42 @@ async function marketReallyClosed() {
 }
 
 function nextSessionText() {
-  const ist = istNow(), mins = ist.getHours() * 60 + ist.getMinutes();
-  const fmt = d => d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
-  const d = new Date(ist);
-  if (!(d.getDay() >= 1 && d.getDay() <= 5 && mins < 555 && !holidayToday())) {
-    do { d.setDate(d.getDate() + 1); } while (d.getDay() === 0 || d.getDay() === 6);
-  }
-  let t = "Next regular session: " + fmt(d) + ", 09:15 (unless it is a holiday).";
-  const soon = ((CFG && CFG.special_sessions) || []).filter(x => { const dd = new Date(x.date + "T00:00:00"); return dd >= new Date(ist.getFullYear(), ist.getMonth(), ist.getDate()) && dd - ist < 30 * 86400000 && String(x.date) !== istDate(ist); })[0];
-  if (soon) t += " Special session: " + soon.name + ", " + fmt(new Date(soon.date + "T00:00:00")) + (soon.provisional ? " (time to be confirmed)." : " " + soon.start + "–" + soon.end + ".");
+  const ist = istNow(), mins = ist.getHours() * 60 + ist.getMinutes(), todayIso = istDate(ist);
+  const fmt = iso => new Date(iso + "T00:00:00").toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
+  let nxt = (isTradingDay(todayIso) && mins < 555 && !holidayToday() && !(ist.getDay() % 6 === 0 && !specialToday())) ? todayIso : nextTradingDay(todayIso);
+  const skipped = [];
+  for (let i = 1; i < 12 && nxt; i++) { const iso = isoPlus(ist, i); if (iso >= nxt) break; const n = holName(iso); if (n) skipped.push(n + " (" + fmt(iso) + ")"); }
+  let t = "Next regular session: " + (nxt ? fmt(nxt) : "—") + ", 09:15" + (Object.keys(HOLS).length ? "." : " (unless it is a holiday).");
+  if (skipped.length) t += " The market is shut in between for " + skipped.join(", ") + ".";
+  const soon = ((CFG && CFG.special_sessions) || []).filter(x => { const dd = new Date(x.date + "T00:00:00"); return dd >= new Date(ist.getFullYear(), ist.getMonth(), ist.getDate()) && dd - ist < 30 * 86400000 && String(x.date) !== todayIso; })[0];
+  if (soon) t += " Special session: " + soon.name + ", " + fmt(soon.date) + (soon.provisional ? " (time to be confirmed)." : " " + soon.start + "–" + soon.end + ".");
   return t;
 }
 
+// A slim bar under the header: why the market is shut today, a heads-up for tomorrow, or the next holiday.
+function renderHolidayBar() {
+  const bar = $("holidayBar");
+  if (!bar) return;
+  const ist = istNow(), todayIso = istDate(ist), dow = ist.getDay(), fmt = iso => new Date(iso + "T00:00:00").toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" });
+  const sp = specialToday();
+  let tag = "", msg = "", soft = false;
+  const reopen = () => { const n = nextTradingDay(todayIso); return n ? " It reopens " + (n === isoPlus(ist, 1) ? "tomorrow" : fmt(n)) + " at 09:15." : ""; };
+  if (sp) { tag = "Special session"; msg = sp.name + " today, " + sp.start + "–" + sp.end + (sp.provisional ? " (timing to be confirmed by NSE)." : "."); }
+  else if (calHolidayToday()) { tag = "Market closed today"; msg = "The NSE is shut for <b>" + esc(calHolidayToday()) + "</b>, so prices and your estimate won't move." + reopen(); }
+  else if (dow === 0 || dow === 6) { tag = "Weekend"; msg = "The market is closed" + (holAny(todayIso) ? " (it is also the NSE holiday for " + esc(holAny(todayIso)) + ")" : "") + "." + reopen(); soft = true; }
+  else {
+    const tm = isoPlus(ist, 1), skipped = [];
+    for (let i = 1; i < 12; i++) { const iso = isoPlus(ist, i); if (isTradingDay(iso)) break; const n = holName(iso); if (n) skipped.push([iso, n]); }
+    if (skipped.length) { tag = "Heads-up"; msg = skipped.map(([iso, n]) => (iso === tm ? "Tomorrow" : fmt(iso)) + " the market is closed for <b>" + esc(n) + "</b>").join("; ") + "." + reopen(); }
+    else {
+      const up = Object.values(HOLS).filter(h => !h.weekend && h.date > todayIso).sort((a, b) => a.date.localeCompare(b.date))[0];
+      if (up && (new Date(up.date + "T00:00:00") - new Date(todayIso + "T00:00:00")) / 86400000 <= 21) { tag = "Next holiday"; msg = "<b>" + esc(up.name) + "</b> on " + fmt(up.date) + ": the market will be closed."; soft = true; }
+    }
+  }
+  bar.hidden = !msg;
+  bar.className = "hbar" + (soft ? " soft" : "");
+  if (msg) bar.innerHTML = '<div class="in"><span class="tg">' + tag + "</span><span>" + msg + "</span></div>";
+}
 function showClosedNotice() {
   const st = marketStatus(), sp = specialToday(), nowM = istNow().getHours() * 60 + istNow().getMinutes();
   if (sp && nowM < hmToMin(sp.start)) {
@@ -2080,7 +2124,8 @@ function showClosedNotice() {
       (sp.provisional ? " (timing to be confirmed by NSE)" : "") + ". Showing the last close; Refresh again once it starts.";
     return;
   }
-  const why = /weekend/.test(st) ? "it's the weekend" : /holiday/.test(st) ? "today is a market holiday"
+  const why = /weekend/.test(st) ? "it's the weekend" + (holAny(istDate(istNow())) ? " (and the NSE holiday for " + holAny(istDate(istNow())) + ")" : "")
+    : calHolidayToday() ? "the NSE is closed today for " + calHolidayToday() : /holiday/.test(st) ? "today is a market holiday"
     : /opens at/.test(st) ? "the market hasn't opened yet" : "today's session has ended";
   $("setupWrap").hidden = false;
   $("setup").className = "note";
@@ -2427,6 +2472,9 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   HIST = await loadJson("data/history.json", Array.isArray, []);
   ANALYTICS = await fetch("data/analytics.json", { cache: "no-store" })
     .then(r => r.ok ? r.json() : null).catch(() => null);
+  const hd = await loadJson("data/holidays.json", isObj, null);
+  HOLS = {}; ((hd && hd.holidays) || []).forEach(h => { if (h && h.date) HOLS[h.date] = h; });
+  renderHolidayBar();
   RISK = await loadJson("data/risk.json", isObj, null);
   TAX = await loadJson("data/tax.json", isObj, null);
   renderReturns(); renderRisk(); renderTax(); renderGoals();

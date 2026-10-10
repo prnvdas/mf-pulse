@@ -148,6 +148,15 @@ def session_end(cfg: dict, when: dt.datetime) -> dt.datetime:
     return when.replace(hour=h, minute=m, second=0, microsecond=0)
 
 
+def trading_holiday(when: dt.datetime) -> str | None:
+    """Name of the NSE weekday holiday on this IST date (from docs/data/holidays.json), else None."""
+    iso = when.date().isoformat()
+    for h in (read_json("holidays.json", {}) or {}).get("holidays", []):
+        if h.get("date") == iso and not h.get("weekend"):
+            return h.get("name") or "market holiday"
+    return None
+
+
 def is_market_window(cfg: dict, when: dt.datetime | None = None) -> bool:
     when = when or now_ist()
     sp = special_session(cfg, when)
@@ -156,7 +165,7 @@ def is_market_window(cfg: dict, when: dt.datetime | None = None) -> bool:
         start = when.replace(hour=sh, minute=sm, second=0, microsecond=0)
         if start <= when <= session_end(cfg, when):
             return True
-    if when.weekday() >= 5:
+    if when.weekday() >= 5 or trading_holiday(when):
         return False
     open_h, open_m = (int(x) for x in cfg["market"]["open"].split(":"))
     close_h, close_m = (int(x) for x in cfg["market"]["close"].split(":"))

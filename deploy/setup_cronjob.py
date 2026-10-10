@@ -43,6 +43,7 @@ PLAN = {
     "GIFT Nifty evening": ("gift.yml", [18, 21, 23], [5], [0, 1, 2, 3, 4], {"ref": "main"}),
     "GIFT Nifty morning": ("gift.yml", [8], [35], WEEKDAYS, {"ref": "main"}),
     "Monthly statement check": ("statement.yml", [20], [0], [-1], {"ref": "main"}, [3]),
+    "Holiday calendar and reminder": ("holidays.yml", [20], [10], [-1], {"ref": "main"}),
     "Nightly grading retry": ("reconcile.yml", [3], [30], [2, 3, 4, 5, 6], {"ref": "main"}),
 }
 

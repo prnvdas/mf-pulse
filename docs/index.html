@@ -1079,9 +1079,10 @@ function renderWhy() {
   const cr = v => "₹" + Math.abs(v).toLocaleString("en-IN") + " cr";
   if (F.fii != null) chips.push('<span class="chip2 notable"><b>FIIs</b> ' + (F.fii >= 0 ? "bought " : "sold ") + cr(F.fii) + "</span>");
   if (F.dii != null) chips.push('<span class="chip2 notable"><b>DIIs</b> ' + (F.dii >= 0 ? "bought " : "sold ") + cr(F.dii) + "</span>");
+  if (F.fii == null && F.dii == null) chips.push('<span class="chip2" style="color:var(--grey)" title="NSE publishes these after the close; this card refreshes by itself">FII / DII flows: not published yet</span>');
   (w.macro || []).forEach(m => chips.push('<span class="chip2' + (m.notable ? " notable" : "") + '" title="' + (m.notable ? "A bigger move than usual for this series" : "An ordinary move") + '"><b>' + esc(m.name) + "</b> " +
     esc(m.unit === "$" || m.unit === "₹" ? m.unit : "") + m.level.toLocaleString("en-IN", { maximumFractionDigits: 2 }) + (m.unit === "%" ? "%" : "") + ' <span class="' + (m.pct >= 0 ? "pos" : "neg") + '">' + sgn(m.pct, 2) + "</span></span>"));
-  html += sec("Money flows and global cues", chips.length ? '<div class="chips">' + chips.join("") + '</div><p class="sub2" style="margin:8px 0 0">Outlined chips are the ones that moved more than usual. FII/DII figures are NSE\'s provisional net numbers for the day.</p>' : "");
+  html += sec("Money flows and global cues", chips.length ? '<div class="chips">' + chips.join("") + '</div><p class="sub2" style="margin:8px 0 0">Outlined chips are the ones that moved more than usual. FII/DII figures are the provisional net numbers for the day' + (F.source ? " (source: " + esc(F.source) + ")" : "") + ".</p>" : "");
 
   // 3. your biggest movers, each with the real headlines found for that company
   const mine = (w.points || []).filter(p => /\byour\b|\byou\b/i.test(p.text)).map(p => "<li>" + esc(p.text) + "</li>").join("");

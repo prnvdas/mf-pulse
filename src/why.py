@@ -139,6 +139,71 @@ def nse_flows(s: requests.Session, session_date: dt.date) -> dict | None:
     return {"date": session_date.isoformat(), **out} if "fii" in out or "dii" in out else None
 
 
+def _num(x) -> float | None:
+    try:
+        return float(str(x).replace(",", "").replace("₹", "").strip())
+    except (TypeError, ValueError):
+        return None
+
+
+def flows_moneycontrol(session_date: dt.date) -> dict | None:
+    """Same provisional FII/DII cash figures NSE publishes, from Moneycontrol's page data (reachable when NSE blocks us)."""
+    import json
+    r = requests.get("https://www.moneycontrol.com/stocks/marketstats/fii_dii_activity/index.php", headers=UA, timeout=25)
+    r.raise_for_status()
+    m = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', r.text, re.S)
+    if not m:
+        return None
+    rows = json.loads(m.group(1))["props"]["pageProps"]["FiiDiiData"]["fiiDiiData"]
+    for x in rows:
+        if x.get("date") == session_date.isoformat():
+            fii, dii = _num(x.get("fiiCM")), _num(x.get("diiCM"))
+            if fii is None and dii is None:
+                return None
+            out = {"date": session_date.isoformat(), "source": "Moneycontrol"}
+            if fii is not None:
+                out["fii"] = round(fii, 0)
+            if dii is not None:
+                out["dii"] = round(dii, 0)
+            if _num(x.get("fiiIdxFut")) is not None:
+                out["fii_index_futures"] = round(_num(x["fiiIdxFut"]), 0)
+            return out
+    return None
+
+
+def sectors_archive(session_date: dt.date) -> dict | None:
+    """NSE's static end-of-day file with every index's close and % change (published after the close)."""
+    import csv, io
+    url = f"https://archives.nseindia.com/content/indices/ind_close_all_{session_date.strftime('%d%m%Y')}.csv"
+    r = requests.get(url, headers=UA, timeout=25)
+    if r.status_code != 200:
+        return None
+    by = {}
+    for row in csv.DictReader(io.StringIO(r.text)):
+        try:
+            by[row["Index Name"].strip().upper()] = (float(row["Change(%)"]), float(row["Closing Index Value"]))
+        except (KeyError, ValueError):
+            continue
+
+    def pick(table: dict) -> list[dict]:
+        return [{"name": label, "pct": round(by[k][0], 2), "last": by[k][1], "up": None, "down": None} for k, label in table.items() if k in by]
+    sectors, broad = pick(SECTORS), pick(BROAD)
+    return {"sectors": sorted(sectors, key=lambda r: -r["pct"]), "broad": broad, "breadth": None} if sectors else None
+
+
+def cached_flows(day: dt.date) -> dict | None:
+    from common import read_json
+    return ((read_json("flows.json", {}) or {}).get("days") or {}).get(day.isoformat())
+
+
+def save_flows(f: dict) -> None:
+    from common import read_json, write_json
+    cur = read_json("flows.json", {}) or {}
+    days = cur.get("days") or {}
+    days[f["date"]] = {k: v for k, v in f.items() if k != "date"}
+    write_json("flows.json", {"days": dict(sorted(days.items())[-20:])})
+
+
 # -------------------------------------------------------------------------------- Yahoo
 def yahoo_macro(session_date: dt.date) -> list[dict]:
     import numpy as np
@@ -285,7 +350,8 @@ def summary(direction: str, nifty_pct: float | None, sec: dict | None, flows: di
             f.append(f"FIIs {'bought' if flows['fii'] >= 0 else 'sold'} {_cr(flows['fii'])}")
         if "dii" in flows:
             f.append(f"DIIs {'bought' if flows['dii'] >= 0 else 'sold'} {_cr(flows['dii'])}")
-        parts.append(" while ".join(f) + " (net, provisional).")
+        src = flows.get("source") or "NSE"
+        parts.append(" while ".join(f) + f" (net, provisional, per {src}).")
     notable = [m for m in macro if m["notable"]]
     if notable:
         parts.append("Notable global and macro moves: " + "; ".join(f"{m['name']} {_sg(m['pct'])}" for m in notable[:4]) + ".")
@@ -297,11 +363,37 @@ def build(movers: dict, date: str, direction: str, nifty_pct: float | None, mark
     session_date = dt.date.fromisoformat(date)
     start = dt.datetime.combine(session_date - dt.timedelta(days=1), dt.time(16, 0), IST)     # after the previous close
     end = min(dt.datetime.combine(session_date + dt.timedelta(days=1), dt.time(9, 0), IST), now.astimezone(IST))
-    got = {}
+    got, trace = {}, {}
     s = nse_session()
+    trace["nse_session"] = "ok" if s else "blocked or unreachable"
     sec = nse_sectors(s, session_date) if s else None
     flows = nse_flows(s, session_date) if s else None
-    got["NSE sectors"], got["NSE flows"] = bool(sec), bool(flows)
+    if flows:
+        flows["source"] = "NSE"
+    trace["nse_sectors"], trace["nse_flows"] = bool(sec), bool(flows)
+    if not flows:                                             # NSE refuses cloud servers: same numbers from Moneycontrol
+        try:
+            flows = flows_moneycontrol(session_date)
+            trace["moneycontrol_flows"] = bool(flows)
+        except Exception as exc:  # noqa: BLE001
+            trace["moneycontrol_flows"] = f"error: {str(exc)[:60]}"
+    if flows:
+        try:
+            save_flows({"date": session_date.isoformat(), **{k: v for k, v in flows.items() if k != "date"}})
+        except Exception:  # noqa: BLE001
+            pass
+    else:
+        cf = cached_flows(session_date)
+        if cf:
+            flows = {"date": session_date.isoformat(), **cf, "from_cache": True}
+        trace["flows_cache"] = bool(cf)
+    if not sec:                                               # NSE's static end-of-day file (a different server, usually reachable)
+        try:
+            sec = sectors_archive(session_date)
+            trace["nse_archive_sectors"] = bool(sec)
+        except Exception as exc:  # noqa: BLE001
+            trace["nse_archive_sectors"] = f"error: {str(exc)[:60]}"
+    got["Sectors"], got["FII/DII flows"] = bool(sec), bool(flows)
     macro = yahoo_macro(session_date)
     got["Yahoo macro"] = bool(macro)
     if not sec:      # NSE unreachable from here: fall back to the three sectoral indices Yahoo carries
@@ -316,6 +408,7 @@ def build(movers: dict, date: str, direction: str, nifty_pct: float | None, mark
             if rows:
                 sec = {"sectors": sorted(rows, key=lambda r: -r["pct"]), "broad": [], "breadth": None}
                 got["Yahoo sectors (fallback)"] = True
+                trace["yahoo_sectors_fallback"] = True
         except Exception:  # noqa: BLE001
             pass
 
@@ -342,4 +435,4 @@ def build(movers: dict, date: str, direction: str, nifty_pct: float | None, mark
     pct = nifty_pct if nifty_pct is not None else (nifty_row["pct"] if nifty_row else None)
     return {"sectors": (sec or {}).get("sectors", []), "broad": (sec or {}).get("broad", []), "breadth": (sec or {}).get("breadth"),
             "flows": flows, "macro": macro, "portfolio": portfolio, "headlines": press,
-            "summary": summary(direction, pct, sec, flows, macro), "sources_ok": got}
+            "summary": summary(direction, pct, sec, flows, macro), "sources_ok": got, "trace": trace}

@@ -51,6 +51,11 @@ jobs:
         continue-on-error: true
         timeout-minutes: 5
         run: python src/tax.py
+      # After the close NSE's end-of-day files and the FII/DII figures exist: refresh "why the market moved" with them.
+      - name: Market explanation (post-close data)
+        continue-on-error: true
+        timeout-minutes: 4
+        run: python src/news.py
       - name: Commit reconciliation
         run: |
           git config user.name  "mf-pulse"

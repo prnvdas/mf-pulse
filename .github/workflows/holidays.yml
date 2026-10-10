@@ -31,6 +31,11 @@ jobs:
       - name: Refresh the holiday calendar
         continue-on-error: true
         run: python src/holidays.py
+      # After the close NSE's end-of-day files and the FII/DII figures exist: refresh "why the market moved" with them.
+      - name: Market explanation (post-close data)
+        continue-on-error: true
+        timeout-minutes: 4
+        run: python src/news.py
       - name: Commit
         run: |
           git config user.name  "mf-pulse"

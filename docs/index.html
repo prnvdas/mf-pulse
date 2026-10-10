@@ -298,6 +298,7 @@
 </header>
 
 <div class="hbar" id="holidayBar" hidden role="status"></div>
+<div class="hbar" id="stmtBar" hidden role="status"></div>
 
 <div class="ticker" id="ticker" hidden aria-label="Market indices">
   <span class="tk-lab" id="tkLab"><i></i>LIVE</span>
@@ -1912,7 +1913,7 @@ function paintStamp() {
   const tl = $("tkLab"); if (tl) tl.innerHTML = tickerLabel();
   const of = $("odFix"); if (of) of.onclick = () => { const b = $("odBox"); if (b) { b.open = true; b.scrollIntoView({ behavior: "smooth", block: "center" }); } return false; };
 }
-setInterval(() => { paintStamp(); renderHolidayBar(); }, 30000);        // keep the clock and the data age moving
+setInterval(() => { paintStamp(); renderHolidayBar(); renderStatementBar(); }, 30000);        // keep the clock and the data age moving
 
 function stampBatch(a) { LAST_BATCH = a; paintStamp(); }
 
@@ -1969,6 +1970,23 @@ function nextSessionText() {
 }
 
 // A slim bar under the header: why the market is shut today, a heads-up for tomorrow, or the next holiday.
+// From the 5th of each month: has this month's Groww statement been imported? A statement dated on or after the 4th
+// includes this month's SIP; an older one doesn't, so the invested amounts and units may be a month behind.
+function renderStatementBar() {
+  const bar = $("stmtBar");
+  if (!bar) return;
+  const asOn = (TAX && TAX.statement_as_on) || (ANALYTICS && ANALYTICS.portfolio_returns && ANALYTICS.portfolio_returns.as_on);
+  const ist = istNow(), todayIso = istDate(ist), monthKey = todayIso.slice(0, 7);
+  if (!asOn || ist.getDate() < 5 || asOn >= monthKey + "-04") { bar.hidden = true; return; }
+  const days = Math.round((new Date(todayIso + "T00:00:00") - new Date(asOn + "T00:00:00")) / 86400000);
+  const when = new Date(asOn + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "long" });
+  const overdue = ist.getDate() >= 10;
+  bar.className = "hbar" + (overdue ? "" : " soft");
+  bar.innerHTML = '<div class="in"><span class="tg">' + (overdue ? "Holdings out of date" : "Time to refresh") + "</span><span>Your holdings were last updated from the Groww statement of <b>" + when + "</b> (" + days + " days ago), so this month's SIP and any new purchases may not be in the invested amounts and units yet. " +
+    "Download the latest statement into <code>MF-Holding/</code> and run <code>python3 deploy/statement_setup.py</code>.</span></div>";
+  bar.hidden = false;
+}
+
 function renderHolidayBar() {
   const bar = $("holidayBar");
   if (!bar) return;
@@ -2354,7 +2372,7 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   renderHolidayBar();
   RISK = await loadJson("data/risk.json", isObj, null);
   TAX = await loadJson("data/tax.json", isObj, null);
-  renderReturns(); renderRisk(); renderTax();
+  renderReturns(); renderRisk(); renderTax(); renderStatementBar();
   renderCompare();
   loadNews();
   loadOutlook();

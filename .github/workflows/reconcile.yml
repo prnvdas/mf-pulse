@@ -56,6 +56,13 @@ jobs:
         continue-on-error: true
         timeout-minutes: 4
         run: python src/news.py
+      # Market mood, valuation and the "buy or sell today?" read (public data; each step non-blocking).
+      - name: Market mood, valuation and advice
+        continue-on-error: true
+        timeout-minutes: 5
+        run: |
+          python src/mood.py
+          python src/advisor.py
       - name: Commit reconciliation
         run: |
           git config user.name  "mf-pulse"

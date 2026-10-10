@@ -212,6 +212,30 @@
   .stat .x{font-size:12px;color:var(--grey);margin-top:5px}
   .subrow td{font-size:12.5px;color:var(--grey);padding:8px 0;border-bottom:1px dashed var(--rule)}
   .subrow td:first-child{padding-left:18px}
+  .tk-idx .mood{font-weight:600;font-size:11px;letter-spacing:.04em;text-transform:uppercase;padding:1px 8px;border-radius:99px;color:#fff}
+  .tk-idx .mood.xf{background:var(--red)}.tk-idx .mood.f{background:#c98a0a}.tk-idx .mood.g{background:var(--green-deep)}.tk-idx .mood.xg{background:#3d6a0a}
+  .gauge{position:relative;margin:34px 0 30px}
+  .gauge .zones{display:flex;height:14px}
+  .gauge .zones i{display:block;height:100%}
+  .gauge .zl{display:flex;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--grey);margin-top:6px}
+  .gauge .mk{position:absolute;top:-24px;transform:translateX(-50%);text-align:center;font-weight:700;font-size:18px;line-height:1}
+  .gauge .mk:after{content:"";position:absolute;left:50%;top:22px;transform:translateX(-50%);border:6px solid transparent;border-top:8px solid var(--ink)}
+  .mtrend{display:flex;gap:26px;flex-wrap:wrap;font-size:13px;color:var(--grey);margin:2px 0 6px}.mtrend b{color:var(--ink);font-weight:600}
+  .pbar{position:relative;display:inline-block;width:150px;height:8px;background:linear-gradient(90deg,#86bc25,#e8d56a 50%,#da291c);vertical-align:middle;opacity:.9}
+  .pbar i{position:absolute;top:-4px;width:4px;height:16px;background:var(--ink);transform:translateX(-50%)}
+  .vchip{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:99px;color:#fff;white-space:nowrap}
+  .vchip.cheap{background:var(--green-deep)}.vchip.below{background:#86bc25}.vchip.fair{background:var(--grey-light)}.vchip.above{background:#c98a0a}.vchip.exp{background:var(--red)}
+  tr.mine td{background:#f6faee}
+  .advbox{border-left:6px solid var(--grey-light);background:var(--wash);padding:20px 24px;margin:6px 0 4px}
+  .advbox.buy,.advbox.lean_buy{border-left-color:var(--green)}.advbox.hold,.advbox.hold_no_add{border-left-color:#c98a0a}.advbox.trim{border-left-color:var(--red)}
+  .advbox .st{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--grey)}
+  .advbox .hl2{font-size:19px;font-weight:600;line-height:1.45;margin:8px 0 6px}
+  .advbox .sc{font-size:12.5px;color:var(--grey)}
+  .advlist{margin:8px 0 0 20px;padding:0;font-size:14.5px;line-height:1.65}.advlist li{margin:6px 0}
+  .reason{display:grid;grid-template-columns:200px 1fr;gap:6px 22px;padding:14px 0;border-top:1px solid var(--rule);font-size:14px;line-height:1.6}
+  .reason .rt{font-weight:600}.reason .rv{display:block;font-weight:400;font-size:12.5px;margin-top:3px}
+  .reason .rv.p{color:var(--green-deep)}.reason .rv.m{color:var(--red)}.reason .rv.e{color:var(--grey)}
+  @media(max-width:760px){.reason{grid-template-columns:1fr}.pbar{width:90px}}
   .rr-v{font-size:14.5px;line-height:1.6;margin:0 0 6px}
   .rr-sub{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin:28px 0 10px;font-weight:600}
   .rbar{display:grid;grid-template-columns:110px 1fr 140px;gap:12px;align-items:center;font-size:13px;margin:7px 0}
@@ -339,6 +363,16 @@
     <ul class="bpoints" id="bPoints"></ul>
     <div class="outlook" id="bOutlook" hidden></div>
     <div id="bBull"></div>
+  </section>
+
+  <section id="advWrap" hidden>
+    <h2>Should I buy or sell today? <span id="advNote"></span></h2>
+    <div id="advBody"></div>
+  </section>
+
+  <section id="valWrap" hidden>
+    <h2>Market mood and valuation <span id="valNote"></span></h2>
+    <div id="valBody"></div>
   </section>
 
   <section id="amfiWrap" hidden>
@@ -504,7 +538,7 @@ const DEMO = {
   ]
 };
 
-let MARKET = [], OUTLOOK = null, GIFT = null, RISK = null, TAX = null, HOLS = {}, BRIEF_PHASE = null, CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, timer = null;
+let MARKET = [], OUTLOOK = null, GIFT = null, RISK = null, TAX = null, HOLS = {}, MOOD = null, ADVISOR = null, BRIEF_PHASE = null, CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, timer = null;
 
 const $ = id => document.getElementById(id);
 const inr = n => "₹" + Math.round(Math.abs(n)).toLocaleString("en-IN");
@@ -1139,6 +1173,10 @@ const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(
 const INDEX_TICKER = makeTicker(
   { bar: "ticker", track: "tkTrack", run: "tkRun", lab: "tkLab", name: "index ticker" },
   items => items.map(m => {
+    if (m.mood) {          // the Market Mood Index leads the tape
+      const z = m.mood.zone || "", cls = /extreme fear/i.test(z) ? "xf" : /fear/i.test(z) ? "f" : /extreme greed/i.test(z) ? "xg" : "g";
+      return '<span class="tk-idx"><b>Market mood</b><span class="lv">' + Math.round(m.mood.value) + '</span><span class="mood ' + cls + '">' + esc(z) + '</span></span><span class="dot">|</span>';
+    }
     const up = m.move_pct >= 0, arrow = up ? "▲" : "▼";
     return '<span class="tk-idx"><b>' + esc(m.name) + '</b><span class="lv">' + m.level.toLocaleString("en-IN", { maximumFractionDigits: 2 }) +
       '</span><span class="' + (up ? "up" : "dn") + '">' + arrow + " " + Math.abs(m.change).toLocaleString("en-IN", { maximumFractionDigits: 2 }) +
@@ -1154,7 +1192,7 @@ function tickerLabel() {
   const t = LAST_BATCH && LAST_BATCH.generatedAt ? new Date(LAST_BATCH.generatedAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }) : "";
   return '<i class="off"></i>' + (age != null && age > 600 ? "LAST CLOSE" : "AS OF " + t);
 }
-function renderTicker() { INDEX_TICKER.render(MARKET); }
+function renderTicker() { INDEX_TICKER.render(MOOD && MOOD.mood && MOOD.mood.value != null ? [{ mood: MOOD.mood }].concat(MARKET) : MARKET); }
 
 async function loadNews() {
   NEWS = await fetch("data/news.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => NEWS);
@@ -1303,6 +1341,66 @@ async function loadOutlook() {
   OUTLOOK = await fetch("data/outlook.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => OUTLOOK);
   GIFT = await loadJson("data/gift.json?t=" + Date.now(), isObj, GIFT);
   renderOutlook();
+}
+
+// ======================================================================================
+// Market mood, valuation and the "should I buy or sell today?" read. Data: data/mood.json and data/advisor.json
+// (src/mood.py, src/advisor.py). Rules-based and transparent: every line shows the number it rests on.
+// ======================================================================================
+async function loadAdvisor() {
+  MOOD = await loadJson("data/mood.json?t=" + Date.now(), isObj, MOOD);
+  ADVISOR = await loadJson("data/advisor.json?t=" + Date.now(), isObj, ADVISOR);
+  renderTicker(); renderValuation(); renderAdvisor();
+}
+
+function renderValuation() {
+  const wrap = $("valWrap"), M = MOOD && MOOD.mood, V = (MOOD && MOOD.valuation) || [], B = MOOD && MOOD.valuation_backtest;
+  if (!M && !V.length) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  $("valNote").textContent = (M && M.as_on) || (M && M.as_of) ? "as of " + new Date((M.as_of || "") + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" }) + (M.fallback ? " · our own estimate" : " · Market Mood Index by Tickertape") : "";
+  let h = "";
+  if (M && M.value != null) {
+    const zc = ["#f3c9c5", "#f7e2b8", "#e3efc6", "#bfdc7f"], v = Math.max(0, Math.min(100, M.value));
+    h += '<div class="gauge"><div class="mk" style="left:' + v + '%">' + Math.round(M.value) + '</div><div class="zones"><i style="width:30%;background:' + zc[0] + '"></i><i style="width:20%;background:' + zc[1] + '"></i><i style="width:20%;background:' + zc[2] + '"></i><i style="width:30%;background:' + zc[3] + '"></i></div>' +
+      '<div class="zl"><span style="width:30%">Extreme fear</span><span style="width:20%">Fear</span><span style="width:20%">Greed</span><span style="width:30%;text-align:right">Extreme greed</span></div></div>' +
+      '<div class="mtrend"><span>Today <b>' + Math.round(M.value) + " · " + esc(M.zone) + "</b></span>" + (M.day_ago != null ? "<span>Yesterday <b>" + Math.round(M.day_ago) + "</b></span>" : "") + (M.week_ago != null ? "<span>Last week <b>" + Math.round(M.week_ago) + "</b></span>" : "") +
+      (M.month_ago != null ? "<span>Last month <b>" + Math.round(M.month_ago) + "</b></span>" : "") + (M.year_ago != null ? "<span>Last year <b>" + Math.round(M.year_ago) + "</b></span>" : "") + "</div>" +
+      '<p class="rr-v" style="margin-top:10px">The Market Mood Index measures how nervous or confident investors are, from 0 (extreme fear) to 100 (extreme greed). ' +
+      (M.nifty && M.long_avg ? "The Nifty is at " + M.nifty.toLocaleString("en-IN") + ", " + Math.abs(M.vs_long_avg_pct).toFixed(1) + "% " + (M.vs_long_avg_pct < 0 ? "below" : "above") + " its longer-term average" + (M.vix ? ", and the India VIX (the market's fear gauge) is " + M.vix : "") + ". " : "") +
+      "A common rule of thumb is to be a little braver when others are fearful and a little more careful when others are greedy. It is a tendency, not a prediction.</p>";
+  }
+  if (V.length) {
+    const cls = vd => vd === "Cheap" ? "cheap" : vd === "Below average" ? "below" : vd === "Fair" ? "fair" : vd === "Above average" ? "above" : "exp";
+    h += '<div class="rr-sub">Is each part of the market cheap or expensive? (compared with its own past)</div><div class="scroll"><table><thead><tr><th>Part of the market</th><th>P/E now</th><th>Typical (10 yrs)</th><th>Where it sits in its own range</th><th>Verdict</th></tr></thead><tbody>' +
+      V.map(r => "<tr" + ((r.mine || []).length ? ' class="mine"' : "") + "><td>" + esc(r.label) + ((r.mine || []).length ? '<br><span class="sub2">your fund: ' + esc(r.mine.map(n => n.replace(" Direct Growth", "").replace(" Fund", "")).join(", ")) + "</span>" : "") + "</td><td><b>" + r.pe + "</b></td><td>" + r.median_pe + " <span class=\"sub2\">(" + (r.premium_pct >= 0 ? "+" : "−") + Math.abs(r.premium_pct) + "%)</span></td>" +
+        '<td style="text-align:left"><span class="pbar" title="cheapest on the left, dearest on the right"><i style="left:' + r.score_pct + '%"></i></span> <span class="sub2">cheaper than ' + (100 - r.score_pct) + "% of the past</span></td>" +
+        '<td><span class="vchip ' + cls(r.verdict) + '">' + esc(r.verdict) + "</span></td></tr>").join("") + "</tbody></table></div>" +
+      '<p class="sub2" style="margin:8px 0 0">P/E is the price you pay for each ₹1 of company profit. "Where it sits" ranks today against the last 5 and 10 years of the same index (history from NSE, one reading a month). Highlighted rows are the benchmarks of your funds.</p>';
+  }
+  if (B && (B.buckets || []).length) {
+    h += '<div class="rr-sub">Does cheap or expensive actually predict returns? A test on the Nifty 50</div><div class="scroll"><table><thead><tr><th>When the Nifty 50 looked…</th><th>Months</th><th>Median next 1 year</th><th>Median next 3 years (a year)</th><th>Worst next 1 year</th><th>Ended positive</th></tr></thead><tbody>' +
+      B.buckets.map(b => "<tr><td>" + esc(b.bucket.replace("Cheapest third", "cheap against its own past").replace("Dearest third", "dear against its own past").replace("Middle third", "in the middle")) + "</td><td>" + b.months + "</td><td>" + pcs(b.median_1y) + "</td><td>" + pcs(b.median_3y) + '</td><td class="' + (b.worst_1y < 0 ? "neg" : "") + '">' + pcs(b.worst_1y) + "</td><td>" + b.positive_1y_pct + "%</td></tr>").join("") + "</tbody></table></div>" +
+      '<p class="sub2" style="margin:8px 0 0">' + esc(B.note) + " Honest reading: cheap or dear told us little about average returns, but a bad year was less severe after cheap months.</p>";
+  }
+  $("valBody").innerHTML = h;
+}
+
+function renderAdvisor() {
+  const A = ADVISOR, wrap = $("advWrap");
+  if (!A || !A.headline) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  $("advNote").textContent = "a plain read of today's market data";
+  const li = arr => '<ul class="advlist">' + (Array.isArray(arr) ? arr : []).map(x => "<li>" + esc(x) + "</li>").join("") + "</ul>";
+  const sc = A.score || {}, sg1 = v => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(1);
+  let h = '<div class="advbox ' + esc(A.stance_key) + '"><div class="st">My read today</div><div class="hl2">' + esc(A.stance) + "</div><div class=\"hl2\" style=\"font-size:16px;font-weight:400;margin-top:0\">" + esc(A.headline) + "</div>" +
+    '<div class="sc">How I got there: market mood ' + sg1(sc.mood || 0) + " · valuation of what you hold " + sg1(sc.valuation || 0) + " · trend " + sg1(sc.trend || 0) + " = " + sg1(sc.total || 0) + " (above +1 leans to buying, below −1 leans to caution)</div></div>";
+  h += '<div class="rr-sub">What to do today</div>' + li(A.do_today || []);
+  h += '<div class="rr-sub">Why</div>' + (Array.isArray(A.reasons) ? A.reasons : []).filter(r => r && typeof r === "object").map(r => '<div class="reason"><div class="rt">' + esc(r.title) + '<span class="rv ' + (r.effect === "+" ? "p" : r.effect === "-" ? "m" : "e") + '">' + (r.effect === "+" ? "▲ favours investing · " : r.effect === "-" ? "▼ argues for caution · " : "") + esc(r.value) + "</span></div><div>" + esc(r.text) + "</div></div>").join("");
+  if (Array.isArray(A.if_you_sell) && A.if_you_sell.length) h += '<div class="rr-sub">If you are thinking of selling</div>' + li(A.if_you_sell);
+  if (Array.isArray(A.watch) && A.watch.length) h += '<div class="rr-sub">What would change my view</div>' + li(A.watch);
+  if (A.evidence) h += '<div class="hv" style="margin-top:18px">' + esc(A.evidence) + "</div>";
+  h += '<p class="note" style="margin-top:18px">' + esc(A.disclaimer || "") + "</p>";
+  $("advBody").innerHTML = h;
 }
 
 // ======================================================================================
@@ -2347,6 +2445,7 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   HIST = await loadJson("data/history.json", Array.isArray, []);
   ANALYTICS = await fetch("data/analytics.json", { cache: "no-store" })
     .then(r => r.ok ? r.json() : null).catch(() => null);
+  loadAdvisor();
   const hd = await loadJson("data/holidays.json", isObj, null);
   HOLS = {}; ((hd && hd.holidays) || []).forEach(h => { if (h && h.date) HOLS[h.date] = h; });
   renderHolidayBar();

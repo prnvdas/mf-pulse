@@ -1,0 +1,154 @@
+{
+  "generated_at": "2026-10-10T20:37:49.918608+05:30",
+  "mood_as_of": "2026-10-09",
+  "stance": "Lean towards investing more, in stages",
+  "stance_key": "lean_buy",
+  "headline": "Don't sell. Keep your SIPs going and, if you have spare cash, invest it in three or four instalments rather than all at once.",
+  "score": {
+    "mood": 1.5,
+    "valuation": 0.4,
+    "trend": -0.5,
+    "total": 1.4
+  },
+  "reasons": [
+    {
+      "key": "mood",
+      "title": "Market mood",
+      "value": "20 \u00b7 Extreme fear",
+      "effect": "+",
+      "text": "The Market Mood Index (Tickertape Market Mood Index) reads 20 of 100: extreme fear. It was 47 a month ago and 52 a year ago. Investors often get most nervous near market lows and most confident near highs, so fear is usually the better time to invest and greed the time to be careful. That is a tendency, not a promise."
+    },
+    {
+      "key": "val_axis-small-cap",
+      "title": "Small caps \u00b7 your Axis Small Cap",
+      "value": "P/E 34.0 \u00b7 above average",
+      "effect": "-",
+      "text": "Its benchmark trades at a P/E of 34.0, against a typical 32.2 over the last ten years (a premium of 6%). Only 57% of the last ten years were cheaper, and 92% of the last five. Verdict: above average."
+    },
+    {
+      "key": "val_mirae-large-midcap",
+      "title": "Large + midcaps \u00b7 your Mirae Asset Large & Midcap",
+      "value": "P/E 22.6 \u00b7 cheap",
+      "effect": "+",
+      "text": "Its benchmark trades at a P/E of 22.6, against a typical 27.6 over the last ten years (a discount of 18%). Only 5% of the last ten years were cheaper, and 7% of the last five. Verdict: cheap."
+    },
+    {
+      "key": "val_jioblackrock-flexicap",
+      "title": "Whole market \u00b7 your JioBlackRock Flexi Cap",
+      "value": "P/E 21.6 \u00b7 cheap",
+      "effect": "+",
+      "text": "Its benchmark trades at a P/E of 21.6, against a typical 26.1 over the last ten years (a discount of 18%). Only 5% of the last ten years were cheaper, and 10% of the last five. Verdict: cheap."
+    },
+    {
+      "key": "trend",
+      "title": "Trend",
+      "value": "Nifty -4.4% vs its long average",
+      "effect": "-",
+      "text": "The Nifty (22,520) is 4.4% below its longer-term average (23,559) and 2.1% below its shorter-term one. Prices are still falling, so cheap can get cheaper: this is why new money should go in over weeks, not on one day."
+    },
+    {
+      "key": "flows",
+      "title": "Who is buying and selling",
+      "value": "foreign investors sold \u20b93,569 crore \u00b7 domestic funds bought \u20b94,743 crore",
+      "effect": "=",
+      "text": "On the last session foreign investors sold \u20b93,569 crore while domestic funds bought \u20b94,743 crore. Heavy foreign selling is a big part of why the market is under pressure; domestic buyers have been absorbing it. This explains the mood, it does not tell you what happens next."
+    },
+    {
+      "key": "you",
+      "title": "Your portfolio",
+      "value": "-6.0% from its peak",
+      "effect": "=",
+      "text": "Your mix is 6.0% below its most recent peak. That is an ordinary dip: this same mix has fallen as much as 35% before and recovered. Selling after a fall is how a temporary dip becomes a permanent loss."
+    },
+    {
+      "key": "tomorrow",
+      "title": "Tomorrow",
+      "value": "GREEN \u00b7 58% (moderate)",
+      "effect": "=",
+      "text": "The short-term call for the next session is a coin-flip with a small tilt. It is useful context for a day trader and irrelevant for a long-term investor: don't buy or sell on it."
+    }
+  ],
+  "do_today": [
+    "Keep your \u20b91.10 lakh monthly SIP running. When prices are low it buys more units for the same money, which is exactly what a SIP is for.",
+    "If you have spare cash: split it into three or four equal parts and invest one part now and the others every two to three weeks. The trend is still down, so spreading it out protects you if prices fall further.",
+    "Of the parts of the market your funds track, large + midcaps looks cheapest (cheap) and small caps the dearest (above average). If you add extra money, tilting it towards Mirae Asset Large & Midcap rather than Axis Small Cap follows that. Your regular SIPs can stay as they are.",
+    "Do not sell because of today's fall or tomorrow's red or green call."
+  ],
+  "where_to_add": [
+    {
+      "label": "Large caps (Nifty 50)",
+      "fund": [],
+      "pe": 19.3,
+      "verdict": "Cheap",
+      "score_pct": 0
+    },
+    {
+      "label": "Large caps, next 50",
+      "fund": [],
+      "pe": 17.9,
+      "verdict": "Cheap",
+      "score_pct": 1
+    },
+    {
+      "label": "Large + midcaps (Nifty LargeMidcap 250)",
+      "fund": [
+        "Mirae Asset Large & Midcap"
+      ],
+      "pe": 22.6,
+      "verdict": "Cheap",
+      "score_pct": 6
+    },
+    {
+      "label": "Whole market (Nifty 500)",
+      "fund": [
+        "JioBlackRock Flexi Cap"
+      ],
+      "pe": 21.6,
+      "verdict": "Cheap",
+      "score_pct": 8
+    },
+    {
+      "label": "Midcaps (Nifty Midcap 150)",
+      "fund": [],
+      "pe": 28.1,
+      "verdict": "Fair",
+      "score_pct": 35
+    },
+    {
+      "label": "Midcaps (Nifty Midcap 100)",
+      "fund": [],
+      "pe": 27.7,
+      "verdict": "Fair",
+      "score_pct": 39
+    },
+    {
+      "label": "Small caps (Nifty Smallcap 250)",
+      "fund": [
+        "Axis Small Cap"
+      ],
+      "pe": 34.0,
+      "verdict": "Above average",
+      "score_pct": 74
+    },
+    {
+      "label": "Small caps (Nifty Smallcap 100)",
+      "fund": [],
+      "pe": 37.5,
+      "verdict": "Expensive",
+      "score_pct": 87
+    }
+  ],
+  "if_you_sell": [
+    "If you sold everything today you would pay about \u20b92.49 lakh in tax, which is a strong reason not to sell on a market view.",
+    "Only sell money you will need within about three years; money for later goals is better left invested through the dip.",
+    "If you do need cash, sell from the older folio first (e.g. Mirae Asset Large & Midcap folio \u20261565): its gains are long-term, and the first \u20b91.25 lakh of long-term gain each year is tax-free. The newer folios may still be short-term (taxed at 20%).",
+    "If you must raise a large sum, sell in two or three parts over a few weeks instead of in one go."
+  ],
+  "watch": [
+    "If the Market Mood rises above 70 (extreme greed) and small caps are expensive against their own history, stop lump sums and think about booking some profit.",
+    "If it stays below 30, nothing changes: keep investing in stages. Recoveries from fear usually take months, not days.",
+    "If the Nifty closes back above its longer-term average (23,559) the trend has turned: invest any remaining instalments."
+  ],
+  "evidence": "How much to trust this: on the Nifty 50 since 2012, months when it looked cheap against its own history were followed by a median 12.4% a year over three years, against 15.7% after dear months. So cheap or dear has told us little about average returns. It did tell us about the bad cases: the worst one-year result after cheap months was -8%, after dear months -26%. Treat the signals above as a reason for patience and for spreading out new money, not as a forecast.",
+  "disclaimer": "Educational analysis of public market data, not personalised or SEBI-registered investment advice. It cannot know your goals, time horizon or income. Markets can stay cheap or expensive for long periods."
+}

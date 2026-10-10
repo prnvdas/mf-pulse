@@ -51,8 +51,6 @@ def main() -> None:
             "projection": cfg.get("projection", {}),
             "profile": cfg.get("profile", {}),
             "special_sessions": cfg.get("special_sessions", []),
-            "goals": cfg.get("goals", []),
-            "goal_scenarios_pct": cfg.get("goal_scenarios_pct", [10, 12, 15]),
         },
     )
 

@@ -139,9 +139,3 @@ tax:
   realized_ltcg_this_fy: 0   # long-term gains you have ALREADY booked this FY (any fund or share): lowers the tax-free room
   realized_stcg_this_fy: 0
   sip_months_assumed: 13     # lots are estimated from this many months of SIPs unless config/transactions.csv exists
-
-# Goals (Goal tracker panel). You normally add goals on the dashboard itself ("What are you saving for?", saved in that
-# browser). To keep some permanently for every device, list them here; amounts are in TODAY's rupees:
-#   - {id: house, name: "Buy a house", target_today_inr: 10000000, target_year: 2034, inflation_pct: 6, share_pct: 50}
-goals: []
-goal_scenarios_pct: [10, 12, 15]   # yearly return cases shown as slower / normal / better markets

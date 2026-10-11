@@ -251,13 +251,9 @@
   @media(max-width:760px){.reason{grid-template-columns:1fr}.pbar{width:90px}}
   .rr-v{font-size:14.5px;line-height:1.6;margin:0 0 6px}
   .rr-sub{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin:28px 0 10px;font-weight:600}
-  .rbar{display:grid;grid-template-columns:110px 1fr 140px;gap:12px;align-items:center;font-size:13px;margin:7px 0}
-  .rbar .t{height:12px;background:var(--wash);position:relative}.rbar .t i{position:absolute;left:0;top:0;bottom:0;background:var(--red);opacity:.85}
-  .rbar b{text-align:right;font-variant-numeric:tabular-nums}
-  .tagc{display:inline-block;font-size:10.5px;color:var(--grey);border:1px solid var(--rule);padding:1px 7px;margin:0 4px 0 0}
   .hv{background:var(--wash);padding:16px 20px;margin:12px 0;font-size:14px;line-height:1.6}
   .hv b{font-weight:600}
-  @media(max-width:760px){.rbar{grid-template-columns:90px 1fr 110px}.gform{grid-template-columns:1fr 1fr}.acc.four{grid-template-columns:1fr 1fr}}
+  @media(max-width:760px){.acc.four{grid-template-columns:1fr 1fr}}
   .why .ev{display:block;font-size:12px;color:var(--grey);margin-top:3px}
   .why .ev a{color:inherit}
   .mvgrid{display:grid;grid-template-columns:1fr 1fr;gap:36px}
@@ -472,10 +468,6 @@
     <div id="retBody"></div>
   </section>
 
-  <section id="riskWrap" hidden>
-    <h2>Risk and reward <span id="riskNote"></span></h2>
-    <div id="riskBody"></div>
-  </section>
 
   <section id="taxWrap" hidden>
     <h2>Tax view <span id="taxNote"></span></h2>
@@ -553,7 +545,7 @@ const DEMO = {
   ]
 };
 
-let MARKET = [], COMMS = [], OUTLOOK = null, GIFT = null, RISK = null, TAX = null, HOLS = {}, MOOD = null, ADVISOR = null, BRIEF_PHASE = null, CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, timer = null;
+let MARKET = [], COMMS = [], OUTLOOK = null, GIFT = null, TAX = null, HOLS = {}, MOOD = null, ADVISOR = null, BRIEF_PHASE = null, CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, timer = null;
 
 const $ = id => document.getElementById(id);
 const inr = n => "₹" + Math.round(Math.abs(n)).toLocaleString("en-IN");
@@ -1488,61 +1480,6 @@ function renderReturns() {
   h += '<p class="note" style="margin-top:18px">Portfolio and folio XIRRs are Groww\'s exact figures. Fund-level XIRRs (marked ≈) are estimated by rebuilding when each folio\'s money went in; doing that for the whole portfolio gives ' + (rb != null ? pcs(rb, 2) : "about the same") + " against Groww's " + (x != null ? pcs(x, 2) : "figure") +
     ", so read the fund-level ones as good to about half a point. Benchmark XIRR invests the same amounts on the same dates in the fund's benchmark index (price index, so it leaves out about 1% a year of dividends, which makes the benchmark look slightly worse than it is). For exact per-fund figures, add your purchase history in <code>config/transactions.csv</code>.</p>";
   $("retBody").innerHTML = h;
-}
-
-function renderRisk() {
-  const R = RISK, wrap = $("riskWrap");
-  if (!R || !R.risk) { wrap.hidden = true; return; }
-  wrap.hidden = false;
-  const k = R.risk, w = R.reward || {}, eps = R.episodes || [], val = R.value || 0;
-  $("riskNote").textContent = "today's mix, replayed on each fund's real history (" + (R.basis.match(/since (\d{4})/) || ["", ""])[1] + " onward)";
-  const lvl = k.vol_3y_pct >= 18 ? "Very high" : k.vol_3y_pct >= 13 ? "High" : k.vol_3y_pct >= 9 ? "Moderate" : "Low";
-  const worst = eps[0];
-  const r3 = (w.rolling || []).find(x => x.years === 3), r1 = (w.rolling || []).find(x => x.years === 1);
-  const nifty3 = (w.nifty_cagr || {})["3y"];
-
-  let h = '<div class="hv"><b>In plain words:</b> on a typical bad day (1 in 20) this mix loses about <b>' + inr(k.var95_rupees) + "</b> (" + k.var95_pct + "%). " +
-    (worst ? "In its worst stretch since " + dshort(R.basis.match(/since (\d{4}-\d{2}-\d{2})/)[1]) + " (" + dshort(worst.peak) + " to " + dshort(worst.trough) + ") it fell <b>" + Math.abs(worst.depth_pct) + "%</b>, which on today's money is about <b>" + cx(Math.abs(worst.rupees_today)) + "</b>" +
-      (worst.days_to_recover != null ? ", and it took " + Math.round(worst.days_to_recover / 30) + " months to win it back. " : ", and it has not fully recovered yet. ") : "") +
-    (r3 ? "Over every 3-year stretch in the record it " + (r3.positive_pct >= 100 ? "never lost money" : "made money " + r3.positive_pct + "% of the time") + " (worst " + pcs(r3.worst) + " a year, median " + pcs(r3.median) + ")." : "") + "</div>";
-
-  h += '<div class="acc four">' +
-    tile("Returns (a year)", pcs(w.cagr_3y) + '<span class="sub2"> 3-yr</span>', "5-yr " + pcs(w.cagr_5y) + " · Nifty 50 3-yr " + pcs(nifty3) + " · FD " + pcs(R.fd_rate_pct), w.cagr_3y >= R.fd_rate_pct ? "pos" : "neg") +
-    tile("Typical bad day", "−" + inr(k.var95_rupees), "1 in 20 days or worse · 1 in 100: −" + inr(k.var99_rupees)) +
-    tile("Worst fall so far", pcs(k.max_drawdown_pct), "now " + pcs(k.current_drawdown_pct) + " from its peak", "neg") +
-    tile("Risk level", lvl, "volatility " + k.vol_3y_pct + "% a year · beta " + (k.beta != null ? k.beta : "—") + " (falls: " + (k.downside_beta != null ? k.downside_beta : "—") + ")") + "</div>";
-
-  // reward spread
-  h += '<div class="rr-sub">Reward: what 1, 3 and 5-year stretches have delivered (per year)</div><div class="scroll"><table><thead><tr><th>Holding for</th><th>Worst</th><th>Bad (1 in 20)</th><th>Median</th><th>Best</th><th>Ended positive</th><th>Beat FD ' + Math.round(R.fd_rate_pct) + '%</th></tr></thead><tbody>' +
-    (w.rolling || []).map(x => "<tr><td>" + x.years + " year" + (x.years > 1 ? "s" : "") + "</td><td class=\"" + (x.worst < 0 ? "neg" : "") + '">' + pcs(x.worst) + "</td><td>" + pcs(x.p5) + "</td><td><b>" + pcs(x.median) + "</b></td><td>" + pcs(x.best) + "</td><td>" + x.positive_pct + "%</td><td>" + x.beat_fd_pct + "%</td></tr>").join("") +
-    "</tbody></table></div>";
-
-  // stress tests
-  const S = R.stress || [];
-  if (S.length) {
-    const mx = Math.max(...S.map(x => Math.abs(x.rupees)));
-    h += '<div class="rr-sub">Stress test: if the Nifty 50 fell…</div>' + S.map(x => '<div class="rbar"><span>Nifty ' + x.nifty_pct + '%</span><span class="t"><i style="width:' + Math.round(Math.abs(x.rupees) / mx * 100) + '%"></i></span><b>−' + cx(Math.abs(x.rupees)) + " (" + x.portfolio_pct + "%)</b></div>").join("") +
-      '<p class="sub2" style="margin:6px 0 0">Using how your funds behaved in the Nifty\'s falling weeks over three years (downside beta ' + k.downside_beta + "): they have tended to fall slightly more than the market. Not a forecast of a fall.</p>";
-  }
-
-  // worst episodes replayed on today's money
-  if (eps.length) {
-    h += '<div class="rr-sub">Your mix\'s worst episodes, replayed on today\'s money</div><div class="scroll"><table><thead><tr><th>Peak to trough</th><th>Fall</th><th>Would cost today</th><th>Time to bottom</th><th>Time to recover</th></tr></thead><tbody>' +
-      eps.map(e => "<tr><td>" + dshort(e.peak) + " → " + dshort(e.trough) + '</td><td class="neg">' + pcs(e.depth_pct) + '</td><td class="neg">−' + cx(Math.abs(e.rupees_today)) + "</td><td>" + Math.round(e.days_to_trough / 30) + " mo</td><td>" + (e.days_to_recover != null ? Math.round(e.days_to_recover / 30) + " mo" : "not yet") + "</td></tr>").join("") + "</tbody></table></div>";
-  }
-
-  // where the risk sits
-  const F = R.funds || [];
-  h += '<div class="rr-sub">Where your risk sits</div><div class="scroll"><table><thead><tr><th>Fund</th><th>Share of money</th><th>Volatility</th><th>Worst fall</th><th>Downside beta</th><th>Share of risk</th></tr></thead><tbody>' +
-    F.map(f => "<tr><td>" + esc(f.name.replace(" Direct Growth", "").replace(" Fund", "")) + (f.history_years < 2 ? ' <span class="sub2">(' + f.history_years + " yr history)</span>" : "") + "</td><td>" + f.weight_pct + "%</td><td>" + f.vol_pct + "%</td><td>" + pcs(f.max_drawdown_pct) + "</td><td>" + (f.downside_beta != null ? f.downside_beta : "—") + "</td><td>" + (f.risk_share_pct != null ? f.risk_share_pct + "%" : "—") + "</td></tr>").join("") + "</tbody></table></div>";
-  const C = R.concentration || {};
-  if ((C.top || []).length) {
-    const mx = Math.max(...C.top.map(x => x.pct));
-    h += '<p class="rr-v" style="margin-top:14px">Your three funds hold <b>' + C.stocks + "</b> different stocks. The top 10 are <b>" + C.top10_pct + "%</b> of your money; <b>" + C.overlap_stocks + "</b> stocks are held by two or more funds (<b>" + C.overlap_pct + "%</b> of your money), and about <b>" + C.cash_pct + "%</b> sits in cash.</p>" +
-      C.top.map(x => '<div class="rbar" style="grid-template-columns:170px 1fr 150px"><span>' + esc(x.name.replace(/ Ltd\.?$/, "")) + '</span><span class="t"><i style="background:var(--ink);opacity:.75;width:' + Math.round(x.pct / mx * 100) + '%"></i></span><b>' + x.pct + "% · " + cx(x.value) + "</b></div>").join("");
-  }
-  h += '<p class="note" style="margin-top:20px">Built from each fund\'s real daily NAV history with today\'s weights, so it answers "how risky is the mix I hold now". Past behaviour is not a promise: a future fall can be deeper or longer than any in the record. Stock holdings are as of each fund\'s last monthly disclosure.</p>';
-  $("riskBody").innerHTML = h;
 }
 
 function renderTax() {
@@ -2494,9 +2431,8 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   const hd = await loadJson("data/holidays.json", isObj, null);
   HOLS = {}; ((hd && hd.holidays) || []).forEach(h => { if (h && h.date) HOLS[h.date] = h; });
   renderHolidayBar();
-  RISK = await loadJson("data/risk.json", isObj, null);
   TAX = await loadJson("data/tax.json", isObj, null);
-  renderReturns(); renderRisk(); renderTax(); renderStatementBar();
+  renderReturns(); renderTax(); renderStatementBar();
   renderCompare();
   loadNews();
   loadOutlook();

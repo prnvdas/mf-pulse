@@ -27,3 +27,13 @@ uploaded by 20:00 IST, the workflow opens another. Uploading at any time trigger
 
 Plain-text alternative: only if you make the repository private (GitHub Pro keeps Pages working); the published
 `docs/` site is public either way.
+
+## One-off: your full transaction history (exact XIRR, exact tax lots, a chart from day one)
+
+The monthly holdings statement only has today's totals. Groww's **transaction report** lists every purchase and sale, and importing it once makes three things exact: each fund's XIRR, the tax lots, and the "Your money over time" chart (which then starts at your first purchase instead of 21 Aug 2026).
+
+1. In Groww, download the mutual-fund transaction report for the **full history** ("since inception") as .xlsx or .csv, and put it in `MF-Holding/` next to your statement.
+2. Check it first (nothing is written): `python src/import_transactions.py --dry-run`. It prints each fund's units from the report beside the units you hold; they must match within 1%, otherwise it refuses (a partial date range would draw a wrong chart).
+3. Encrypt and push it, the same way as the statement: `python src/encrypt_statement.py --transactions --push`. The `transactions` workflow decrypts it with the same `STATEMENT_KEY`, keeps only dates, amounts and units in `config/transactions.csv`, and rebuilds the history, XIRR and tax lots.
+
+Your name, PAN, phone and folio numbers are never copied. `config/transactions.csv` is visible in this public repository (every purchase date and amount); the chart it produces shows the same thing, so if that bothers you, keep the repository private instead.

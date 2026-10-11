@@ -40,7 +40,7 @@ jobs:
       - name: Find the newest statement
         id: find
         run: |
-          f=$(ls -1 statements/*.xlsx.enc 2>/dev/null | sort | tail -1 || true)
+          f=$(ls -1 statements/2*.xlsx.enc 2>/dev/null | sort | tail -1 || true)
           echo "file=$f" >> "$GITHUB_OUTPUT"
           this_month=$(date -u +%Y-%m)
           if [ -z "$f" ]; then echo "state=none" >> "$GITHUB_OUTPUT"

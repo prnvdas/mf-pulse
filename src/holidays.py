@@ -82,9 +82,34 @@ def next_closure(today: dt.date, cfg: dict, hol: dict) -> tuple[list[dict], dt.d
         d += dt.timedelta(days=1)
 
 
+def remind_token(cfg: dict, today: dt.date) -> None:
+    """The fine-grained GitHub token behind cron-job.org expires (max one year). Open an issue three weeks ahead."""
+    exp = (cfg.get("profile") or {}).get("github_token_expires")
+    if not exp:
+        return
+    exp = dt.date.fromisoformat(str(exp))
+    left = (exp - today).days
+    if left > 21:
+        return
+    repo = os.environ.get("GITHUB_REPOSITORY")
+    title = f"GitHub token for cron-job.org expires on {exp.strftime('%-d %b %Y')}"
+    body = ("The token that lets cron-job.org start the updates " + (f"expires in {left} days." if left >= 0 else "has expired.") +
+            " Create a new fine-grained token (this repository only, Actions: Read and write) and run `python3 deploy/setup_cronjob.py` "
+            "to update every job, then set `profile.github_token_expires` in config/portfolio.yaml to the new date. Until then the "
+            "scheduled updates will stop.")
+    print(f"[remind] {title}")
+    if not (repo and os.environ.get("GH_TOKEN")):
+        return
+    have = subprocess.run(["gh", "issue", "list", "-R", repo, "--state", "all", "--search", f'in:title "{title}"', "--json", "number", "-q", "length"],
+                          capture_output=True, text=True).stdout.strip()
+    if not have or have == "0":
+        subprocess.run(["gh", "issue", "create", "-R", repo, "--assignee", os.environ.get("GITHUB_REPOSITORY_OWNER", ""), "--title", title, "--body", body], check=False)
+
+
 def remind() -> None:
     cfg, hol = load_portfolio(), read_json("holidays.json", {})
     today = now_ist().date()
+    remind_token(cfg, today)
     found, nxt = next_closure(today, cfg, hol)
     if not found:
         print("[info] no weekday closure before the next trading day; no reminder")

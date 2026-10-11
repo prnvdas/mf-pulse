@@ -318,6 +318,15 @@
     .hcards{grid-template-columns:1fr}
   }
 
+  .snav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);border-bottom:1px solid var(--rule);backdrop-filter:blur(6px)}
+  .snav .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-top:6px;padding-bottom:6px}
+  .snav .wrap::-webkit-scrollbar{display:none}
+  .snav button{background:none;color:var(--grey);border:0;border-bottom:2px solid transparent;padding:8px 14px;font-size:11.5px;letter-spacing:.09em;white-space:nowrap}
+  .snav button:hover:not(:disabled){background:none;color:var(--ink)}
+  .snav button[aria-current=true]{color:var(--ink);border-bottom-color:var(--green-deep)}
+  .hero,section{scroll-margin-top:50px}
+  .hline{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:12px;color:var(--grey);margin:26px 0 0}
+  .hline .dotc{margin-right:6px}
   /* money over time, score card, calendar, SIP, cost, fund health */
   .kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);margin-bottom:6px}
   .kgrid>div{background:var(--paper);padding:18px 20px}
@@ -384,12 +393,14 @@
   <div class="tk-track" id="tkTrack"><div class="tk-run" id="tkRun"></div></div>
 </div>
 
+<nav class="snav" id="snav" aria-label="Jump to a section" hidden><div class="wrap" id="snavIn"></div></nav>
+
 <main class="wrap">
   <div class="hbar" id="holidayBar" hidden role="status"></div>
   <div class="hbar" id="stmtBar" hidden role="status"></div>
 
 
-  <div class="hero">
+  <div class="hero" id="hero">
     <div>
       <div class="eyebrow" id="eyebrow">Estimated impact today</div>
       <div class="headline" id="pnl">—</div>
@@ -416,28 +427,23 @@
     <div class="outlook" id="bOutlook" hidden></div>
     <div id="bBull"></div>
   </section>
-
   <section id="advWrap" hidden>
     <h2>Should I buy or sell today? <span id="advNote"></span></h2>
     <div id="advBody"></div>
   </section>
-
   <section id="valWrap" hidden>
     <h2>Market mood and valuation <span id="valNote"></span></h2>
     <div id="valBody"></div>
   </section>
-
   <section id="amfiWrap" hidden>
     <h2>Tonight's actual NAV <span>AMFI, checked live — not yet in the scored history below</span></h2>
     <div class="note" id="amfiNote"></div>
   </section>
-
   <section id="setupWrap" hidden>
     <h2>Price source</h2>
     <div class="note bad" id="setup"></div>
   </section>
-
-  <section>
+  <section id="fundsSec">
     <h2>By fund <span id="fundNote"></span></h2>
     <table class="fundtbl">
       <thead><tr>
@@ -446,68 +452,36 @@
       <tbody id="funds"></tbody>
     </table>
   </section>
-
   <section id="moneyWrap" hidden>
     <h2>Your money over time <span id="moneyNote"></span></h2>
     <div id="moneyKpis" class="kgrid"></div>
-    <div class="seg" id="moneySeg" role="tablist" aria-label="Chart view" style="margin-top:16px"></div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:16px"><div class="seg" id="moneySeg" role="tablist" aria-label="Chart view" style="margin:0"></div><div class="seg" id="moneyRange" role="tablist" aria-label="Period" style="margin:0"></div></div>
     <div class="mchart" id="moneyChart"></div>
     <div class="legend" id="moneyLegend"></div>
     <p class="note" id="moneyFoot"></p>
   </section>
-
   <section id="scoreWrap" hidden>
     <h2>Estimate vs actual NAV <span id="scoreNote"></span></h2>
     <div id="scoreBody"></div>
   </section>
-
-  <section id="whyWrap" class="why" hidden>
-    <h2 id="whyTitle">Why the market moved</h2>
-    <div id="whyBody"></div>
-  </section>
-
-  <section>
-    <h2>What moved it <span id="movedNote">Live prices, weighted by holding</span></h2>
-    <div class="contrib" id="contrib"></div>
-  </section>
-
-  <section id="moversWrap" hidden>
-    <h2>Top movers <span id="moversNote">Your holdings that moved the most, by rupee impact on your money</span></h2>
-    <div style="margin:0 0 14px"><select id="moversDay" style="font:inherit;font-size:12.5px;padding:5px 8px"></select></div>
-    <div class="mvgrid">
-      <div><div class="sub2" style="margin-bottom:6px">GAINERS</div><div class="scroll"><table><thead><tr><th>Stock</th><th>Move</th><th>Your exposure</th><th>Impact</th></tr></thead><tbody id="mvUp"></tbody></table></div></div>
-      <div><div class="sub2" style="margin-bottom:6px">LAGGARDS</div><div class="scroll"><table><thead><tr><th>Stock</th><th>Move</th><th>Your exposure</th><th>Impact</th></tr></thead><tbody id="mvDown"></tbody></table></div></div>
-    </div>
-    <p class="sub2" style="margin-top:12px">What already moved in that session, not a prediction of which stocks will rise. Exposure is your money in the stock across all funds (fund value × its weight in the fund's latest disclosed holdings).</p>
-  </section>
-
-  <section id="compareWrap" hidden>
-    <h2>How your funds compare <span>Each fund against its own benchmark, in plain terms</span></h2>
-    <div id="compareBody"></div>
-  </section>
-
-  <section>
-    <h2>Estimate accuracy <span>Predicted vs published NAV, last 30 sessions</span></h2>
-    <div id="accWrap"></div>
-    <div id="hitWrap"></div>
-    <details><summary>Day-by-day detail</summary>
-    <table id="histTableEl" hidden>
-      <thead><tr>
-        <th>Date</th><th>Fund</th><th>Predicted NAV</th><th>Actual NAV</th>
-        <th>Est. P&amp;L</th><th>Actual P&amp;L</th><th>Error</th><th>Direction</th>
-      </tr></thead>
-      <tbody id="histTable"></tbody>
-    </table>
-    </details>
-  </section>
-
   <section id="calWrap" hidden>
     <h2>Day by day <span id="calNote">What the market did to your money each day (new SIP money left out)</span></h2>
     <div class="calnav"><button class="ghost" id="calPrev" aria-label="Previous month">‹</button><b id="calMonth"></b><button class="ghost" id="calNext" aria-label="Next month">›</button></div>
     <div class="cal" id="calGrid"></div>
     <div class="calsum" id="calSum"></div>
   </section>
-
+  <section id="sectorWrap" hidden>
+    <h2>Where your money sits <span id="sectorNote"></span></h2>
+    <div id="sectorBody"></div>
+  </section>
+  <section id="sipWrap" hidden>
+    <h2>SIP tracker <span id="sipNote"></span></h2>
+    <div id="sipBody"></div>
+  </section>
+  <section id="costWrap" hidden>
+    <h2>What owning these funds costs <span id="costNote"></span></h2>
+    <div id="costBody"></div>
+  </section>
   <section id="projWrap" hidden>
     <h2>Where this could be <span id="projNote"></span></h2>
     <div class="sub2" style="margin:0 0 6px">Assumed yearly return</div>
@@ -526,40 +500,57 @@
       and holding 22% for decades would be exceptional. Real markets move unevenly and results can differ a
       lot. Edit the scenarios under <code>projection</code> in <code>config/portfolio.yaml</code>.</p>
   </section>
-
-  <section id="sectorWrap" hidden>
-    <h2>Where your money sits <span id="sectorNote"></span></h2>
-    <div id="sectorBody"></div>
+  <section id="whyWrap" class="why" hidden>
+    <h2 id="whyTitle">Why the market moved</h2>
+    <div id="whyBody"></div>
   </section>
-
+  <section id="moveSec">
+    <h2>What moved it <span id="movedNote">Live prices, weighted by holding</span></h2>
+    <div class="contrib" id="contrib"></div>
+  </section>
+  <section id="moversWrap" hidden>
+    <h2>Top movers <span id="moversNote">Your holdings that moved the most, by rupee impact on your money</span></h2>
+    <div style="margin:0 0 14px"><select id="moversDay" style="font:inherit;font-size:12.5px;padding:5px 8px"></select></div>
+    <div class="mvgrid">
+      <div><div class="sub2" style="margin-bottom:6px">GAINERS</div><div class="scroll"><table><thead><tr><th>Stock</th><th>Move</th><th>Your exposure</th><th>Impact</th></tr></thead><tbody id="mvUp"></tbody></table></div></div>
+      <div><div class="sub2" style="margin-bottom:6px">LAGGARDS</div><div class="scroll"><table><thead><tr><th>Stock</th><th>Move</th><th>Your exposure</th><th>Impact</th></tr></thead><tbody id="mvDown"></tbody></table></div></div>
+    </div>
+    <p class="sub2" style="margin-top:12px">What already moved in that session, not a prediction of which stocks will rise. Exposure is your money in the stock across all funds (fund value × its weight in the fund's latest disclosed holdings).</p>
+  </section>
+  <section id="compareWrap" hidden>
+    <h2>How your funds compare <span>Each fund against its own benchmark, in plain terms</span></h2>
+    <div id="compareBody"></div>
+  </section>
   <section id="healthWrap" hidden>
     <h2>Fund health check <span id="healthNote"></span></h2>
     <div id="healthBody"></div>
   </section>
-
-  <section id="sipWrap" hidden>
-    <h2>SIP tracker <span id="sipNote"></span></h2>
-    <div id="sipBody"></div>
+  <section id="accSec">
+    <h2>Estimate accuracy <span>Predicted vs published NAV, last 30 sessions</span></h2>
+    <div id="accWrap"></div>
+    <div id="hitWrap"></div>
+    <details><summary>Day-by-day detail</summary>
+    <table id="histTableEl" hidden>
+      <thead><tr>
+        <th>Date</th><th>Fund</th><th>Predicted NAV</th><th>Actual NAV</th>
+        <th>Est. P&amp;L</th><th>Actual P&amp;L</th><th>Error</th><th>Direction</th>
+      </tr></thead>
+      <tbody id="histTable"></tbody>
+    </table>
+    </details>
   </section>
-
-  <section id="costWrap" hidden>
-    <h2>What owning these funds costs <span id="costNote"></span></h2>
-    <div id="costBody"></div>
-  </section>
-
   <section id="retWrap" hidden>
     <h2>Returns: XIRR <span id="retNote"></span></h2>
     <div id="retBody"></div>
   </section>
-
-
   <section id="taxWrap" hidden>
     <h2>Tax view <span id="taxNote"></span></h2>
     <div id="taxBody"></div>
   </section>
 
 
-  <p class="sub2" style="margin:26px 0 8px"><button class="ghost" id="diag" title="Test where the prices come from and say exactly what failed">Check data connection</button> <span style="margin-left:8px">tests where the prices come from and says what failed</span></p>
+  <div class="hline" id="healthLine" hidden></div>
+  <p class="sub2" style="margin:14px 0 8px"><button class="ghost" id="diag" title="Test where the prices come from and say exactly what failed">Check data connection</button> <span style="margin-left:8px">tests where the prices come from and says what failed</span></p>
 
   <details id="odBox" class="od">
     <summary>Reliable updates (optional)</summary>
@@ -1285,7 +1276,8 @@ function tickerLabel() {
 }
 function renderTicker() {                                                       // Brent crude leads the tape
   const ok = x => x && typeof x === "object" && x.name && Number.isFinite(x.level) && Number.isFinite(x.move_pct) && Number.isFinite(x.change);
-  INDEX_TICKER.render((Array.isArray(COMMS) ? COMMS : []).concat(Array.isArray(MARKET) ? MARKET : []).filter(ok));
+  const gt = (() => { try { return giftTick(); } catch (e) { return null; } })();
+  INDEX_TICKER.render((Array.isArray(COMMS) ? COMMS : []).concat(gt ? [gt] : [], Array.isArray(MARKET) ? MARKET : []).filter(ok));
 }
 
 async function loadNews() {
@@ -1434,7 +1426,7 @@ function renderOutlook() {
 async function loadOutlook() {
   OUTLOOK = await fetch("data/outlook.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => OUTLOOK);
   GIFT = await loadJson("data/gift.json?t=" + Date.now(), isObj, GIFT);
-  renderOutlook(); renderHeaderChips();
+  renderOutlook(); renderHeaderChips(); renderTicker();
 }
 
 // ======================================================================================
@@ -2057,7 +2049,7 @@ function paintStamp() {
 }
 setInterval(() => { paintStamp(); renderHolidayBar(); renderStatementBar(); }, 30000);        // keep the clock and the data age moving
 
-function stampBatch(a) { LAST_BATCH = a; paintStamp(); safe(renderScore, "scoreWrap"); }
+function stampBatch(a) { LAST_BATCH = a; paintStamp(); safe(renderScore, "scoreWrap"); safe(renderHealthLine); }
 
 async function applyBatch() {
   const r = await fetch("data/latest.json?t=" + Date.now(), { cache: "no-store" });
@@ -2522,13 +2514,20 @@ function niceTicks(lo, hi, n) {
 }
 
 // ---- 1. Your money over time
-const MONEY = { mode: "value" };
+const MONEY = { mode: "value", range: "All" };
+const RANGE_DAYS = { "1M": 31, "3M": 92, "1Y": 366 };
 function renderMoney() {
-  const wrap = $("moneyWrap"), pts = histPoints();
-  if (pts.length < 2) { wrap.hidden = true; return; }
+  const wrap = $("moneyWrap"), all = histPoints();
+  if (all.length < 2) { wrap.hidden = true; return; }
   wrap.hidden = false;
+  const spanDays = (Date.parse(all[all.length - 1].d) - Date.parse(all[0].d)) / 86400000, ranges = ["1M", "3M", "1Y", "All"].filter(r => r === "All" || spanDays > RANGE_DAYS[r] * 1.15);
+  if (!ranges.includes(MONEY.range)) MONEY.range = "All";
+  const cut = MONEY.range === "All" ? "" : new Date(Date.parse(all[all.length - 1].d) - RANGE_DAYS[MONEY.range] * 86400000).toISOString().slice(0, 10);
+  const sel = all.filter(p => p.d >= cut), pts = sel.length >= 2 ? sel : all;
+  $("moneyRange").innerHTML = ranges.length > 1 ? ranges.map(r => '<button role="tab" aria-selected="' + (MONEY.range === r) + '" data-r="' + r + '">' + r + "</button>").join("") : "";
+  $("moneyRange").querySelectorAll("button").forEach(b => b.onclick = () => { MONEY.range = b.dataset.r; renderMoney(); });
   const a = pts[0], z = pts[pts.length - 1], g0 = a.v - a.i, g1 = z.v - z.i;
-  $("moneyNote").textContent = dmon(a.d) + " to " + dmon(z.d) + " · " + pts.length + " trading days";
+  $("moneyNote").textContent = dmon(a.d) + (spanDays > 400 ? " " + a.d.slice(0, 4) : "") + " to " + dmon(z.d) + (spanDays > 400 ? " " + z.d.slice(0, 4) : "") + " · " + pts.length + " trading days";
   const k = (t, v, n, c) => '<div><div class="k">' + t + '</div><div class="v ' + (c || "") + '">' + v + '</div><div class="n">' + n + "</div></div>";
   $("moneyKpis").innerHTML =
     k("Worth now", cl(z.v), "on " + dmon(z.d)) +
@@ -2540,8 +2539,11 @@ function renderMoney() {
   $("moneyLegend").innerHTML = MONEY.mode === "gain"
     ? '<span><i></i>Gain = what it is worth minus what you put in</span>'
     : '<span><i></i>Worth</span><span><i class="d"></i>Put in</span><span><i class="g"></i>The gap is your gain</span>';
-  $("moneyFoot").innerHTML = "Rebuilt from your exact holdings today with each SIP taken back out at that day's NAV, so it assumes nothing else was bought or sold since " + dmon(a.d) +
+  $("moneyFoot").innerHTML = PHIST && PHIST.basis === "your transaction report"
+    ? "Built from your own transaction report: units and money in are running totals of what you actually bought and sold, valued at each day's published NAV. A new point is added every trading night."
+    : "Rebuilt from your exact holdings today with each SIP taken back out at that day's NAV, so it assumes nothing else was bought or sold since " + dmon(a.d) +
     ". A new point is added every trading night, so this grows into a long history. Earlier years aren't recorded anywhere, because a Groww statement only gives today's totals.";
+  MONEY.pts = pts;
   drawMoneyChart(pts);
 }
 
@@ -2554,7 +2556,7 @@ function drawMoneyChart(pts) {
   let lo = Math.min(...all), hi = Math.max(...all);
   if (hi - lo < 1) hi = lo + 1;
   const pad = (hi - lo) * .07; lo -= pad; hi += pad;
-  if (gainMode && Math.min(...all) >= 0) lo = Math.max(0, lo);
+  if (Math.min(...all) >= 0) lo = Math.max(0, lo);
   const ticks = niceTicks(lo, hi, 4), y0 = ticks[0], y1 = ticks[ticks.length - 1];
   const t = d => Date.parse(d + "T00:00:00"), x0 = t(pts[0].d), x1 = t(pts[pts.length - 1].d);
   const X = d => m.l + (t(d) - x0) / ((x1 - x0) || 1) * (W - m.l - m.r), Y = v => H - m.b - (v - y0) / (y1 - y0) * (H - m.t - m.b);
@@ -2563,12 +2565,13 @@ function drawMoneyChart(pts) {
   const ip = []; pts.forEach((p, i) => { if (i) ip.push([X(p.d), Y(pts[i - 1].i)]); ip.push([X(p.d), Y(p.i)]); });
   const up = pts[pts.length - 1].v - pts[pts.length - 1].i >= 0, col = !gainMode || up ? "#5f8a15" : "#da291c", fill = !gainMode || up ? "rgba(134,188,37,.2)" : "rgba(218,41,28,.14)";
   const poly = gainMode ? vp.concat([[vp[vp.length - 1][0], Y(0)], [vp[0][0], Y(0)]]) : vp.concat(ip.slice().reverse());
+  const longSpan = (x1 - x0) > 400 * 86400000, xl = d => longSpan ? new Date(d + "T00:00:00").toLocaleDateString("en-IN", { month: "short", year: "2-digit" }) : dmon(d);
   const n = pts.length, xi = n <= 5 ? pts.map((_, i) => i) : [0, 1, 2, 3, 4].map(i => Math.round(i * (n - 1) / 4));
   host.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" height="' + H + '" role="img" aria-label="' + (gainMode ? "Gain over time" : "Portfolio worth against money put in, over time") + '">' +
     ticks.map(v => '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + f1(Y(v)) + '" y2="' + f1(Y(v)) + '" stroke="#ececec"/>' +
       (HIDE ? "" : '<text x="' + (m.l - 8) + '" y="' + f1(Y(v) + 3) + '" font-size="10.5" text-anchor="end" fill="#97999b">' + (v === 0 ? "0" : cx(v)) + "</text>")).join("") +
     (gainMode ? '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + f1(Y(0)) + '" y2="' + f1(Y(0)) + '" stroke="#97999b"/>' : "") +
-    xi.map(i => '<text x="' + f1(X(pts[i].d)) + '" y="' + (H - 8) + '" font-size="10.5" text-anchor="' + (i === 0 ? "start" : i === n - 1 ? "end" : "middle") + '" fill="#97999b">' + dmon(pts[i].d) + "</text>").join("") +
+    xi.map(i => '<text x="' + f1(X(pts[i].d)) + '" y="' + (H - 8) + '" font-size="10.5" text-anchor="' + (i === 0 ? "start" : i === n - 1 ? "end" : "middle") + '" fill="#97999b">' + xl(pts[i].d) + "</text>").join("") +
     '<path d="' + line(poly) + ' Z" fill="' + fill + '"/>' +
     (gainMode ? "" : '<path d="' + line(ip) + '" fill="none" stroke="#97999b" stroke-width="1.5" stroke-dasharray="4 4"/>') +
     '<path d="' + line(vp) + '" fill="none" stroke="' + col + '" stroke-width="2.4" stroke-linejoin="round"/>' +
@@ -2583,7 +2586,7 @@ function drawMoneyChart(pts) {
     $("mguide").setAttribute("x1", gx); $("mguide").setAttribute("x2", gx); $("mguide").setAttribute("visibility", "visible");
     $("mdot").setAttribute("cx", gx); $("mdot").setAttribute("cy", gy); $("mdot").setAttribute("visibility", "visible");
     tip.hidden = false;
-    tip.innerHTML = "<b>" + dlong(p.d) + "</b><br>worth <b>" + cl(p.v) + "</b><br><span class=\"m\">put in " + cl(p.i) + "<br>gain " + sgc(p.v - p.i) +
+    tip.innerHTML = "<b>" + (longSpan ? p.d.split("-").reverse().join("-") : dlong(p.d)) + "</b><br>worth <b>" + cl(p.v) + "</b><br><span class=\"m\">put in " + cl(p.i) + "<br>gain " + sgc(p.v - p.i) +
       (prev ? "<br>that day " + sgc((p.v - prev.v) - (p.i - prev.i)) : "") + "</span>";
     const tw = tip.offsetWidth, left = Math.min(Math.max(gx * (r.width / W) - tw / 2, 0), r.width - tw);
     tip.style.left = left + "px"; tip.style.top = Math.max(0, gy * (r.width / W) - tip.offsetHeight - 14) + "px";
@@ -2593,7 +2596,7 @@ function drawMoneyChart(pts) {
   hit.addEventListener("mousemove", move); hit.addEventListener("mouseleave", hide);
   hit.addEventListener("touchstart", move, { passive: true }); hit.addEventListener("touchmove", move, { passive: true }); hit.addEventListener("touchend", hide);
 }
-window.addEventListener("resize", () => { if (!$("moneyWrap").hidden) safe(() => drawMoneyChart(histPoints()), "moneyWrap"); });
+window.addEventListener("resize", () => { if (!$("moneyWrap").hidden) safe(() => drawMoneyChart(MONEY.pts || histPoints()), "moneyWrap"); });
 
 // ---- 2. Estimate vs actual NAV
 function renderScore() {
@@ -2766,6 +2769,59 @@ function renderSectors() {
     '<p class="sub2" style="margin-top:12px">Sectors are Yahoo\'s classification (' + (num(X.classified_pct) ? X.classified_pct : "most") + "% of your money is covered); holdings are the funds' monthly disclosures, so this lags real life a little.</p>";
 }
 
+// ---- section menu
+const NAV = [["Today", ["hero"]], ["Advice", ["advWrap", "valWrap"]], ["Money", ["fundsSec"]], ["Market", ["whyWrap", "moveSec"]], ["Funds", ["compareWrap", "healthWrap", "accSec"]], ["Returns & tax", ["retWrap", "taxWrap"]]];
+function navTarget(ids) { for (const id of ids) { const e = $(id); if (e && !e.hidden) return e; } return null; }
+function setupNav() {
+  const bar = $("snav"), inner = $("snavIn"); if (!bar) return;
+  bar.hidden = false;
+  inner.innerHTML = NAV.map(([t], i) => '<button type="button" data-i="' + i + '">' + esc(t) + "</button>").join("");
+  inner.querySelectorAll("button").forEach(b => b.onclick = () => { if (+b.dataset.i === 0) { window.scrollTo({ top: 0, behavior: "smooth" }); return; } const e = navTarget(NAV[+b.dataset.i][1]); if (e) e.scrollIntoView({ behavior: "smooth", block: "start" }); });
+  let busy = false;
+  const spy = () => { busy = false; let cur = 0;
+    NAV.forEach(([, ids], i) => { const e = navTarget(ids); if (e && e.getBoundingClientRect().top <= 90) cur = i; });
+    inner.querySelectorAll("button").forEach((b, i) => b.setAttribute("aria-current", String(i === cur))); };
+  window.addEventListener("scroll", () => { if (!busy) { busy = true; requestAnimationFrame(spy); } }, { passive: true });
+  spy();
+}
+
+// ---- footer health line: is everything feeding this page fresh?
+function prevTradingDay(iso) { for (let i = 1; i < 15; i++) { const d = isoPlus(new Date(iso + "T00:00:00"), -i); if (isTradingDay(d)) return d; } return null; }
+function renderHealthLine() {
+  const box = $("healthLine"); if (!box) return;
+  const ist = istNow(), today = istDate(ist), mins = ist.getHours() * 60 + ist.getMinutes(), items = [];
+  const dot = (cls, txt) => '<span><i class="dotc ' + cls + '"></i>' + txt + "</span>";
+  const closedSession = isTradingDay(today) && mins >= 15 * 60 + 30 ? today : prevTradingDay(today);
+  if (LAST_BATCH && LAST_BATCH.generatedAt) {
+    const age = ageMinutes(LAST_BATCH.generatedAt), gd = String(LAST_BATCH.generatedAt).slice(0, 10);
+    if (marketOpen()) items.push(age == null ? "" : dot(age <= 30 ? "g" : age <= 90 ? "f" : "xf", "Prices " + (age < 60 ? Math.round(age) + " min" : Math.round(age / 60) + " h") + " old"));
+    else items.push(gd >= closedSession ? dot("g", "Prices: close of " + dlong(closedSession)) : dot("f", "Prices from " + dlong(gd) + "; fresh ones come with the next session"));
+  }
+  const graded = (Array.isArray(HIST) ? HIST : []).reduce((m, h) => h && typeof h.date === "string" && h.date > m ? h.date : m, "");
+  if (graded && closedSession) {
+    const due = closedSession === today && mins < 23 * 60 + 45 ? prevTradingDay(today) : closedSession;
+    items.push(graded >= due ? dot("g", "NAVs graded to " + dlong(graded)) : dot("f", "NAV grading behind: last graded " + dlong(graded)));
+  }
+  const sd = TAX && TAX.statement_as_on;
+  if (sd) { const d = Math.floor((Date.parse(today + "T00:00:00") - Date.parse(sd + "T00:00:00")) / 86400000);
+    items.push(dot(d <= 35 ? "g" : d <= 45 ? "f" : "xf", "Statement of " + dmon(sd) + " (" + d + " day" + (d === 1 ? "" : "s") + " old)")); }
+  const te = CFG && CFG.profile && CFG.profile.github_token_expires;
+  if (te && /^\d{4}-\d{2}-\d{2}$/.test(String(te))) { const d = Math.floor((Date.parse(te + "T00:00:00") - Date.parse(today + "T00:00:00")) / 86400000);
+    items.push(dot(d > 45 ? "g" : d >= 14 ? "f" : "xf", d < 0 ? "GitHub token expired: the schedule has stopped" : "GitHub token valid to " + dmon(te) + " (" + d + " days)")); }
+  box.innerHTML = items.filter(Boolean).join(""); box.hidden = !box.innerHTML;
+}
+
+// ---- GIFT Nifty for the ticker
+function giftTick() {
+  const g = GIFT; if (!g || !num(g.last) || g.last <= 0 || !num(g.change) || !num(g.change_pct)) return null;
+  const q = String(g.quote_time || "").match(/^(\d{2})-(\w{3})-(\d{4}) (\d{2}):(\d{2})/);
+  const qt = q ? Date.parse(q[1] + " " + q[2] + " " + q[3] + " " + q[4] + ":" + q[5] + " GMT+0530") : NaN;
+  const ageH = isFinite(qt) ? (Date.now() - qt) / 3600000 : null;
+  if (ageH != null && ageH > 80) return null;                                    // longer than a weekend: don't show an old quote
+  const when = ageH != null && ageH > 3 ? " (" + new Date(qt).toLocaleString("en-IN", { weekday: "short", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }) + ")" : "";
+  return { name: "GIFT Nifty" + when, level: g.last, change: g.change, move_pct: g.change_pct, unit: "" };
+}
+
 // ---- hide amounts
 // Some sentences are written by the nightly jobs ("your portfolio moved about +₹91,615", the tax figure in the advice). Those
 // are scrubbed here instead. Market figures stay: crore amounts (flows, headlines) and per-unit NAVs are public.
@@ -2819,7 +2875,7 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   FHEALTH = await loadJson("data/fund_health.json", j => isObj(j) && Array.isArray(j.funds), null);
   setupHide();
   renderReturns(); renderTax(); renderStatementBar();
-  safe(renderMoney, "moneyWrap"); safe(renderSectors, "sectorWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap");
+  safe(renderMoney, "moneyWrap"); safe(renderSectors, "sectorWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(renderHealthLine); safe(setupNav);
   renderCompare();
   loadNews();
   loadOutlook();

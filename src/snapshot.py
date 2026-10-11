@@ -5,6 +5,9 @@ Written to docs/data/portfolio_history.json and drawn by the "Your money over ti
     python src/snapshot.py              # add today's point (nightly, after reconcile.py); first ever run backfills
     python src/snapshot.py --backfill   # rebuild the file from scratch
 
+With config/transactions.csv (see import_transactions.py) the history is exact and starts at your first purchase.
+Without it, it is rebuilt from today's holdings as described below.
+
 Where the history comes from. state.json has your exact units and invested amount today (they come from the Groww
 statement). Walking backwards, the only things that changed them are the SIPs in config/portfolio.yaml, so each
 SIP is taken back out at its own NAV: units(t) = units now - the units bought after t. That is exact as long as the
@@ -20,7 +23,8 @@ import sys
 import pandas as pd
 
 from analytics import fetch_nav_series
-from common import load_portfolio, now_ist, read_json, write_json
+from analytics import load_transactions
+from common import CONFIG, load_portfolio, now_ist, read_json, write_json
 
 OUT = "portfolio_history.json"
 DEFAULT_SINCE = "2026-08-21"          # first NAV date the dashboard recorded
@@ -31,8 +35,7 @@ def _day(s: str) -> str:
 
 
 def point(date: str, rows: dict) -> dict:
-    return {"d": date, "v": round(sum(r[0] for r in rows.values()), 2), "i": round(sum(r[1] for r in rows.values()), 2),
-            "f": {k: [round(r[0], 2), round(r[1], 2)] for k, r in rows.items()}}
+    return {"d": date, "v": round(sum(r[0] for r in rows.values()), 2), "i": round(sum(r[1] for r in rows.values()), 2)}
 
 
 def backfill(cfg: dict, state: dict, since: str) -> list[dict]:
@@ -70,6 +73,61 @@ def backfill(cfg: dict, state: dict, since: str) -> list[dict]:
     return out
 
 
+def tx_units() -> dict[str, dict[pd.Timestamp, float]]:
+    """config/transactions.csv's units column (written by import_transactions.py), summed per fund and day; {} if absent."""
+    path, out = CONFIG / "transactions.csv", {}
+    if not path.exists():
+        return out
+    for line in path.read_text().splitlines():
+        parts = [x.strip() for x in line.split(",")]
+        if len(parts) >= 4 and parts[3] and parts[0][:1].isdigit():
+            try:
+                d = pd.Timestamp(parts[0]); out.setdefault(parts[1], {})
+                out[parts[1]][d] = out[parts[1]].get(d, 0.0) + float(parts[3])
+            except ValueError:
+                continue
+    return out
+
+
+def backfill_from_transactions(cfg: dict, state: dict) -> list[dict] | None:
+    """Exact history from the first purchase: units and money in are running sums of the real transactions.
+    Returns None (so the caller falls back to the SIP reconstruction) when the file doesn't explain today's units."""
+    tx, un = load_transactions(), tx_units()
+    if not tx:
+        return None
+    navs, cum = {}, {}
+    for f in cfg["funds"]:
+        fid = f["id"]
+        rows = tx.get(fid)
+        s = fetch_nav_series(f["amfi_code"])
+        if not rows or s is None:
+            print(f"[warn] transactions: nothing usable for {fid}; using the SIP reconstruction", file=sys.stderr)
+            return None
+        navs[fid] = s
+        money = pd.Series({pd.Timestamp(d): 0.0 for d, _ in rows})
+        for d, a in rows:
+            money[pd.Timestamp(d)] += a
+        units = pd.Series(un.get(fid, {}), dtype=float)
+        if units.empty:                                  # no units column: price each purchase at that day's NAV
+            units = pd.Series({d: float(a) / float(s.asof(d)) for d, a in money.items()})
+        cum[fid] = (units.sort_index().cumsum(), money.sort_index().cumsum())
+        held = float((state.get(fid) or {}).get("units") or 0)
+        if held and abs(cum[fid][0].iloc[-1] / held - 1) > 0.01:
+            print(f"[warn] transactions: {fid} units {cum[fid][0].iloc[-1]:,.1f} vs holding {held:,.1f}; using the SIP reconstruction", file=sys.stderr)
+            return None
+    start = min(c[0].index[0] for c in cum.values())
+    dates = sorted(set.union(*[set(s.index[s.index >= start]) for s in navs.values()]))
+    out = []
+    for d in dates:
+        rows = {}
+        for fid, (u, m) in cum.items():
+            uu, mm = u[u.index <= d], m[m.index <= d]
+            units = float(uu.iloc[-1]) if len(uu) else 0.0
+            rows[fid] = (units * float(navs[fid].asof(d)) if units else 0.0, float(mm.iloc[-1]) if len(mm) else 0.0)
+        out.append(point(d.date().isoformat(), rows))
+    return out
+
+
 def today_point(cfg: dict, state: dict) -> dict | None:
     rows, days = {}, []
     for f in cfg["funds"]:
@@ -89,8 +147,11 @@ def main() -> None:
     cfg, state = load_portfolio(), read_json("state.json", {})
     doc = read_json(OUT, None)
     if args.backfill or not (isinstance(doc, dict) and doc.get("points")):
-        pts = backfill(cfg, state, args.since)
-        doc = {"since": args.since, "basis": "reconstructed from today's units, taking the configured SIPs back out", "points": pts}
+        pts = backfill_from_transactions(cfg, state)
+        basis = "your transaction report"
+        if pts is None:
+            pts, basis = backfill(cfg, state, args.since), "reconstructed from today's units, taking the configured SIPs back out"
+        doc = {"since": pts[0]["d"], "basis": basis, "points": pts}
         print(f"[ok] backfilled {len(pts)} points from {pts[0]['d']} to {pts[-1]['d']}")
     p = today_point(cfg, state)
     if p:

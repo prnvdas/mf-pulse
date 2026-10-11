@@ -69,7 +69,8 @@ def main() -> None:
         if not st["as_on"]:
             sys.exit("Couldn't read the 'HOLDINGS AS ON <date>' line; is this the Groww holdings statement?")
         label, rows_n = f"{st['as_on']}.xlsx", len(st["rows"])
-    key = os.environ.get("STATEMENT_KEY") or getpass.getpass("Passphrase (the STATEMENT_KEY secret) (hidden): ")
+    keyfile = pathlib.Path(os.environ.get("MFP_CONFIG_DIR") or pathlib.Path.home() / ".config" / "mf-pulse") / "statement.key"
+    key = os.environ.get("STATEMENT_KEY") or (keyfile.read_text().strip() if keyfile.exists() else "") or getpass.getpass("Passphrase (the STATEMENT_KEY secret) (hidden): ")
     if len(key) < 20:
         sys.exit("Use a long random passphrase (20+ characters), e.g. the output of: openssl rand -base64 32")
     out = pathlib.Path(args.out_dir or ROOT / "statements") / f"{label}.enc"

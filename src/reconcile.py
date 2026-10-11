@@ -12,6 +12,7 @@ from __future__ import annotations
 import datetime as dt
 
 from common import (
+    CONFIG,
     fetch_amfi_navs,
     load_portfolio,
     now_ist,
@@ -22,6 +23,19 @@ from common import (
 
 def _parse_amfi_date(s: str) -> dt.date:
     return dt.datetime.strptime(s, "%d-%b-%Y").date()
+
+
+def log_sip_transaction(fund_id: str, day: dt.date, amount: float, units: float, nav: float) -> None:
+    """Keep config/transactions.csv (the imported order history) current: one line per SIP the dashboard counts,
+    so the exact XIRR, tax lots and money-over-time chart stay exact without re-importing every month."""
+    path = CONFIG / "transactions.csv"
+    if not path.exists():
+        return
+    line = f"{day.isoformat()},{fund_id},{amount:.2f},{units:.4f},{nav}"
+    text = path.read_text()
+    if f"{day.isoformat()},{fund_id},{amount:.2f}," in text:
+        return
+    path.write_text(text + ("" if text.endswith("\n") else "\n") + line + "\n")
 
 
 def main() -> None:
@@ -94,6 +108,7 @@ def main() -> None:
                     entry.get("seed_invested", fund.get("seed_invested", 0))
                 ) + sip["amount"]
                 entry["sip_applied_month"] = this_month
+                log_sip_transaction(fid, _parse_amfi_date(row["date"]), float(sip["amount"]), bought, new_nav)
                 print(f"[info] {fid}: SIP +{bought:.4f} units (day {ts.day}, target {day})")
 
         # Grade the estimate we made earlier today. `stale` is a display-only

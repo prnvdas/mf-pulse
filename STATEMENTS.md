@@ -34,6 +34,10 @@ The monthly holdings statement only has today's totals. Groww's **transaction re
 
 1. In Groww, download the mutual-fund transaction report for the **full history** ("since inception") as .xlsx or .csv, and put it in `MF-Holding/` next to your statement.
 2. Check it first (nothing is written): `python src/import_transactions.py --dry-run`. It prints each fund's units from the report beside the units you hold; they must match within 1%, otherwise it refuses (a partial date range would draw a wrong chart).
-3. Encrypt and push it, the same way as the statement: `python src/encrypt_statement.py --transactions --push`. The `transactions` workflow decrypts it with the same `STATEMENT_KEY`, keeps only dates, amounts and units in `config/transactions.csv`, and rebuilds the history, XIRR and tax lots.
+3. Encrypt and push it, the same way as the statement (run from the mf-pulse folder; it finds your passphrase in `~/.config/mf-pulse/statement.key` by itself): `python3 src/encrypt_statement.py --transactions --push`. The `transactions` workflow decrypts it with the same `STATEMENT_KEY`, keeps only dates, amounts and units in `config/transactions.csv`, and rebuilds the history, XIRR and tax lots.
 
 Your name, PAN, phone and folio numbers are never copied. `config/transactions.csv` is visible in this public repository (every purchase date and amount); the chart it produces shows the same thing, so if that bothers you, keep the repository private instead.
+
+You normally never repeat this: each SIP the dashboard counts is added to `config/transactions.csv` automatically. Only
+a purchase or sale outside your SIPs (a lump sum, a redemption) makes the history fall behind, and then the page shows
+a "History out of date" notice with these steps and a copy button for the command.

@@ -132,6 +132,22 @@ def backfill_from_transactions(cfg: dict, state: dict) -> list[dict] | None:
     return out
 
 
+def tx_check(cfg: dict, state: dict) -> dict:
+    """Does config/transactions.csv still explain the units you hold? A purchase or sale made outside the SIPs
+    (a lump sum, a redemption) makes it fall behind; the page then tells you to download the order history again."""
+    path = CONFIG / "transactions.csv"
+    if not path.exists():
+        return {"status": "none"}
+    un, gaps, last = tx_units(), {}, ""
+    for f in cfg["funds"]:
+        held = float((state.get(f["id"]) or {}).get("units") or 0)
+        mine = un.get(f["id"], {})
+        if held and mine:
+            gaps[f["id"]] = round((sum(mine.values()) / held - 1) * 100, 2)
+            last = max(last, max(mine).date().isoformat())
+    return {"status": "stale" if any(abs(g) > 1 for g in gaps.values()) or len(gaps) < len(cfg["funds"]) else "ok", "gaps_pct": gaps, "last_transaction": last}
+
+
 def today_point(cfg: dict, state: dict) -> dict | None:
     rows, days = {}, []
     for f in cfg["funds"]:
@@ -162,6 +178,7 @@ def main() -> None:
         by = {x["d"]: x for x in doc["points"]}
         by[p["d"]] = p
         doc["points"] = [by[k] for k in sorted(by)]
+    doc["tx_check"] = tx_check(cfg, state)
     doc["generated_at"] = now_ist().isoformat()
     write_json(OUT, doc)
     last = doc["points"][-1]

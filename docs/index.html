@@ -218,6 +218,8 @@
   .hbar .tg{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8a5a00;margin-right:10px;white-space:nowrap}
   .hbar.soft{border-left-color:var(--grey-light);color:var(--grey)}.hbar.soft .tg{color:var(--grey)}
   .hbar code{font-size:12px}
+  .hbar ol{margin:6px 0 2px 20px}.hbar li{margin:2px 0}
+  button.cp{padding:3px 10px;font-size:10.5px;margin-left:6px;vertical-align:1px}
   .stat .x{font-size:12px;color:var(--grey);margin-top:5px}
   .subrow td{font-size:12.5px;color:var(--grey);padding:8px 0;border-bottom:1px dashed var(--rule)}
   .subrow td:first-child{padding-left:18px}
@@ -398,6 +400,7 @@
 <main class="wrap">
   <div class="hbar" id="holidayBar" hidden role="status"></div>
   <div class="hbar" id="stmtBar" hidden role="status"></div>
+  <div class="hbar" id="txBar" hidden role="status"></div>
 
 
   <div class="hero" id="hero">
@@ -2117,7 +2120,7 @@ function renderStatementBar() {
   const overdue = ist.getDate() >= 10;
   bar.className = "hbar" + (overdue ? "" : " soft");
   bar.innerHTML = '<div class="in"><span class="tg">' + (overdue ? "Holdings out of date" : "Time to refresh") + "</span><span>Your holdings were last updated from the Groww statement of <b>" + when + "</b> (" + days + " days ago), so this month's SIP and any new purchases may not be in the invested amounts and units yet. " +
-    "Download the latest statement into <code>MF-Holding/</code> and run <code>python3 deploy/statement_setup.py</code>.</span></div>";
+    "Download the latest statement into <code>MF-Holding/</code>, then in a terminal opened in the mf-pulse folder run " + cmdBox("python3 deploy/statement_setup.py") + ".</span></div>";
   bar.hidden = false;
 }
 
@@ -2822,6 +2825,29 @@ function giftTick() {
   return { name: "GIFT Nifty" + when, level: g.last, change: g.change, move_pct: g.change_pct, unit: "" };
 }
 
+// a command to paste into a terminal, with a copy button
+const cmdBox = c => "<code>" + esc(c) + '</code><button type="button" class="ghost cp" data-cmd="' + esc(c) + '">Copy</button>';
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("button.cp"); if (!b) return;
+  const done = () => { b.textContent = "Copied"; setTimeout(() => { b.textContent = "Copy"; }, 1500); };
+  try { navigator.clipboard.writeText(b.dataset.cmd).then(done, () => toast("Couldn't copy: select the command and copy it by hand.", true)); } catch (x) { toast("Couldn't copy: select the command and copy it by hand.", true); }
+});
+
+// the imported order history stops explaining your units after a purchase or sale outside the SIPs
+function renderTxBar() {
+  const bar = $("txBar"); if (!bar) return;
+  const c = PHIST && PHIST.tx_check;
+  if (!c || c.status !== "stale") { bar.hidden = true; return; }
+  const names = Object.entries(c.gaps_pct || {}).filter(([, g]) => num(g) && Math.abs(g) > 1).map(([id, g]) => {
+    const f = ((CFG && CFG.funds) || []).find(x => x.id === id); return esc(shortName(f ? f.name : id)) + " (" + (g < 0 ? "" : "+") + g.toFixed(1) + "%)"; });
+  bar.className = "hbar";
+  bar.innerHTML = '<div class="in"><span class="tg">History out of date</span><span>Your saved order history no longer explains the units you hold' + (names.length ? ": " + names.join(", ") : "") +
+    ". You probably bought or sold something outside your SIPs, so exact XIRR, tax lots and the money chart may be a little off. To refresh it:</span>" +
+    "<ol><li>In Groww, download <b>Mutual Funds → Order history</b> for all time into the <code>MF-Holding/</code> folder.</li><li>Open a terminal in the mf-pulse folder and run " +
+    cmdBox("python3 src/encrypt_statement.py --transactions --push") + ".</li><li>Wait a couple of minutes; this notice disappears.</li></ol></div>";
+  bar.hidden = false;
+}
+
 // ---- hide amounts
 // Some sentences are written by the nightly jobs ("your portfolio moved about +₹91,615", the tax figure in the advice). Those
 // are scrubbed here instead. Market figures stay: crore amounts (flows, headlines) and per-unit NAVs are public.
@@ -2875,7 +2901,7 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   FHEALTH = await loadJson("data/fund_health.json", j => isObj(j) && Array.isArray(j.funds), null);
   setupHide();
   renderReturns(); renderTax(); renderStatementBar();
-  safe(renderMoney, "moneyWrap"); safe(renderSectors, "sectorWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(renderHealthLine); safe(setupNav);
+  safe(renderMoney, "moneyWrap"); safe(renderSectors, "sectorWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(renderHealthLine); safe(renderTxBar); safe(setupNav);
   renderCompare();
   loadNews();
   loadOutlook();

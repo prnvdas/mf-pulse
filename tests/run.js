@@ -13,7 +13,7 @@ const { spawn } = require('child_process'), fs = require('fs'), path = require('
     // asynchronous on purpose: the servers above live in this process and must keep answering while the suite runs
     // output is passed through, and in GitHub Actions each failure also becomes an annotation (visible without the raw log)
     const code = await new Promise(res => {
-      const c = spawn(process.execPath, [path.join(dir, name + '.js')], { stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, BASE: `http://127.0.0.1:${live ? 8001 : 8000}/index.html` }, cwd: __dirname });
+      const c = spawn(process.execPath, [path.join(dir, name + '.js')], { stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, NODE_OPTIONS: `--require ${path.join(__dirname, 'preload.js')}`, BASE: `http://127.0.0.1:${live ? 8001 : 8000}/index.html` }, cwd: __dirname });
       let seen = 0;
       const tee = stream => d => { const t = d.toString(); stream.write(t);
         if (process.env.GITHUB_ACTIONS) for (const l of t.split('\n')) if (/^FAIL|Error|failed|Timeout/.test(l.trim()) && seen++ < 25) console.log(`::error title=${name}::${l.trim().slice(0, 300).replace(/[\r\n%]/g, ' ')}`); };

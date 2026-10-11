@@ -75,6 +75,7 @@ jobs:
         run: |
           python src/export_web.py
           python src/tax.py
+          python src/snapshot.py --backfill   # a fund sold or added changes the portfolio the history is built from
       - name: Commit
         if: steps.find.outputs.state == 'current'
         run: |

@@ -18,7 +18,7 @@ import subprocess
 import sys
 
 DATA = pathlib.Path(__file__).resolve().parent.parent / "docs" / "data"
-LISTS = {"history.json", "movers.json", "outlook_history.json"}          # everything else the page reads is an object
+LISTS = {"history.json", "movers.json", "outlook_history.json", "picks_history.json"}          # everything else the page reads is an object
 
 
 def _bad_constant(name: str):

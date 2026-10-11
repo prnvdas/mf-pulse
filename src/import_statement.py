@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import glob
+import json
 import re
 import sys
 
@@ -82,6 +83,14 @@ def read_statement(path: str) -> dict:
     return {"as_on": as_on, "summary": summary, "rows": rows}
 
 
+def read_closed() -> dict:
+    try:
+        d = json.loads((ROOT / "config" / "funds_closed.json").read_text())
+        return d if isinstance(d.get("closed"), list) else {"closed": []}
+    except (OSError, ValueError, AttributeError):
+        return {"closed": []}
+
+
 def match_fund(scheme: str, funds: list[dict]) -> dict | None:
     """Strict: the statement's name and the configured name must start the same (statements truncate long names).
     Looser word-overlap matching would file another fund with a similar name (a different Flexi Cap) under yours."""
@@ -105,7 +114,7 @@ def main() -> None:
     if not path:
         sys.exit("No statement found: put the Groww .xlsx in the MF-Holding/ folder.")
     st = read_statement(path)
-    cfg = load_portfolio()
+    cfg = load_portfolio(include_closed=True)
     state = read_json("state.json", {})
     print(f"[info] statement as on {st['as_on']}: {len(st['rows'])} folio rows (name, phone, PAN and full folio numbers are ignored)")
 
@@ -138,9 +147,17 @@ def main() -> None:
         inv = s.get("seed_invested")
         if inv and abs(p["invested"] / inv - 1) > 0.05:
             problems.append(f"{fid}: statement invested ₹{p['invested']:,.0f} vs dashboard ₹{inv:,.0f}")
-    missing = [f["id"] for f in cfg["funds"] if f["id"] not in per]
-    if missing:
-        problems.append("funds missing from the statement: " + ", ".join(missing))
+    # A fund that has vanished from the statement while the others are all there was sold completely: close it
+    # (below, once we know this isn't a dry run). If NOTHING matches, it is the wrong file: refuse as before.
+    closed_doc = read_closed()
+    already = {c["id"] for c in closed_doc["closed"]}
+    missing = [f["id"] for f in cfg["funds"] if f["id"] not in per and f["id"] not in already]
+    sold = [m for m in missing if (state.get(m) or {}).get("units")]
+    if missing and not per.keys() & {f["id"] for f in cfg["funds"]}:
+        problems.append("none of your funds are in this statement: " + ", ".join(missing))
+        sold = []
+    elif [m for m in missing if m not in sold]:
+        problems.append("funds missing from the statement: " + ", ".join(m for m in missing if m not in sold))
     if problems and not args.force:
         print("[refused] the statement doesn't match the dashboard (wrong account, or old file?). Use --force to override.\n  " + "\n  ".join(problems))
         sys.exit(1)
@@ -157,6 +174,16 @@ def main() -> None:
         print("[dry-run] nothing written")
         return
 
+    for m in sold:
+        name = next(f["name"] for f in cfg["funds"] if f["id"] == m)
+        closed_doc["closed"].append({"id": m, "name": name, "noticed_on": now_ist().date().isoformat(), "units_before": (state.get(m) or {}).get("units")})
+        print(f"[note] {name} is no longer in your statement: marked as sold, so it leaves the dashboard (its history is kept in your order history)")
+    reopened = [c["id"] for c in closed_doc["closed"] if c["id"] in per]
+    if reopened:
+        closed_doc["closed"] = [c for c in closed_doc["closed"] if c["id"] not in reopened]
+        print("[note] back in your statement, so reopened: " + ", ".join(reopened))
+    if sold or reopened:
+        (ROOT / "config" / "funds_closed.json").write_text(json.dumps(closed_doc, indent=2, ensure_ascii=False) + "\n")
     as_on = dt.date.fromisoformat(st["as_on"]) if st["as_on"] else now_ist().date()
     sip_day = {x["fund_id"]: int(x["day_of_month"]) for x in cfg.get("sips", [])}
     for fid, p in per.items():
@@ -173,7 +200,6 @@ def main() -> None:
            "portfolio": {"invested": sm.get("invested"), "value": sm.get("value"), "xirr_pct": sm.get("xirr_pct")},
            "funds": [{"fund_id": p["fund_id"], "name": p["name"], "units": round(p["units"], 3), "invested": round(p["invested"], 2),
                       "value": round(p["value"], 2), "folios": p["folios"]} for p in per.values()]}
-    import json
     (ROOT / "config" / "folios.json").write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n")
     print("[ok] state.json synced to the statement's units and invested amounts; config/folios.json written (no personal data)")
 

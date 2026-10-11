@@ -138,6 +138,18 @@ def folio_lots(fid: str, folios: dict | None, today: dt.date) -> list[dict]:
     return out
 
 
+def realized_this_fy(start: dt.date, end: dt.date) -> dict:
+    """From config/realized.json (yearly totals written by import_transactions.py)."""
+    import json
+    from common import CONFIG
+    label = f"{start.year}-{str(start.year + 1)[2:]}"
+    try:
+        y = json.loads((CONFIG / "realized.json").read_text()).get("by_fy", {}).get(label) or {}
+    except (OSError, ValueError, AttributeError):
+        y = {}
+    return {"ltcg": round(float(y.get("ltcg", 0)), 2), "stcg": round(float(y.get("stcg", 0)), 2), "sales": int(y.get("sales", 0)), "fy": label}
+
+
 def main() -> None:
     cfg, ts = load_portfolio(), now_ist()
     today = ts.date()
@@ -147,6 +159,11 @@ def main() -> None:
     folios = load_folios()
     rate_st, rate_lt, cess = t["stcg_pct"] / 100, t["ltcg_pct"] / 100, 1 + t["cess_pct"] / 100
     fy_start, fy_end = fy_bounds(today)
+    # gains you have already booked this financial year, read from your order history (any equity fund, even one you no
+    # longer hold); the figures typed under `tax:` in portfolio.yaml are added on top, for sales elsewhere (shares...)
+    auto = realized_this_fy(fy_start, fy_end)
+    t["realized_ltcg_this_fy"] = float(t["realized_ltcg_this_fy"]) + auto["ltcg"]
+    t["realized_stcg_this_fy"] = float(t["realized_stcg_this_fy"]) + auto["stcg"]
 
     funds, all_lots, nav_dates = [], [], []
     for f in cfg["funds"]:
@@ -252,7 +269,7 @@ def main() -> None:
            "rates": {"stcg_pct": t["stcg_pct"], "ltcg_pct": t["ltcg_pct"], "ltcg_exempt_inr": t["ltcg_exempt_inr"], "cess_pct": t["cess_pct"],
                      "long_term_days": t["long_term_days"], "note": "As last known to the author; edit `tax:` in config/portfolio.yaml if the law changed."},
            "fy": {"start": fy_start.isoformat(), "end": fy_end.isoformat(), "days_left": (fy_end - today).days,
-                  "realized_ltcg": t["realized_ltcg_this_fy"], "realized_stcg": t["realized_stcg_this_fy"]},
+                  "realized_ltcg": t["realized_ltcg_this_fy"], "realized_stcg": t["realized_stcg_this_fy"], "realized_from_history": auto},
            "totals": {"value": tot("value"), "cost": tot("cost"), "gain": tot("gain"), "lt_gain": lt_gain, "st_gain": st_gain,
                       "lt_value": tot("lt_value"), "st_value": tot("st_value")},
            "sell_all": {"lt_gain_after_setoff": round(lt_net), "st_gain_after_setoff": round(max(0.0, st_net)), "exempt_used": round(exempt_used),

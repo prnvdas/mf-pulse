@@ -364,6 +364,16 @@
   .sbar{display:flex;height:26px;gap:2px;margin:2px 0 12px}.sbar i{display:block;min-width:2px}
   .slegend{display:flex;flex-wrap:wrap;gap:6px 20px;font-size:12.5px;color:var(--grey)}
   .slegend b{color:var(--ink);font-weight:600}.slegend i{display:inline-block;width:9px;height:9px;margin-right:6px}
+  .pick{display:grid;grid-template-columns:190px 1fr;gap:6px 26px;padding:18px 0;border-bottom:1px solid var(--rule)}
+  .pick:last-child{border-bottom:0}
+  .pick h3{font-size:15px;font-weight:600;line-height:1.3}.pick h3 small{display:block;font-size:11.5px;font-weight:400;color:var(--grey);margin-top:2px}
+  .pick .no{display:inline-block;width:22px;color:var(--grey-light);font-weight:400}
+  .pick .sc{height:5px;background:var(--rule);margin:10px 0 4px;max-width:150px}.pick .sc i{display:block;height:100%;background:var(--green-deep)}
+  .pick .nums{font-size:12px;color:var(--grey);line-height:1.6}
+  .pick ul{margin:0 0 0 17px;font-size:13px;line-height:1.55}.pick li{margin:2px 0}
+  .pick .watch{margin-top:8px;color:#8a5a00;font-size:12.5px}.pick .watch b{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase}
+  .pick .watch ul{color:#8a5a00;font-size:12.5px}
+  @media(max-width:760px){.pick{grid-template-columns:1fr}}
   .chip.new{background:var(--grey-light)}
   .statline{display:flex;align-items:center;gap:8px;font-size:13px}
   .hideb{padding:8px 11px;line-height:0;display:inline-flex;align-items:center}
@@ -551,6 +561,14 @@
     <div id="taxBody"></div>
   </section>
 
+
+  <section id="ideasWrap" hidden>
+    <h2>Weekly ideas <span id="ideasNote"></span></h2>
+    <div class="hbar soft" style="margin:0 0 18px"><div class="in"><span class="tg">A screen, not a prediction</span>Nobody can reliably pick multibaggers in advance, and most names a screen like this finds will not multiply: some will fall hard. This ranks assets that already show strength and have room left, shows exactly why, and keeps score of how past picks did. It is not investment advice; never put in money you can't afford to lose.</div></div>
+    <div class="seg" id="ideasSeg" role="tablist" aria-label="Asset type"></div>
+    <div id="ideasBody"></div>
+    <div id="ideasRecord"></div>
+  </section>
 
   <div class="hline" id="healthLine" hidden></div>
   <p class="sub2" style="margin:14px 0 8px"><button class="ghost" id="diag" title="Test where the prices come from and say exactly what failed">Check data connection</button> <span style="margin-left:8px">tests where the prices come from and says what failed</span></p>
@@ -1280,7 +1298,8 @@ function tickerLabel() {
 function renderTicker() {                                                       // Brent crude leads the tape
   const ok = x => x && typeof x === "object" && x.name && Number.isFinite(x.level) && Number.isFinite(x.move_pct) && Number.isFinite(x.change);
   const gt = (() => { try { return giftTick(); } catch (e) { return null; } })();
-  INDEX_TICKER.render((Array.isArray(COMMS) ? COMMS : []).concat(gt ? [gt] : [], Array.isArray(MARKET) ? MARKET : []).filter(ok));
+  const cr = (() => { try { return cryptoTicks(); } catch (e) { return []; } })();
+  INDEX_TICKER.render((Array.isArray(COMMS) ? COMMS : []).concat(gt ? [gt] : [], cr, Array.isArray(MARKET) ? MARKET : []).filter(ok));
 }
 
 async function loadNews() {
@@ -2773,7 +2792,7 @@ function renderSectors() {
 }
 
 // ---- section menu
-const NAV = [["Today", ["hero"]], ["Advice", ["advWrap", "valWrap"]], ["Money", ["fundsSec"]], ["Market", ["whyWrap", "moveSec"]], ["Funds", ["compareWrap", "healthWrap", "accSec"]], ["Returns & tax", ["retWrap", "taxWrap"]]];
+const NAV = [["Today", ["hero"]], ["Advice", ["advWrap", "valWrap"]], ["Money", ["fundsSec"]], ["Market", ["whyWrap", "moveSec"]], ["Funds", ["compareWrap", "healthWrap", "accSec"]], ["Returns & tax", ["retWrap", "taxWrap"]], ["Ideas", ["ideasWrap"]]];
 function navTarget(ids) { for (const id of ids) { const e = $(id); if (e && !e.hidden) return e; } return null; }
 function setupNav() {
   const bar = $("snav"), inner = $("snavIn"); if (!bar) return;
@@ -2848,6 +2867,69 @@ function renderTxBar() {
   bar.hidden = false;
 }
 
+// ---- Bitcoin and Ethereum for the ticker: live from CoinGecko (free, open to browsers), refreshed every 5 minutes;
+// if it can't be reached, the last weekly snapshot (data/crypto.json) is shown with its time, never silently.
+let CRYPTO_LIVE = null, CRYPTO_SAVED = null;
+const CRYPTO_COINS = [["bitcoin", "Bitcoin"], ["ethereum", "Ethereum"]];
+async function loadCryptoPrices() {
+  try {
+    const r = await fetchWithTimeout("https://api.coingecko.com/api/v3/simple/price?ids=" + CRYPTO_COINS.map(c => c[0]).join(",") + "&vs_currencies=usd&include_24hr_change=true", { cache: "no-store" }, 8000);
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const j = await r.json(), out = {};
+    CRYPTO_COINS.forEach(([id]) => { const x = j && j[id]; if (x && num(x.usd) && x.usd > 0 && num(x.usd_24h_change)) out[id] = { usd: x.usd, chg: x.usd_24h_change }; });
+    if (Object.keys(out).length) { CRYPTO_LIVE = { at: Date.now(), coins: out }; return; }
+  } catch (e) { /* offline or rate-limited: fall back to the saved snapshot */ }
+}
+function cryptoTicks() {
+  const src = CRYPTO_LIVE && Date.now() - CRYPTO_LIVE.at < 20 * 60000 ? { coins: CRYPTO_LIVE.coins, label: "" }
+    : CRYPTO_SAVED && CRYPTO_SAVED.majors && Date.now() - Date.parse(CRYPTO_SAVED.generated_at || "") < 4 * 86400000
+      ? { coins: CRYPTO_SAVED.majors, label: " (" + new Date(CRYPTO_SAVED.generated_at).toLocaleString("en-IN", { weekday: "short", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }) + ")" } : null;
+  if (!src) return [];
+  return CRYPTO_COINS.map(([id, name]) => { const c = src.coins[id]; if (!c || !num(c.usd) || !num(c.chg)) return null;
+    return { name: name + src.label, level: c.usd, change: c.usd - c.usd / (1 + c.chg / 100), move_pct: c.chg, unit: "$" }; }).filter(Boolean);
+}
+async function startCrypto() {
+  CRYPTO_SAVED = await loadJson("data/crypto.json", isObj, null);
+  await loadCryptoPrices(); renderTicker();
+  setInterval(async () => { await loadCryptoPrices(); renderTicker(); }, 5 * 60000);
+}
+
+// ---- 8. Weekly ideas (data/picks.json from src/picks.py)
+let PICKS = null; const IDEAS = { tab: "crypto" };
+function renderIdeas() {
+  const wrap = $("ideasWrap"), P = PICKS;
+  const ok = x => x && Array.isArray(x.picks) && x.picks.length;
+  if (!isObj(P) || !(ok(P.crypto) || ok(P.stocks))) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  const tabs = [["crypto", "Crypto"], ["stocks", "Indian stocks"]].filter(([k]) => ok(P[k]));
+  if (!tabs.some(([k]) => k === IDEAS.tab)) IDEAS.tab = tabs[0][0];
+  const wk = P.week_of ? new Date(P.week_of + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" }) : "";
+  $("ideasNote").textContent = (wk ? "week of " + wk + " · " : "") + "refreshed every Sunday";
+  $("ideasSeg").innerHTML = tabs.map(([k, t]) => '<button role="tab" aria-selected="' + (IDEAS.tab === k) + '" data-k="' + k + '">' + t + "</button>").join("");
+  $("ideasSeg").querySelectorAll("button").forEach(b => b.onclick = () => { IDEAS.tab = b.dataset.k; renderIdeas(); });
+  const D = P[IDEAS.tab], isC = IDEAS.tab === "crypto", pc1 = v => num(v) ? pcs(v, 0) : "—";
+  const list = a => "<ul>" + (Array.isArray(a) ? a : []).map(x => "<li>" + esc(x) + "</li>").join("") + "</ul>";
+  const card = (p, i) => {
+    const nums = isC ? "Price $" + (num(p.price_usd) ? p.price_usd.toLocaleString("en-US", { maximumSignificantDigits: 5 }) : "—") + "<br>30 days " + pc1(p.d30) + " · 200 days " + pc1(p.d200) + (num(p.y1) ? " · 1 year " + pc1(p.y1) : "") + "<br>Rank #" + esc(p.rank) + " by size"
+      : "Price ₹" + (num(p.price) ? p.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—") + "<br>6 months " + pc1(p.m6) + " · P/E " + (num(p.pe) ? p.pe.toFixed(0) : "—") + "<br>Market cap ₹" + (num(p.mcap_cr) ? p.mcap_cr.toLocaleString("en-IN") : "—") + " cr" + (p.industry ? "<br>" + esc(p.industry) : "") +
+        (num(p.held_pct) && p.held_pct >= 0.05 ? "<br><b>Your funds already hold about " + p.held_pct.toFixed(1) + "% of your portfolio in it</b>" : "");
+    return '<div class="pick"><div><h3><span class="no">' + (i + 1) + "</span>" + esc(p.name) + "<small>" + esc(p.symbol) + '</small></h3><div class="sc" title="screen score ' + esc(p.score) + ' of 100"><i style="width:' + Math.max(0, Math.min(100, +p.score || 0)) + '%"></i></div><div class="nums">' + nums + "</div></div>" +
+      "<div>" + list(p.why) + '<div class="watch"><b>Watch out</b>' + list(p.risk) + "</div></div></div>";
+  };
+  let h = D.picks.map(card).join("");
+  if (isC) h += '<p class="sub2" style="margin-top:14px">In India, gains on crypto are taxed at a flat 30% with no set-off for losses, and 1% TDS is deducted on sales (rules as last known: check the current ones). Prices are in US dollars.</p>';
+  h += '<details style="margin-top:12px"><summary>How these were chosen</summary><p class="note" style="margin-top:10px">' + esc((P.method && P.method[IDEAS.tab]) || "") + " Screened " + esc(D.screened) + ", " + esc(D.eligible) + " passed the filters. " +
+    (isC ? "Data: CoinGecko." : "Data: NSE (Nifty 500 list) and Yahoo Finance, whose fundamentals can be incomplete or late.") + "</p></details>";
+  $("ideasBody").innerHTML = h;
+  const tr = P.track_record || {}, rows = (Array.isArray(tr.rows) ? tr.rows : []).filter(r => r && r.kind === (isC ? "crypto" : "stock") && typeof r.week_of === "string" && num(r.avg_pct) && num(r.bench_pct) && num(r.beat) && num(r.n)), sm0 = tr.summary && tr.summary[isC ? "crypto" : "stock"], sm = sm0 && num(sm0.avg_pct) && num(sm0.bench_pct) && num(sm0.beat) && num(sm0.n) ? sm0 : null;
+  let t = '<h2 style="margin-top:30px;margin-bottom:12px">Track record of earlier picks</h2>';
+  t += sm ? '<p class="scoreline" style="margin-top:0">Picks that are at least 4 weeks old: they averaged <b>' + pcs(sm.avg_pct, 1) + "</b> against <b>" + pcs(sm.bench_pct, 1) + "</b> for " + (isC ? "Bitcoin" : "the Nifty 500") + " over the same stretch, and <b>" + esc(sm.beat) + " of " + esc(sm.n) + "</b> picks beat it (" + esc(sm.weeks) + " weeks).</p>"
+    : '<p class="sub2">Building: picks are scored once they are 4 weeks old, so the first verdict arrives about a month after the first list.</p>';
+  if (rows.length) t += '<table class="mini"><thead><tr><th>Week of</th><th>Picks (avg)</th><th>' + (isC ? "Bitcoin" : "Nifty 500") + "</th><th>Beat it</th><th>Age</th></tr></thead><tbody>" +
+    rows.slice(-8).reverse().map(r => "<tr><td>" + dmon(r.week_of) + '</td><td class="' + (r.avg_pct >= 0 ? "pos" : "neg") + '">' + pcs(r.avg_pct, 1) + "</td><td>" + pcs(r.bench_pct, 1) + "</td><td>" + esc(r.beat) + " of " + esc(r.n) + "</td><td>" + esc(r.age_days) + " d</td></tr>").join("") + "</tbody></table>";
+  $("ideasRecord").innerHTML = t;
+}
+
 // ---- hide amounts
 // Some sentences are written by the nightly jobs ("your portfolio moved about +₹91,615", the tax figure in the advice). Those
 // are scrubbed here instead. Market figures stay: crore amounts (flows, headlines) and per-unit NAVs are public.
@@ -2899,9 +2981,10 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   TAX = await loadJson("data/tax.json", isObj, null);
   PHIST = await loadJson("data/portfolio_history.json", j => isObj(j) && Array.isArray(j.points), null);
   FHEALTH = await loadJson("data/fund_health.json", j => isObj(j) && Array.isArray(j.funds), null);
+  PICKS = await loadJson("data/picks.json", isObj, null);
   setupHide();
   renderReturns(); renderTax(); renderStatementBar();
-  safe(renderMoney, "moneyWrap"); safe(renderSectors, "sectorWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(renderHealthLine); safe(renderTxBar); safe(setupNav);
+  safe(renderMoney, "moneyWrap"); safe(renderSectors, "sectorWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(renderIdeas, "ideasWrap"); safe(renderHealthLine); safe(renderTxBar); safe(setupNav); safe(startCrypto);
   renderCompare();
   loadNews();
   loadOutlook();

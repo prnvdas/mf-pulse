@@ -132,6 +132,77 @@ def parse(path: str, cfg: dict) -> tuple[list[dict], dict]:
     return out, skipped
 
 
+NON_EQUITY = re.compile(r"fof|fund of fund|overseas|international|nasdaq|nyse|fang|global|debt|liquid|gilt|bond|gold|silver|money market|overnight|arbitrage|income|duration|credit|short term|ultra", re.I)
+
+
+def fy_of(d: dt.date) -> str:
+    y = d.year if d.month >= 4 else d.year - 1
+    return f"{y}-{str(y + 1)[2:]}"
+
+
+def realized_events(path: str, long_days: int = 365) -> list[dict]:
+    """Gains you have already booked, from EVERY scheme in the report (including funds you no longer hold), by
+    first-in-first-out matching of each redemption against that scheme's purchases. Equity-oriented schemes only
+    count towards the long-term exemption; fund-of-funds, debt, gold and overseas schemes are tagged equity=false."""
+    rows = load_rows(path)
+    h = find_header(rows)
+    if not h:
+        return []
+    hi, col = h
+    by: dict[str, list[tuple]] = {}
+    for r in rows[hi + 1:]:
+        get = lambda k: r[col[k]] if k in col and col[k] < len(r) else None
+        scheme, d = get("scheme"), to_date(get("date"))
+        if not scheme or d is None:
+            continue
+        kind, status = str(get("type") or ""), str(get("status") or "")
+        if BAD_TEXT.search(kind + " " + status) or (status.strip() and not OK_STATUS.search(status)) or (PAYOUT_TEXT.search(kind) and not NOCASH_TEXT.search(kind)):
+            continue
+        amt, units = num(get("amount")), num(get("units"))
+        if units is None or amt is None:
+            continue
+        out = bool(OUT_TEXT.search(kind)) or units < 0 or amt < 0
+        by.setdefault(str(scheme).strip(), []).append((d, out, abs(units), abs(amt)))
+    events = []
+    for scheme, xs in by.items():
+        lots: list[list] = []                                      # [date, units left, cost left]
+        for d, out, u, a in sorted(xs, key=lambda x: (x[0], x[1])):
+            if not out:
+                lots.append([d, u, a])
+                continue
+            need, cost, long_cost, long_proceeds = u, 0.0, 0.0, 0.0
+            parts = []
+            for lot in lots:
+                if need <= 1e-9:
+                    break
+                take = min(lot[1], need)
+                c = lot[2] * take / lot[1] if lot[1] else 0.0
+                parts.append((take, c, (d - lot[0]).days > long_days))
+                lot[1] -= take
+                lot[2] -= c
+                need -= take
+            lots = [x for x in lots if x[1] > 1e-9]
+            for take, c, is_long in parts:
+                share = take / u if u else 0.0
+                events.append({"date": d.isoformat(), "fy": fy_of(d), "scheme": scheme, "equity": not NON_EQUITY.search(scheme),
+                               "term": "long" if is_long else "short", "proceeds": round(a * share, 2), "cost": round(c, 2), "gain": round(a * share - c, 2)})
+    return sorted(events, key=lambda e: e["date"])
+
+
+def write_realized(path: str) -> None:
+    ev = realized_events(path)
+    by_fy: dict[str, dict] = {}
+    for e in ev:
+        if e["equity"]:
+            f = by_fy.setdefault(e["fy"], {"ltcg": 0.0, "stcg": 0.0, "sales": 0})
+            f["ltcg" if e["term"] == "long" else "stcg"] += e["gain"]
+            f["sales"] += 1
+    # Only yearly totals are kept (this file is public): no dates, schemes or amounts of individual sales.
+    doc = {"source": "your order history, first-in-first-out, equity-oriented schemes", "by_fy": {k: {a: round(b, 2) for a, b in v.items()} for k, v in sorted(by_fy.items())}}
+    (ROOT / "config" / "realized.json").write_text(__import__("json").dumps(doc, indent=1) + "\n")
+    print("[ok] realized gains by financial year (equity funds): " + (", ".join(f"{k}: long ₹{v['ltcg']:,.0f}, short ₹{v['stcg']:,.0f}" for k, v in doc["by_fy"].items()) or "none"))
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("file", nargs="?", help="report (.xlsx/.csv); default: the newest transaction report in MF-Holding/")
@@ -190,6 +261,8 @@ def main() -> None:
         w.writerow(["date", "fund_id", "amount", "units", "nav"])
         for t in tx:
             w.writerow([t["date"].isoformat(), t["fund_id"], f"{t['amount']:.2f}", "" if t["units"] is None else f"{t['units']:.4f}", "" if t["nav"] is None else t["nav"]])
+    if args.out == str(CSV_OUT):
+        write_realized(path)
     print(f"\n[ok] wrote {args.out}: exact XIRR, tax lots and the full money-over-time history will use it from the next nightly run")
 
 

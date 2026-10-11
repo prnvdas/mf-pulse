@@ -32,12 +32,13 @@ def _json(name: str, default):
         return default
 
 
-def load_portfolio() -> dict:
+def load_portfolio(include_closed: bool = False) -> dict:
     """portfolio.yaml, with what the jobs have learned layered on top so nothing needs hand-editing:
 
       config/funds_auto.json    funds found in a holdings statement that aren't in the yaml (import_statement.py)
       config/fund_meta.json     from Groww's page: current expense ratio, category, benchmark name (fund_meta.py)
       config/sips_detected.json your SIPs as seen in your order history (detect_sips.py)
+      config/funds_closed.json  funds you have sold completely (import_statement.py): left out unless include_closed
 
     The yaml keeps working on its own: its values are the fallback whenever a learned one is missing.
     """
@@ -56,6 +57,10 @@ def load_portfolio() -> dict:
     if isinstance(det.get("sips"), list) and det.get("funds_checked"):
         checked = set(det["funds_checked"])
         cfg["sips"] = [s for s in cfg.get("sips", []) if s["fund_id"] not in checked] + det["sips"]
+    closed = {c.get("id") for c in _json("funds_closed.json", {}).get("closed", []) if isinstance(c, dict)}
+    if closed and not include_closed:
+        cfg["funds"] = [f for f in cfg["funds"] if f["id"] not in closed]
+        cfg["sips"] = [s for s in cfg.get("sips", []) if s["fund_id"] not in closed]
     return cfg
 
 

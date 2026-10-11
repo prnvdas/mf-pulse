@@ -15,6 +15,7 @@ import common  # noqa: E402
 import detect_sips  # noqa: E402
 import health  # noqa: E402
 import import_transactions as itx  # noqa: E402
+import picks  # noqa: E402
 import reconcile  # noqa: E402
 import snapshot  # noqa: E402
 import validate_data  # noqa: E402
@@ -142,6 +143,70 @@ class ImportTransactions(unittest.TestCase):
         wb = openpyxl.Workbook(); wb.active.append(["Scheme Name", "Folio No.", "Units", "Invested Value"])
         f = tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False); wb.save(f.name)
         self.assertFalse(itx.is_transaction_report(f.name))
+
+
+class Picks(unittest.TestCase):
+    def test_track_record_scores_old_picks_against_the_benchmark(self):
+        today = dt.date.today()
+        old = (today - dt.timedelta(days=35)).isoformat()
+        young = (today - dt.timedelta(days=7)).isoformat()
+        hist = [{"week_of": old, "generated_at": old, "crypto": [{"id": "a", "price": 10.0}, {"id": "b", "price": 10.0}], "stocks": [], "bench": {"btc": 100.0, "nifty500": 100.0}},
+                {"week_of": young, "generated_at": young, "crypto": [{"id": "a", "price": 20.0}], "stocks": [], "bench": {"btc": 100.0, "nifty500": 100.0}}]
+        rec = picks.track_record(hist, {"a": 15.0, "b": 8.0}, {}, 110.0, 120.0)
+        first = [r for r in rec["rows"] if r["week_of"] == old][0]
+        self.assertEqual((first["bench_pct"], first["n"]), (20.0, 2))
+        self.assertEqual(first["avg_pct"], 15.0)        # (+50% and -20%) / 2
+        self.assertEqual(first["beat"], 1)              # only 'a' beat Bitcoin's +20%
+        self.assertEqual(rec["summary"]["crypto"]["weeks"], 1)    # the 7-day-old week is too young for the summary
+        self.assertEqual(len([r for r in rec["rows"] if r["week_of"] == young]), 1)
+
+    def test_helpers_survive_bad_numbers(self):
+        self.assertIsNone(picks.fnum(float("nan")))
+        self.assertIsNone(picks.fnum("x"))
+        self.assertEqual(picks.fnum("3.5"), 3.5)
+        import pandas as pd
+        self.assertEqual(list(picks.pct_rank(pd.Series([1.0, 2.0, 3.0]))), [1 / 3, 2 / 3, 1.0])
+
+    def test_the_crypto_name_filter_drops_copies_of_other_coins(self):
+        for bad in ("wrapped-bitcoin Wrapped Bitcoin wbtc", "staked-ether Staked Ether steth", "usd-coin USDC usdc", "tether Tether usdt"):
+            self.assertTrue(picks.EXCLUDE_NAME.search(bad), bad)
+        for good in ("arbitrum Arbitrum arb", "near NEAR Protocol near"):
+            self.assertFalse(picks.EXCLUDE_NAME.search(good), good)
+
+
+class RealizedGains(unittest.TestCase):
+    def test_fifo_split_between_long_and_short_term(self):
+        import openpyxl
+        wb = openpyxl.Workbook(); ws = wb.active
+        ws.append(["Scheme Name", "Transaction Type", "Units", "NAV", "Amount", "Date"])
+        ws.append(["Some Equity Fund Direct Growth", "PURCHASE", 10, 100, 1000, dt.datetime(2024, 1, 10)])
+        ws.append(["Some Equity Fund Direct Growth", "PURCHASE", 10, 120, 1200, dt.datetime(2024, 6, 10)])
+        ws.append(["Some Equity Fund Direct Growth", "REDEEM", 15, 150, 2250, dt.datetime(2025, 2, 1)])
+        ws.append(["Global NASDAQ FoF Direct Growth", "PURCHASE", 5, 10, 50, dt.datetime(2024, 1, 10)])
+        ws.append(["Global NASDAQ FoF Direct Growth", "REDEEM", 5, 20, 100, dt.datetime(2025, 3, 1)])
+        f = tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False); wb.save(f.name)
+        ev = itx.realized_events(f.name)
+        eq = [e for e in ev if e["equity"]]
+        self.assertEqual([(e["term"], e["gain"], e["fy"]) for e in eq], [("long", 500.0, "2024-25"), ("short", 150.0, "2024-25")])
+        self.assertEqual([e["equity"] for e in ev if "NASDAQ" in e["scheme"]], [False])
+        self.assertEqual(itx.fy_of(dt.date(2026, 3, 31)), "2025-26")
+        self.assertEqual(itx.fy_of(dt.date(2026, 4, 1)), "2026-27")
+
+
+class SoldFunds(unittest.TestCase):
+    def test_a_closed_fund_and_its_sip_leave_the_portfolio_unless_asked_for(self):
+        with tempfile.TemporaryDirectory() as td:
+            t = pathlib.Path(td)
+            (t / "portfolio.yaml").write_text("funds:\n  - {id: a, name: A}\n  - {id: b, name: B}\nsips:\n  - {fund_id: a, amount: 1, day_of_month: 1}\n  - {fund_id: b, amount: 2, day_of_month: 1}\n")
+            (t / "funds_closed.json").write_text(json.dumps({"closed": [{"id": "b"}]}))
+            old, common.CONFIG = common.CONFIG, t
+            try:
+                now, every = common.load_portfolio(), common.load_portfolio(include_closed=True)
+            finally:
+                common.CONFIG = old
+        self.assertEqual([f["id"] for f in now["funds"]], ["a"])
+        self.assertEqual([s["fund_id"] for s in now["sips"]], ["a"])
+        self.assertEqual([f["id"] for f in every["funds"]], ["a", "b"])
 
 
 class LoadPortfolioOverlay(unittest.TestCase):

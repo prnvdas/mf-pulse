@@ -25,7 +25,7 @@ import re
 import sys
 
 from common import ROOT, load_portfolio, read_json
-from import_statement import match_fund, num
+from import_statement import norm, num
 
 CSV_OUT = ROOT / "config" / "transactions.csv"
 ALIASES = {
@@ -43,6 +43,18 @@ OUT_TEXT = re.compile(r"redem|sell|sale|withdraw|switch[\s_-]*out|swp|stp[\s_-]*
 NOCASH_TEXT = re.compile(r"reinvest|bonus", re.I)                  # units arrive without money
 PAYOUT_TEXT = re.compile(r"payout|dividend|idcw", re.I)            # cash comes out as dividend: not a purchase or sale
 DATE_FORMATS = ("%Y-%m-%d", "%d-%m-%Y", "%d/%m/%Y", "%d-%b-%Y", "%d %b %Y", "%d-%b-%y", "%d %B %Y", "%b %d, %Y", "%Y-%m-%d %H:%M:%S", "%d-%m-%Y %H:%M:%S")
+
+
+def match_fund(scheme: str, funds: list[dict]) -> dict | None:
+    """Strict: the report's name and the configured name must start the same (a report may truncate long names).
+    Looser word-overlap matching would file a different fund with a similar name (another Flexi Cap) under yours."""
+    s = norm(scheme)
+    for f in funds:
+        n = norm(f["name"])
+        k = min(len(s), len(n))
+        if k >= 20 and s[:k] == n[:k]:
+            return f
+    return None
 
 
 def to_date(v) -> dt.date | None:
@@ -150,7 +162,21 @@ def main() -> None:
     print(f"[info] {len(tx)} transactions from {tx[0]['date']} to {tx[-1]['date']}  (skipped: {skipped['status']} not completed, {skipped['payout']} dividend payouts, {skipped['other']} without amount)")
     if skipped["unmatched"]:
         print("[info] ignored funds that aren't in your portfolio: " + ", ".join(sorted(skipped["unmatched"])))
-    problems = []
+    problems, patched = [], []
+    # A report a little short of your holding usually means a small purchase made outside Groww (or an old transfer).
+    # Up to 3% of the units: add one balancing "opening" line instead of refusing, and say so.
+    for f in cfg["funds"]:
+        rs = [t for t in tx if t["fund_id"] == f["id"]]
+        st = state.get(f["id"]) or {}
+        held = st.get("units") or 0
+        if rs and held and all(t["units"] is not None for t in rs):
+            gap = held - sum(t["units"] for t in rs)
+            if 0.0005 * held < gap <= 0.03 * held:
+                net = sum(t["amount"] for t in rs)
+                amt = max((st.get("seed_invested") or 0) - net, 0) or gap * (rs[0]["nav"] or 0)
+                tx.append({"date": rs[0]["date"], "fund_id": f["id"], "amount": round(amt, 2), "units": round(gap, 4), "nav": None})
+                patched.append(f"{f['id']}: the report is {gap:,.1f} units ({gap / held * 100:.1f}%) short of your holding, so I added one opening line of those units and about ₹{amt:,.0f}, dated {rs[0]['date']} (likely bought outside Groww)")
+    tx.sort(key=lambda x: (x["date"], x["fund_id"]))
     print(f"\n{'fund':<24}{'txns':>6}{'first':>12}{'units (report)':>16}{'units (held)':>14}{'net money in':>16}")
     for f in cfg["funds"]:
         rs = [t for t in tx if t["fund_id"] == f["id"]]
@@ -162,6 +188,8 @@ def main() -> None:
             problems.append(f"{f['id']}: no transactions in the report")
         elif have_units and have and abs(u / have - 1) > 0.01:
             problems.append(f"{f['id']}: the report's units ({u:,.1f}) don't match your holding ({have:,.1f}); is the date range the full history?")
+    for m in patched:
+        print("[note] " + m)
     if problems and not args.force:
         print("\n[refused] the report doesn't add up to your holdings:\n  " + "\n  ".join(problems) + "\nDownload it again for the full history (since inception), or use --force.")
         sys.exit(1)

@@ -21,7 +21,14 @@ import glob
 import re
 import sys
 
-import openpyxl
+try:
+    import openpyxl
+except ImportError:                      # started with the system Python: switch to the project's own environment
+    import os
+    _venv = ROOT_VENV = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".venv2", "bin", "python")
+    if os.path.exists(_venv) and os.path.abspath(sys.executable) != os.path.abspath(_venv):
+        os.execv(_venv, [_venv, "-W", "ignore"] + sys.argv)
+    sys.exit("openpyxl is missing: run this with the project's Python (.venv2/bin/python) or `pip install openpyxl`.")
 
 from common import ROOT, load_portfolio, now_ist, read_json, write_json
 

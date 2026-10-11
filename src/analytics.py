@@ -311,7 +311,7 @@ def refresh_fundamentals(tickers: list[str], today: dt.date) -> dict:
     stale = [
         t for t in tickers
         if t not in cache
-        or "ey" not in cache[t]
+        or "sector" not in cache[t]
         or (today - dt.date.fromisoformat(cache[t].get("date", "2000-01-01"))).days
         > FUNDAMENTALS_MAX_AGE_DAYS
     ]
@@ -326,16 +326,16 @@ def refresh_fundamentals(tickers: list[str], today: dt.date) -> dict:
             # earnings yield keeps the sign: a loss-maker has negative earnings, which
             # a P/E (None for losses) throws away
             ey = eps / price if eps is not None and price else (1 / pe if pe else None)
-            return t, {"pe": pe, "pb": info.get("priceToBook"), "ey": ey, "date": today.isoformat()}
+            return t, {"pe": pe, "pb": info.get("priceToBook"), "ey": ey, "sector": info.get("sector"), "date": today.isoformat()}
         except Exception:  # noqa: BLE001 -- keep the old value, retry next run
             return t, None
 
     with ThreadPoolExecutor(max_workers=8) as pool:
         for t, v in pool.map(one, stale):
-            if v is not None and (v["pe"] is not None or v["pb"] is not None or v["ey"] is not None):
+            if v is not None and (v["pe"] is not None or v["pb"] is not None or v["ey"] is not None or v["sector"]):
                 cache[t] = v
             elif t not in cache:
-                cache[t] = {"pe": None, "pb": None, "ey": None, "date": today.isoformat()}
+                cache[t] = {"pe": None, "pb": None, "ey": None, "sector": None, "date": today.isoformat()}
     write_json("fundamentals.json", cache)
     return cache
 
@@ -370,6 +370,40 @@ def aggregate_pe(pairs: list[tuple[float, float | None]]):
     if earnings <= 0:
         return None, 0.0
     return round(sum(w for w, _ in have) / earnings, 1), round(sum(w for w, _ in have) / total * 100, 0)
+
+
+# --- sector exposure -----------------------------------------------------------
+
+SECTOR_NAMES = {"Financial Services": "Financials", "Consumer Cyclical": "Consumer (discretionary)", "Consumer Defensive": "Consumer staples",
+                "Basic Materials": "Materials", "Communication Services": "Telecom & media"}
+
+
+def sector_exposure(cfg: dict, state: dict, holdings: dict, funda: dict) -> dict | None:
+    """Your money by sector: each fund's holdings (disclosed weights) x what the fund is worth now, summed over funds."""
+    tot: dict[str, float] = {}
+    grand = classified = 0.0
+    for f in cfg["funds"]:
+        st = state.get(f["id"], {})
+        value = (st.get("units") or 0) * (st.get("last_nav") or 0)
+        if not value:
+            continue
+        grand += value
+        hs = holdings.get(f["id"]) or []
+        for h in hs:
+            amt = value * float(h["weight_pct"]) / 100
+            sec = (funda.get(h["ticker"]) or {}).get("sector")
+            if sec:
+                classified += amt
+                sec = SECTOR_NAMES.get(sec, sec)
+            else:
+                sec = "Unclassified"
+            tot[sec] = tot.get(sec, 0) + amt
+        rest = value - sum(value * float(h["weight_pct"]) / 100 for h in hs)
+        tot["Cash and other"] = tot.get("Cash and other", 0) + max(rest, 0)
+    if not grand or classified / grand < 0.5:
+        return None
+    rows = sorted(({"sector": k, "pct": round(v / grand * 100, 1)} for k, v in tot.items()), key=lambda r: -r["pct"])
+    return {"rows": [r for r in rows if r["pct"] >= 0.1], "classified_pct": round(classified / grand * 100)}
 
 
 # --- main -----------------------------------------------------------------------
@@ -504,6 +538,7 @@ def main() -> None:
     write_json("analytics.json", {
         "generated_at": ts.isoformat(), "risk_free_pct": rf, "portfolio_xirr_pct": portfolio_xirr,
         "portfolio_returns": portfolio_returns,
+        "sector_exposure": sector_exposure(cfg, state, holdings, funda),
         "funds": funds_out,
     })
     for o in funds_out:

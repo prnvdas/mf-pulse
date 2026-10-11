@@ -350,6 +350,9 @@
   .cardsrow dl{display:grid;grid-template-columns:auto 1fr auto auto;gap:5px 12px;margin:12px 0 6px;font-size:12.5px}
   .cardsrow dt{color:var(--grey)}.cardsrow dd{text-align:right}.cardsrow dl .hd{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--grey-light)}
   table.mini{margin-top:6px}.mini th{padding-bottom:6px;font-size:9.5px}.mini td{padding:7px 0;font-size:12.5px}
+  .sbar{display:flex;height:26px;gap:2px;margin:2px 0 12px}.sbar i{display:block;min-width:2px}
+  .slegend{display:flex;flex-wrap:wrap;gap:6px 20px;font-size:12.5px;color:var(--grey)}
+  .slegend b{color:var(--ink);font-weight:600}.slegend i{display:inline-block;width:9px;height:9px;margin-right:6px}
   .chip.new{background:var(--grey-light)}
   .statline{display:flex;align-items:center;gap:8px;font-size:13px}
   .hideb{padding:9px 14px}
@@ -521,6 +524,11 @@
       still to come. 12% is a common long-run planning assumption; 15%, 18% and 22% are optimistic scenarios,
       and holding 22% for decades would be exceptional. Real markets move unevenly and results can differ a
       lot. Edit the scenarios under <code>projection</code> in <code>config/portfolio.yaml</code>.</p>
+  </section>
+
+  <section id="sectorWrap" hidden>
+    <h2>Where your money sits <span id="sectorNote"></span></h2>
+    <div id="sectorBody"></div>
   </section>
 
   <section id="healthWrap" hidden>
@@ -2738,6 +2746,25 @@ function renderCost() {
     '<p class="note">You are never sent a bill: a small slice comes out of each fund\'s NAV every day, so the returns you see are already after costs. What you hold are <b>Direct</b> plans, which charge roughly half a percentage point to a full point a year less than the same funds bought as Regular plans. The rates here are the ones set in <code>config/portfolio.yaml</code>; check them against each fund\'s latest factsheet, as funds change them. Costs matter, but a good fund can earn them back many times over, so compare them with the fund health check above, not on their own.</p>';
 }
 
+// ---- 7. Sector exposure (concise)
+function renderSectors() {
+  const wrap = $("sectorWrap"), X = ANALYTICS && ANALYTICS.sector_exposure, rows = X && Array.isArray(X.rows) ? X.rows.filter(r => r && typeof r.sector === "string" && num(r.pct) && r.pct > 0) : [];
+  if (rows.length < 2) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  const cash = rows.find(r => r.sector === "Cash and other"), sec = rows.filter(r => r !== cash && r.sector !== "Unclassified");
+  const top = sec.slice(0, 6), rest = sec.slice(6).reduce((s, r) => s + r.pct, 0) + (rows.find(r => r.sector === "Unclassified") || { pct: 0 }).pct;
+  const items = top.map((r, i) => ({ n: r.sector, p: r.pct, c: ["#2f4a0b", "#5f8a15", "#86bc25", "#b4d77a", "#6b7075", "#a7aaad"][i] }));
+  if (rest >= 0.5) items.push({ n: "Everything else", p: rest, c: "#d3d5d7" });
+  if (cash) items.push({ n: "Cash", p: cash.pct, c: "#ececec" });
+  const t3 = top.slice(0, 3).reduce((s, r) => s + r.pct, 0), big = top[0];
+  $("sectorNote").textContent = "from each fund's latest disclosed holdings";
+  $("sectorBody").innerHTML = '<p class="scoreline" style="margin-top:0"><b>' + esc(big.sector) + "</b> is your biggest sector at <b>" + big.pct.toFixed(0) + "%</b>; the top three hold <b>" + t3.toFixed(0) + "%</b>." +
+    (big.pct >= 30 ? " That is a lot in one sector." : "") + "</p>" +
+    '<div class="sbar" role="img" aria-label="Your money by sector">' + items.map(i => '<i style="width:' + i.p + "%;background:" + i.c + '" title="' + esc(i.n) + " " + i.p.toFixed(1) + '%"></i>').join("") + "</div>" +
+    '<div class="slegend">' + items.map(i => '<span><i style="background:' + i.c + '"></i>' + esc(i.n) + " <b>" + i.p.toFixed(0) + "%</b></span>").join("") + "</div>" +
+    '<p class="sub2" style="margin-top:12px">Sectors are Yahoo\'s classification (' + (num(X.classified_pct) ? X.classified_pct : "most") + "% of your money is covered); holdings are the funds' monthly disclosures, so this lags real life a little.</p>";
+}
+
 // ---- hide amounts
 // Some sentences are written by the nightly jobs ("your portfolio moved about +₹91,615", the tax figure in the advice). Those
 // are scrubbed here instead. Market figures stay: crore amounts (flows, headlines) and per-unit NAVs are public.
@@ -2788,7 +2815,7 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   FHEALTH = await loadJson("data/fund_health.json", j => isObj(j) && Array.isArray(j.funds), null);
   setupHide();
   renderReturns(); renderTax(); renderStatementBar();
-  safe(renderMoney, "moneyWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap");
+  safe(renderMoney, "moneyWrap"); safe(renderSectors, "sectorWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap");
   renderCompare();
   loadNews();
   loadOutlook();

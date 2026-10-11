@@ -42,6 +42,7 @@ jobs:
       - name: Rebuild history, XIRR and tax lots
         continue-on-error: true
         run: |
+          python src/detect_sips.py
           python src/snapshot.py --backfill
           python src/analytics.py
           python src/tax.py
@@ -49,7 +50,7 @@ jobs:
         run: |
           git config user.name  "mf-pulse"
           git config user.email "actions@users.noreply.github.com"
-          git add docs/data config/transactions.csv
+          git add -A docs/data config
           git diff --staged --quiet || git commit -m "transactions import $(date -u +%F)"
           for n in 1 2 3 4; do
             git pull --rebase --autostash -X theirs -q origin main && git push -q && exit 0

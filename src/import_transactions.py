@@ -25,7 +25,7 @@ import re
 import sys
 
 from common import ROOT, load_portfolio, read_json
-from import_statement import norm, num
+from import_statement import match_fund, num
 
 CSV_OUT = ROOT / "config" / "transactions.csv"
 ALIASES = {
@@ -43,18 +43,6 @@ OUT_TEXT = re.compile(r"redem|sell|sale|withdraw|switch[\s_-]*out|swp|stp[\s_-]*
 NOCASH_TEXT = re.compile(r"reinvest|bonus", re.I)                  # units arrive without money
 PAYOUT_TEXT = re.compile(r"payout|dividend|idcw", re.I)            # cash comes out as dividend: not a purchase or sale
 DATE_FORMATS = ("%Y-%m-%d", "%d-%m-%Y", "%d/%m/%Y", "%d-%b-%Y", "%d %b %Y", "%d-%b-%y", "%d %B %Y", "%b %d, %Y", "%Y-%m-%d %H:%M:%S", "%d-%m-%Y %H:%M:%S")
-
-
-def match_fund(scheme: str, funds: list[dict]) -> dict | None:
-    """Strict: the report's name and the configured name must start the same (a report may truncate long names).
-    Looser word-overlap matching would file a different fund with a similar name (another Flexi Cap) under yours."""
-    s = norm(scheme)
-    for f in funds:
-        n = norm(f["name"])
-        k = min(len(s), len(n))
-        if k >= 20 and s[:k] == n[:k]:
-            return f
-    return None
 
 
 def to_date(v) -> dt.date | None:

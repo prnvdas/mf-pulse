@@ -1018,7 +1018,7 @@ function renderProjection(value, invested) {
 
   const now = new Date(), yr = now.getFullYear();
   const tLeft = Math.max(0, (new Date(yr, 11, 31) - now) / 86400000 / 365);
-  const sipsLeft = Math.max(0, 11 - now.getMonth()) + (now.getDate() < 3 ? 1 : 0);   // this month's SIP counts once its allocation day (the 3rd) has passed
+  const sipsLeft = Math.max(0, 11 - now.getMonth()) + ((CFG.sips && CFG.sips[0] ? now.getDate() < CFG.sips[0].day_of_month : now.getDate() < 3) ? 1 : 0);   // this month's SIP counts once its day has passed
   $("projNote").textContent = inr(sip) + "/month SIP continuing · " + sipsLeft + " SIP" + (sipsLeft === 1 ? "" : "s") + " left in " + yr;
 
   const all = rates.map(r => projectionSeries(value, invested, r, sip, tLeft, sipsLeft, years));
@@ -2690,7 +2690,7 @@ function renderHealth() {
   wrap.hidden = false;
   const chipCls = { good: "healthy", mixed: "watch", weak: "caution", "new": "new" }, by = FHEALTH.bench_yield_pp || 1;
   const p1 = v => num(v) ? pcs(v, 1) : "—";
-  $("healthNote").textContent = "each fund against its benchmark and a few comparable funds" + (fs[0].as_of ? " · to " + dmon(fs[0].as_of) : "");
+  $("healthNote").textContent = "each fund against its benchmark and its whole AMFI category" + (fs[0].as_of ? " · to " + dmon(fs[0].as_of) : "");
   $("healthBody").innerHTML = '<div class="cardsrow">' + fs.map(f => {
     const w = f.windows || {};
     const rows = ["1Y", "3Y", "5Y"].map(k => { const x = w[k] || {};
@@ -2699,10 +2699,10 @@ function renderHealth() {
       return "<tr><td>" + k.replace("Y", " yr") + '</td><td class="' + (beat == null ? "" : beat ? "pos" : "neg") + '">' + p1(x.fund) + "</td><td>" + p1(x.bench) + "</td><td>" + p1(x.peer_median) + "</td><td>" + (num(x.rank) ? x.rank + " of " + x.of : "—") + "</td></tr>"; }).join("");
     const peers = (f.peers || []).map(p => "<tr><td>" + esc(p.name) + "</td><td>" + p1(p["1Y"]) + "</td><td>" + p1(p["3Y"]) + "</td><td>" + p1(p["5Y"]) + "</td></tr>").join("");
     return "<div><h3><span>" + esc(shortName(f.name)) + '</span><span class="chip ' + (chipCls[f.verdict] || "new") + '">' + esc(f.label || "") + "</span></h3>" +
-      "<p>" + esc(f.text || "") + '</p><table class="mini"><thead><tr><th>Over</th><th>Fund</th><th>Benchmark</th><th>Peers\' middle</th><th>Rank</th></tr></thead><tbody>' + rows + "</tbody></table>" +
-      '<p class="sub2" style="margin-top:8px">Yearly returns (3 and 5 yr annualised).' + (num(f.beat_benchmark_pct) ? " Ahead of its benchmark in <b>" + f.beat_benchmark_pct + "%</b> of recent one-year periods." : "") + (num(f.ter_pct) ? " Costs " + f.ter_pct + "% a year." : "") + "</p>" +
-      (peers ? '<details><summary>The comparable funds</summary><table class="mini"><thead><tr><th>Fund</th><th>1 yr</th><th>3 yr</th><th>5 yr</th></tr></thead><tbody>' + peers + "</tbody></table></details>" : "") + "</div>"; }).join("") + "</div>" +
-    '<p class="note">' + esc(FHEALTH.note || "") + " The benchmark gets a " + by + " point a year head start because an index leaves out dividends. A fund can trail for a year or two and still be a good one: treat this as a prompt to look closer, never as a signal to sell. Edit the comparison funds under <code>peers</code> in <code>config/portfolio.yaml</code>.</p>";
+      "<p>" + esc(f.text || "") + '</p><table class="mini"><thead><tr><th>Over</th><th>Fund</th><th>Index</th><th>Category</th><th>Rank</th></tr></thead><tbody>' + rows + "</tbody></table>" +
+      '<p class="sub2" style="margin-top:8px">Yearly returns (3 and 5 yr annualised). "Index" is its benchmark; "Category" is the middle fund of its category.' + (num(f.beat_benchmark_pct) ? " Ahead of its benchmark in <b>" + f.beat_benchmark_pct + "%</b> of recent one-year periods." : "") + (num(f.category_size) ? " Category of " + f.category_size + " funds." : "") + (num(f.ter_pct) ? " Costs " + f.ter_pct + "% a year." : "") + "</p>" +
+      (peers ? '<details><summary>The category\'s best over ' + String(f.best_window || "3Y").replace("Y", " yr") + '</summary><table class="mini"><thead><tr><th>Fund</th><th>1 yr</th><th>3 yr</th><th>5 yr</th></tr></thead><tbody>' + peers + "</tbody></table></details>" : "") + "</div>"; }).join("") + "</div>" +
+    '<p class="note">' + esc(FHEALTH.note || "") + " The benchmark gets a " + by + " point a year head start because an index leaves out dividends. A fund can trail for a year or two and still be a good one: treat this as a prompt to look closer, never as a signal to sell. The category is found automatically from AMFI's list and refreshed about weekly.</p>";
 }
 
 // ---- 5. SIP tracker
@@ -2750,7 +2750,7 @@ function renderCost() {
     k("Over 10 years", cl(drag), "of growth, if the funds earn 12% after costs and your SIPs continue") + "</div>" +
     '<table style="margin-top:14px"><thead><tr><th>Fund</th><th>Worth</th><th>Yearly cost</th><th>A year</th></tr></thead><tbody>' +
     fs.map(f => "<tr><td>" + esc(shortName(f.name)) + "</td><td>" + cl(val(f)) + "</td><td>" + f.ter_annual_pct.toFixed(2) + "%</td><td>" + cl(val(f) * f.ter_annual_pct / 100) + "</td></tr>").join("") + "</tbody></table>" +
-    '<p class="note">You are never sent a bill: a small slice comes out of each fund\'s NAV every day, so the returns you see are already after costs. What you hold are <b>Direct</b> plans, which charge roughly half a percentage point to a full point a year less than the same funds bought as Regular plans. The rates here are the ones set in <code>config/portfolio.yaml</code>; check them against each fund\'s latest factsheet, as funds change them. Costs matter, but a good fund can earn them back many times over, so compare them with the fund health check above, not on their own.</p>';
+    '<p class="note">You are never sent a bill: a small slice comes out of each fund\'s NAV every day, so the returns you see are already after costs. What you hold are <b>Direct</b> plans, which charge roughly half a percentage point to a full point a year less than the same funds bought as Regular plans. The rates are each fund\'s current total expense ratio, read from Groww and refreshed weekly. Costs matter, but a good fund can earn them back many times over, so compare them with the fund health check above, not on their own.</p>';
 }
 
 // ---- 7. Sector exposure (concise)

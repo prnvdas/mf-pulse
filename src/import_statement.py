@@ -83,18 +83,15 @@ def read_statement(path: str) -> dict:
 
 
 def match_fund(scheme: str, funds: list[dict]) -> dict | None:
+    """Strict: the statement's name and the configured name must start the same (statements truncate long names).
+    Looser word-overlap matching would file another fund with a similar name (a different Flexi Cap) under yours."""
     s = norm(scheme)
-    best = None
     for f in funds:
         n = norm(f["name"])
-        # the statement truncates long names; match on the common prefix
         k = min(len(s), len(n))
-        if k >= 20 and (s[:k] == n[:k]):
+        if k >= 20 and s[:k] == n[:k]:
             return f
-        ov = len(set(re.findall(r"[a-z0-9]+", scheme.lower())) & set(re.findall(r"[a-z0-9]+", f["name"].lower())))
-        if best is None or ov > best[0]:
-            best = (ov, f)
-    return best[1] if best and best[0] >= 4 else None
+    return None
 
 
 def main() -> None:
@@ -115,8 +112,16 @@ def main() -> None:
     per: dict[str, dict] = {}
     for r in st["rows"]:
         f = match_fund(r["scheme"], cfg["funds"])
+        if not f and args.dry_run:
+            print(f"[dry-run] '{r['scheme']}' is new to the dashboard: a real run would look it up and add it automatically")
+            continue
         if not f:
-            sys.exit(f"[error] '{r['scheme']}' doesn't match any fund in config/portfolio.yaml; nothing changed")
+            from funds_auto import register                       # a fund new to the dashboard: look it up and add it
+            f = register(r["scheme"], r["invested"], r["value"])
+            if f:
+                cfg["funds"].append(f)
+        if not f:
+            sys.exit(f"[error] '{r['scheme']}' isn't in your portfolio and couldn't be added automatically; nothing changed")
         p = per.setdefault(f["id"], {"fund_id": f["id"], "name": f["name"], "units": 0.0, "invested": 0.0, "value": 0.0, "folios": []})
         p["units"] += r["units"]; p["invested"] += r["invested"]; p["value"] += r["value"]
         p["folios"].append({"label": "…" + re.sub(r"\D", "", r["folio"])[-4:], "units": round(r["units"], 3), "invested": round(r["invested"], 2),

@@ -43,11 +43,15 @@ jobs:
         run: |
           python src/mood.py
           python src/advisor.py
+      # Sundays: refresh each fund's current expense ratio and category from Groww (non-blocking)
+      - name: Fund metadata (weekly)
+        continue-on-error: true
+        run: if [ "$(date +%u)" = "7" ]; then python src/fund_meta.py; else echo "not Sunday"; fi
       - name: Commit
         run: |
           git config user.name  "mf-pulse"
           git config user.email "actions@users.noreply.github.com"
-          git add docs/data
+          git add -A docs/data config
           git diff --staged --quiet || git commit -m "holidays $(date -u +%F)"
           # Retry: another workflow may push between our pull and push. Our fresh data wins any conflict.
           for n in 1 2 3 4; do

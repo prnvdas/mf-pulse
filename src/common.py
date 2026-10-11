@@ -25,9 +25,38 @@ def now_ist() -> dt.datetime:
     return dt.datetime.now(IST)
 
 
+def _json(name: str, default):
+    try:
+        return json.loads((CONFIG / name).read_text())
+    except (OSError, ValueError):
+        return default
+
+
 def load_portfolio() -> dict:
+    """portfolio.yaml, with what the jobs have learned layered on top so nothing needs hand-editing:
+
+      config/funds_auto.json    funds found in a holdings statement that aren't in the yaml (import_statement.py)
+      config/fund_meta.json     from Groww's page: current expense ratio, category, benchmark name (fund_meta.py)
+      config/sips_detected.json your SIPs as seen in your order history (detect_sips.py)
+
+    The yaml keeps working on its own: its values are the fallback whenever a learned one is missing.
+    """
     with open(CONFIG / "portfolio.yaml") as fh:
-        return yaml.safe_load(fh)
+        cfg = yaml.safe_load(fh)
+    have = {f["id"] for f in cfg["funds"]}
+    for f in _json("funds_auto.json", []):
+        if isinstance(f, dict) and f.get("id") and f["id"] not in have:
+            cfg["funds"].append(f)
+    meta = _json("fund_meta.json", {})
+    for f in cfg["funds"]:
+        m = meta.get(f["id"]) or {}
+        if isinstance(m.get("expense_ratio"), (int, float)) and m["expense_ratio"] > 0:
+            f["ter_annual_pct"] = m["expense_ratio"]
+    det = _json("sips_detected.json", {})
+    if isinstance(det.get("sips"), list) and det.get("funds_checked"):
+        checked = set(det["funds_checked"])
+        cfg["sips"] = [s for s in cfg.get("sips", []) if s["fund_id"] not in checked] + det["sips"]
+    return cfg
 
 
 def load_holdings(fund_id: str) -> dict:

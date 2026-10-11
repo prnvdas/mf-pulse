@@ -1,0 +1,26 @@
+{
+  "as_of": "2026-10-11",
+  "basis": "your order history (config/transactions.csv)",
+  "funds_checked": [
+    "axis-small-cap",
+    "jioblackrock-flexicap",
+    "mirae-large-midcap"
+  ],
+  "sips": [
+    {
+      "fund_id": "mirae-large-midcap",
+      "amount": 50000,
+      "day_of_month": 1
+    },
+    {
+      "fund_id": "axis-small-cap",
+      "amount": 50000,
+      "day_of_month": 1
+    },
+    {
+      "fund_id": "jioblackrock-flexicap",
+      "amount": 10000,
+      "day_of_month": 1
+    }
+  ]
+}

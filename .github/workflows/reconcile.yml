@@ -44,6 +44,11 @@ jobs:
         run: python src/analytics.py
       # Risk/reward and capital-gains views. Each non-blocking and time-boxed: they lean on a NAV-history API.
       # Daily value-vs-invested point for the "Your money over time" chart, and the peer comparison for "Fund health".
+      # Your SIPs, read from your own order history (config/transactions.csv), so amounts and dates are never typed in.
+      - name: Detect SIPs
+        continue-on-error: true
+        timeout-minutes: 2
+        run: python src/detect_sips.py
       - name: Portfolio history point
         continue-on-error: true
         timeout-minutes: 5
@@ -76,7 +81,7 @@ jobs:
         run: |
           git config user.name  "mf-pulse"
           git config user.email "actions@users.noreply.github.com"
-          git add docs/data
+          git add -A docs/data config
           git diff --staged --quiet || git commit -m "reconcile $(date -u +%F)"
           # Retry: another workflow may push between our pull and push. Our fresh data wins any conflict.
           for n in 1 2 3 4; do

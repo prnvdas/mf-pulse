@@ -95,12 +95,15 @@ def main() -> None:
         # exactly once per month even if reconcile.py runs daily across
         # that whole window.
         SIP_GRACE_DAYS = 4
-        this_month = ts.strftime("%Y-%m")
+        # Judged on the NAV's own date, not on when this job happens to run: a run just after midnight still carries
+        # the previous day's NAV, and the order is priced at the NAV of the day it executes.
+        nav_day = _parse_amfi_date(row["date"])
+        this_month = nav_day.strftime("%Y-%m")
         for sip in cfg.get("sips", []):
             if sip["fund_id"] != fid:
                 continue
             day = sip["day_of_month"]
-            due = day <= ts.day <= day + SIP_GRACE_DAYS
+            due = day <= nav_day.day <= day + SIP_GRACE_DAYS
             if due and entry.get("sip_applied_month") != this_month:
                 bought = sip["amount"] / new_nav
                 entry["units"] = round(entry["units"] + bought, 4)
@@ -109,7 +112,7 @@ def main() -> None:
                 ) + sip["amount"]
                 entry["sip_applied_month"] = this_month
                 log_sip_transaction(fid, _parse_amfi_date(row["date"]), float(sip["amount"]), bought, new_nav)
-                print(f"[info] {fid}: SIP +{bought:.4f} units (day {ts.day}, target {day})")
+                print(f"[info] {fid}: SIP +{bought:.4f} units (NAV of {nav_day}, target day {day})")
 
         # Grade the estimate we made earlier today. `stale` is a display-only
         # flag (estimate.py's post-close run sets it on every close estimate

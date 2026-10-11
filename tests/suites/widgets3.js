@@ -12,4 +12,4 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
  for (const [m,fn] of Object.entries({garbage:j=>{j.tx_check='x';return j;},nullgaps:j=>{j.tx_check={status:'stale',gaps_pct:null};return j;},weird:j=>{j.tx_check={status:'stale',gaps_pct:{a:'x',b:null}};return j;}})) {const {p,ctx,errs}=await page({portfolio_history:fn});ok(!errs.length&&!/NaN|undefined/.test(await p.evaluate(()=>document.body.innerText)),'tx_check '+m,errs[0]);await ctx.close();}
  // statement bar copy
  {const {p,ctx}=await page({analytics:j=>j});ok(true,'noop');await ctx.close();}
- ok(false,'DELIBERATE failure to test the automatic undo');console.log(`${n-fail}/${n} passed`);await b.close();process.exit(fail?1:0);})();
+ console.log(`${n-fail}/${n} passed`);await b.close();process.exit(fail?1:0);})();

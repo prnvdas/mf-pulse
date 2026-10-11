@@ -61,6 +61,7 @@ jobs:
         run: |
           git config user.name  "mf-pulse"
           git config user.email "actions@users.noreply.github.com"
+          python3 src/validate_data.py --fix   # never publish a broken data file
           find screenshots -maxdepth 1 -type f \( -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' \) -print0 | xargs -0 -r git rm -q
           git add docs/data
           git diff --staged --quiet || git commit -m "sync-screenshot: ${{ steps.sync.outcome }} ($(date -u +%F))"

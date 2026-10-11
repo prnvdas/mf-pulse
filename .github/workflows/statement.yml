@@ -80,6 +80,7 @@ jobs:
         run: |
           git config user.name  "mf-pulse"
           git config user.email "actions@users.noreply.github.com"
+          python3 src/validate_data.py --fix   # never publish a broken data file
           git add -A docs/data config
           git diff --staged --quiet || git commit -m "statement import $(date -u +%F)"
           # Retry: another workflow may push between our pull and push. Our fresh data wins any conflict.

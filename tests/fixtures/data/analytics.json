@@ -1,0 +1,336 @@
+{
+  "generated_at": "2026-10-11T17:21:02.208284+05:30",
+  "risk_free_pct": 6.5,
+  "portfolio_xirr_pct": 11.4,
+  "portfolio_returns": {
+    "as_on": "2026-10-10",
+    "invested": 8386652.53,
+    "value": 10430514.32,
+    "absolute_pct": 24.37,
+    "xirr_pct": 11.57,
+    "xirr_source": "Groww statement (exact)",
+    "rebuilt_xirr_pct": 11.35,
+    "nifty50_same_flows_pct": 0.1,
+    "fd_pct": 7.0,
+    "since": "2022-12-10"
+  },
+  "sector_exposure": {
+    "rows": [
+      {
+        "sector": "Financials",
+        "pct": 22.8
+      },
+      {
+        "sector": "Healthcare",
+        "pct": 14.0
+      },
+      {
+        "sector": "Industrials",
+        "pct": 13.5
+      },
+      {
+        "sector": "Consumer (discretionary)",
+        "pct": 11.8
+      },
+      {
+        "sector": "Materials",
+        "pct": 9.8
+      },
+      {
+        "sector": "Technology",
+        "pct": 7.9
+      },
+      {
+        "sector": "Cash and other",
+        "pct": 7.9
+      },
+      {
+        "sector": "Consumer staples",
+        "pct": 3.6
+      },
+      {
+        "sector": "Energy",
+        "pct": 2.9
+      },
+      {
+        "sector": "Real Estate",
+        "pct": 2.6
+      },
+      {
+        "sector": "Telecom & media",
+        "pct": 1.9
+      },
+      {
+        "sector": "Utilities",
+        "pct": 1.5
+      }
+    ],
+    "classified_pct": 92
+  },
+  "funds": [
+    {
+      "id": "axis-small-cap",
+      "name": "Axis Small Cap Fund Direct Growth",
+      "benchmark": {
+        "name": "Nifty Smallcap 250",
+        "note": "index level (price return); P/E comes from the HDFC Nifty Smallcap 250 ETF, which holds the same basket"
+      },
+      "mine": {
+        "invested": 4124793.89,
+        "value": 5301494,
+        "gain_pct": 28.53
+      },
+      "returns": {
+        "1M": {
+          "fund": -4.26,
+          "bench": -4.65,
+          "diff": 0.39
+        },
+        "3M": {
+          "fund": -0.71,
+          "bench": -3.0,
+          "diff": 2.29
+        },
+        "6M": {
+          "fund": 13.09,
+          "bench": 11.56,
+          "diff": 1.53
+        },
+        "1Y": {
+          "fund": 8.12,
+          "bench": 3.33,
+          "diff": 4.79
+        }
+      },
+      "risk": {
+        "window_days": 364,
+        "beta": 0.85,
+        "alpha_pct": 4.02,
+        "vol_pct": 15.1,
+        "bench_vol_pct": 17.4,
+        "sharpe": 0.15,
+        "max_drawdown_pct": -14.7,
+        "bench_max_drawdown_pct": -18.4
+      },
+      "valuation": {
+        "fund_pe": 31.8,
+        "fund_pe_cover_pct": 100.0,
+        "fund_pb": 4.0,
+        "bench_pe": 24.8
+      },
+      "history_days": 4691,
+      "as_of": "2026-10-09",
+      "scenarios": {
+        "basis": "fund",
+        "since": "2013-12-05",
+        "years": 12.9,
+        "worst": -14.8,
+        "p25": 6.9,
+        "median": 16.5,
+        "p75": 31.5,
+        "best": 100.7,
+        "share_positive": 89
+      },
+      "recovery": {
+        "nav_last": 132.26,
+        "nav_peak_6m": 138.49,
+        "gap_pct": 4.7,
+        "peak_date": "2026-09-08"
+      },
+      "xirr": {
+        "pct": 13.4,
+        "source": "transactions",
+        "since": "2021-01-08",
+        "bench_pct": 11.7
+      },
+      "folios": [
+        {
+          "label": "\u20268052",
+          "invested": 2299885.26,
+          "value": 3435417.0,
+          "xirr_pct": 15.04
+        },
+        {
+          "label": "\u20265582",
+          "invested": 1824908.63,
+          "value": 1866077.1,
+          "xirr_pct": 3.04
+        }
+      ]
+    },
+    {
+      "id": "mirae-large-midcap",
+      "name": "Mirae Asset Large & Midcap Fund Direct Growth",
+      "benchmark": {
+        "name": "Nifty LargeMidcap 250",
+        "note": "approx. 70/30 blend of the Nifty 100 and Nifty Midcap 150 ETFs (the index is Nifty 100 + Midcap 150, roughly 70% large-cap by weight); price return"
+      },
+      "mine": {
+        "invested": 4074867.98,
+        "value": 4949441,
+        "gain_pct": 21.46
+      },
+      "returns": {
+        "1M": {
+          "fund": -5.83,
+          "bench": -4.98,
+          "diff": -0.85
+        },
+        "3M": {
+          "fund": -6.57,
+          "bench": -6.52,
+          "diff": -0.05
+        },
+        "6M": {
+          "fund": -0.08,
+          "bench": -2.41,
+          "diff": 2.33
+        },
+        "1Y": {
+          "fund": -2.64,
+          "bench": -5.35,
+          "diff": 2.71
+        }
+      },
+      "risk": {
+        "window_days": 364,
+        "beta": 0.85,
+        "alpha_pct": 1.09,
+        "vol_pct": 14.8,
+        "bench_vol_pct": 14.7,
+        "sharpe": -0.58,
+        "max_drawdown_pct": -14.4,
+        "bench_max_drawdown_pct": -14.5
+      },
+      "valuation": {
+        "fund_pe": 27.9,
+        "fund_pe_cover_pct": 100.0,
+        "fund_pb": 3.0,
+        "bench_pe": 21.0
+      },
+      "history_days": 584,
+      "as_of": "2026-10-09",
+      "scenarios": {
+        "basis": "fund",
+        "since": "2013-01-02",
+        "years": 13.8,
+        "worst": -27.4,
+        "p25": 6.1,
+        "median": 16.9,
+        "p75": 38.5,
+        "best": 111.0,
+        "share_positive": 88
+      },
+      "recovery": {
+        "nav_last": 167.333,
+        "nav_peak_6m": 181.884,
+        "gap_pct": 8.7,
+        "peak_date": "2026-08-03"
+      },
+      "xirr": {
+        "pct": 9.7,
+        "source": "transactions",
+        "since": "2019-04-30",
+        "bench_pct": 6.2
+      },
+      "folios": [
+        {
+          "label": "\u20261565",
+          "invested": 1579926.65,
+          "value": 2499415.37,
+          "xirr_pct": 12.71
+        },
+        {
+          "label": "\u20266633",
+          "invested": 2494941.33,
+          "value": 2450025.2,
+          "xirr_pct": -2.08
+        }
+      ]
+    },
+    {
+      "id": "jioblackrock-flexicap",
+      "name": "JioBlackRock Flexi Cap Fund Direct Growth",
+      "benchmark": {
+        "name": "Nifty 500",
+        "note": "index level (price return); benchmark P/E is approximated from a 75/15/10 large/mid/small ETF mix"
+      },
+      "mine": {
+        "invested": 186990.66,
+        "value": 179580,
+        "gain_pct": -3.96
+      },
+      "returns": {
+        "1M": {
+          "fund": -3.98,
+          "bench": -4.76,
+          "diff": 0.78
+        },
+        "3M": {
+          "fund": -4.94,
+          "bench": -6.35,
+          "diff": 1.41
+        },
+        "6M": {
+          "fund": -1.52,
+          "bench": -2.15,
+          "diff": 0.63
+        },
+        "1Y": {
+          "fund": null,
+          "bench": null,
+          "diff": null
+        }
+      },
+      "risk": {
+        "window_days": 357,
+        "beta": 1.0,
+        "alpha_pct": 1.8,
+        "vol_pct": 14.6,
+        "bench_vol_pct": 14.5,
+        "sharpe": -0.78,
+        "max_drawdown_pct": -14.3,
+        "bench_max_drawdown_pct": -14.8
+      },
+      "valuation": {
+        "fund_pe": 18.0,
+        "fund_pe_cover_pct": 100.0,
+        "fund_pb": 2.6,
+        "bench_pe": 20.6
+      },
+      "history_days": 357,
+      "as_of": "2026-10-09",
+      "scenarios": {
+        "basis": "benchmark",
+        "since": "2005-09-27",
+        "years": 21.0,
+        "worst": -60.3,
+        "p25": 0.7,
+        "median": 9.7,
+        "p75": 26.8,
+        "best": 116.3,
+        "share_positive": 77
+      },
+      "recovery": {
+        "nav_last": 9.5134,
+        "nav_peak_6m": 10.2047,
+        "gap_pct": 7.3,
+        "peak_date": "2026-08-07"
+      },
+      "xirr": {
+        "pct": -6.4,
+        "source": "transactions",
+        "since": "2025-10-13",
+        "bench_pct": -8.0
+      },
+      "folios": [
+        {
+          "label": "\u20269183",
+          "invested": 186990.66,
+          "value": 179579.65,
+          "xirr_pct": -6.34
+        }
+      ]
+    }
+  ]
+}

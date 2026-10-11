@@ -1,0 +1,67 @@
+name: tests
+
+# Checks the page and the Python pieces every time the page or the code changes (not on the bots' data commits).
+#  - page: Chromium drives the real page over frozen fixture data (tests/fixtures) at 12 clock states and two screen
+#    widths, feeds it deliberately broken data files, and then loads the real docs/data to confirm the live site renders
+#  - backend: unit tests for SIP detection, the transaction import, history snapshots, fund health, config overlay
+#  - data: every docs/data/*.json must be strictly valid JSON
+# A failed run emails you (GitHub's default). Run the same thing locally: cd tests && npm install && npx playwright install chromium && npm test
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/index.html"
+      - "docs/*.svg"
+      - "docs/*.webmanifest"
+      - "src/**"
+      - "tests/**"
+      - "requirements*.txt"
+      - ".github/workflows/tests.yml"
+  pull_request:
+    paths:
+      - "docs/index.html"
+      - "src/**"
+      - "tests/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Data files are valid JSON
+        run: python3 src/validate_data.py
+      - name: Unit tests
+        run: python -m unittest discover -s tests -p "test_*.py" -v
+
+  page:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: tests/package-lock.json
+      - name: Install Playwright and Chromium
+        working-directory: tests
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Page tests
+        working-directory: tests
+        run: node run.js

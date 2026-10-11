@@ -1,0 +1,230 @@
+{
+  "generated_at": "2026-10-10T18:31:23.842220+05:30",
+  "base_close_date": "2026-10-09",
+  "base_close": 22520.45,
+  "sigma_pct": 1.1,
+  "nifty": {
+    "typical": [
+      22345.2,
+      22768.3
+    ],
+    "wide": [
+      22179.2,
+      22967.2
+    ],
+    "typical_pct": [
+      -0.78,
+      1.1
+    ],
+    "wide_pct": [
+      -1.52,
+      1.98
+    ],
+    "centre_pct": 0.18
+  },
+  "portfolio": {
+    "value": 10430514,
+    "sigma_pct": 0.9,
+    "typical_rupees": 105089,
+    "wide_rupees": 195726
+  },
+  "lean": {
+    "status": "ok",
+    "label": "slight tilt up",
+    "p_up": 57.8,
+    "mu_pct": 0.18,
+    "sp_date": "2026-10-09",
+    "sp_move_pct": 0.59,
+    "us_sessions": 1
+  },
+  "call": {
+    "colour": "green",
+    "p_up": 57.8,
+    "p_call": 57.8,
+    "basis": "us",
+    "tier": "moderate",
+    "hit_pct": 61.5,
+    "why": "the S&P 500 moved +0.59% overnight",
+    "provisional": true,
+    "note": "Provisional: it firms up once GIFT Nifty's pre-open price is in (about 08:45 IST)."
+  },
+  "model": {
+    "volatility": "GJR-GARCH(1,1) with Student-t errors",
+    "signal": "S&P 500 last US session (ridge for the centre, logistic for P(up))",
+    "band_errors_from": "model's own out-of-sample errors, last 5 years",
+    "fitted_sessions": 4604,
+    "ewma_sigma_pct": 0.84
+  },
+  "backtest": {
+    "generated_at": "2026-10-10T13:03:50.456531+05:30",
+    "method": "walk-forward: fitted on years before each test year, tested on that year",
+    "test_period": [
+      "2015-01-02",
+      "2026-10-09"
+    ],
+    "n_sessions": 2898,
+    "calls": {
+      "us": {
+        "strong": {
+          "hit_pct": 67.9,
+          "share_pct": 19.7,
+          "n": 570
+        },
+        "moderate": {
+          "hit_pct": 61.5,
+          "share_pct": 26.1,
+          "n": 756
+        },
+        "weak": {
+          "hit_pct": 55.9,
+          "share_pct": 54.2,
+          "n": 1572
+        },
+        "all": {
+          "hit_pct": 59.7,
+          "share_pct": 100.0,
+          "n": 2898
+        }
+      },
+      "gift": {
+        "very high": {
+          "hit_pct": 84.8,
+          "share_pct": 15.2,
+          "n": 440
+        },
+        "good": {
+          "hit_pct": 72.3,
+          "share_pct": 38.9,
+          "n": 1127
+        },
+        "weak": {
+          "hit_pct": 54.6,
+          "share_pct": 45.9,
+          "n": 1331
+        },
+        "all": {
+          "hit_pct": 66.1,
+          "share_pct": 100.0,
+          "n": 2898
+        }
+      },
+      "gift_noise_assumed_pct": 0.15,
+      "note": "gift: trained and tested on the Nifty's real opening gap blurred by the assumed noise; the live GIFT-to-open error will be measured from the log"
+    },
+    "range": {
+      "old_ewma_normal": {
+        "pinball_bp": 23.028,
+        "coverage70_pct": 69.6,
+        "width70_pct": 1.79,
+        "coverage95_pct": 94.4,
+        "width95_pct": 3.63
+      },
+      "new_gjr_sp500": {
+        "pinball_bp": 21.39,
+        "coverage70_pct": 70.0,
+        "width70_pct": 1.7,
+        "coverage95_pct": 95.0,
+        "width95_pct": 3.18
+      },
+      "pinball_improvement_pct": 7.1
+    },
+    "direction": {
+      "always_up_pct": 53.3,
+      "tiers": [
+        {
+          "tier": "leans up / leans down",
+          "rule": "P(up) \u2265 60% or \u2264 40%",
+          "hit_pct": 67.9,
+          "share_pct": 19.7,
+          "n": 570
+        },
+        {
+          "tier": "slight tilt or stronger",
+          "rule": "P(up) \u2265 55% or \u2264 45%",
+          "hit_pct": 64.3,
+          "share_pct": 45.8,
+          "n": 1326
+        },
+        {
+          "tier": "every session",
+          "rule": "any",
+          "hit_pct": 59.7,
+          "share_pct": 100.0,
+          "n": 2898
+        }
+      ],
+      "reliability": [
+        {
+          "bin": "0%\u201340%",
+          "n": 172,
+          "predicted_pct": 33.6,
+          "actual_pct": 32.0
+        },
+        {
+          "bin": "40%\u201345%",
+          "n": 175,
+          "predicted_pct": 42.7,
+          "actual_pct": 34.3
+        },
+        {
+          "bin": "45%\u201350%",
+          "n": 530,
+          "predicted_pct": 47.9,
+          "actual_pct": 43.6
+        },
+        {
+          "bin": "50%\u201355%",
+          "n": 1042,
+          "predicted_pct": 52.4,
+          "actual_pct": 55.7
+        },
+        {
+          "bin": "55%\u201360%",
+          "n": 581,
+          "predicted_pct": 57.3,
+          "actual_pct": 60.2
+        },
+        {
+          "bin": "60%\u201365%",
+          "n": 276,
+          "predicted_pct": 62.1,
+          "actual_pct": 66.7
+        },
+        {
+          "bin": "65%\u2013100%",
+          "n": 122,
+          "predicted_pct": 70.5,
+          "actual_pct": 70.5
+        }
+      ],
+      "brier": 0.2387,
+      "brier_base_rate": 0.2489
+    },
+    "gap": {
+      "slope": 0.94,
+      "r2": 0.34,
+      "intraday_to_total_vol": 0.81,
+      "note": "estimated from the actual open gap; GIFT Nifty only approximates it, so the dashboard adds noise (see outlook.py)"
+    }
+  },
+  "calibration": {
+    "within70_pct": 70.0,
+    "within95_pct": 95.0,
+    "n": 2898
+  },
+  "record": {
+    "sessions": 0,
+    "range_70_pct": null,
+    "range_95_pct": null,
+    "calls": 0,
+    "lean_hit_pct": null,
+    "earlier_model": {
+      "sessions": 5,
+      "range_1s_pct": 20.0
+    },
+    "calls_all": {
+      "sessions": 0,
+      "hit_pct": null
+    }
+  }
+}

@@ -57,6 +57,7 @@ jobs:
         run: |
           git config user.name  "mf-pulse"
           git config user.email "actions@users.noreply.github.com"
+          python3 src/validate_data.py --fix   # never publish a broken data file
           git add docs/data
           MSG="adjust: $INPUT_FUND $INPUT_AMOUNT"
           if [ -n "$INPUT_NOTE" ]; then MSG="$MSG ($INPUT_NOTE)"; fi

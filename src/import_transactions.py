@@ -39,7 +39,7 @@ ALIASES = {
 }
 OK_STATUS = re.compile(r"success|complet|allot|confirm|process|settled|executed|done", re.I)
 BAD_TEXT = re.compile(r"reject|fail|cancel|pending|rever", re.I)
-OUT_TEXT = re.compile(r"redem|sell|sale|withdraw|switch[\s_-]*out|swp|stp[\s_-]*out", re.I)
+OUT_TEXT = re.compile(r"redeem|redem|sell|sale|withdraw|switch[\s_-]*out|swp|stp[\s_-]*out", re.I)
 NOCASH_TEXT = re.compile(r"reinvest|bonus", re.I)                  # units arrive without money
 PAYOUT_TEXT = re.compile(r"payout|dividend|idcw", re.I)            # cash comes out as dividend: not a purchase or sale
 DATE_FORMATS = ("%Y-%m-%d", "%d-%m-%Y", "%d/%m/%Y", "%d-%b-%Y", "%d %b %Y", "%d-%b-%y", "%d %B %Y", "%b %d, %Y", "%Y-%m-%d %H:%M:%S", "%d-%m-%Y %H:%M:%S")

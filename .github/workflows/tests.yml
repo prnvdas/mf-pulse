@@ -65,3 +65,78 @@ jobs:
       - name: Page tests
         working-directory: tests
         run: node run.js
+
+  # If a change breaks the tests, put the site back the way it was: undo that one commit, re-run everything on the
+  # result, and only publish the undo if it passes (so it never makes things worse). An issue tells you what happened.
+  # Skipped for commits that are themselves reverts, or whose message contains [no-revert].
+  undo:
+    needs: [backend, page]
+    if: ${{ always() && github.event_name == 'push' && (needs.backend.result == 'failure' || needs.page.result == 'failure') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BAD: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Should this commit be undone?
+        id: decide
+        run: |
+          subject=$(git log -1 --format=%s "$BAD")
+          echo "subject=$subject" >> "$GITHUB_OUTPUT"
+          if echo "$subject" | grep -qi '^revert'; then echo "skip=it is already a revert" >> "$GITHUB_OUTPUT"
+          elif git log -1 --format=%B "$BAD" | grep -qF '[no-revert]'; then echo "skip=its message says [no-revert]" >> "$GITHUB_OUTPUT"
+          else echo "skip=" >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/setup-python@v5
+        if: steps.decide.outputs.skip == ''
+        with:
+          python-version: "3.12"
+          cache: pip
+      - uses: actions/setup-node@v4
+        if: steps.decide.outputs.skip == ''
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: tests/package-lock.json
+      - name: Undo the commit and re-run every test on the result
+        id: undo
+        if: steps.decide.outputs.skip == ''
+        continue-on-error: true
+        run: |
+          git config user.name  "mf-pulse"
+          git config user.email "actions@users.noreply.github.com"
+          git revert --no-edit "$BAD" || { git revert --abort; echo "The undo conflicts with later changes."; exit 1; }
+          pip install -r requirements.txt
+          python3 src/validate_data.py
+          python -m unittest discover -s tests -p "test_*.py"
+          cd tests && npm ci && npx playwright install --with-deps chromium && node run.js
+      - name: Publish the undo
+        id: publish
+        if: steps.decide.outputs.skip == '' && steps.undo.outcome == 'success'
+        run: |
+          for n in 1 2 3 4; do
+            git pull --rebase --autostash -q origin main && git push -q origin HEAD:main && exit 0
+            sleep $((n * 6))
+          done
+          echo "push failed after 4 attempts" >&2; exit 1
+      - name: Tell you what happened
+        if: always() && steps.decide.outputs.skip == ''
+        env:
+          SUBJECT: ${{ steps.decide.outputs.subject }}
+          PUBLISHED: ${{ steps.publish.outcome }}
+        run: |
+          short=$(git rev-parse --short "$BAD")
+          if [ "$PUBLISHED" = "success" ]; then
+            title="Undid a change that broke the tests: $SUBJECT"
+            body="Commit $short broke the tests, so it was reverted automatically and the undo passed every test before it was published. The site is back to how it was. Fix the change and push it again (put [no-revert] in the commit message to stop this happening while you work on it). Failed run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/${{ github.run_id }}"
+          else
+            title="Tests are failing after: $SUBJECT"
+            body="Commit $short broke the tests, but undoing it did not fix them (or the undo conflicted with later changes), so nothing was reverted. This needs a look. Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/${{ github.run_id }}"
+          fi
+          gh issue create -R "$GITHUB_REPOSITORY" --assignee "$GITHUB_REPOSITORY_OWNER" --title "$title" --body "$body"

@@ -1,0 +1,43 @@
+name: cleanup
+
+# Deletes finished workflow runs (and the "pages build and deployment" runs every push creates) that are older than
+# KEEP_DAYS, so the Actions tab stays readable. It never touches the code, the data or the live site: only the run
+# history and its logs. Weekly, or run it by hand (set dry_run to just list what it would delete).
+on:
+  schedule:
+    - cron: "40 21 * * 0"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Only list the runs that would be deleted"
+        type: boolean
+        default: false
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: cleanup
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      KEEP_DAYS: "30"
+      DRY: ${{ inputs.dry_run }}
+    steps:
+      - name: Delete old workflow runs
+        run: |
+          cutoff=$(date -u -d "$KEEP_DAYS days ago" +%F)
+          echo "Deleting finished runs created before $cutoff"
+          ids=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?per_page=100&status=completed&created=<$cutoff" \
+                  --paginate --jq '.workflow_runs[].id' | head -2000)
+          n=0
+          for id in $ids; do
+            if [ "$DRY" = "true" ]; then echo "would delete run $id"; else gh api -X DELETE "repos/$GITHUB_REPOSITORY/actions/runs/$id" --silent || true; fi
+            n=$((n+1))
+          done
+          echo "Done: $n run(s) $( [ "$DRY" = "true" ] && echo listed || echo deleted )."

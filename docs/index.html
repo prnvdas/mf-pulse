@@ -226,11 +226,15 @@
   .vchip{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 9px;border-radius:99px;color:#fff;white-space:nowrap}
   .vchip.cheap{background:var(--green-deep)}.vchip.below{background:#86bc25}.vchip.fair{background:var(--grey-light)}.vchip.above{background:#c98a0a}.vchip.exp{background:var(--red)}
   tr.mine td{background:#f6faee}
-  .advbox{border-left:6px solid var(--grey-light);background:var(--wash);padding:20px 24px;margin:6px 0 4px}
+  .advbox{border-left:6px solid var(--grey-light);background:var(--wash);padding:16px 22px;margin:6px 0 4px}
   .advbox.buy,.advbox.lean_buy{border-left-color:var(--green)}.advbox.hold,.advbox.hold_no_add{border-left-color:#c98a0a}.advbox.trim{border-left-color:var(--red)}
   .advbox .st{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--grey)}
   .advbox .hl2{font-size:19px;font-weight:600;line-height:1.45;margin:8px 0 6px}
   .advbox .sc{font-size:12.5px;color:var(--grey)}
+  .chips2{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px}
+  .chip3{font-size:12.5px;border:1px solid var(--rule);padding:5px 11px;line-height:1.4}.chip3 b{font-weight:600}
+  .chip3.p span{color:var(--green-deep)}.chip3.m span{color:var(--red)}.chip3.e span{color:var(--grey-light)}
+  .advmore{margin-top:6px}.advmore summary{cursor:pointer;font-size:13px;color:var(--grey);padding:6px 0}
   .advlist{margin:8px 0 0 20px;padding:0;font-size:14.5px;line-height:1.65}.advlist li{margin:6px 0}
   .reason{display:grid;grid-template-columns:200px 1fr;gap:6px 22px;padding:14px 0;border-top:1px solid var(--rule);font-size:14px;line-height:1.6}
   .reason .rt{font-weight:600}.reason .rv{display:block;font-weight:400;font-size:12.5px;margin-top:3px}
@@ -1389,17 +1393,26 @@ function renderAdvisor() {
   const A = ADVISOR, wrap = $("advWrap");
   if (!A || !A.headline) { wrap.hidden = true; return; }
   wrap.hidden = false;
-  $("advNote").textContent = "a plain read of today's market data";
-  const li = arr => '<ul class="advlist">' + (Array.isArray(arr) ? arr : []).map(x => "<li>" + esc(x) + "</li>").join("") + "</ul>";
+  $("advNote").textContent = "a quick read of today's market data";
+  const arr = x => Array.isArray(x) ? x : [];
+  const li = a => '<ul class="advlist">' + arr(a).map(x => "<li>" + esc(x) + "</li>").join("") + "</ul>";
   const sc = A.score || {}, sg1 = v => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(1);
-  let h = '<div class="advbox ' + esc(A.stance_key) + '"><div class="st">My read today</div><div class="hl2">' + esc(A.stance) + "</div><div class=\"hl2\" style=\"font-size:16px;font-weight:400;margin-top:0\">" + esc(A.headline) + "</div>" +
-    '<div class="sc">How I got there: market mood ' + sg1(sc.mood || 0) + " · valuation of what you hold " + sg1(sc.valuation || 0) + " · trend " + sg1(sc.trend || 0) + " = " + sg1(sc.total || 0) + " (above +1 leans to buying, below −1 leans to caution)</div></div>";
-  h += '<div class="rr-sub">What to do today</div>' + li(A.do_today || []);
-  h += '<div class="rr-sub">Why</div>' + (Array.isArray(A.reasons) ? A.reasons : []).filter(r => r && typeof r === "object").map(r => '<div class="reason"><div class="rt">' + esc(r.title) + '<span class="rv ' + (r.effect === "+" ? "p" : r.effect === "-" ? "m" : "e") + '">' + (r.effect === "+" ? "▲ favours investing · " : r.effect === "-" ? "▼ argues for caution · " : "") + esc(r.value) + "</span></div><div>" + esc(r.text) + "</div></div>").join("");
-  if (Array.isArray(A.if_you_sell) && A.if_you_sell.length) h += '<div class="rr-sub">If you are thinking of selling</div>' + li(A.if_you_sell);
-  if (Array.isArray(A.watch) && A.watch.length) h += '<div class="rr-sub">What would change my view</div>' + li(A.watch);
-  if (A.evidence) h += '<div class="hv" style="margin-top:18px">' + esc(A.evidence) + "</div>";
-  h += '<p class="note" style="margin-top:18px">' + esc(A.disclaimer || "") + "</p>";
+  const quick = arr(A.quick).length ? A.quick : arr(A.do_today).slice(0, 3);
+
+  // at a glance: the verdict, a few signal chips, three short lines
+  let h = '<div class="advbox ' + esc(A.stance_key) + '"><div class="st">My read today</div><div class="hl2" style="margin-bottom:0">' + esc(A.stance) + "</div></div>" +
+    '<div class="chips2">' + arr(A.chips).filter(c => c && typeof c === "object").map(c => '<span class="chip3 ' + (c.effect === "+" ? "p" : c.effect === "-" ? "m" : "e") + '"><span>' + (c.effect === "+" ? "▲" : c.effect === "-" ? "▼" : "●") + "</span> " + esc(c.label) + ": <b>" + esc(c.value) + "</b></span>").join("") + "</div>" +
+    li(quick);
+
+  // everything else, on demand
+  let more = '<div class="sc" style="margin-bottom:6px">How I got there: market mood ' + sg1(sc.mood || 0) + " · valuation of what you hold " + sg1(sc.valuation || 0) + " · trend " + sg1(sc.trend || 0) + " = " + sg1(sc.total || 0) + " (above +1 leans to buying, below −1 leans to caution)</div>";
+  more += '<div class="rr-sub">What to do, in full</div>' + li(A.do_today);
+  more += '<div class="rr-sub">Why</div>' + arr(A.reasons).filter(r => r && typeof r === "object").map(r => '<div class="reason"><div class="rt">' + esc(r.title) + '<span class="rv ' + (r.effect === "+" ? "p" : r.effect === "-" ? "m" : "e") + '">' + (r.effect === "+" ? "▲ favours investing · " : r.effect === "-" ? "▼ argues for caution · " : "") + esc(r.value) + "</span></div><div>" + esc(r.text) + "</div></div>").join("");
+  if (arr(A.if_you_sell).length) more += '<div class="rr-sub">If you are thinking of selling</div>' + li(A.if_you_sell);
+  if (arr(A.watch).length) more += '<div class="rr-sub">What would change my view</div>' + li(A.watch);
+  if (A.evidence) more += '<div class="hv" style="margin-top:18px">' + esc(A.evidence) + "</div>";
+  h += '<details class="advmore"><summary>Show the full reasoning</summary>' + more + "</details>" +
+    '<p class="sub2" style="margin:12px 0 0">' + esc(A.disclaimer || "Educational analysis of public data, not personal investment advice.") + "</p>";
   $("advBody").innerHTML = h;
 }
 

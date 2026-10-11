@@ -165,7 +165,22 @@ def main() -> None:
                         f"against {d['median_3y']:.1f}% after dear months. So cheap or dear has told us little about average returns. It did tell us about the bad cases: the worst one-year result after cheap months was {c['worst_1y']:.0f}%, after dear months {d['worst_1y']:.0f}%. "
                         "Treat the signals above as a reason for patience and for spreading out new money, not as a forecast.")
 
-    write_json("advisor.json", {"generated_at": ts.isoformat(), "mood_as_of": mood.get("as_of"), "stance": stance, "stance_key": key, "headline": headline,
+    # ---- the one-glance version: three short lines and a few signal chips
+    short = {"buy": "Spare cash? Invest it in 3-4 parts, 2-3 weeks apart.", "lean_buy": "Spare cash? Invest it in 3-4 parts, 2-3 weeks apart.",
+             "hold": "Spare cash? No rush: invest it gradually.", "hold_no_add": "Skip lump sums for now.", "trim": "Skip lump sums; trim some profit in stages if you need money soon."}[key]
+    quick = [f"Keep your {lakh(sip_total)} monthly SIP running." if sip_total else "Keep your SIPs running.", short]
+    if tilt and mine_where and len(mine_where) >= 2:
+        quick.append(f"Put any extra into {', '.join(mine_where[0]['fund'])} rather than {', '.join(mine_where[-1]['fund'])}.")
+    quick.append("Don't sell on today's fall or tomorrow's call.")
+    chips = []
+    if mv is not None:
+        chips.append({"label": "Market mood", "value": f"{mv:.0f} · {mood['zone'].lower()}", "effect": "+" if m_score > 0 else "-" if m_score < 0 else "="})
+    for f, r, v in sorted(fund_rows, key=lambda x: -x[2]):
+        chips.append({"label": r["label"].split(" (")[0], "value": r["verdict"].lower(), "effect": "+" if r["score_pct"] < 35 else "-" if r["score_pct"] > 65 else "="})
+    if vs_long is not None:
+        chips.append({"label": "Trend", "value": f"{abs(vs_long):.1f}% {'below' if vs_long < 0 else 'above'} average", "effect": "-" if t_score < 0 else "+" if t_score > 0 else "="})
+
+    write_json("advisor.json", {"quick": quick, "chips": chips,"generated_at": ts.isoformat(), "mood_as_of": mood.get("as_of"), "stance": stance, "stance_key": key, "headline": headline,
                                 "score": {"mood": round(m_score, 1), "valuation": round(v_score, 1), "trend": round(t_score, 1), "total": round(total, 1)},
                                 "reasons": reasons, "do_today": do_today, "where_to_add": where, "if_you_sell": sell, "watch": watch, "evidence": evidence,
                                 "disclaimer": "Educational analysis of public market data, not personalised or SEBI-registered investment advice. It cannot know your goals, time horizon or income. Markets can stay cheap or expensive for long periods."})

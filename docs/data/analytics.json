@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-11T14:47:48.986796+05:30",
+  "generated_at": "2026-10-11T16:43:41.444448+05:30",
   "risk_free_pct": 6.5,
-  "portfolio_xirr_pct": 11.57,
+  "portfolio_xirr_pct": 11.4,
   "portfolio_returns": {
     "as_on": "2026-10-10",
     "invested": 8386652.53,
@@ -139,10 +139,9 @@
       },
       "xirr": {
         "pct": 13.4,
-        "source": "folios",
-        "approx": true,
-        "since": "2023-11-28",
-        "bench_pct": 11.1
+        "source": "transactions",
+        "since": "2021-01-08",
+        "bench_pct": 11.7
       },
       "folios": [
         {
@@ -229,11 +228,10 @@
         "peak_date": "2026-08-03"
       },
       "xirr": {
-        "pct": 9.6,
-        "source": "folios",
-        "approx": true,
-        "since": "2022-12-09",
-        "bench_pct": 3.7
+        "pct": 9.7,
+        "source": "transactions",
+        "since": "2019-04-30",
+        "bench_pct": 6.2
       },
       "folios": [
         {
@@ -320,11 +318,10 @@
         "peak_date": "2026-08-07"
       },
       "xirr": {
-        "pct": -6.3,
-        "source": "folios",
-        "approx": true,
-        "since": "2026-02-25",
-        "bench_pct": -10.4
+        "pct": -6.4,
+        "source": "transactions",
+        "since": "2025-10-13",
+        "bench_pct": -8.0
       },
       "folios": [
         {

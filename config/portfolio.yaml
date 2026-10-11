@@ -43,6 +43,13 @@ funds:
       note: index level (price return); P/E comes from the HDFC Nifty Smallcap 250 ETF, which holds the same basket
       returns: [{ticker: "NIFTYSMLCAP250.NS", weight: 1.0}]
       pe: [{ticker: "HDFCSML250.NS", weight: 1.0}]
+    # comparable direct-plan funds for the fund health check (a hand-picked sample, not the whole category)
+    peers:
+      - {code: 118778, name: Nippon India Small Cap}
+      - {code: 125497, name: SBI Small Cap}
+      - {code: 130503, name: HDFC Small Cap}
+      - {code: 120164, name: Kotak Small Cap}
+      - {code: 120828, name: Quant Small Cap}
     units: null
     seed_value: 5312000    # synced from IndMoney 2026-10-03
     seed_invested: 4125000 # synced from IndMoney 2026-10-03
@@ -61,6 +68,13 @@ funds:
       # midcap ETF above only exists since Mar 2025 and some purchases are older
       xirr_returns: [{ticker: "^NSEI", weight: 0.7}, {ticker: "^NSEMDCP50", weight: 0.3}]
       pe: [{ticker: "HDFCNIF100.NS", weight: 0.7}, {ticker: "HDFCMID150.NS", weight: 0.3}]
+    # comparable direct-plan funds for the fund health check (a hand-picked sample, not the whole category)
+    peers:
+      - {code: 119721, name: SBI Large & Midcap}
+      - {code: 130498, name: HDFC Large & Mid Cap}
+      - {code: 120596, name: ICICI Prudential Large & Mid Cap}
+      - {code: 147704, name: Motilal Oswal Large & Midcap}
+      - {code: 146772, name: HSBC Large & Mid Cap}
     units: null
     seed_value: 4959000    # synced from IndMoney 2026-10-03
     seed_invested: 4075000 # synced from IndMoney 2026-10-03
@@ -76,6 +90,13 @@ funds:
       note: index level (price return); benchmark P/E is approximated from a 75/15/10 large/mid/small ETF mix
       returns: [{ticker: "^CRSLDX", weight: 1.0}]
       pe: [{ticker: "HDFCNIF100.NS", weight: 0.75}, {ticker: "HDFCMID150.NS", weight: 0.15}, {ticker: "HDFCSML250.NS", weight: 0.10}]
+    # comparable direct-plan funds for the fund health check (a hand-picked sample, not the whole category)
+    peers:
+      - {code: 122639, name: Parag Parikh Flexi Cap}
+      - {code: 118955, name: HDFC Flexi Cap}
+      - {code: 120166, name: Kotak Flexi Cap}
+      - {code: 120662, name: UTI Flexi Cap}
+      - {code: 118535, name: Franklin India Flexi Cap}
     units: null
     seed_value: 179820    # synced from IndMoney 2026-10-03
     seed_invested: 187000 # synced from IndMoney 2026-10-03

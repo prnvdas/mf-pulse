@@ -31,6 +31,7 @@ def main() -> None:
                 "units": st.get("units"),
                 "last_nav": st.get("last_nav"),
                 "last_nav_date": st.get("last_nav_date"),
+                "sip_applied_month": st.get("sip_applied_month"),
                 "seed_value": f.get("seed_value"),
                 "invested": st.get("seed_invested", f.get("seed_invested")),
                 "holdings": [
@@ -48,6 +49,7 @@ def main() -> None:
             "tail_model": cfg["estimator"]["tail_model"],
             "funds": funds,
             "monthly_sip_total": monthly_sip_total,
+            "sips": [{"fund_id": s["fund_id"], "amount": float(s["amount"]), "day_of_month": int(s["day_of_month"])} for s in cfg.get("sips", [])],
             "projection": cfg.get("projection", {}),
             "profile": cfg.get("profile", {}),
             "special_sessions": cfg.get("special_sessions", []),

@@ -43,6 +43,15 @@ jobs:
         timeout-minutes: 6
         run: python src/analytics.py
       # Risk/reward and capital-gains views. Each non-blocking and time-boxed: they lean on a NAV-history API.
+      # Daily value-vs-invested point for the "Your money over time" chart, and the peer comparison for "Fund health".
+      - name: Portfolio history point
+        continue-on-error: true
+        timeout-minutes: 5
+        run: python src/snapshot.py
+      - name: Fund health check
+        continue-on-error: true
+        timeout-minutes: 6
+        run: python src/health.py
       - name: Portfolio risk
         continue-on-error: true
         timeout-minutes: 5

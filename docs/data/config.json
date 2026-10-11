@@ -12,6 +12,7 @@
       "units": 40083.881,
       "last_nav": 132.26,
       "last_nav_date": "09-Oct-2026",
+      "sip_applied_month": "2026-10",
       "seed_value": 5312000,
       "invested": 4124793.89,
       "holdings": [
@@ -628,6 +629,7 @@
       "units": 29578.389,
       "last_nav": 167.333,
       "last_nav_date": "09-Oct-2026",
+      "sip_applied_month": "2026-10",
       "seed_value": 4959000,
       "invested": 4074867.98,
       "holdings": [
@@ -1039,6 +1041,7 @@
       "units": 18876.495,
       "last_nav": 9.5134,
       "last_nav_date": "09-Oct-2026",
+      "sip_applied_month": "2026-10",
       "seed_value": 179820,
       "invested": 186990.66,
       "holdings": [
@@ -1651,6 +1654,23 @@
     }
   ],
   "monthly_sip_total": 110000.0,
+  "sips": [
+    {
+      "fund_id": "axis-small-cap",
+      "amount": 50000.0,
+      "day_of_month": 3
+    },
+    {
+      "fund_id": "mirae-large-midcap",
+      "amount": 50000.0,
+      "day_of_month": 3
+    },
+    {
+      "fund_id": "jioblackrock-flexicap",
+      "amount": 10000.0,
+      "day_of_month": 3
+    }
+  ],
   "projection": {
     "scenarios_pct": [
       12,

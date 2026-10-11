@@ -317,6 +317,44 @@
     .acc.four{grid-template-columns:1fr 1fr}
     .hcards{grid-template-columns:1fr}
   }
+
+  /* money over time, score card, calendar, SIP, cost, fund health */
+  .kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);margin-bottom:6px}
+  .kgrid>div{background:var(--paper);padding:18px 20px}
+  .kgrid .k{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--grey);margin-bottom:7px}
+  .kgrid .v{font-size:22px;font-weight:600;letter-spacing:-.02em}
+  .kgrid .n{font-size:11.5px;color:var(--grey-light);margin-top:5px;line-height:1.45}
+  .mchart{position:relative;margin-top:14px}.mchart svg{display:block;width:100%;overflow:visible}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--grey);margin:2px 0 0}
+  .legend i{display:inline-block;width:18px;height:0;border-top:2.4px solid var(--green-deep);vertical-align:middle;margin-right:6px}
+  .legend i.d{border-top:1.6px dashed var(--grey-light)}.legend i.g{height:9px;border:0;background:rgba(134,188,37,.22)}
+  .scoreline{font-size:15px;line-height:1.6;margin:16px 0 4px}
+  .scoreline b{font-weight:600}
+  td.miss{white-space:nowrap;padding-left:10px}
+  .ok{color:var(--green-deep);font-weight:600}.bad{color:var(--red);font-weight:600}
+  .calnav{display:flex;align-items:center;gap:10px;margin:0 0 14px}
+  .calnav b{min-width:120px;text-align:center;font-size:14px;font-weight:600}
+  .calnav button{padding:5px 12px}
+  .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .cal .dh{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--grey-light);text-align:center;padding-bottom:2px}
+  .cal .d{min-height:58px;padding:5px 6px;background:var(--wash);font-size:11px;color:var(--grey-light);display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+  .cal .d.e{background:none}
+  .cal .d .a{font-size:11.5px;font-weight:600;white-space:nowrap}
+  .cal .d.g .a{color:var(--green-deep)}.cal .d.r .a{color:var(--red)}
+  .cal .d.today{outline:1.5px solid var(--ink);outline-offset:-1.5px}
+  .calsum{display:flex;gap:26px;flex-wrap:wrap;margin-top:16px;font-size:13px;color:var(--grey)}
+  .calsum b{color:var(--ink);font-weight:600}
+  .cardsrow{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule)}
+  .cardsrow>div{background:var(--paper);padding:20px 22px;font-size:13px;line-height:1.55}
+  .cardsrow h3{font-size:14px;font-weight:600;margin-bottom:8px;display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+  .cardsrow dl{display:grid;grid-template-columns:auto 1fr auto auto;gap:5px 12px;margin:12px 0 6px;font-size:12.5px}
+  .cardsrow dt{color:var(--grey)}.cardsrow dd{text-align:right}.cardsrow dl .hd{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--grey-light)}
+  table.mini{margin-top:6px}.mini th{padding-bottom:6px;font-size:9.5px}.mini td{padding:7px 0;font-size:12.5px}
+  .chip.new{background:var(--grey-light)}
+  .statline{display:flex;align-items:center;gap:8px;font-size:13px}
+  .hideb{padding:9px 14px}
+  body.hiding .hideb{background:#fff;color:var(--ink)}
+  @media(max-width:760px){.kgrid{grid-template-columns:1fr 1fr}.cardsrow{grid-template-columns:1fr}.cal .d{min-height:46px;padding:3px 4px}.cal .d .a{font-size:10px}}
   @media(prefers-reduced-motion:reduce){.spin{animation:none}}
 </style>
 </head>
@@ -329,6 +367,7 @@
     <div class="ctl">
       <span class="stamp" id="stamp">Ready</span>
       <button id="refresh">Refresh live</button>
+      <button id="hideAmt" class="ghost hideb" aria-pressed="false" title="Blur every rupee amount on this page (for screen sharing or public places)">Hide ₹</button>
       <button id="auto" aria-pressed="false" hidden>Auto 60s</button>
     </div>
   </div>
@@ -404,6 +443,20 @@
     </table>
   </section>
 
+  <section id="moneyWrap" hidden>
+    <h2>Your money over time <span id="moneyNote"></span></h2>
+    <div id="moneyKpis" class="kgrid"></div>
+    <div class="seg" id="moneySeg" role="tablist" aria-label="Chart view" style="margin-top:16px"></div>
+    <div class="mchart" id="moneyChart"></div>
+    <div class="legend" id="moneyLegend"></div>
+    <p class="note" id="moneyFoot"></p>
+  </section>
+
+  <section id="scoreWrap" hidden>
+    <h2>Estimate vs actual NAV <span id="scoreNote"></span></h2>
+    <div id="scoreBody"></div>
+  </section>
+
   <section id="whyWrap" class="why" hidden>
     <h2 id="whyTitle">Why the market moved</h2>
     <div id="whyBody"></div>
@@ -444,6 +497,13 @@
     </details>
   </section>
 
+  <section id="calWrap" hidden>
+    <h2>Day by day <span id="calNote">What the market did to your money each day (new SIP money left out)</span></h2>
+    <div class="calnav"><button class="ghost" id="calPrev" aria-label="Previous month">‹</button><b id="calMonth"></b><button class="ghost" id="calNext" aria-label="Next month">›</button></div>
+    <div class="cal" id="calGrid"></div>
+    <div class="calsum" id="calSum"></div>
+  </section>
+
   <section id="projWrap" hidden>
     <h2>Where this could be <span id="projNote"></span></h2>
     <div class="sub2" style="margin:0 0 6px">Assumed yearly return</div>
@@ -461,6 +521,21 @@
       still to come. 12% is a common long-run planning assumption; 15%, 18% and 22% are optimistic scenarios,
       and holding 22% for decades would be exceptional. Real markets move unevenly and results can differ a
       lot. Edit the scenarios under <code>projection</code> in <code>config/portfolio.yaml</code>.</p>
+  </section>
+
+  <section id="healthWrap" hidden>
+    <h2>Fund health check <span id="healthNote"></span></h2>
+    <div id="healthBody"></div>
+  </section>
+
+  <section id="sipWrap" hidden>
+    <h2>SIP tracker <span id="sipNote"></span></h2>
+    <div id="sipBody"></div>
+  </section>
+
+  <section id="costWrap" hidden>
+    <h2>What owning these funds costs <span id="costNote"></span></h2>
+    <div id="costBody"></div>
   </section>
 
   <section id="retWrap" hidden>
@@ -548,7 +623,11 @@ const DEMO = {
 let MARKET = [], COMMS = [], OUTLOOK = null, GIFT = null, TAX = null, HOLS = {}, MOOD = null, ADVISOR = null, BRIEF_PHASE = null, CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, timer = null;
 
 const $ = id => document.getElementById(id);
-const inr = n => "₹" + Math.round(Math.abs(n)).toLocaleString("en-IN");
+let HIDE = false;                                   // "Hide ₹": every rupee amount on the page is masked (stored per browser)
+try { HIDE = localStorage.getItem("mfp_hide") === "1"; } catch (e) { /* private window: stays off */ }
+const MASK = "₹ ••••";
+const inr = n => HIDE ? MASK : "₹" + Math.round(Math.abs(n)).toLocaleString("en-IN");
+const unitsFmt = n => HIDE ? "••••" : Math.round(n).toLocaleString("en-IN");
 const signed = n => (n >= 0 ? "+" : "−") + inr(n);
 const pc = (n, d = 2) => (n >= 0 ? "+" : "−") + Math.abs(n).toFixed(d) + "%";
 const valueOf = f => (f.units && f.last_nav) ? f.units * f.last_nav : (f.seed_value || 0);
@@ -907,7 +986,7 @@ function projectFutureValue(lumpsum, monthlySip, annualRatePct, tYears, nSips) {
 }
 
 let PROJ = { sel: 0, last: null };
-const cx = n => n >= 1e7 ? "₹" + (n / 1e7).toFixed(n >= 1e9 ? 0 : 2) + " Cr" : n >= 1e5 ? "₹" + (n / 1e5).toFixed(1) + " L" : "₹" + Math.round(n).toLocaleString("en-IN");
+const cx = n => HIDE ? MASK : n >= 1e7 ? "₹" + (n / 1e7).toFixed(n >= 1e9 ? 0 : 2) + " Cr" : n >= 1e5 ? "₹" + (n / 1e5).toFixed(1) + " L" : "₹" + Math.round(n).toLocaleString("en-IN");
 
 // Every year-end from this year to ~25 years out for one assumed return: portfolio
 // value, money invested, and what the year itself earned (value change minus the
@@ -1444,7 +1523,7 @@ function renderAdvisor() {
 // nightly (src/risk.py, src/tax.py); goals and their maths run here in the browser.
 // ======================================================================================
 const pcs = (v, d = 1) => v == null ? "—" : (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(d) + "%";
-const cl = n => n >= 1e7 ? "₹" + (n / 1e7).toFixed(2).replace(/\.?0+$/, "") + " Cr" : n >= 1e5 ? "₹" + (n / 1e5).toFixed(2).replace(/\.?0+$/, "") + " L" : inr(n);
+const cl = n => HIDE ? MASK : n >= 1e7 ? "₹" + (n / 1e7).toFixed(2).replace(/\.?0+$/, "") + " Cr" : n >= 1e5 ? "₹" + (n / 1e5).toFixed(2).replace(/\.?0+$/, "") + " L" : inr(n);
 const dshort = iso => iso ? new Date(iso + "T00:00:00").toLocaleDateString("en-IN", { month: "short", year: "numeric" }) : "—";
 const tile = (k, v, n, cls) => '<div><div class="k">' + k + '</div><div class="v ' + (cls || "") + '">' + v + '</div><div class="n">' + (n || "") + "</div></div>";
 
@@ -1500,7 +1579,7 @@ function renderTax() {
     tile("Worth harvesting", inr(hv.future_tax_saved), "of future tax saved each year you use the room", "pos") + "</div>";
 
   if ((hv.plan || []).length) {
-    h += '<div class="hv" style="margin-top:18px"><b>Tax-free harvest idea:</b> ' + hv.plan.map(p => "sell about <b>" + cl(p.value) + "</b> of " + esc(p.fund.replace(" Direct Growth", "")) + (p.folio ? " <b>folio " + esc(p.folio) + "</b>" : "") + " (" + Math.round(p.units).toLocaleString("en-IN") + " units, oldest first) to book <b>" + cl(p.gain) + "</b> of long-term gain").join("; and ") +
+    h += '<div class="hv" style="margin-top:18px"><b>Tax-free harvest idea:</b> ' + hv.plan.map(p => "sell about <b>" + cl(p.value) + "</b> of " + esc(p.fund.replace(" Direct Growth", "")) + (p.folio ? " <b>folio " + esc(p.folio) + "</b>" : "") + " (" + unitsFmt(p.units) + " units, oldest first) to book <b>" + cl(p.gain) + "</b> of long-term gain").join("; and ") +
       ". That is inside this year's " + cl(rt.ltcg_exempt_inr) + " exemption, so no tax. Buy the same fund back straight away: your holding is unchanged, but your cost price resets higher, which lowers the tax on every future sale. " +
       "<span class=\"sub2\">Check exit load, the small STT on redemption, and which lots your platform sells (units are normally redeemed oldest first). Do it before " + new Date(fy.end + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" }) + ", because the room does not carry over.</span></div>";
   } else if (hv.remaining_exempt <= 0) {
@@ -1969,7 +2048,7 @@ function paintStamp() {
 }
 setInterval(() => { paintStamp(); renderHolidayBar(); renderStatementBar(); }, 30000);        // keep the clock and the data age moving
 
-function stampBatch(a) { LAST_BATCH = a; paintStamp(); }
+function stampBatch(a) { LAST_BATCH = a; paintStamp(); safe(renderScore, "scoreWrap"); }
 
 async function applyBatch() {
   const r = await fetch("data/latest.json?t=" + Date.now(), { cache: "no-store" });
@@ -2413,6 +2492,279 @@ function adaptLatest(d) {
            total: d.tickers_total, phase: d.phase, health: d.health, market: d.market, commodities: d.commodities, generatedAt: d.generated_at, movers: d.movers };
 }
 
+// ---------------------------------------------------------------------------------------------
+// Money over time, estimate-vs-actual score, daily calendar, fund health, SIP tracker, cost of owning.
+// Each renderer is wrapped in safe(): a bad data file hides its own section and nothing else.
+function safe(fn, wrapId) { try { fn(); } catch (e) { console.error(fn.name, e); if (wrapId && $(wrapId)) $(wrapId).hidden = true; } }
+let PHIST = null, FHEALTH = null;
+const num = v => typeof v === "number" && Number.isFinite(v);
+const dmon = iso => new Date(iso + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+const dlong = iso => new Date(iso + "T00:00:00").toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
+const sgc = n => (n >= 0 ? "+" : "−") + cl(Math.abs(n));                       // signed, compact rupees
+const shortName = n => String(n || "").replace(" Direct Growth", "").replace(" Fund", "");
+const ordinal = n => n + (n % 10 === 1 && n !== 11 ? "st" : n % 10 === 2 && n !== 12 ? "nd" : n % 10 === 3 && n !== 13 ? "rd" : "th");
+const histPoints = () => ((PHIST && Array.isArray(PHIST.points)) ? PHIST.points : []).filter(p => p && typeof p.d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(p.d) && num(p.v) && num(p.i));
+
+function niceTicks(lo, hi, n) {
+  const raw = (hi - lo) / n, p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p;
+  const step = (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p, out = [];
+  for (let v = Math.floor(lo / step) * step; v < hi + step * .999; v += step) out.push(v);
+  return out;
+}
+
+// ---- 1. Your money over time
+const MONEY = { mode: "value" };
+function renderMoney() {
+  const wrap = $("moneyWrap"), pts = histPoints();
+  if (pts.length < 2) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  const a = pts[0], z = pts[pts.length - 1], g0 = a.v - a.i, g1 = z.v - z.i;
+  $("moneyNote").textContent = dmon(a.d) + " to " + dmon(z.d) + " · " + pts.length + " trading days";
+  const k = (t, v, n, c) => '<div><div class="k">' + t + '</div><div class="v ' + (c || "") + '">' + v + '</div><div class="n">' + n + "</div></div>";
+  $("moneyKpis").innerHTML =
+    k("Worth now", cl(z.v), "on " + dmon(z.d)) +
+    k("Put in", cl(z.i), z.i - a.i > 1 ? "of which " + cl(z.i - a.i) + " went in since " + dmon(a.d) : "nothing added since " + dmon(a.d)) +
+    k("Gain", sgc(g1), pcs((z.v / z.i - 1) * 100, 1) + " on what you put in", g1 >= 0 ? "pos" : "neg") +
+    k("The market's effect", sgc(g1 - g0), "change in your gain since " + dmon(a.d) + ", new money left out", g1 - g0 >= 0 ? "pos" : "neg");
+  $("moneySeg").innerHTML = [["value", "Worth vs put in"], ["gain", "Gain only"]].map(([m, t]) => '<button role="tab" aria-selected="' + (MONEY.mode === m) + '" data-m="' + m + '">' + t + "</button>").join("");
+  $("moneySeg").querySelectorAll("button").forEach(b => b.onclick = () => { MONEY.mode = b.dataset.m; renderMoney(); });
+  $("moneyLegend").innerHTML = MONEY.mode === "gain"
+    ? '<span><i></i>Gain = what it is worth minus what you put in</span>'
+    : '<span><i></i>Worth</span><span><i class="d"></i>Put in</span><span><i class="g"></i>The gap is your gain</span>';
+  $("moneyFoot").innerHTML = "Rebuilt from your exact holdings today with each SIP taken back out at that day's NAV, so it assumes nothing else was bought or sold since " + dmon(a.d) +
+    ". A new point is added every trading night, so this grows into a long history. Earlier years aren't recorded anywhere, because a Groww statement only gives today's totals.";
+  drawMoneyChart(pts);
+}
+
+function drawMoneyChart(pts) {
+  const host = $("moneyChart"), gainMode = MONEY.mode === "gain";
+  const W = Math.max(300, host.clientWidth || 800), narrow = W < 520, H = narrow ? 240 : 300;
+  const m = { l: HIDE ? 12 : narrow ? 54 : 74, r: 16, t: 14, b: 28 };
+  const val = p => gainMode ? p.v - p.i : p.v;
+  const all = pts.flatMap(p => gainMode ? [val(p), 0] : [p.v, p.i]);
+  let lo = Math.min(...all), hi = Math.max(...all);
+  if (hi - lo < 1) hi = lo + 1;
+  const pad = (hi - lo) * .07; lo -= pad; hi += pad;
+  if (gainMode && Math.min(...all) >= 0) lo = Math.max(0, lo);
+  const ticks = niceTicks(lo, hi, 4), y0 = ticks[0], y1 = ticks[ticks.length - 1];
+  const t = d => Date.parse(d + "T00:00:00"), x0 = t(pts[0].d), x1 = t(pts[pts.length - 1].d);
+  const X = d => m.l + (t(d) - x0) / ((x1 - x0) || 1) * (W - m.l - m.r), Y = v => H - m.b - (v - y0) / (y1 - y0) * (H - m.t - m.b);
+  const f1 = n => n.toFixed(1), line = ps => ps.map((q, i) => (i ? "L" : "M") + f1(q[0]) + " " + f1(q[1])).join(" ");
+  const vp = pts.map(p => [X(p.d), Y(val(p))]);
+  const ip = []; pts.forEach((p, i) => { if (i) ip.push([X(p.d), Y(pts[i - 1].i)]); ip.push([X(p.d), Y(p.i)]); });
+  const up = pts[pts.length - 1].v - pts[pts.length - 1].i >= 0, col = !gainMode || up ? "#5f8a15" : "#da291c", fill = !gainMode || up ? "rgba(134,188,37,.2)" : "rgba(218,41,28,.14)";
+  const poly = gainMode ? vp.concat([[vp[vp.length - 1][0], Y(0)], [vp[0][0], Y(0)]]) : vp.concat(ip.slice().reverse());
+  const n = pts.length, xi = n <= 5 ? pts.map((_, i) => i) : [0, 1, 2, 3, 4].map(i => Math.round(i * (n - 1) / 4));
+  host.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" height="' + H + '" role="img" aria-label="' + (gainMode ? "Gain over time" : "Portfolio worth against money put in, over time") + '">' +
+    ticks.map(v => '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + f1(Y(v)) + '" y2="' + f1(Y(v)) + '" stroke="#ececec"/>' +
+      (HIDE ? "" : '<text x="' + (m.l - 8) + '" y="' + f1(Y(v) + 3) + '" font-size="10.5" text-anchor="end" fill="#97999b">' + (v === 0 ? "0" : cx(v)) + "</text>")).join("") +
+    (gainMode ? '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + f1(Y(0)) + '" y2="' + f1(Y(0)) + '" stroke="#97999b"/>' : "") +
+    xi.map(i => '<text x="' + f1(X(pts[i].d)) + '" y="' + (H - 8) + '" font-size="10.5" text-anchor="' + (i === 0 ? "start" : i === n - 1 ? "end" : "middle") + '" fill="#97999b">' + dmon(pts[i].d) + "</text>").join("") +
+    '<path d="' + line(poly) + ' Z" fill="' + fill + '"/>' +
+    (gainMode ? "" : '<path d="' + line(ip) + '" fill="none" stroke="#97999b" stroke-width="1.5" stroke-dasharray="4 4"/>') +
+    '<path d="' + line(vp) + '" fill="none" stroke="' + col + '" stroke-width="2.4" stroke-linejoin="round"/>' +
+    '<circle cx="' + f1(vp[vp.length - 1][0]) + '" cy="' + f1(vp[vp.length - 1][1]) + '" r="4" fill="' + col + '"/>' +
+    '<line id="mguide" y1="' + m.t + '" y2="' + (H - m.b) + '" stroke="#97999b" stroke-dasharray="3 3" visibility="hidden"/><circle id="mdot" r="4.5" fill="#fff" stroke="' + col + '" stroke-width="2" visibility="hidden"/>' +
+    '<rect id="mhit" x="' + m.l + '" y="' + m.t + '" width="' + (W - m.l - m.r) + '" height="' + (H - m.t - m.b) + '" fill="transparent"/></svg><div class="ptip" id="mtip" hidden></div>';
+  const svg = host.querySelector("svg"), tip = $("mtip");
+  const move = e => {
+    const r = svg.getBoundingClientRect(), px = ((e.touches ? e.touches[0].clientX : e.clientX) - r.left) * (W / r.width);
+    let bi = 0; vp.forEach((q, i) => { if (Math.abs(q[0] - px) < Math.abs(vp[bi][0] - px)) bi = i; });
+    const p = pts[bi], prev = pts[bi - 1], gx = vp[bi][0], gy = vp[bi][1];
+    $("mguide").setAttribute("x1", gx); $("mguide").setAttribute("x2", gx); $("mguide").setAttribute("visibility", "visible");
+    $("mdot").setAttribute("cx", gx); $("mdot").setAttribute("cy", gy); $("mdot").setAttribute("visibility", "visible");
+    tip.hidden = false;
+    tip.innerHTML = "<b>" + dlong(p.d) + "</b><br>worth <b>" + cl(p.v) + "</b><br><span class=\"m\">put in " + cl(p.i) + "<br>gain " + sgc(p.v - p.i) +
+      (prev ? "<br>that day " + sgc((p.v - prev.v) - (p.i - prev.i)) : "") + "</span>";
+    const tw = tip.offsetWidth, left = Math.min(Math.max(gx * (r.width / W) - tw / 2, 0), r.width - tw);
+    tip.style.left = left + "px"; tip.style.top = Math.max(0, gy * (r.width / W) - tip.offsetHeight - 14) + "px";
+  };
+  const hide = () => { tip.hidden = true; ["mguide", "mdot"].forEach(id => $(id).setAttribute("visibility", "hidden")); };
+  const hit = $("mhit");
+  hit.addEventListener("mousemove", move); hit.addEventListener("mouseleave", hide);
+  hit.addEventListener("touchstart", move, { passive: true }); hit.addEventListener("touchmove", move, { passive: true }); hit.addEventListener("touchend", hide);
+}
+window.addEventListener("resize", () => { if (!$("moneyWrap").hidden) safe(() => drawMoneyChart(histPoints()), "moneyWrap"); });
+
+// ---- 2. Estimate vs actual NAV
+function renderScore() {
+  const wrap = $("scoreWrap"), cfgFunds = (CFG && CFG.funds) || [];
+  const rows = (Array.isArray(HIST) ? HIST : []).filter(h => h && typeof h.date === "string" && num(h.predicted_pct) && num(h.actual_pct));
+  const lastDay = rows.reduce((m, h) => h.date > m ? h.date : m, "");
+  const order = id => { const i = cfgFunds.findIndex(f => f.id === id); return i < 0 ? 99 : i; };
+  const nm = id => esc(shortName((cfgFunds.find(f => f.id === id) || {}).name || id));
+  const B = LAST_BATCH, ist = istNow(), today = istDate(ist), mins = ist.getHours() * 60 + ist.getMinutes();
+  const gen = B && B.generatedAt ? String(B.generatedAt).slice(0, 10) : "";
+  const est = B && Array.isArray(B.funds) ? B.funds.filter(f => num(f.projectedNav) && num(f.navMove)) : [];
+  const pending = est.length && gen > lastDay && isTradingDay(gen) && (gen < today || (gen === today && mins >= 15 * 60 + 30));
+  const cell = (nav, pct) => (num(nav) ? "₹" + nav.toFixed(2) + " " : "") + '<span class="sub2">' + pc(pct) + "</span>";
+
+  if (pending) {
+    wrap.hidden = false;
+    $("scoreNote").textContent = "session of " + dlong(gen) + " · waiting for the published NAVs";
+    $("scoreBody").innerHTML = '<table><thead><tr><th>Fund</th><th>My estimate</th><th>Published NAV</th></tr></thead><tbody>' +
+      est.map(f => "<tr><td>" + esc(shortName(f.name)) + "</td><td>" + cell(f.projectedNav, f.navMove) + '</td><td class="sub2">not published yet</td></tr>').join("") + "</tbody></table>" +
+      '<p class="scoreline">The funds publish their NAV between about 9 pm and 11:30 pm. The dashboard grades this estimate right after, and this card then shows how close it was.</p>';
+    return;
+  }
+  const day = rows.filter(h => h.date === lastDay).sort((a, b) => order(a.fund_id) - order(b.fund_id));
+  if (!day.length) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  const hits = day.filter(h => h.direction_hit).length, avg = day.reduce((s, h) => s + Math.abs(h.predicted_pct - h.actual_pct), 0) / day.length;
+  $("scoreNote").textContent = "session of " + dlong(lastDay) + " · graded after the funds published";
+  let html = '<table><thead><tr><th>Fund</th><th>My estimate</th><th>Published NAV</th><th>Miss</th></tr></thead><tbody>' +
+    day.map(h => { const miss = Math.abs(h.predicted_pct - h.actual_pct);
+      return "<tr><td>" + nm(h.fund_id) + "</td><td>" + cell(h.predicted_nav, h.predicted_pct) + "</td><td>" + cell(h.actual_nav, h.actual_pct) +
+        '</td><td class="miss">' + miss.toFixed(2) + " pp " + (h.direction_hit ? '<span class="ok">✓</span>' : '<span class="bad">✗ wrong way</span>') + "</td></tr>"; }).join("") + "</tbody></table>";
+  const both = day.filter(h => num(h.predicted_pl_rupees) && num(h.actual_pl_rupees));
+  let line = "";
+  if (both.length === day.length) {
+    const pe = both.reduce((s, h) => s + h.predicted_pl_rupees, 0), pa = both.reduce((s, h) => s + h.actual_pl_rupees, 0);
+    line = "On your money I estimated <b>" + sgc(pe) + "</b> and the published NAVs made it <b>" + sgc(pa) + "</b>: off by <b>" + cl(Math.abs(pe - pa)) + "</b>. ";
+  }
+  line += "Right direction for <b>" + hits + " of " + day.length + "</b> funds, average miss <b>" + avg.toFixed(2) + " pp</b> of NAV.";
+  const sessions = new Set(rows.map(h => h.date)).size, hitAll = rows.filter(h => h.direction_hit).length;
+  html += '<p class="scoreline">' + line + "</p>";
+  if (sessions > 1) html += '<p class="sub2">Over the last ' + sessions + " graded sessions: direction right " + Math.round(hitAll / rows.length * 100) + "% of the time, average miss " +
+    (rows.reduce((s, h) => s + Math.abs(h.predicted_pct - h.actual_pct), 0) / rows.length).toFixed(2) + " pp. The estimate is a same-day reading of the market, built from stock prices at the close, not a forecast.</p>";
+  $("scoreBody").innerHTML = html;
+}
+
+// ---- 3. Day-by-day calendar
+const CAL = { ym: null };
+function dayGains() {
+  const pts = histPoints(), out = {};
+  for (let i = 1; i < pts.length; i++) out[pts[i].d] = (pts[i].v - pts[i - 1].v) - (pts[i].i - pts[i - 1].i);
+  return out;
+}
+function renderCalendar() {
+  const wrap = $("calWrap"), g = dayGains(), days = Object.keys(g).sort();
+  if (days.length < 3) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  const months = [...new Set(days.map(d => d.slice(0, 7)))];
+  if (!CAL.ym || !months.includes(CAL.ym)) CAL.ym = months[months.length - 1];
+  const mi = months.indexOf(CAL.ym), [Y, M] = CAL.ym.split("-").map(Number);
+  $("calMonth").textContent = new Date(Y, M - 1, 1).toLocaleDateString("en-IN", { month: "long", year: "numeric" });
+  $("calPrev").disabled = mi <= 0; $("calNext").disabled = mi >= months.length - 1;
+  $("calPrev").onclick = () => { CAL.ym = months[mi - 1]; renderCalendar(); };
+  $("calNext").onclick = () => { CAL.ym = months[mi + 1]; renderCalendar(); };
+  const inM = days.filter(d => d.startsWith(CAL.ym)), mx = Math.max(1, ...inM.map(d => Math.abs(g[d])));
+  const ks = n => HIDE ? "" : (n >= 0 ? "+" : "−") + (Math.abs(n) >= 1e5 ? (Math.abs(n) / 1e5).toFixed(1) + "L" : Math.round(Math.abs(n) / 1e3) + "k");
+  const dim = new Date(Y, M, 0).getDate(), lead = (new Date(Y, M - 1, 1).getDay() + 6) % 7, today = istDate(istNow());
+  let cells = ["M", "T", "W", "T", "F", "S", "S"].map(d => '<div class="dh">' + d + "</div>").join("") + '<div class="d e"></div>'.repeat(lead);
+  for (let d = 1; d <= dim; d++) {
+    const iso = CAL.ym + "-" + String(d).padStart(2, "0"), v = g[iso], hol = holAny(iso);
+    if (v == null) { cells += '<div class="d' + (iso === today ? " today" : "") + '" title="' + esc(hol || "no market data") + '"><span>' + d + "</span></div>"; continue; }
+    const a = (.12 + .5 * Math.abs(v) / mx).toFixed(2), bg = v >= 0 ? "rgba(134,188,37," + a + ")" : "rgba(218,41,28," + a + ")";
+    cells += '<div class="d ' + (v >= 0 ? "g" : "r") + (iso === today ? " today" : "") + '" style="background:' + bg + '" title="' + esc(dlong(iso) + ": " + sgc(v)) + '"><span>' + d + '</span><span class="a">' + ks(v) + "</span></div>";
+  }
+  $("calGrid").innerHTML = cells;
+  const up = inM.filter(d => g[d] >= 0).length, best = inM.reduce((b, d) => g[d] > g[b] ? d : b, inM[0]), worst = inM.reduce((b, d) => g[d] < g[b] ? d : b, inM[0]);
+  let streak = 0; const dir = g[days[days.length - 1]] >= 0;
+  for (let i = days.length - 1; i >= 0 && (g[days[i]] >= 0) === dir; i--) streak++;
+  $("calSum").innerHTML = "<span>This month <b class=\"" + (inM.reduce((s, d) => s + g[d], 0) >= 0 ? "pos" : "neg") + '">' + sgc(inM.reduce((s, d) => s + g[d], 0)) + "</b></span>" +
+    "<span><b>" + up + "</b> up days, <b>" + (inM.length - up) + "</b> down days</span>" +
+    "<span>Best <b>" + dmon(best) + "</b> " + sgc(g[best]) + "</span><span>Worst <b>" + dmon(worst) + "</b> " + sgc(g[worst]) + "</span>" +
+    "<span>Now on a run of <b>" + streak + (dir ? " up" : " down") + " day" + (streak > 1 ? "s" : "") + "</b></span>";
+}
+
+// ---- 4. Fund health check
+function renderHealth() {
+  const wrap = $("healthWrap"), fs = (FHEALTH && Array.isArray(FHEALTH.funds) ? FHEALTH.funds : []).filter(f => f && f.windows && typeof f.name === "string");
+  if (!fs.length) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  const chipCls = { good: "healthy", mixed: "watch", weak: "caution", "new": "new" }, by = FHEALTH.bench_yield_pp || 1;
+  const p1 = v => num(v) ? pcs(v, 1) : "—";
+  $("healthNote").textContent = "each fund against its benchmark and a few comparable funds" + (fs[0].as_of ? " · to " + dmon(fs[0].as_of) : "");
+  $("healthBody").innerHTML = '<div class="cardsrow">' + fs.map(f => {
+    const w = f.windows || {};
+    const rows = ["1Y", "3Y", "5Y"].map(k => { const x = w[k] || {};
+      if (!num(x.fund)) return "<tr><td>" + k.replace("Y", " yr") + '</td><td colspan="4" class="sub2" style="text-align:left">not enough history</td></tr>';
+      const beat = num(x.bench) ? x.fund >= x.bench + by : null;
+      return "<tr><td>" + k.replace("Y", " yr") + '</td><td class="' + (beat == null ? "" : beat ? "pos" : "neg") + '">' + p1(x.fund) + "</td><td>" + p1(x.bench) + "</td><td>" + p1(x.peer_median) + "</td><td>" + (num(x.rank) ? x.rank + " of " + x.of : "—") + "</td></tr>"; }).join("");
+    const peers = (f.peers || []).map(p => "<tr><td>" + esc(p.name) + "</td><td>" + p1(p["1Y"]) + "</td><td>" + p1(p["3Y"]) + "</td><td>" + p1(p["5Y"]) + "</td></tr>").join("");
+    return "<div><h3><span>" + esc(shortName(f.name)) + '</span><span class="chip ' + (chipCls[f.verdict] || "new") + '">' + esc(f.label || "") + "</span></h3>" +
+      "<p>" + esc(f.text || "") + '</p><table class="mini"><thead><tr><th>Over</th><th>Fund</th><th>Benchmark</th><th>Peers\' middle</th><th>Rank</th></tr></thead><tbody>' + rows + "</tbody></table>" +
+      '<p class="sub2" style="margin-top:8px">Yearly returns (3 and 5 yr annualised).' + (num(f.beat_benchmark_pct) ? " Ahead of its benchmark in <b>" + f.beat_benchmark_pct + "%</b> of recent one-year periods." : "") + (num(f.ter_pct) ? " Costs " + f.ter_pct + "% a year." : "") + "</p>" +
+      (peers ? '<details><summary>The comparable funds</summary><table class="mini"><thead><tr><th>Fund</th><th>1 yr</th><th>3 yr</th><th>5 yr</th></tr></thead><tbody>' + peers + "</tbody></table></details>" : "") + "</div>"; }).join("") + "</div>" +
+    '<p class="note">' + esc(FHEALTH.note || "") + " The benchmark gets a " + by + " point a year head start because an index leaves out dividends. A fund can trail for a year or two and still be a good one: treat this as a prompt to look closer, never as a signal to sell. Edit the comparison funds under <code>peers</code> in <code>config/portfolio.yaml</code>.</p>";
+}
+
+// ---- 5. SIP tracker
+function renderSip() {
+  const wrap = $("sipWrap"), sips = (CFG && Array.isArray(CFG.sips) ? CFG.sips : []).filter(s => s && num(s.amount) && num(s.day_of_month));
+  if (!sips.length) { wrap.hidden = true; return; }
+  const funds = CFG.funds || [], now = istNow(), today = istDate(now), ym = today.slice(0, 7), dn = now.getDate();
+  const monthName = now.toLocaleDateString("en-IN", { month: "long" });
+  let counted = 0, nextIso = null;
+  const rows = sips.map(s => {
+    const f = funds.find(x => x.id === s.fund_id); if (!f) return "";
+    const done = f.sip_applied_month === ym; if (done) counted++;
+    let st;
+    if (done) st = '<span class="ok">✓ Counted for ' + monthName + "</span>";
+    else if (dn < s.day_of_month) st = "Due: units arrive with the " + ordinal(s.day_of_month) + "'s NAV";
+    else if (dn <= s.day_of_month + 4) st = "Waiting: added once tonight's NAV is published";
+    else st = '<span class="bad">Not counted.</span> Check on Groww that it ran';
+    const pastThisMonth = done || dn >= s.day_of_month;
+    const d = new Date(now.getFullYear(), now.getMonth() + (pastThisMonth ? 1 : 0), s.day_of_month), iso0 = istDate(d);
+    const iso = isTradingDay(iso0) ? iso0 : nextTradingDay(iso0);
+    if (iso && (!nextIso || iso < nextIso)) nextIso = iso;
+    return "<tr><td>" + esc(shortName(f.name)) + '<div class="fmeta">' + inr(s.amount) + " a month</div></td><td>" + ordinal(s.day_of_month) + '</td><td style="text-align:left;padding-left:20px">' + st + "</td></tr>";
+  }).join("");
+  const total = sips.reduce((s, x) => s + x.amount, 0);
+  wrap.hidden = false;
+  $("sipNote").textContent = counted + " of " + sips.length + " counted for " + monthName;
+  const k = (t, v, n) => '<div><div class="k">' + t + '</div><div class="v">' + v + '</div><div class="n">' + n + "</div></div>";
+  $("sipBody").innerHTML = '<div class="kgrid">' + k("Every month", cl(total), sips.length + " SIPs") + k("Over a year", cl(total * 12), "if none is skipped") +
+    k("This month", counted + " of " + sips.length, counted === sips.length ? "all counted" : "counted so far") + k("Next units arrive", nextIso ? dlong(nextIso) : "—", "with that day's NAV") + "</div>" +
+    '<table style="margin-top:14px"><thead><tr><th>Fund</th><th>Units on</th><th style="text-align:left;padding-left:20px">This month</th></tr></thead><tbody>' + rows + "</tbody></table>" +
+    '<p class="note">This shows what the dashboard has counted into your units, not what your bank did. Each SIP is added automatically in the first 4 days after its date, when the night\'s NAV arrives. If one says "not counted", check on Groww that it actually ran (a low balance or an expired mandate is the usual cause). Your next monthly statement import corrects the units either way.</p>';
+}
+
+// ---- 6. Cost of owning
+function renderCost() {
+  const wrap = $("costWrap"), fs = ((CFG && CFG.funds) || []).filter(f => num(f.units) && num(f.last_nav) && num(f.ter_annual_pct));
+  if (!fs.length) { wrap.hidden = true; return; }
+  const val = f => f.units * f.last_nav, total = fs.reduce((s, f) => s + val(f), 0), cost = fs.reduce((s, f) => s + val(f) * f.ter_annual_pct / 100, 0), wter = cost / total * 100;
+  const sip = (CFG.monthly_sip_total || 0), r = 12;
+  const drag = projectFutureValue(total, sip, r + wter, 10, 120) - projectFutureValue(total, sip, r, 10, 120);
+  wrap.hidden = false;
+  $("costNote").textContent = "about " + wter.toFixed(2) + "% of your money a year";
+  const k = (t, v, n) => '<div><div class="k">' + t + '</div><div class="v">' + v + '</div><div class="n">' + n + "</div></div>";
+  $("costBody").innerHTML = '<div class="kgrid">' + k("A year", cl(cost), "taken by the funds' running costs") + k("A month", cl(cost / 12), "") + k("A day", inr(cost / 365), "") +
+    k("Over 10 years", cl(drag), "of growth, if the funds earn 12% after costs and your SIPs continue") + "</div>" +
+    '<table style="margin-top:14px"><thead><tr><th>Fund</th><th>Worth</th><th>Yearly cost</th><th>A year</th></tr></thead><tbody>' +
+    fs.map(f => "<tr><td>" + esc(shortName(f.name)) + "</td><td>" + cl(val(f)) + "</td><td>" + f.ter_annual_pct.toFixed(2) + "%</td><td>" + cl(val(f) * f.ter_annual_pct / 100) + "</td></tr>").join("") + "</tbody></table>" +
+    '<p class="note">You are never sent a bill: a small slice comes out of each fund\'s NAV every day, so the returns you see are already after costs. What you hold are <b>Direct</b> plans, which charge roughly half a percentage point to a full point a year less than the same funds bought as Regular plans. The rates here are the ones set in <code>config/portfolio.yaml</code>; check them against each fund\'s latest factsheet, as funds change them. Costs matter, but a good fund can earn them back many times over, so compare them with the fund health check above, not on their own.</p>';
+}
+
+// ---- hide amounts
+// Some sentences are written by the nightly jobs ("your portfolio moved about +₹91,615", the tax figure in the advice). Those
+// are scrubbed here instead. Market figures stay: crore amounts (flows, headlines) and per-unit NAVs are public.
+function scrubAmounts(root) {
+  const re = /([−+]?)₹\s?([\d,]+(?:\.\d+)?)(\s?(?:lakh|crore|cr\b|L\b|Cr\b))?/g, w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  for (let n = w.nextNode(); n; n = w.nextNode()) {
+    const t = n.nodeValue; if (!t || t.indexOf("₹") < 0) continue;
+    const u = t.replace(re, (m, sg, d, suf) => { const x = (suf || "").trim(), v = parseFloat(d.replace(/,/g, ""));
+      return (/^(lakh|L|Cr)$/.test(x) || (!x && d.indexOf(".") < 0 && v >= 1000)) ? sg + MASK : m; });
+    if (u !== t) n.nodeValue = u;
+  }
+}
+function setupHide() {
+  const b = $("hideAmt"); if (!b) return;
+  if (HIDE) {
+    let tm; const run = () => safe(() => scrubAmounts(document.body));
+    new MutationObserver(() => { clearTimeout(tm); tm = setTimeout(run, 40); }).observe(document.body, { childList: true, subtree: true, characterData: true });
+    run();
+  }
+  b.setAttribute("aria-pressed", String(HIDE)); b.textContent = HIDE ? "Show ₹" : "Hide ₹";
+  document.body.classList.toggle("hiding", HIDE);
+  b.onclick = () => {
+    try { localStorage.setItem("mfp_hide", HIDE ? "0" : "1"); } catch (e) { toast("This browser won't remember the setting, so it can't be changed here.", true); return; }
+    location.reload();
+  };
+}
+
 // Fetch JSON and accept it only if it has the expected shape (a file that is valid JSON but
 // the wrong kind -- null, {} where a list belongs -- must fall back, not crash the page).
 function loadJson(url, valid, fallback) {
@@ -2432,7 +2784,11 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   HOLS = {}; ((hd && hd.holidays) || []).forEach(h => { if (h && h.date) HOLS[h.date] = h; });
   renderHolidayBar();
   TAX = await loadJson("data/tax.json", isObj, null);
+  PHIST = await loadJson("data/portfolio_history.json", j => isObj(j) && Array.isArray(j.points), null);
+  FHEALTH = await loadJson("data/fund_health.json", j => isObj(j) && Array.isArray(j.funds), null);
+  setupHide();
   renderReturns(); renderTax(); renderStatementBar();
+  safe(renderMoney, "moneyWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap");
   renderCompare();
   loadNews();
   loadOutlook();

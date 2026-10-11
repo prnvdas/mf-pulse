@@ -35,6 +35,7 @@ def _day(s: str) -> str:
 
 
 def point(date: str, rows: dict) -> dict:
+    assert all(x == x and abs(x) != float("inf") for r in rows.values() for x in r), f"non-finite value on {date}"
     return {"d": date, "v": round(sum(r[0] for r in rows.values()), 2), "i": round(sum(r[1] for r in rows.values()), 2)}
 
 
@@ -123,7 +124,10 @@ def backfill_from_transactions(cfg: dict, state: dict) -> list[dict] | None:
         for fid, (u, m) in cum.items():
             uu, mm = u[u.index <= d], m[m.index <= d]
             units = float(uu.iloc[-1]) if len(uu) else 0.0
-            rows[fid] = (units * float(navs[fid].asof(d)) if units else 0.0, float(mm.iloc[-1]) if len(mm) else 0.0)
+            money = float(mm.iloc[-1]) if len(mm) else 0.0
+            nav = float(navs[fid].asof(d)) if units else 0.0
+            # the day a fund is first bought its NAV may not be published yet (asof gives NaN): value it at cost
+            rows[fid] = (units * nav if nav == nav and nav > 0 else money if units else 0.0, money)
         out.append(point(d.date().isoformat(), rows))
     return out
 

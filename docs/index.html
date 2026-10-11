@@ -51,6 +51,15 @@
   .mark i{display:inline-block;width:10px;height:10px;border-radius:50%;
     background:var(--state);margin-left:3px;font-style:normal}
   .ctl{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  html{scroll-behavior:smooth}
+  .autoon{color:var(--green-deep);font-weight:600}
+  .hchips{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .hchip{font-size:12.5px;border:1px solid var(--rule);padding:5px 13px;color:var(--ink);text-decoration:none;line-height:1.45;white-space:nowrap;background:var(--paper)}
+  .hchip:hover{border-color:var(--ink)}
+  .hchip b{font-weight:600}.hchip b.pos{color:var(--green-deep)}.hchip b.neg{color:var(--red)}
+  .dotc{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;background:var(--grey-light);vertical-align:1px}
+  .dotc.xf{background:var(--red)}.dotc.f{background:#c98a0a}.dotc.g{background:var(--green-deep)}.dotc.xg{background:#3d6a0a}
+  @media(max-width:760px){.hchip.hide-m{display:none}}
   .stamp{font-size:11.5px;color:var(--grey);letter-spacing:.05em;text-transform:uppercase}
   .stamp b{font-weight:600;color:var(--ink)}
 
@@ -323,11 +332,11 @@
     <a class="mark" id="home" href="#" title="Back to the top and reload the latest numbers">Portfolio<i></i></a>
     <div class="ctl">
       <span class="stamp" id="stamp">Ready</span>
-      <button class="ghost" id="diag" title="Test the price source and report exactly what failed">Diagnose</button>
-      <button class="ghost" id="auto" aria-pressed="false" title="Re-run every 60s while the market is open (turns on by itself during market hours)">Auto 60s</button>
       <button id="refresh">Refresh live</button>
+      <button id="auto" aria-pressed="false" hidden>Auto 60s</button>
     </div>
   </div>
+  <div class="wrap hchips" id="hChips" hidden></div>
 </header>
 
 
@@ -473,6 +482,8 @@
     <div id="taxBody"></div>
   </section>
 
+
+  <p class="sub2" style="margin:26px 0 8px"><button class="ghost" id="diag" title="Test where the prices come from and say exactly what failed">Check data connection</button> <span style="margin-left:8px">tests where the prices come from and says what failed</span></p>
 
   <details id="odBox" class="od">
     <summary>Reliable updates (optional)</summary>
@@ -1200,7 +1211,7 @@ function renderTicker() { INDEX_TICKER.render(MOOD && MOOD.mood && MOOD.mood.val
 
 async function loadNews() {
   NEWS = await fetch("data/news.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => NEWS);
-  renderWhy();
+  renderWhy(); renderHeaderChips();
 }
 
 // "Next session setup": how big a move to expect (volatility-based, calibrated) and a
@@ -1344,17 +1355,38 @@ function renderOutlook() {
 async function loadOutlook() {
   OUTLOOK = await fetch("data/outlook.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => OUTLOOK);
   GIFT = await loadJson("data/gift.json?t=" + Date.now(), isObj, GIFT);
-  renderOutlook();
+  renderOutlook(); renderHeaderChips();
 }
 
 // ======================================================================================
 // Market mood, valuation and the "should I buy or sell today?" read. Data: data/mood.json and data/advisor.json
 // (src/mood.py, src/advisor.py). Rules-based and transparent: every line shows the number it rests on.
 // ======================================================================================
+// The header chips: market mood, the next session's call, and the day's FII/DII flows (each hides itself if its data is missing).
+function renderHeaderChips() {
+  const el = $("hChips");
+  if (!el) return;
+  const chips = [], cr = v => (v >= 0 ? "+" : "−") + "₹" + Math.abs(v).toLocaleString("en-IN") + " cr";
+  const M = MOOD && MOOD.mood;
+  if (M && M.value != null) {
+    const z = String(M.zone || ""), cls = /extreme fear/i.test(z) ? "xf" : /fear/i.test(z) ? "f" : /extreme greed/i.test(z) ? "xg" : "g";
+    chips.push('<a class="hchip" href="#valWrap" title="Market Mood Index: below 30 extreme fear, above 70 extreme greed. Tap for the full picture."><i class="dotc ' + cls + '"></i>Mood <b>' + Math.round(M.value) + "</b> · " + esc(z) + "</a>");
+  }
+  const C = OUTLOOK && OUTLOOK.call;
+  if (C && C.colour && C.p_call != null) chips.push('<a class="hchip hide-m" href="#bOutlook" title="Chance the Nifty ends the next session higher (green) or lower (red)"><i class="dotc ' + (C.colour === "green" ? "g" : "xf") + '"></i>Next session <b>' + (C.colour === "green" ? "GREEN" : "RED") + " " + Math.round(C.p_call) + "%</b></a>");
+  const W = NEWS && NEWS.why, F = W && W.flows;
+  if (F && (F.fii != null || F.dii != null)) {
+    const todayIso = istDate(istNow()), day = W.date && W.date !== todayIso ? new Date(W.date + "T00:00:00").toLocaleDateString("en-IN", { weekday: "short" }) + ": " : "";
+    chips.push('<a class="hchip hide-m" href="#whyWrap" title="Net buying (+) or selling (−) by foreign (FII) and domestic (DII) institutions, in ₹ crore">' + day + (F.fii != null ? 'FII <b class="' + (F.fii >= 0 ? "pos" : "neg") + '">' + cr(F.fii) + "</b>" : "") + (F.fii != null && F.dii != null ? " · " : "") + (F.dii != null ? 'DII <b class="' + (F.dii >= 0 ? "pos" : "neg") + '">' + cr(F.dii) + "</b>" : "") + "</a>");
+  }
+  el.hidden = !chips.length;
+  el.innerHTML = chips.join("");
+}
+
 async function loadAdvisor() {
   MOOD = await loadJson("data/mood.json?t=" + Date.now(), isObj, MOOD);
   ADVISOR = await loadJson("data/advisor.json?t=" + Date.now(), isObj, ADVISOR);
-  renderTicker(); renderValuation(); renderAdvisor();
+  renderTicker(); renderValuation(); renderAdvisor(); renderHeaderChips();
 }
 
 function renderValuation() {
@@ -1994,7 +2026,8 @@ function paintStamp() {
   $("stamp").innerHTML = marketStatus() + " · <b>" + clock + "</b>" +
     (age != null ? " · data " + (age < 1 ? "just updated" : age < 90 ? age + " min old" : age < 2880 ? Math.round(age / 60) + " h old" : Math.round(age / 1440) + " days old") : "") +
     (waiting ? " · waiting for today's first update (due about 09:30)"
-      : late ? ' · <span class="neg">delayed — updates are running late; ' + fix + "</span>" : "");
+      : late ? ' · <span class="neg">delayed — updates are running late; ' + fix + "</span>" : "") +
+    (marketOpen() && $("auto").getAttribute("aria-pressed") === "true" ? ' · <span class="autoon">● auto-updating</span>' : "");
   const tl = $("tkLab"); if (tl) tl.innerHTML = tickerLabel();
   const of = $("odFix"); if (of) of.onclick = () => { const b = $("odBox"); if (b) { b.open = true; b.scrollIntoView({ behavior: "smooth", block: "center" }); } return false; };
 }
@@ -2378,7 +2411,7 @@ $("diag").addEventListener("click", async e => {
   $("setup").innerHTML = "<b>Diagnostics</b><table class=\"diag\">" +
     rows.map(([k, v]) => "<tr><td>" + k + "</td><td>" + String(v)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;") + "</td></tr>").join("") + "</table>";
-  b.disabled = false; b.textContent = "Diagnose";
+  b.disabled = false; b.textContent = "Check data connection";
   const v = rows.find(r => r[0] === "Verdict");
   toast("Diagnosis — " + (v ? v[1] : "see the details below") + " (details shown below)", v && !/^Working/.test(String(v[1])));
   showPanel();

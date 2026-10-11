@@ -6,12 +6,13 @@ const URL=process.env.BASE||(process.env.BASE||'http://localhost:8000/index.html
   for(const [f,fn] of Object.entries(routes)) await p.route(new RegExp('/data/'+f+'\\.json'),async r=>{const resp=await r.fetch();const j=await resp.json();r.fulfill({json:fn(j)});});
   await p.goto(URL,{waitUntil:'networkidle'});await p.waitForTimeout(400);await p.clock.fastForward(4000);await p.waitForTimeout(250);return {p,ctx,errs};}
  const longHist=j=>{const pts=[];let v=40000,i=40000;const d0=Date.parse('2022-12-12');for(let k=0;k<1000;k++){const d=new Date(d0+k*86400000*1.4);if(d.getDay()%6===0)continue;if(k%21===0)i+=50000;v=(v+(k%21===0?50000:0))*(1+Math.sin(k/9)*0.006+0.0006);pts.push({d:d.toISOString().slice(0,10),v:Math.round(v),i});}j.points=pts;j.basis='your transaction report';return j;};
+ const settle=async p=>{let last=-1,same=0;for(let i=0;i<60&&same<4;i++){await p.waitForTimeout(100);const y=await p.evaluate(()=>Math.round(scrollY));same=y===last?same+1:0;last=y;}};
  // nav
  {const {p,ctx,errs}=await page('2026-10-12T08:30:00Z');
   ok(await p.$eval('#snav',e=>!e.hidden),'nav visible'); const labels=await p.$$eval('#snavIn button',b=>b.map(x=>x.textContent)); ok(labels.length===6,'nav buttons',labels.join());
-  await p.click('#snavIn button:nth-child(6)'); await p.waitForTimeout(900); const y=await p.$eval('#retWrap',e=>Math.round(e.getBoundingClientRect().top)); ok(y<120&&y>=0,'nav jumps to returns',String(y));
+  await p.click('#snavIn button:nth-child(6)'); await settle(p); const y=await p.$eval('#retWrap',e=>Math.round(e.getBoundingClientRect().top)); ok(y<120&&y>=0,'nav jumps to returns',String(y));
   ok((await p.$eval('#snavIn button:nth-child(6)',e=>e.getAttribute('aria-current')))==='true','scroll-spy marks Returns');
-  await p.click('#snavIn button:nth-child(1)'); await p.waitForTimeout(900); ok(await p.evaluate(()=>scrollY<50),'nav back to top');
+  await p.click('#snavIn button:nth-child(1)'); await settle(p); ok(await p.evaluate(()=>scrollY<50),'nav back to top');
   ok(!errs.length,'nav errors',errs[0]); await ctx.close();}
  // gift in ticker
  {const {p,ctx}=await page('2026-10-10T11:00:00Z',{gift:j=>{j.quote_time='10-Oct-2026 16:00:00';j.last=22575.5;j.change=-27;j.change_pct=-0.119;return j;}});

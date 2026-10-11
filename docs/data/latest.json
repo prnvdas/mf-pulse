@@ -581,5 +581,15 @@
   },
   "tickers_resolved": 260,
   "tickers_total": 260,
-  "nav_settled": "09-Oct-2026"
+  "nav_settled": "09-Oct-2026",
+  "commodities": [
+    {
+      "name": "Brent crude",
+      "ticker": "BZ=F",
+      "unit": "$",
+      "level": 104.72,
+      "change": 1.8,
+      "move_pct": 1.75
+    }
+  ]
 }

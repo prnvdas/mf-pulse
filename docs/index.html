@@ -553,7 +553,7 @@ const DEMO = {
   ]
 };
 
-let MARKET = [], OUTLOOK = null, GIFT = null, RISK = null, TAX = null, HOLS = {}, MOOD = null, ADVISOR = null, BRIEF_PHASE = null, CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, timer = null;
+let MARKET = [], COMMS = [], OUTLOOK = null, GIFT = null, RISK = null, TAX = null, HOLS = {}, MOOD = null, ADVISOR = null, BRIEF_PHASE = null, CFG = null, ACC = { samples: 0 }, HIST = [], ANALYTICS = null, MOVERS = [], NEWS = null, timer = null;
 
 const $ = id => document.getElementById(id);
 const inr = n => "₹" + Math.round(Math.abs(n)).toLocaleString("en-IN");
@@ -1188,12 +1188,8 @@ const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(
 const INDEX_TICKER = makeTicker(
   { bar: "ticker", track: "tkTrack", run: "tkRun", lab: "tkLab", name: "index ticker" },
   items => items.map(m => {
-    if (m.mood) {          // the Market Mood Index leads the tape
-      const z = m.mood.zone || "", cls = /extreme fear/i.test(z) ? "xf" : /fear/i.test(z) ? "f" : /extreme greed/i.test(z) ? "xg" : "g";
-      return '<span class="tk-idx"><b>Market mood</b><span class="lv">' + Math.round(m.mood.value) + '</span><span class="mood ' + cls + '">' + esc(z) + '</span></span><span class="dot">|</span>';
-    }
     const up = m.move_pct >= 0, arrow = up ? "▲" : "▼";
-    return '<span class="tk-idx"><b>' + esc(m.name) + '</b><span class="lv">' + m.level.toLocaleString("en-IN", { maximumFractionDigits: 2 }) +
+    return '<span class="tk-idx"><b>' + esc(m.name) + '</b><span class="lv">' + (m.unit || "") + m.level.toLocaleString("en-IN", { maximumFractionDigits: 2 }) +
       '</span><span class="' + (up ? "up" : "dn") + '">' + arrow + " " + Math.abs(m.change).toLocaleString("en-IN", { maximumFractionDigits: 2 }) +
       " (" + (up ? "+" : "−") + Math.abs(m.move_pct).toFixed(2) + '%)</span></span><span class="dot">|</span>';
   }).join(""),
@@ -1207,7 +1203,10 @@ function tickerLabel() {
   const t = LAST_BATCH && LAST_BATCH.generatedAt ? new Date(LAST_BATCH.generatedAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }) : "";
   return '<i class="off"></i>' + (age != null && age > 600 ? "LAST CLOSE" : "AS OF " + t);
 }
-function renderTicker() { INDEX_TICKER.render(MOOD && MOOD.mood && MOOD.mood.value != null ? [{ mood: MOOD.mood }].concat(MARKET) : MARKET); }
+function renderTicker() {                                                       // Brent crude leads the tape
+  const ok = x => x && typeof x === "object" && x.name && Number.isFinite(x.level) && Number.isFinite(x.move_pct) && Number.isFinite(x.change);
+  INDEX_TICKER.render((Array.isArray(COMMS) ? COMMS : []).concat(Array.isArray(MARKET) ? MARKET : []).filter(ok));
+}
 
 async function loadNews() {
   NEWS = await fetch("data/news.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => NEWS);
@@ -2046,7 +2045,7 @@ async function applyBatch() {
     blend: "estimate.py, " + a.resolved + "/" + a.total + " tickers", phase: a.phase });
   setupMoversPicker(a.movers);
   stampBatch(a);
-  MARKET = a.market || []; renderTicker(); loadNews(); loadOutlook();
+  MARKET = a.market || []; COMMS = a.commodities || []; renderTicker(); loadNews(); loadOutlook();
   return a;
 }
 
@@ -2474,7 +2473,7 @@ function adaptLatest(d) {
   }));
   return { funds, priced: funds.reduce((s, f) => s + f.priced, 0),
            generated: d.generated_label, resolved: d.tickers_resolved,
-           total: d.tickers_total, phase: d.phase, health: d.health, market: d.market, generatedAt: d.generated_at, movers: d.movers };
+           total: d.tickers_total, phase: d.phase, health: d.health, market: d.market, commodities: d.commodities, generatedAt: d.generated_at, movers: d.movers };
 }
 
 // Fetch JSON and accept it only if it has the expected shape (a file that is valid JSON but
@@ -2515,7 +2514,7 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
     MOVERS = await loadJson("data/movers.json", Array.isArray, []);
     setupMoversPicker(latest.movers);
       stampBatch(a);
-    MARKET = a.market || []; renderTicker();
+    MARKET = a.market || []; COMMS = a.commodities || []; renderTicker();
     if (marketOpen() && $("auto").getAttribute("aria-pressed") !== "true") $("auto").click();
     return;   // don't immediately overwrite good data with a throttled relay pull
   }

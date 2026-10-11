@@ -62,6 +62,29 @@ def fetch_indices() -> list[dict]:
     return out
 
 
+COMMODITIES = [("Brent crude", "BZ=F", "$")]
+
+
+def fetch_commodities(previous: list[dict] | None = None) -> list[dict]:
+    """Brent crude for the front of the ticker. Kept apart from `market` (the equity indices): it is not part of
+    "the market rose/fell" sentences. If Yahoo hiccups, the last known price is kept rather than dropping the item."""
+    out = []
+    for name, ticker, unit in COMMODITIES:
+        try:
+            fi = yf.Ticker(ticker).fast_info
+            last, prev = float(fi["lastPrice"]), float(fi["previousClose"])
+            if last and prev:
+                out.append({"name": name, "ticker": ticker, "unit": unit, "level": round(last, 2),
+                            "change": round(last - prev, 2), "move_pct": round((last / prev - 1) * 100, 2)})
+                continue
+        except Exception as exc:  # noqa: BLE001
+            print(f"[warn] {name} unavailable: {exc}", file=sys.stderr)
+        old = next((x for x in (previous or []) if x.get("ticker") == ticker), None)
+        if old:
+            out.append(old)
+    return out
+
+
 def fetch_moves(
     tickers: list[str], retries: int = 2
 ) -> tuple[dict[str, float | None], dt.date | None, dict[str, float]]:
@@ -322,6 +345,7 @@ def main() -> None:
     # "final" = a run after the close with today's bar present: the number
     # reconcile.py will grade tonight. Everything else is a live batch.
     market = fetch_indices()
+    commodities = fetch_commodities((read_json("latest.json", {}) or {}).get("commodities"))
     held = {h["ticker"] for f in funds for h in load_holdings(f["id"]).get("holdings") or []}
     pts = [moves[t] for t in held if moves.get(t) is not None]
     breadth = None if is_holiday or not pts else {
@@ -373,6 +397,7 @@ def main() -> None:
         "funds": results,
         "movers": movers,
         "market": market,
+        "commodities": commodities,
         "breadth": breadth,
         "accuracy": read_json("accuracy.json", {"samples": 0}),
         "tickers_resolved": resolved,

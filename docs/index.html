@@ -355,7 +355,8 @@
   .slegend b{color:var(--ink);font-weight:600}.slegend i{display:inline-block;width:9px;height:9px;margin-right:6px}
   .chip.new{background:var(--grey-light)}
   .statline{display:flex;align-items:center;gap:8px;font-size:13px}
-  .hideb{padding:9px 14px}
+  .hideb{padding:8px 11px;line-height:0;display:inline-flex;align-items:center}
+  .hideb svg{width:18px;height:18px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   body.hiding .hideb{background:#fff;color:var(--ink)}
   @media(max-width:760px){.kgrid{grid-template-columns:1fr 1fr}.cardsrow{grid-template-columns:1fr}.cal .d{min-height:46px;padding:3px 4px}.cal .d .a{font-size:10px}}
   @media(prefers-reduced-motion:reduce){.spin{animation:none}}
@@ -370,7 +371,7 @@
     <div class="ctl">
       <span class="stamp" id="stamp">Ready</span>
       <button id="refresh">Refresh live</button>
-      <button id="hideAmt" class="ghost hideb" aria-pressed="false" title="Blur every rupee amount on this page (for screen sharing or public places)">Hide ₹</button>
+      <button id="hideAmt" class="ghost hideb" aria-pressed="false" aria-label="Hide rupee amounts" title="Hide rupee amounts (for screen sharing or public places)"></button>
       <button id="auto" aria-pressed="false" hidden>Auto 60s</button>
     </div>
   </div>
@@ -2784,7 +2785,10 @@ function setupHide() {
     new MutationObserver(() => { clearTimeout(tm); tm = setTimeout(run, 40); }).observe(document.body, { childList: true, subtree: true, characterData: true });
     run();
   }
-  b.setAttribute("aria-pressed", String(HIDE)); b.textContent = HIDE ? "Show ₹" : "Hide ₹";
+  const EYE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+    EYE_OFF = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.5 10.5 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.6A17 17 0 0 0 2 12s3.6 7 10 7a10 10 0 0 0 4.4-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+  b.setAttribute("aria-pressed", String(HIDE)); b.innerHTML = HIDE ? EYE_OFF : EYE;
+  b.setAttribute("aria-label", HIDE ? "Show rupee amounts" : "Hide rupee amounts"); b.title = HIDE ? "Amounts are hidden: click to show them" : "Hide rupee amounts (for screen sharing or public places)";
   document.body.classList.toggle("hiding", HIDE);
   b.onclick = () => {
     try { localStorage.setItem("mfp_hide", HIDE ? "0" : "1"); } catch (e) { toast("This browser won't remember the setting, so it can't be changed here.", true); return; }

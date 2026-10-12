@@ -1,6 +1,12 @@
 {
-  "generated_at": "2026-10-13T03:44:43.900090+05:30",
+  "generated_at": "2026-10-13T05:18:34.371733+05:30",
   "market": [
+    {
+      "title": "Singapore Bank Selloff Tests the City-State\u2019s Safe Haven Status",
+      "link": "https://www.livemint.com/market/singapore-bank-selloff-tests-the-city-state-s-safe-haven-status-11791847678381.html",
+      "source": "Mint",
+      "published": "2026-10-12T23:27:57+00:00"
+    },
     {
       "title": "US stocks: Nasdaq ends lower as oil prices surge ahead of earnings, economic data",
       "link": "https://economictimes.indiatimes.com/markets/us-stocks/news/us-stocks-nasdaq-ends-lower-as-oil-prices-surge-ahead-of-earnings-economic-data/articleshow/134902064.cms",
@@ -66,12 +72,6 @@
       "link": "https://www.livemint.com/market/stock-market-news/fmcg-dividend-giants-colgate-hindustan-unilever-itc-britannia-which-stock-offers-highest-yield-11791818253859.html",
       "source": "Mint",
       "published": "2026-10-12T15:58:53+00:00"
-    },
-    {
-      "title": "RBI measures to support rupee weigh on govt bonds, domestic equities",
-      "link": "https://news.google.com/rss/articles/CBMizwFBVV95cUxOTUdRWjd4RTljLXgzZEd0aXFWd2gyYS1kLWlXVlgyLVJBR3lXbFc2dWM0YkhnTjZtSG9VdUwzdExFZmJfalhibklVM3lPd3Bza0dWYllXcU5nQ19oVFlMRW5kNVNaUmZDTUpjUS1VX0xqZUM1RE1GNlAxUF8wcTc5WEZ2a2p3VjRyTEJnTEFsdUZxSzU4bGRqMkExOHlNTmtBSEhUMk5fQXpUNlo4UndxNTByTjRabGpPUVNZSXlBVXQxdkhyUTd0MHVhclJXWGfSAdQBQVVfeXFMTnFac2NMLTBjejhsd2h1RmRDWmNVdllaVjlRTFZYbWNfNnNnTzdwSDN2VHBIYTdSeEI1WFUtUmlxa3d6R19QeGt0RWJxVlA1U1BtU1p6VWtwWjRQRzdLZFZNalhYMlRRWlhhNmZvdFRPV29xdUxqd1hmQnk1cW9GLXZPLVhJbGpNaXlrRkRybmhWUldzc2NuX0JZTWotN3BuUkd4QkU1MXRjZm83NWdPbVVobFJuVE54VFZ2S0thcGdTZEZKMnp0Uk5aQ053UXpLel8wME4?oc=5",
-      "source": "Business Standard",
-      "published": "2026-10-12T15:50:52+00:00"
     },
     {
       "title": "Indian Gas Exchange secures Sebi's nod to float IPO",
@@ -187,7 +187,7 @@
     "date": "2026-10-12",
     "direction": "down",
     "title": "Why the market fell in the last session (Mon 12 Oct)",
-    "summary": "The Nifty fell \u22120.70%, dragged by FMCG (\u22121.7%), PSU banks (\u22121.2%), while Media (+4.6%) held up. FIIs sold \u20b91,708 cr while DIIs bought \u20b93,045 cr (net, provisional, per Moneycontrol). Notable global and macro moves: USD/INR \u22121.1%.",
+    "summary": "The Nifty fell \u22120.70%, dragged by FMCG (\u22121.7%), PSU banks (\u22121.2%), while Media (+4.6%) held up. FIIs sold \u20b91,708 cr while DIIs bought \u20b93,045 cr (net, provisional, per Moneycontrol).",
     "points": [
       {
         "kind": "fact",
@@ -381,20 +381,11 @@
       },
       {
         "name": "Brent crude",
-        "level": 105.92,
-        "pct": 1.15,
+        "level": 106.05,
+        "pct": 1.27,
         "unit": "$",
         "notable": false,
-        "z": 0.5,
-        "date": "2026-10-12"
-      },
-      {
-        "name": "USD/INR",
-        "level": 95.76,
-        "pct": -1.1,
-        "unit": "\u20b9",
-        "notable": true,
-        "z": -2.7,
+        "z": 0.6,
         "date": "2026-10-12"
       },
       {
@@ -532,6 +523,14 @@
       "Company news": true,
       "Market-wrap news": true
     },
-    "rich_at": "2026-10-12T22:00:55.475669+00:00"
+    "trace": {
+      "nse_session": "blocked or unreachable",
+      "nse_sectors": false,
+      "nse_flows": false,
+      "moneycontrol_flows": "error: 403 Client Error: Forbidden for url: https://www.moneycontro",
+      "flows_cache": true,
+      "nse_archive_sectors": true
+    },
+    "rich_at": "2026-10-12T23:48:11.925847+00:00"
   }
 }

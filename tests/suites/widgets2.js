@@ -14,6 +14,14 @@ const URL=process.env.BASE||(process.env.BASE||'http://localhost:8000/index.html
   ok((await p.$eval('#snavIn button:nth-child(6)',e=>e.getAttribute('aria-current')))==='true','scroll-spy marks Returns');
   await p.click('#snavIn button:nth-child(1)'); await settle(p); ok(await p.evaluate(()=>scrollY<50),'nav back to top');
   ok(!errs.length,'nav errors',errs[0]); await ctx.close();}
+ // back to top
+ {const {p,ctx,errs}=await page('2026-10-12T08:30:00Z');
+  ok(!(await p.$eval('#toTop',e=>e.classList.contains('show'))),'back-to-top hidden at the top');
+  await p.evaluate(()=>window.scrollTo(0,document.body.scrollHeight)); await p.waitForTimeout(400);
+  ok(await p.$eval('#toTop',e=>e.classList.contains('show')),'back-to-top shown at the bottom');
+  await p.click('#toTop'); await settle(p); ok(await p.evaluate(()=>scrollY<5),'back-to-top returns to the top');
+  await p.waitForTimeout(300); ok(!(await p.$eval('#toTop',e=>e.classList.contains('show'))),'hidden again at the top');
+  ok(!errs.length,'to-top errors',errs[0]); await ctx.close();}
  // gift in ticker
  {const {p,ctx}=await page('2026-10-10T11:00:00Z',{gift:j=>{j.quote_time='10-Oct-2026 16:00:00';j.last=22575.5;j.change=-27;j.change_pct=-0.119;return j;}});
   const t=await p.$eval('#tkRun',e=>e.innerText); ok(/GIFT Nifty/.test(t)&&/22,575.5/.test(t),'gift in ticker',t.slice(0,200)); ok(t.indexOf('Brent')<t.indexOf('GIFT')||t.indexOf('Brent')<0,'brent before gift'); await ctx.close();}

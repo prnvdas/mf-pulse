@@ -327,6 +327,12 @@
   .snav button:hover:not(:disabled){background:none;color:var(--ink)}
   .snav button[aria-current=true]{color:var(--ink);border-bottom-color:var(--green-deep)}
   .hero,section{scroll-margin-top:50px}
+  .totop{position:fixed;right:18px;bottom:18px;z-index:30;width:46px;height:46px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    background:var(--ink);color:#fff;border:1px solid var(--ink);box-shadow:0 4px 16px rgba(0,0,0,.25);opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .2s,transform .2s}
+  .totop.show{opacity:1;transform:none;pointer-events:auto}
+  .totop[hidden]{display:none}
+  .totop svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .totop:hover:not(:disabled){background:#fff;color:var(--ink)}
   .hline{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:12px;color:var(--grey);margin:26px 0 0}
   .hline .dotc{margin-right:6px}
   /* money over time, score card, calendar, SIP, cost, fund health */
@@ -385,6 +391,7 @@
 </head>
 <body>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<button type="button" id="toTop" class="totop" aria-label="Back to the top" title="Back to the top" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></button>
 
 <header>
   <div class="wrap bar">
@@ -2921,13 +2928,24 @@ function renderIdeas() {
   h += '<details style="margin-top:12px"><summary>How these were chosen</summary><p class="note" style="margin-top:10px">' + esc((P.method && P.method[IDEAS.tab]) || "") + " Screened " + esc(D.screened) + ", " + esc(D.eligible) + " passed the filters. " +
     (isC ? "Data: CoinGecko." : "Data: NSE (Nifty 500 list) and Yahoo Finance, whose fundamentals can be incomplete or late.") + "</p></details>";
   $("ideasBody").innerHTML = h;
-  const tr = P.track_record || {}, rows = (Array.isArray(tr.rows) ? tr.rows : []).filter(r => r && r.kind === (isC ? "crypto" : "stock") && typeof r.week_of === "string" && num(r.avg_pct) && num(r.bench_pct) && num(r.beat) && num(r.n)), sm0 = tr.summary && tr.summary[isC ? "crypto" : "stock"], sm = sm0 && num(sm0.avg_pct) && num(sm0.bench_pct) && num(sm0.beat) && num(sm0.n) ? sm0 : null;
+  const tr = P.track_record || {}, rows = (Array.isArray(tr.rows) ? tr.rows : []).filter(r => r && r.kind === (isC ? "crypto" : "stock") && typeof r.week_of === "string" && num(r.age_days) && r.age_days >= 7 && num(r.avg_pct) && num(r.bench_pct) && num(r.beat) && num(r.n)), sm0 = tr.summary && tr.summary[isC ? "crypto" : "stock"], sm = sm0 && num(sm0.avg_pct) && num(sm0.bench_pct) && num(sm0.beat) && num(sm0.n) ? sm0 : null;
   let t = '<h2 style="margin-top:30px;margin-bottom:12px">Track record of earlier picks</h2>';
   t += sm ? '<p class="scoreline" style="margin-top:0">Picks that are at least 4 weeks old: they averaged <b>' + pcs(sm.avg_pct, 1) + "</b> against <b>" + pcs(sm.bench_pct, 1) + "</b> for " + (isC ? "Bitcoin" : "the Nifty 500") + " over the same stretch, and <b>" + esc(sm.beat) + " of " + esc(sm.n) + "</b> picks beat it (" + esc(sm.weeks) + " weeks).</p>"
     : '<p class="sub2">Building: picks are scored once they are 4 weeks old, so the first verdict arrives about a month after the first list.</p>';
   if (rows.length) t += '<table class="mini"><thead><tr><th>Week of</th><th>Picks (avg)</th><th>' + (isC ? "Bitcoin" : "Nifty 500") + "</th><th>Beat it</th><th>Age</th></tr></thead><tbody>" +
     rows.slice(-8).reverse().map(r => "<tr><td>" + dmon(r.week_of) + '</td><td class="' + (r.avg_pct >= 0 ? "pos" : "neg") + '">' + pcs(r.avg_pct, 1) + "</td><td>" + pcs(r.bench_pct, 1) + "</td><td>" + esc(r.beat) + " of " + esc(r.n) + "</td><td>" + esc(r.age_days) + " d</td></tr>").join("") + "</tbody></table>";
   $("ideasRecord").innerHTML = t;
+}
+
+// ---- back to top: appears once you have scrolled a screen or so down
+function setupToTop() {
+  const b = $("toTop"); if (!b) return;
+  b.hidden = false;
+  let busy = false;
+  const upd = () => { busy = false; b.classList.toggle("show", window.scrollY > Math.max(500, window.innerHeight * 0.8)); };
+  window.addEventListener("scroll", () => { if (!busy) { busy = true; requestAnimationFrame(upd); } }, { passive: true });
+  b.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  upd();
 }
 
 // ---- hide amounts
@@ -2984,7 +3002,7 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   PICKS = await loadJson("data/picks.json", isObj, null);
   setupHide();
   renderReturns(); renderTax(); renderStatementBar();
-  safe(renderMoney, "moneyWrap"); safe(renderSectors, "sectorWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(renderIdeas, "ideasWrap"); safe(renderHealthLine); safe(renderTxBar); safe(setupNav); safe(startCrypto);
+  safe(renderMoney, "moneyWrap"); safe(renderSectors, "sectorWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(setupToTop); safe(renderIdeas, "ideasWrap"); safe(renderHealthLine); safe(renderTxBar); safe(setupNav); safe(startCrypto);
   renderCompare();
   loadNews();
   loadOutlook();

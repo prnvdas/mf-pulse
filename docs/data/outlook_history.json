@@ -56,18 +56,22 @@
   },
   {
     "base_date": "2026-10-09",
-    "made_at": "2026-10-09T15:55:51.787179+05:30",
+    "made_at": "2026-10-12T07:15:34.280367+05:30",
     "method": "gjr-v2",
     "sigma_pct": 1.098,
-    "mu_pct": 0.0,
-    "lo70_pct": -0.957,
-    "hi70_pct": 0.922,
-    "lo95_pct": -1.694,
-    "hi95_pct": 1.805,
-    "lean": null,
-    "p_up": null,
+    "mu_pct": 0.179,
+    "lo70_pct": -0.778,
+    "hi70_pct": 1.101,
+    "lo95_pct": -1.515,
+    "hi95_pct": 1.984,
+    "lean": "slight tilt up",
+    "p_up": 57.8,
     "gift_gap_pct": 0.364,
     "gift_lo70_pct": -0.444,
-    "gift_hi70_pct": 1.1
+    "gift_hi70_pct": 1.1,
+    "call_colour": "green",
+    "call_p_up": 57.8,
+    "call_basis": "us",
+    "call_tier": "moderate"
   }
 ]

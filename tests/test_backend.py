@@ -154,10 +154,15 @@ class DataHealth(unittest.TestCase):
         h = estimate.data_health({"tickers": 100, "gap": 0, "repaired": 0, "unverified": 0, "outliers": [], "verifiable": True}, 100, 100, self.FUND, self.NIFTY)
         self.assertEqual((h["status"], h["issues"]), ("ok", []))
 
-    def test_a_yahoo_gap_that_was_repaired_is_a_warning(self):
+    def test_a_yahoo_gap_that_was_fully_repaired_is_only_a_note(self):
         h = estimate.data_health({"tickers": 264, "gap": 261, "repaired": 261, "unverified": 0, "outliers": [], "verifiable": True}, 264, 264, self.FUND, self.NIFTY)
-        self.assertEqual(h["status"], "warn")
+        self.assertEqual(h["status"], "ok")                       # nothing for the front page to say
+        self.assertEqual(h["issues"][0]["level"], "info")
         self.assertIn("261", h["issues"][0]["text"])
+
+    def test_a_gap_that_could_not_be_repaired_is_a_warning(self):
+        h = estimate.data_health({"tickers": 264, "gap": 261, "repaired": 100, "unverified": 0, "outliers": [], "verifiable": True}, 264, 264, self.FUND, self.NIFTY)
+        self.assertEqual(h["status"], "warn")
 
     def test_unverifiable_closes_or_missing_prices_hold_the_estimate(self):
         self.assertEqual(estimate.data_health({"tickers": 100, "gap": 40, "repaired": 5, "unverified": 35, "outliers": [], "verifiable": True}, 100, 100, self.FUND, self.NIFTY)["status"], "bad")

@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-13T17:24:27.954481+05:30",
-  "generated_label": "13 Oct 2026, 17:24 IST",
+  "generated_at": "2026-10-13T17:43:06.441433+05:30",
+  "generated_label": "13 Oct 2026, 17:43 IST",
   "stale": false,
   "phase": "final",
   "market_open": false,
@@ -549,10 +549,10 @@
       "name": "Brent crude",
       "ticker": "BZ=F",
       "unit": "$",
-      "level": 104.93,
-      "change": -0.51,
-      "move_pct": -0.48,
-      "as_of": "2026-10-13T17:14:28+05:30"
+      "level": 105.05,
+      "change": -0.39,
+      "move_pct": -0.37,
+      "as_of": "2026-10-13T17:33:13+05:30"
     }
   ],
   "breadth": {
@@ -561,14 +561,14 @@
     "total": 261
   },
   "health": {
-    "status": "warn",
+    "status": "ok",
     "issues": [
       {
-        "level": "warn",
+        "level": "info",
         "text": "Yahoo's daily history had a hole for 261 of 264 stocks; their previous close was rebuilt from intraday prices (261 repaired)."
       }
     ],
-    "checked_at": "2026-10-13T17:24:43.024965+05:30",
+    "checked_at": "2026-10-13T17:43:23.760669+05:30",
     "repaired": 261,
     "gap": 261,
     "ignored": 0

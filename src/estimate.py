@@ -292,8 +292,10 @@ def data_health(stats: dict, resolved: int, total: int, results: list[dict], mar
         elif cov < 0.9:
             add("warn", f"Prices came through for {resolved} of {total} stocks, so the estimate leans harder on the benchmark.")
     n = stats.get("tickers") or total or 1
+    left = stats.get("gap", 0) - stats.get("repaired", 0)
     if stats.get("gap", 0) > 0.1 * n:
-        add("warn", f"Yahoo's daily history had a hole for {stats['gap']} of {n} stocks; their previous close was rebuilt from intraday prices ({stats.get('repaired', 0)} repaired).")
+        # a gap that was fully repaired changes nothing about the estimate: noted for the record (footer), not a front-page warning
+        add("info" if left <= 0.05 * n else "warn", f"Yahoo's daily history had a hole for {stats['gap']} of {n} stocks; their previous close was rebuilt from intraday prices ({stats.get('repaired', 0)} repaired).")
     if stats.get("unverified", 0) > 0.25 * n:
         add("bad", f"{stats['unverified']} of {n} stocks have no previous close that can be verified.")
     elif stats.get("unverified", 0) > 0.05 * n:
@@ -312,7 +314,7 @@ def data_health(stats: dict, resolved: int, total: int, results: list[dict], mar
                 add("warn", f"{r['name'].replace(' Direct Growth', '')}: estimate {r['nav_move_pct']:+.2f}% is far from the Nifty's {nifty['move_pct']:+.2f}%; check before trusting it.")
         if abs(nifty["move_pct"]) > 8:
             add("warn", f"The Nifty shows {nifty['move_pct']:+.1f}% for the day, which is unusual: verify the index data.")
-    status = "bad" if any(i["level"] == "bad" for i in issues) else "warn" if issues else "ok"
+    status = "bad" if any(i["level"] == "bad" for i in issues) else "warn" if any(i["level"] == "warn" for i in issues) else "ok"
     return {"status": status, "issues": issues, "checked_at": now_ist().isoformat(), "repaired": stats.get("repaired", 0), "gap": stats.get("gap", 0), "ignored": len(stats.get("outliers", []))}
 
 

@@ -2852,7 +2852,7 @@ function renderHealthLine() {
     else items.push(gd >= closedSession ? dot("g", "Prices: close of " + dlong(closedSession)) : dot("f", "Prices from " + dlong(gd) + "; fresh ones come with the next session"));
   }
   const dh = LAST_BATCH && LAST_BATCH.health;
-  if (isObj(dh) && typeof dh.status === "string") items.push(dh.status === "ok" ? dot("g", "Price data clean") : dh.status === "warn" ? dot("f", "Price data repaired" + (num(dh.repaired) && dh.repaired ? " (" + dh.repaired + " stocks)" : "")) : dot("xf", "Price data problem: estimate on hold"));
+  if (isObj(dh) && typeof dh.status === "string") items.push(dh.status === "ok" ? dot("g", "Price data clean" + (num(dh.repaired) && dh.repaired ? " (" + dh.repaired + " stocks' history rebuilt)" : "")) : dh.status === "warn" ? dot("f", "Price data repaired" + (num(dh.repaired) && dh.repaired ? " (" + dh.repaired + " stocks)" : "")) : dot("xf", "Price data problem: estimate on hold"));
   const graded = (Array.isArray(HIST) ? HIST : []).reduce((m, h) => h && typeof h.date === "string" && h.date > m ? h.date : m, "");
   if (graded && closedSession) {
     const due = closedSession === today && mins < 23 * 60 + 45 ? prevTradingDay(today) : closedSession;
@@ -3024,7 +3024,7 @@ function renderDataBar() {
   const at = h.checked_at ? new Date(h.checked_at).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }) : "";
   bar.className = "hbar" + (h.status === "warn" ? " soft" : "");
   bar.innerHTML = '<div class="in"><span class="tg">' + (h.status === "bad" ? "Estimate on hold" : "Data check") + "</span><span>" +
-    (h.status === "bad" ? "The price data looks broken, so the estimate was not updated: what you see is the last good one. " : "The prices were usable but not perfect" + (at ? " (checked " + at + " IST)" : "") + ". The estimate is probably still close; the accuracy panel shows how close recent ones were. ") + "</span><ul style=\"margin:6px 0 0 20px\">" + items + "</ul></div>";
+    (h.status === "bad" ? "The price data looks broken, so the estimate was not updated: what you see is the last good one. " : "Some of today's price data was missing or odd" + (at ? " (checked " + at + " IST)" : "") + ", so this estimate may be a little less accurate than usual. ") + "</span><ul style=\"margin:6px 0 0 20px\">" + items + "</ul></div>";
   bar.hidden = false;
 }
 

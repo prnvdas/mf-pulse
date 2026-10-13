@@ -1314,7 +1314,7 @@ const INDEX_TICKER = makeTicker(
 // on a trading morning (before the first update lands) was misleading.
 function tickerLabel() {
   if (!marketOpen()) return '<i class="off"></i>LAST CLOSE';
-  if (LIVE_AT && Date.now() - LIVE_AT < 3 * 60000) return "<i></i>LIVE";                 // quotes pulled from the feed within the last 3 minutes
+  if ((WS.last && Date.now() - WS.last < 60000) || (LIVE_AT && Date.now() - LIVE_AT < 3 * 60000)) return "<i></i>LIVE";                 // quotes pulled from the feed within the last 3 minutes
   const age = LAST_BATCH ? ageMinutes(LAST_BATCH.generatedAt) : null;
   if (age != null && age <= 30) return "<i></i>LIVE";
   const t = LAST_BATCH && LAST_BATCH.generatedAt ? new Date(LAST_BATCH.generatedAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }) : "";
@@ -2915,6 +2915,18 @@ async function loadCryptoPrices() {
   } catch (e) { /* offline or rate-limited: fall back to the saved snapshot */ }
 }
 function cryptoTicks() {
+  const map = { bitcoin: "BTC-USD", ethereum: "ETH-USD" }, base = cryptoBase(), out = [];
+  CRYPTO_COINS.forEach(([id, name]) => {
+    const w = WS.quotes[map[id]], b = base.find(x => x.name.indexOf(name) === 0);
+    if (w && Date.now() - w.at < 5 * 60000) {                                       // a recent tick from the real-time stream wins, coin by coin
+      const pct = num(w.chgPct) ? w.chgPct : b ? b.move_pct : null;
+      if (num(pct)) { out.push({ name, level: w.price, change: w.price - w.price / (1 + pct / 100), move_pct: pct, unit: "$" }); return; }
+    }
+    if (b) out.push(b);
+  });
+  return out;
+}
+function cryptoBase() {
   const src = CRYPTO_LIVE && Date.now() - CRYPTO_LIVE.at < 20 * 60000 ? { coins: CRYPTO_LIVE.coins, label: "" }
     : CRYPTO_SAVED && CRYPTO_SAVED.majors && Date.now() - Date.parse(CRYPTO_SAVED.generated_at || "") < 4 * 86400000
       ? { coins: CRYPTO_SAVED.majors, label: " (" + new Date(CRYPTO_SAVED.generated_at).toLocaleString("en-IN", { weekday: "short", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }) + ")" } : null;
@@ -3001,6 +3013,13 @@ function liveItem(m) {
   if (!m || typeof m.ticker !== "string") return m;
   const q = LIVE_Q[m.ticker], today = istDate(istNow()), fx = /=F$/.test(m.ticker);
   const day = ms => new Date(ms + 330 * 60000).toISOString().slice(0, 10);
+  // the real-time stream wins when it has spoken recently: price from the stream, previous close from the verified daily bars
+  const w = WS.quotes[m.ticker];
+  if (w && Date.now() - w.at < (fx ? 10 : 3) * 60000 && (fx || marketOpen())) {
+    let base = q ? (fx || day(q.t) === today ? q.prev : q.level) : null;
+    if (!(base > 0)) { const ao = typeof m.as_of === "string" ? m.as_of.slice(0, 10) : ""; base = ao && ao < today ? m.level : m.level - m.change; }   // the batch's own numbers
+    if (base > 0) return { ...m, level: w.price, change: w.price - base, move_pct: (w.price / base - 1) * 100 };
+  }
   if (q && (fx ? Date.now() - q.t < 60 * 60000 : day(q.t) === today && Date.now() - q.t < 90 * 60000))
     return { ...m, level: q.level, change: q.level - q.prev, move_pct: (q.level / q.prev - 1) * 100 };
   const asOf = typeof m.as_of === "string" ? m.as_of.slice(0, 10) : "", seen = q ? day(q.t) : "", last = seen > asOf ? seen : asOf;     // the freshest trade date we know of
@@ -3010,6 +3029,7 @@ function liveItem(m) {
 let LIVE_STARTED = false;
 function startLiveQuotes() {
   if (LIVE_STARTED) return; LIVE_STARTED = true;                                          // called after every batch load: start once
+  startStream();
   let tick = 0;
   const go = () => { if (document.visibilityState === "hidden") return; tick++; if (marketOpen() || tick % 5 === 1) refreshLiveQuotes().catch(() => {}); };
   go(); setInterval(go, 60000);
@@ -3027,6 +3047,50 @@ function renderDataBar() {
     (h.status === "bad" ? "The price data looks broken, so the estimate was not updated: what you see is the last good one. " : "Some of today's price data was missing or odd" + (at ? " (checked " + at + " IST)" : "") + ", so this estimate may be a little less accurate than usual. ") + "</span><ul style=\"margin:6px 0 0 20px\">" + items + "</ul></div>";
   bar.hidden = false;
 }
+
+// ---- real-time stream: Yahoo's own price socket (what its website uses), straight to the browser. Prices tick as they happen;
+// the previous close still comes from the verified daily bars above. If it can't connect or drops, the one-minute polling
+// above carries on by itself, and it reconnects with a growing pause.
+const WS = { sock: null, tries: 0, last: 0, quotes: {}, pending: null, want: true };
+function decodeQuote(b64) {                                   // a tiny protobuf reader: id (1), price (2), time (3), change % (8), change (12)
+  const bin = atob(b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+  const dv = new DataView(u.buffer); let p = 0; const out = {};
+  const varint = () => { let r = 0n, sh = 0n; for (;;) { if (p >= u.length) throw new Error("eof"); const b = u[p++]; r |= BigInt(b & 127) << sh; if (!(b & 128)) break; sh += 7n; } return r; };
+  while (p < u.length) {
+    const key = Number(varint()), f = key >> 3, w = key & 7;
+    if (w === 0) varint();
+    else if (w === 5) { if (p + 4 > u.length) throw new Error("eof"); const v = dv.getFloat32(p, true); p += 4; if (f === 2) out.price = v; if (f === 8) out.chgPct = v; if (f === 12) out.chg = v; }
+    else if (w === 1) p += 8;
+    else if (w === 2) { const len = Number(varint()); if (f === 1) out.id = new TextDecoder().decode(u.subarray(p, p + len)); p += len; }
+    else throw new Error("bad wire type");
+  }
+  return out;
+}
+function streamSymbols() {
+  const t = [].concat(Array.isArray(MARKET) ? MARKET : [], Array.isArray(COMMS) ? COMMS : []).map(m => m && m.ticker).filter(x => typeof x === "string" && x);
+  return [...new Set(t.concat(["BTC-USD", "ETH-USD"]))];
+}
+function scheduleTickerRender() { if (!WS.pending) WS.pending = setTimeout(() => { WS.pending = null; renderTicker(); }, 1500); }
+function startStream() {
+  if (WS.sock || !WS.want || document.visibilityState === "hidden" || typeof WebSocket === "undefined") return;
+  let sock; try { sock = new WebSocket("wss://streamer.finance.yahoo.com/?version=2"); } catch (e) { return; }
+  WS.sock = sock;
+  const drop = () => { if (WS.sock !== sock) return; WS.sock = null; if (WS.want) setTimeout(startStream, Math.min(60000, 2000 * Math.pow(2, Math.min(WS.tries++, 5)))); };
+  sock.onopen = () => { WS.tries = 0; try { sock.send(JSON.stringify({ subscribe: streamSymbols() })); } catch (e) { /* closed again */ } };
+  sock.onmessage = ev => {
+    try {
+      const m = JSON.parse(ev.data); if (!m || m.type !== "pricing" || typeof m.message !== "string") return;
+      const q = decodeQuote(m.message);
+      if (typeof q.id !== "string" || !(q.price > 0) || !isFinite(q.price)) return;
+      WS.quotes[q.id] = { price: q.price, chgPct: q.chgPct, chg: q.chg, at: Date.now() }; WS.last = Date.now(); scheduleTickerRender();
+    } catch (e) { /* not a price message we understand: ignore */ }
+  };
+  sock.onerror = drop; sock.onclose = drop;
+}
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") { WS.want = false; try { if (WS.sock) WS.sock.close(); } catch (e) { /* already gone */ } WS.sock = null; }
+  else { WS.want = true; startStream(); }
+});
 
 // ---- hide amounts
 // Some sentences are written by the nightly jobs ("your portfolio moved about +₹91,615", the tax figure in the advice). Those

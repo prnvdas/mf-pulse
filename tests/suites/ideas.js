@@ -35,16 +35,8 @@ const URL = process.env.BASE; let n = 0, fail = 0; const ok = (c, name, d) => { 
     const { p, ctx, errs } = await page({ picks: fn });
     const t = await p.evaluate(() => document.body.innerText);
     ok(!errs.length && !/\bNaN\b|undefined|\[object/.test(t), 'picks ' + m, errs[0] || (t.match(/.{20}(NaN|undefined|\[object).{20}/) || [])[0]); await ctx.close(); }
-  // --- ticker
+  // --- ticker: Bitcoin and Ethereum are no longer on the tape (the crypto ideas section remains)
   { const { p, ctx } = await page(); const t = await tick(p);
-    ok(/Bitcoin\s*\$83,000/.test(t) && /Ethereum\s*\$2,500/.test(t), 'bitcoin and ethereum in ticker', t.slice(0, 200));
-    ok(t.indexOf('Brent') < t.indexOf('Bitcoin') || t.indexOf('Brent') < 0, 'brent still leads'); await ctx.close(); }
-  { const { p, ctx } = await page({}, '2026-10-12T08:30:00Z', 1200, c => c.route(/api\.coingecko\.com/, r => r.abort()));
-    const t = await tick(p); ok(/Bitcoin \(/.test(t.replace(/\n/g,' ')), 'falls back to the saved snapshot, labelled with its time', t.slice(0, 160)); await ctx.close(); }
-  { const { p, ctx } = await page({}, '2026-11-30T08:30:00Z', 1200, c => c.route(/api\.coingecko\.com/, r => r.abort()));
-    ok(!/Bitcoin/.test(await tick(p)), 'a saved price older than 4 days is not shown'); await ctx.close(); }
-  for (const body of ['{}', '{"bitcoin":{"usd":"x"}}', 'garbage', '{"bitcoin":{"usd":0,"usd_24h_change":1}}']) {
-    const { p, ctx, errs } = await page({}, '2026-10-12T08:30:00Z', 1200, c => c.route(/api\.coingecko\.com/, r => r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body })));
-    ok(!errs.length && !/NaN|undefined/.test(await tick(p)), 'coingecko answer ' + body.slice(0, 20), errs[0]); await ctx.close(); }
+    ok(!/Bitcoin|Ethereum/.test(t), 'no Bitcoin/Ethereum on the tape', t.slice(0, 200)); ok(/Brent/.test(t) && /Nifty 50/.test(t), 'the rest of the tape is intact', t.slice(0, 200)); await ctx.close(); }
   console.log(`${n - fail}/${n} passed`); await b.close(); process.exit(fail ? 1 : 0);
 })();

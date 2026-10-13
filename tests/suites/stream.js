@@ -37,12 +37,8 @@ function msg({ id, price, chgPct, chg, t }) {
   { const { p, ctx, errs, subs } = await page(OPEN, { quotes: Q, stream: ws => { ws.send(msg({ id: '^NSEI', price: 22600 })); setTimeout(() => ws.send(msg({ id: '^NSEI', price: 22700 })), 300); } });
     await p.waitForTimeout(500); await p.clock.fastForward(2500); await p.waitForTimeout(400);
     const t = await tape(p); ok(/Nifty 50\s+22,700/.test(t) && /\+1\.34%/.test(t), 'newest stream tick shown, measured against the daily-bar previous close (22,400)', t.slice(0, 400));
-    ok(subs.includes('^NSEI') && subs.includes('^BSESN') && subs.includes('BZ=F') && subs.includes('BTC-USD') && subs.includes('ETH-USD'), 'subscribes to the indices, Brent and the two coins', subs.join());
+    ok(subs.includes('^NSEI') && subs.includes('^BSESN') && subs.includes('BZ=F') && !subs.includes('BTC-USD'), 'subscribes to the indices and Brent only', subs.join());
     ok(/LIVE/.test(await label(p)), 'tape says LIVE', await label(p)); ok(!errs.length, 'stream errors', errs[0]); await ctx.close(); }
-  // 2. crypto from the stream, with its own change %
-  { const { p, ctx } = await page(OPEN, { quotes: Q, stream: ws => ws.send(msg({ id: 'BTC-USD', price: 84000, chgPct: 1.25, t: 1790000000000 })) });
-    await p.clock.fastForward(2500); await p.waitForTimeout(400); const t = await tape(p);
-    ok(/Bitcoin\s+\$84,000/.test(t) && /\+1\.25%/.test(t), 'Bitcoin from the stream', t.slice(0, 300)); await ctx.close(); }
   // 3. junk is ignored
   for (const bad of ['not json', JSON.stringify({ type: 'heartbeat' }), JSON.stringify({ type: 'pricing', message: '!!!' }), JSON.stringify({ type: 'pricing', message: 'CgZeQlNF' }), JSON.stringify({ type: 'pricing' }),
                      msg({ id: '^NSEI', price: 0 }), msg({ id: '^NSEI', price: -5 }), msg({ id: '^NSEI', price: NaN }), msg({ id: '^NSEI' })]) {

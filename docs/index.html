@@ -1293,7 +1293,7 @@ function makeTicker(ids, buildUnit, label) {
     // which is never replaced, so refreshing the content does not interrupt the scroll.
     run.innerHTML = unit.repeat(copies);
     run.style.setProperty("--tk-shift", "-" + (100 / copies) + "%");               // exactly one copy: a seamless loop
-    const dur = Math.max(8, Math.round(w / 200));                                   // about 200 px a second (started at 45: too slow to follow)
+    const dur = Math.max(12, Math.round(w / 110));                                  // about 110 px a second (45 was too slow, 200 too fast)
     if (Math.abs(dur - st.dur) >= 1) { st.dur = dur; run.style.setProperty("--tk-dur", dur + "s"); }
   }
   window.addEventListener("resize", () => render(st.items));
@@ -1323,9 +1323,8 @@ function tickerLabel() {
 function renderTicker() {                                                       // Brent crude leads the tape
   const ok = x => x && typeof x === "object" && x.name && Number.isFinite(x.level) && Number.isFinite(x.move_pct) && Number.isFinite(x.change);
   const gt = (() => { try { return giftTick(); } catch (e) { return null; } })();
-  const cr = (() => { try { return cryptoTicks(); } catch (e) { return []; } })();
   const lv = x => { try { return liveItem(x); } catch (e) { return x; } };
-  INDEX_TICKER.render((Array.isArray(COMMS) ? COMMS : []).map(lv).concat(gt ? [gt] : [], cr, (Array.isArray(MARKET) ? MARKET : []).map(lv)).filter(ok));
+  INDEX_TICKER.render((Array.isArray(COMMS) ? COMMS : []).map(lv).concat(gt ? [gt] : [], (Array.isArray(MARKET) ? MARKET : []).map(lv)).filter(ok));
 }
 
 async function loadNews() {
@@ -2901,45 +2900,6 @@ function renderTxBar() {
   bar.hidden = false;
 }
 
-// ---- Bitcoin and Ethereum for the ticker: live from CoinGecko (free, open to browsers), refreshed every 5 minutes;
-// if it can't be reached, the last weekly snapshot (data/crypto.json) is shown with its time, never silently.
-let CRYPTO_LIVE = null, CRYPTO_SAVED = null;
-const CRYPTO_COINS = [["bitcoin", "Bitcoin"], ["ethereum", "Ethereum"]];
-async function loadCryptoPrices() {
-  try {
-    const r = await fetchWithTimeout("https://api.coingecko.com/api/v3/simple/price?ids=" + CRYPTO_COINS.map(c => c[0]).join(",") + "&vs_currencies=usd&include_24hr_change=true", { cache: "no-store" }, 8000);
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    const j = await r.json(), out = {};
-    CRYPTO_COINS.forEach(([id]) => { const x = j && j[id]; if (x && num(x.usd) && x.usd > 0 && num(x.usd_24h_change)) out[id] = { usd: x.usd, chg: x.usd_24h_change }; });
-    if (Object.keys(out).length) { CRYPTO_LIVE = { at: Date.now(), coins: out }; return; }
-  } catch (e) { /* offline or rate-limited: fall back to the saved snapshot */ }
-}
-function cryptoTicks() {
-  const map = { bitcoin: "BTC-USD", ethereum: "ETH-USD" }, base = cryptoBase(), out = [];
-  CRYPTO_COINS.forEach(([id, name]) => {
-    const w = WS.quotes[map[id]], b = base.find(x => x.name.indexOf(name) === 0);
-    if (w && Date.now() - w.at < 5 * 60000) {                                       // a recent tick from the real-time stream wins, coin by coin
-      const pct = num(w.chgPct) ? w.chgPct : b ? b.move_pct : null;
-      if (num(pct)) { out.push({ name, level: w.price, change: w.price - w.price / (1 + pct / 100), move_pct: pct, unit: "$" }); return; }
-    }
-    if (b) out.push(b);
-  });
-  return out;
-}
-function cryptoBase() {
-  const src = CRYPTO_LIVE && Date.now() - CRYPTO_LIVE.at < 20 * 60000 ? { coins: CRYPTO_LIVE.coins, label: "" }
-    : CRYPTO_SAVED && CRYPTO_SAVED.majors && Date.now() - Date.parse(CRYPTO_SAVED.generated_at || "") < 4 * 86400000
-      ? { coins: CRYPTO_SAVED.majors, label: " (" + new Date(CRYPTO_SAVED.generated_at).toLocaleString("en-IN", { weekday: "short", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }) + ")" } : null;
-  if (!src) return [];
-  return CRYPTO_COINS.map(([id, name]) => { const c = src.coins[id]; if (!c || !num(c.usd) || !num(c.chg)) return null;
-    return { name: name + src.label, level: c.usd, change: c.usd - c.usd / (1 + c.chg / 100), move_pct: c.chg, unit: "$" }; }).filter(Boolean);
-}
-async function startCrypto() {
-  CRYPTO_SAVED = await loadJson("data/crypto.json", isObj, null);
-  await loadCryptoPrices(); renderTicker();
-  setInterval(async () => { await loadCryptoPrices(); renderTicker(); }, 5 * 60000);
-}
-
 // ---- 8. Weekly ideas (data/picks.json from src/picks.py)
 let PICKS = null; const IDEAS = { tab: "crypto" };
 function renderIdeas() {
@@ -3068,7 +3028,7 @@ function decodeQuote(b64) {                                   // a tiny protobuf
 }
 function streamSymbols() {
   const t = [].concat(Array.isArray(MARKET) ? MARKET : [], Array.isArray(COMMS) ? COMMS : []).map(m => m && m.ticker).filter(x => typeof x === "string" && x);
-  return [...new Set(t.concat(["BTC-USD", "ETH-USD"]))];
+  return [...new Set(t)];
 }
 function scheduleTickerRender() { if (!WS.pending) WS.pending = setTimeout(() => { WS.pending = null; renderTicker(); }, 1500); }
 function startStream() {
@@ -3146,7 +3106,7 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   PICKS = await loadJson("data/picks.json", isObj, null);
   setupHide();
   renderReturns(); renderTax(); renderStatementBar();
-  safe(renderMoney, "moneyWrap"); safe(renderSectors, "sectorWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(setupToTop); safe(renderIdeas, "ideasWrap"); safe(renderHealthLine); safe(renderTxBar); safe(renderDataBar); safe(setupNav); safe(startCrypto);
+  safe(renderMoney, "moneyWrap"); safe(renderSectors, "sectorWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(setupToTop); safe(renderIdeas, "ideasWrap"); safe(renderHealthLine); safe(renderTxBar); safe(renderDataBar); safe(setupNav);
   renderCompare();
   loadNews();
   loadOutlook();

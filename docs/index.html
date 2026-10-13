@@ -1293,7 +1293,7 @@ function makeTicker(ids, buildUnit, label) {
     // which is never replaced, so refreshing the content does not interrupt the scroll.
     run.innerHTML = unit.repeat(copies);
     run.style.setProperty("--tk-shift", "-" + (100 / copies) + "%");               // exactly one copy: a seamless loop
-    const dur = Math.max(10, Math.round(w / 130));                                  // about 130 px a second (started at 45: too slow to follow)
+    const dur = Math.max(8, Math.round(w / 200));                                   // about 200 px a second (started at 45: too slow to follow)
     if (Math.abs(dur - st.dur) >= 1) { st.dur = dur; run.style.setProperty("--tk-dur", dur + "s"); }
   }
   window.addEventListener("resize", () => render(st.items));

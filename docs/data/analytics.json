@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-13T05:17:56.403318+05:30",
+  "generated_at": "2026-10-13T06:53:37.844345+05:30",
   "risk_free_pct": 6.5,
   "portfolio_xirr_pct": 11.5,
   "portfolio_returns": {
@@ -231,7 +231,7 @@
         "pct": 9.6,
         "source": "transactions",
         "since": "2019-04-30",
-        "bench_pct": 6.2
+        "bench_pct": 6.0
       },
       "folios": [
         {
@@ -262,19 +262,19 @@
       },
       "returns": {
         "1M": {
-          "fund": -3.98,
-          "bench": -4.76,
+          "fund": -3.78,
+          "bench": -4.56,
           "diff": 0.78
         },
         "3M": {
-          "fund": -4.94,
-          "bench": -6.35,
-          "diff": 1.41
+          "fund": -5.05,
+          "bench": -6.53,
+          "diff": 1.48
         },
         "6M": {
-          "fund": -1.52,
-          "bench": -2.15,
-          "diff": 0.63
+          "fund": -0.74,
+          "bench": -1.61,
+          "diff": 0.87
         },
         "1Y": {
           "fund": null,
@@ -283,12 +283,12 @@
         }
       },
       "risk": {
-        "window_days": 357,
+        "window_days": 360,
         "beta": 1.0,
-        "alpha_pct": 1.8,
+        "alpha_pct": 1.96,
         "vol_pct": 14.6,
         "bench_vol_pct": 14.5,
-        "sharpe": -0.78,
+        "sharpe": -0.79,
         "max_drawdown_pct": -14.3,
         "bench_max_drawdown_pct": -14.8
       },
@@ -298,12 +298,12 @@
         "fund_pb": 2.7,
         "bench_pe": 20.6
       },
-      "history_days": 357,
-      "as_of": "2026-10-09",
+      "history_days": 360,
+      "as_of": "2026-10-12",
       "scenarios": {
         "basis": "benchmark",
         "since": "2005-09-27",
-        "years": 21.0,
+        "years": 21.1,
         "worst": -60.3,
         "p25": 0.7,
         "median": 9.7,
@@ -318,10 +318,10 @@
         "peak_date": "2026-08-07"
       },
       "xirr": {
-        "pct": -6.4,
+        "pct": -6.3,
         "source": "transactions",
         "since": "2025-10-13",
-        "bench_pct": -8.0
+        "bench_pct": -8.2
       },
       "folios": [
         {

@@ -22,6 +22,7 @@ import time
 import urllib.parse
 
 import requests
+import pandas as pd
 import yfinance as yf
 
 from common import (
@@ -67,23 +68,43 @@ def quote_time(ticker: str) -> str | None:
 
 
 def fetch_indices() -> list[dict]:
+    """Index levels with the change since the PREVIOUS SESSION's close.
+
+    Yahoo's own `previousClose` fields have been a session behind (Friday's close on a Tuesday), which turned a +1.6% day
+    into +0.9%, so the previous close is taken from the daily bars and checked against the real previous trading date
+    (and repaired from intraday candles when the bar is missing). The level comes from the chart feed when it has a trade
+    from today, so it is as fresh as Yahoo's."""
     out = []
+    tickers = [t for _, t in INDICES]
+    sessions = index_dates()
+    closes = {}
+    try:
+        d = yf.download(tickers=" ".join(tickers), period="10d", interval="1d", group_by="ticker", progress=False, threads=True, auto_adjust=False, timeout=30)
+        for t in tickers:
+            try:
+                closes[t] = d[t]["Close"].dropna()
+            except Exception:  # noqa: BLE001
+                continue
+    except Exception as exc:  # noqa: BLE001
+        print(f"[warn] index daily bars unavailable: {exc}", file=sys.stderr)
+    prevs = previous_closes(tickers, closes, sessions) if sessions else {}
     for name, ticker in INDICES:
         try:
-            # Yahoo's ^BSESN `previousClose` has been seen a session behind (Friday's close on a Tuesday, turning a flat open
-            # into "-0.7%"). The chart feed's own previous close is right whenever it has a trade from today.
             q = chart_quote(ticker)
-            if q and q["t"].date() == now_ist().date():
-                last, prev, as_of = q["level"], q["prev"], q["t"].isoformat()
-            else:
-                fi = yf.Ticker(ticker).fast_info
-                last, prev, as_of = float(fi["lastPrice"]), float(fi["previousClose"]), (q["t"].isoformat() if q else None)
+            today = q and q["t"].date() == now_ist().date()
+            c = closes.get(ticker)
+            last = q["level"] if today else (float(c.iloc[-1]) if c is not None and len(c) else None)
+            as_of = q["t"].isoformat() if q else None
+            prev = prevs.get(ticker)
+            if last is None or prev is None:
+                if sessions:                                # we can validate dates, so an index we can't validate is left out, not guessed
+                    print(f"[warn] index {name}: no verifiable previous close; left out of the ticker", file=sys.stderr)
+                    continue
+                fi = yf.Ticker(ticker).fast_info            # no calendar at all: last resort
+                last, prev = float(fi["lastPrice"]), float(fi["previousClose"])
             if last and prev:
-                out.append({
-                    "name": name, "ticker": ticker, "level": round(last, 2),
-                    "change": round(last - prev, 2),
-                    "move_pct": round((last / prev - 1) * 100, 2), "as_of": as_of,
-                })
+                out.append({"name": name, "ticker": ticker, "level": round(last, 2), "change": round(last - prev, 2),
+                            "move_pct": round((last / prev - 1) * 100, 2), "as_of": as_of})
         except Exception as exc:  # noqa: BLE001 -- a missing chip must not fail the run
             print(f"[warn] index {name} unavailable: {exc}", file=sys.stderr)
     return out
@@ -109,6 +130,67 @@ def fetch_commodities(previous: list[dict] | None = None) -> list[dict]:
         old = next((x for x in (previous or []) if x.get("ticker") == ticker), None)
         if old:
             out.append(old)
+    return out
+
+
+def index_dates(retries: int = 2) -> list[dt.date]:
+    """Trading dates according to the Nifty 50's own daily bars (every real session has one)."""
+    for _ in range(retries + 1):
+        try:
+            c = yf.download("^NSEI", period="10d", interval="1d", progress=False, auto_adjust=False, timeout=30)["Close"].dropna()
+            return [i.date() for i in c.index]
+        except Exception:  # noqa: BLE001
+            time.sleep(3)
+    return []
+
+
+def intraday_close_on(tickers: list[str], day: dt.date) -> dict[str, float]:
+    """Last traded price of `day` for each ticker, from 30-minute candles. Yahoo's daily series sometimes drops a whole
+    session for individual stocks (the 12 Oct 2026 bar vanished for most NSE shares while the indices kept it), and a
+    move measured against the bar before the gap is a two-day move; the intraday candles still have the missing day."""
+    if not tickers:
+        return {}
+    out: dict[str, float] = {}
+    try:
+        data = yf.download(tickers=" ".join(tickers), period="10d", interval="30m", group_by="ticker", progress=False, threads=True, auto_adjust=False, timeout=60)
+    except Exception as exc:  # noqa: BLE001
+        print(f"[warn] intraday repair download failed: {exc}", file=sys.stderr)
+        return out
+    for t in tickers:
+        try:
+            c = (data[t] if len(tickers) > 1 else data)["Close"].dropna()
+            c = c[[i.tz_convert(IST).date() == day for i in c.index]] if c.index.tz is not None else c[[i.date() == day for i in c.index]]
+            if len(c):
+                out[t] = float(c.iloc[-1])
+        except Exception:  # noqa: BLE001
+            continue
+    return out
+
+
+def previous_closes(tickers: list[str], closes: dict[str, "pd.Series"], sessions: list[dt.date]) -> dict[str, float]:
+    """The close of the session before the latest one, for every ticker, repaired where Yahoo's daily series has a gap.
+    `closes` are daily Close series; `sessions` the market's real trading dates (oldest first)."""
+    if len(sessions) < 2:
+        return {}
+    latest, expected = sessions[-1], sessions[-2]
+    out, repair = {}, []
+    for t in tickers:
+        c = closes.get(t)
+        if c is None or len(c) == 0:
+            repair.append(t)
+            continue
+        dates = [i.date() for i in c.index]
+        if dates[-1] == latest:                       # the latest session's bar exists: the previous close is the bar before it
+            if len(c) >= 2 and dates[-2] == expected:
+                out[t] = float(c.iloc[-2])
+            else:
+                repair.append(t)
+        elif dates[-1] == expected:                   # the latest session has not got a daily bar yet
+            out[t] = float(c.iloc[-1])
+    if repair:
+        fixed = intraday_close_on(repair, expected)
+        print(f"[info] {len(repair)} tickers had a gap in Yahoo's daily bars before {latest}; repaired {len(fixed)} from intraday candles")
+        out.update(fixed)
     return out
 
 
@@ -155,13 +237,23 @@ def fetch_moves(
         return moves, None, week
 
     latest_bar_date: dt.date | None = None
+    series = {}
     for ticker in tickers:
         try:
-            frame = data[ticker] if len(tickers) > 1 else data
-            closes = frame["Close"].dropna()
-            if len(closes) < 2:
+            series[ticker] = (data[ticker] if len(tickers) > 1 else data)["Close"].dropna()
+        except Exception:  # noqa: BLE001
+            continue
+    sessions = index_dates()
+    if sessions:
+        repaired = previous_closes(tickers, series, sessions)
+    else:
+        repaired = {}
+    for ticker in tickers:
+        try:
+            closes = series.get(ticker)
+            if closes is None or len(closes) < 2:
                 continue
-            prev, last = float(closes.iloc[-2]), float(closes.iloc[-1])
+            prev, last = repaired.get(ticker, float(closes.iloc[-2])), float(closes.iloc[-1])
             if prev:
                 moves[ticker] = (last - prev) / prev * 100.0
             first = float(closes.iloc[0])

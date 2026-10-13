@@ -751,6 +751,19 @@ async function fetchViaWorker(tickers) {
 // to depend on.
 const RELAY = "https://api.allorigins.win/raw?url=";
 
+// Yahoo's chart "previous close" fields are unreliable (a session behind, or the close before the whole range), so the
+// previous close is read from the daily bars themselves: the last close dated before the day of the latest trade.
+function chartLastPrev(res) {
+  const m = (res && res.meta) || {}, ts = Array.isArray(res && res.timestamp) ? res.timestamp : [], cl = (((res || {}).indicators || {}).quote || [{}])[0].close || [];
+  const off = num(m.gmtoffset) ? m.gmtoffset : 19800, key = t => new Date((t + off) * 1000).toISOString().slice(0, 10);
+  if (!(num(m.regularMarketPrice) && m.regularMarketPrice > 0 && num(m.regularMarketTime))) return null;
+  const today = key(m.regularMarketTime);
+  let prev = null;
+  for (let i = ts.length - 1; i >= 0; i--) if (num(cl[i]) && cl[i] > 0 && key(ts[i]) < today) { prev = cl[i]; break; }
+  return prev ? { last: m.regularMarketPrice, prev, t: m.regularMarketTime * 1000 } : null;
+}
+
+
 async function fetchViaRelay(tickers) {
   LAST_SOURCES = { relay: 0 }; LAST_NSE_ERROR = null;
   const quotes = {};
@@ -766,11 +779,9 @@ async function fetchViaRelay(tickers) {
         encodeURIComponent(t) + "?range=5d&interval=1d";
       const r = await fetchWithTimeout(RELAY + encodeURIComponent(y), { cache: "no-store" }, 12000);
       if (!r.ok) throw new Error("relay " + r.status);
-      const m = (await r.json())?.chart?.result?.[0]?.meta;
-      const last = m?.regularMarketPrice;
-      const prev = m?.chartPreviousClose ?? m?.previousClose;
-      if (!last || !prev) throw new Error("no data");
-      return [t, { last, prev, pct: (last - prev) / prev * 100, src: "relay" }];
+      const q = chartLastPrev((await r.json())?.chart?.result?.[0]);
+      if (!q) throw new Error("no data");
+      return [t, { last: q.last, prev: q.prev, pct: (q.last - q.prev) / q.prev * 100, src: "relay" }];
     }));
     const gained = settled.filter(s => s.status === "fulfilled").length;
     for (const s of settled) {
@@ -1281,7 +1292,7 @@ function makeTicker(ids, buildUnit, label) {
     // which is never replaced, so refreshing the content does not interrupt the scroll.
     run.innerHTML = unit.repeat(copies);
     run.style.setProperty("--tk-shift", "-" + (100 / copies) + "%");               // exactly one copy: a seamless loop
-    const dur = Math.max(14, Math.round(w / 80));                                   // about 80 px a second (was 45: too slow to follow)
+    const dur = Math.max(10, Math.round(w / 130));                                  // about 130 px a second (started at 45: too slow to follow)
     if (Math.abs(dur - st.dur) >= 1) { st.dur = dur; run.style.setProperty("--tk-dur", dur + "s"); }
   }
   window.addEventListener("resize", () => render(st.items));
@@ -2967,12 +2978,12 @@ function setupToTop() {
 // labelled "(prev close)" instead of being passed off as live (Yahoo's Sensex feed is often late to start the day).
 let LIVE_Q = {}, LIVE_AT = 0;
 async function chartQuote(ticker) {
-  const url = "https://query1.finance.yahoo.com/v8/finance/chart/" + encodeURIComponent(ticker) + "?interval=1m&range=1d";
+  const url = "https://query1.finance.yahoo.com/v8/finance/chart/" + encodeURIComponent(ticker) + "?interval=1d&range=5d";
   const r = await fetchWithTimeout(RELAY + encodeURIComponent(url), { cache: "no-store" }, 9000);
   if (!r.ok) throw new Error("HTTP " + r.status);
-  const m = ((await r.json()).chart.result[0] || {}).meta || {};
-  if (!(num(m.regularMarketPrice) && m.regularMarketPrice > 0 && num(m.chartPreviousClose) && m.chartPreviousClose > 0 && num(m.regularMarketTime))) throw new Error("no quote");
-  return { level: m.regularMarketPrice, prev: m.chartPreviousClose, t: m.regularMarketTime * 1000 };
+  const q = chartLastPrev((await r.json()).chart.result[0]);
+  if (!q) throw new Error("no quote");
+  return { level: q.last, prev: q.prev, t: q.t };
 }
 async function refreshLiveQuotes() {
   const open = marketOpen();

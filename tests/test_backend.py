@@ -15,6 +15,7 @@ import common  # noqa: E402
 import detect_sips  # noqa: E402
 import health  # noqa: E402
 import import_transactions as itx  # noqa: E402
+import estimate  # noqa: E402
 import picks  # noqa: E402
 import reconcile  # noqa: E402
 import snapshot  # noqa: E402
@@ -143,6 +144,30 @@ class ImportTransactions(unittest.TestCase):
         wb = openpyxl.Workbook(); wb.active.append(["Scheme Name", "Folio No.", "Units", "Invested Value"])
         f = tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False); wb.save(f.name)
         self.assertFalse(itx.is_transaction_report(f.name))
+
+
+class PreviousCloses(unittest.TestCase):
+    def series(self, days, closes):
+        import pandas as pd
+        return pd.Series(closes, index=pd.to_datetime([f"2026-10-{d:02d}" for d in days]))
+
+    def test_gap_in_yahoos_daily_bars_is_repaired_from_intraday(self):
+        sessions = [D(2026, 10, 8), D(2026, 10, 9), D(2026, 10, 12), D(2026, 10, 13)]
+        closes = {"GAP": self.series([8, 9, 13], [100.0, 101.0, 110.0]),          # the 12th is missing: 110 vs 101 would be a 2-day move
+                  "FULL": self.series([8, 9, 12, 13], [50.0, 51.0, 52.0, 53.0]),
+                  "STALE": self.series([8, 9, 12], [10.0, 11.0, 12.0])}           # no bar for the 13th yet
+        old, estimate.intraday_close_on = estimate.intraday_close_on, lambda tk, day: {t: 105.0 for t in tk} if day == D(2026, 10, 12) else {}
+        try:
+            got = estimate.previous_closes(["GAP", "FULL", "STALE", "NONE"], closes, sessions)
+        finally:
+            estimate.intraday_close_on = old
+        self.assertEqual(got["GAP"], 105.0)
+        self.assertEqual(got["FULL"], 52.0)
+        self.assertEqual(got["STALE"], 12.0)
+        self.assertEqual(got["NONE"], 105.0)                                      # no daily data at all: also repaired
+
+    def test_needs_two_sessions(self):
+        self.assertEqual(estimate.previous_closes(["A"], {}, [D(2026, 10, 13)]), {})
 
 
 class Picks(unittest.TestCase):

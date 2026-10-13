@@ -14,7 +14,9 @@ const URL = process.env.BASE; let n = 0, fail = 0; const ok = (c, name, d) => { 
       const u = decodeURIComponent(new URL2(r.request().url()).searchParams.get('url') || ''), tk = decodeURIComponent((u.match(/chart\/([^?]+)/) || [])[1] || ''), q = quotes[tk];
       if (!q) return r.fulfill({ status: 404, body: '' });
       r.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' },
-        body: JSON.stringify({ chart: { result: [{ meta: { regularMarketPrice: q.price, chartPreviousClose: q.prev, regularMarketTime: Math.floor(Date.parse(q.t) / 1000) } }] } }) });
+        // chartPreviousClose is a deliberate decoy (Yahoo's own field is unreliable): the page must use the daily bars
+        body: JSON.stringify({ chart: { result: [(() => { const t = Math.floor(Date.parse(q.t) / 1000); return { meta: { regularMarketPrice: q.price, chartPreviousClose: 123456, regularMarketTime: t, gmtoffset: 19800 },
+          timestamp: [t - 3 * 86400, t - 86400, t], indicators: { quote: [{ close: [q.prev * 0.9, q.prev, q.price] }] } }; })()] } }) });
     });
     await p.goto(URL, { waitUntil: 'networkidle' }); await p.waitForTimeout(500); await p.clock.fastForward(3000); await p.waitForTimeout(500);
     return { p, ctx, errs };

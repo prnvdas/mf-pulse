@@ -326,7 +326,9 @@ def main() -> None:
     # In the opening minutes Yahoo may not have published today's first bar yet, which looks
     # exactly like a holiday. Don't announce "market closed today" on a normal morning; a
     # real holiday is still declared by the first run after 09:45 (or any forced/after-close run).
-    if (is_holiday and not args.force and not special_session(cfg, ts)
+    # (A forced run does not change this: a manual refresh at 01:55 IST used to land here, call the night a holiday and
+    # publish "-₹222", which was nothing but the day's expense-ratio drag on yesterday's closing values.)
+    if (is_holiday and not special_session(cfg, ts)
             and ts.hour * 60 + ts.minute < 9 * 60 + 45):
         print("[info] no bar for today yet (opening minutes); not declaring a holiday, keeping last data")
         latest = read_json("latest.json", None)
@@ -341,6 +343,10 @@ def main() -> None:
         resolved = 0
 
     results = [estimate_fund(f, cfg, moves) for f in funds]
+    if is_holiday:
+        # nothing traded and no NAV will be published for today, so there is no move to report: not even the expense-ratio drag
+        for r in results:
+            r.update({"nav_move_pct": 0.0, "rupee_impact": 0.0, "band_rupees": 0.0, "projected_nav": r.get("last_nav")})
 
     # "final" = a run after the close with today's bar present: the number
     # reconcile.py will grade tonight. Everything else is a live batch.

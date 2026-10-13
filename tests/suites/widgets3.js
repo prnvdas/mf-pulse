@@ -10,6 +10,9 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
   await p.click('#txBar button.cp');await p.waitForTimeout(200);const clip=await p.evaluate(()=>navigator.clipboard.readText());ok(clip==='python3 src/encrypt_statement.py --transactions --push','copy button copies command',clip);
   ok(/Copied/.test(await p.$eval('#txBar button.cp',e=>e.textContent)),'copy feedback');ok(!errs.length,'stale errs',errs[0]);await (await p.$('#txBar')).screenshot({path:'txbar.png'});await ctx.close();}
  for (const [m,fn] of Object.entries({garbage:j=>{j.tx_check='x';return j;},nullgaps:j=>{j.tx_check={status:'stale',gaps_pct:null};return j;},weird:j=>{j.tx_check={status:'stale',gaps_pct:{a:'x',b:null}};return j;}})) {const {p,ctx,errs}=await page({portfolio_history:fn});ok(!errs.length&&!/NaN|undefined/.test(await p.evaluate(()=>document.body.innerText)),'tx_check '+m,errs[0]);await ctx.close();}
+ // a stale "holiday" batch carrying a small negative move must show as zero, not -Rs 222
+ {const {p,ctx,errs}=await page({latest:j=>{j.phase='holiday';j.funds.forEach(f=>{f.nav_move_pct=-0.002;f.rupee_impact=-100;f.band_rupees=3000;});j.totals.today_impact=-222;j.totals.today_pct=-0.002;return j;}});
+  const t=await p.$eval('#pnl',e=>e.textContent); ok(!/222/.test(t)&&!/−/.test(t),'holiday batch shows no impact',t); ok(!errs.length,'holiday errs',errs[0]); await ctx.close();}
  // statement bar copy
  {const {p,ctx}=await page({analytics:j=>j});ok(true,'noop');await ctx.close();}
  console.log(`${n-fail}/${n} passed`);await b.close();process.exit(fail?1:0);})();

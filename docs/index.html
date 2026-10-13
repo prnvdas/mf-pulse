@@ -2501,7 +2501,9 @@ window.addEventListener("error", e => {
 // yfinance straight from Python — no CORS, no relay, every ticker resolved.
 // Prefer it on load; the Refresh button then overrides it with a live pull.
 function adaptLatest(d) {
-  const funds = d.funds.map(f => ({
+  // a "holiday" batch means nothing traded: whatever move a stale file carries must not be shown as today's estimate
+  const closed = d.phase === "holiday";
+  const funds = d.funds.map(f0 => { const f = closed ? { ...f0, nav_move_pct: 0, rupee_impact: 0, band_rupees: 0, projected_nav: f0.last_nav } : f0; return {
     ...f,
     value: f.current_value,
     navMove: f.nav_move_pct,
@@ -2516,7 +2518,7 @@ function adaptLatest(d) {
       name: c.name, weight: c.weight_pct, move: c.move_pct,
       contribution: c.contribution_pct, fund: f.name.split(" ")[0]
     }))
-  }));
+  }; });
   return { funds, priced: funds.reduce((s, f) => s + f.priced, 0),
            generated: d.generated_label, resolved: d.tickers_resolved,
            total: d.tickers_total, phase: d.phase, health: d.health, market: d.market, commodities: d.commodities, generatedAt: d.generated_at, movers: d.movers };

@@ -2503,6 +2503,10 @@ window.addEventListener("error", e => {
 function adaptLatest(d) {
   // a "holiday" batch means nothing traded: whatever move a stale file carries must not be shown as today's estimate
   const closed = d.phase === "holiday";
+  // ...and a holiday can only be discovered after the first bar should exist (09:45 IST): an earlier "holiday" label is just the night
+  // after a trading day, written before the first bar of the new day (the bug that showed "Market holiday today" at 08:18)
+  const gi = Date.parse(d.generated_at || "") + 330 * 60000, genMin = isFinite(gi) ? new Date(gi).getUTCHours() * 60 + new Date(gi).getUTCMinutes() : 1e9;
+  const phase = closed && genMin < 9 * 60 + 45 ? "preopen" : d.phase;
   const funds = d.funds.map(f0 => { const f = closed ? { ...f0, nav_move_pct: 0, rupee_impact: 0, band_rupees: 0, projected_nav: f0.last_nav } : f0; return {
     ...f,
     value: f.current_value,
@@ -2521,7 +2525,7 @@ function adaptLatest(d) {
   }; });
   return { funds, priced: funds.reduce((s, f) => s + f.priced, 0),
            generated: d.generated_label, resolved: d.tickers_resolved,
-           total: d.tickers_total, phase: d.phase, health: d.health, market: d.market, commodities: d.commodities, generatedAt: d.generated_at, movers: d.movers };
+           total: d.tickers_total, phase, health: d.health, market: d.market, commodities: d.commodities, generatedAt: d.generated_at, movers: d.movers };
 }
 
 // ---------------------------------------------------------------------------------------------

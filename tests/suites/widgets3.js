@@ -21,6 +21,11 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
   await p.route(/\/data\/latest\.json/,async r=>{const j=await (await r.fetch()).json();j.phase='holiday';j.generated_at='2026-10-13T10:30:00+05:30';r.fulfill({json:j});});
   await p.goto(process.env.BASE||'http://localhost:8000/index.html',{waitUntil:'networkidle'});await p.waitForTimeout(400);await p.clock.fastForward(3000);await p.waitForTimeout(250);
   const t=await p.$eval('#stamp',e=>e.textContent); ok(/holiday/i.test(t),'a real mid-morning holiday label still shows',t); await ctx.close();}
+ // price-data health notice
+ for (const [st,re,label] of [['warn',/data check/i,'warn'],['bad',/estimate on hold/i,'bad']]) {const {p,ctx,errs}=await page({latest:j=>{j.health={status:st,issues:[{level:st,text:'Yahoo had a hole for 261 of 264 stocks.'}],checked_at:'2026-10-12T14:00:00+05:30',repaired:261};return j;}});
+  const t=await p.$eval('#dataBar',e=>e.hidden?'':e.innerText); ok(re.test(t)&&/261 of 264/.test(t),'data bar '+label,t); ok(/price data/i.test(await p.$eval('#healthLine',e=>e.innerText)),'footer price-data item '+label); ok(!errs.length,'data bar errs '+label,errs[0]); await ctx.close();}
+ for (const h of [{status:'ok',issues:[]},null,{status:'warn',issues:'x'},{status:'warn',issues:[null,{text:5}]},'str']) {const {p,ctx,errs}=await page({latest:j=>{if(h===null)delete j.health;else j.health=h;return j;}});
+  ok(!errs.length&&!/NaN|undefined|\[object/.test(await p.evaluate(()=>document.body.innerText)),'health shape '+JSON.stringify(h).slice(0,30),errs[0]); await ctx.close();}
  // statement bar copy
  {const {p,ctx}=await page({analytics:j=>j});ok(true,'noop');await ctx.close();}
  console.log(`${n-fail}/${n} passed`);await b.close();process.exit(fail?1:0);})();

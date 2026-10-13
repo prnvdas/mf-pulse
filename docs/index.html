@@ -423,6 +423,7 @@
   <div class="hbar" id="holidayBar" hidden role="status"></div>
   <div class="hbar" id="stmtBar" hidden role="status"></div>
   <div class="hbar" id="txBar" hidden role="status"></div>
+  <div class="hbar" id="dataBar" hidden role="status"></div>
 
 
   <div class="hero" id="hero">
@@ -2096,7 +2097,7 @@ function paintStamp() {
 }
 setInterval(() => { paintStamp(); renderHolidayBar(); renderStatementBar(); }, 30000);        // keep the clock and the data age moving
 
-function stampBatch(a) { LAST_BATCH = a; paintStamp(); safe(renderScore, "scoreWrap"); safe(renderHealthLine); }
+function stampBatch(a) { LAST_BATCH = a; paintStamp(); safe(renderScore, "scoreWrap"); safe(renderHealthLine); safe(renderDataBar); }
 
 async function applyBatch() {
   const r = await fetch("data/latest.json?t=" + Date.now(), { cache: "no-store" });
@@ -2850,6 +2851,8 @@ function renderHealthLine() {
     if (marketOpen()) items.push(age == null ? "" : dot(age <= 30 ? "g" : age <= 90 ? "f" : "xf", "Prices " + (age < 60 ? Math.round(age) + " min" : Math.round(age / 60) + " h") + " old"));
     else items.push(gd >= closedSession ? dot("g", "Prices: close of " + dlong(closedSession)) : dot("f", "Prices from " + dlong(gd) + "; fresh ones come with the next session"));
   }
+  const dh = LAST_BATCH && LAST_BATCH.health;
+  if (isObj(dh) && typeof dh.status === "string") items.push(dh.status === "ok" ? dot("g", "Price data clean") : dh.status === "warn" ? dot("f", "Price data repaired" + (num(dh.repaired) && dh.repaired ? " (" + dh.repaired + " stocks)" : "")) : dot("xf", "Price data problem: estimate on hold"));
   const graded = (Array.isArray(HIST) ? HIST : []).reduce((m, h) => h && typeof h.date === "string" && h.date > m ? h.date : m, "");
   if (graded && closedSession) {
     const due = closedSession === today && mins < 23 * 60 + 45 ? prevTradingDay(today) : closedSession;
@@ -3012,6 +3015,19 @@ function startLiveQuotes() {
   go(); setInterval(go, 60000);
 }
 
+// price-data health check from the estimate job (data_health() in estimate.py): say so when the numbers behind the estimate are shaky
+function renderDataBar() {
+  const bar = $("dataBar"); if (!bar) return;
+  const h = LAST_BATCH && LAST_BATCH.health;
+  if (!isObj(h) || (h.status !== "warn" && h.status !== "bad") || !Array.isArray(h.issues)) { bar.hidden = true; return; }
+  const items = h.issues.filter(i => i && typeof i.text === "string").map(i => "<li>" + esc(i.text) + "</li>").join("");
+  const at = h.checked_at ? new Date(h.checked_at).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }) : "";
+  bar.className = "hbar" + (h.status === "warn" ? " soft" : "");
+  bar.innerHTML = '<div class="in"><span class="tg">' + (h.status === "bad" ? "Estimate on hold" : "Data check") + "</span><span>" +
+    (h.status === "bad" ? "The price data looks broken, so the estimate was not updated: what you see is the last good one. " : "The prices were usable but not perfect" + (at ? " (checked " + at + " IST)" : "") + ". The estimate is probably still close; the accuracy panel shows how close recent ones were. ") + "</span><ul style=\"margin:6px 0 0 20px\">" + items + "</ul></div>";
+  bar.hidden = false;
+}
+
 // ---- hide amounts
 // Some sentences are written by the nightly jobs ("your portfolio moved about +₹91,615", the tax figure in the advice). Those
 // are scrubbed here instead. Market figures stay: crore amounts (flows, headlines) and per-unit NAVs are public.
@@ -3066,7 +3082,7 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   PICKS = await loadJson("data/picks.json", isObj, null);
   setupHide();
   renderReturns(); renderTax(); renderStatementBar();
-  safe(renderMoney, "moneyWrap"); safe(renderSectors, "sectorWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(setupToTop); safe(renderIdeas, "ideasWrap"); safe(renderHealthLine); safe(renderTxBar); safe(setupNav); safe(startCrypto);
+  safe(renderMoney, "moneyWrap"); safe(renderSectors, "sectorWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(setupToTop); safe(renderIdeas, "ideasWrap"); safe(renderHealthLine); safe(renderTxBar); safe(renderDataBar); safe(setupNav); safe(startCrypto);
   renderCompare();
   loadNews();
   loadOutlook();

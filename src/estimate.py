@@ -167,7 +167,10 @@ def intraday_close_on(tickers: list[str], day: dt.date) -> dict[str, float]:
     return out
 
 
-def previous_closes(tickers: list[str], closes: dict[str, "pd.Series"], sessions: list[dt.date]) -> dict[str, float]:
+MOVE_STATS: dict = {}          # what the last fetch_moves saw: feeds data_health()
+
+
+def previous_closes(tickers: list[str], closes: dict[str, "pd.Series"], sessions: list[dt.date], stats: dict | None = None) -> dict[str, float]:
     """The close of the session before the latest one, for every ticker, repaired where Yahoo's daily series has a gap.
     `closes` are daily Close series; `sessions` the market's real trading dates (oldest first)."""
     if len(sessions) < 2:
@@ -191,6 +194,8 @@ def previous_closes(tickers: list[str], closes: dict[str, "pd.Series"], sessions
         fixed = intraday_close_on(repair, expected)
         print(f"[info] {len(repair)} tickers had a gap in Yahoo's daily bars before {latest}; repaired {len(fixed)} from intraday candles")
         out.update(fixed)
+    if stats is not None:
+        stats.update({"gap": len(repair), "repaired": len([t for t in repair if t in out]), "latest": latest.isoformat(), "expected": expected.isoformat()})
     return out
 
 
@@ -244,18 +249,26 @@ def fetch_moves(
         except Exception:  # noqa: BLE001
             continue
     sessions = index_dates()
-    if sessions:
-        repaired = previous_closes(tickers, series, sessions)
-    else:
-        repaired = {}
+    MOVE_STATS.clear()
+    MOVE_STATS.update({"tickers": len(tickers), "gap": 0, "repaired": 0, "unverified": 0, "outliers": [], "verifiable": bool(sessions)})
+    repaired = previous_closes(tickers, series, sessions, MOVE_STATS) if sessions else {}
     for ticker in tickers:
         try:
             closes = series.get(ticker)
             if closes is None or len(closes) < 2:
                 continue
-            prev, last = repaired.get(ticker, float(closes.iloc[-2])), float(closes.iloc[-1])
+            last = float(closes.iloc[-1])
+            if sessions and closes.index[-1].date() == sessions[-1] and ticker not in repaired:
+                MOVE_STATS["unverified"] += 1               # a bar for today exists but its previous close can't be checked: no move beats a wrong move
+                prev = 0.0
+            else:
+                prev = repaired.get(ticker, float(closes.iloc[-2]))
             if prev:
                 moves[ticker] = (last - prev) / prev * 100.0
+                if abs(moves[ticker]) > 35:                  # no NSE share moves 35% in a day: a split/bonus/bad print, not a price move
+                    MOVE_STATS["outliers"].append((ticker, round(moves[ticker], 1)))
+                    moves[ticker] = None
+                    continue
             first = float(closes.iloc[0])
             if first:
                 week[ticker] = (last - first) / first * 100.0
@@ -265,6 +278,42 @@ def fetch_moves(
         except Exception:  # noqa: BLE001
             continue
     return moves, latest_bar_date, week
+
+
+def data_health(stats: dict, resolved: int, total: int, results: list[dict], market: list[dict]) -> dict:
+    """Is the price data behind this estimate trustworthy? status ok / warn / bad, with plain-English reasons.
+    `bad` means the estimate is held back (the previous one stays); `warn` is published with a notice on the page."""
+    issues: list[dict] = []
+    add = lambda level, text: issues.append({"level": level, "text": text})
+    if total:
+        cov = resolved / total
+        if cov < 0.5:
+            add("bad", f"Prices came through for only {resolved} of {total} stocks.")
+        elif cov < 0.9:
+            add("warn", f"Prices came through for {resolved} of {total} stocks, so the estimate leans harder on the benchmark.")
+    n = stats.get("tickers") or total or 1
+    if stats.get("gap", 0) > 0.1 * n:
+        add("warn", f"Yahoo's daily history had a hole for {stats['gap']} of {n} stocks; their previous close was rebuilt from intraday prices ({stats.get('repaired', 0)} repaired).")
+    if stats.get("unverified", 0) > 0.25 * n:
+        add("bad", f"{stats['unverified']} of {n} stocks have no previous close that can be verified.")
+    elif stats.get("unverified", 0) > 0.05 * n:
+        add("warn", f"{stats['unverified']} stocks were left out: their previous close couldn't be verified.")
+    if stats.get("outliers"):
+        names = ", ".join(f"{t.replace('.NS', '')} {m:+.0f}%" for t, m in stats["outliers"][:4])
+        add("warn", f"{len(stats['outliers'])} price(s) moved more than 35% and were ignored (likely a split or bonus): {names}.")
+    if stats.get("verifiable") is False:
+        add("warn", "The market calendar couldn't be fetched, so previous closes couldn't be date-checked this run.")
+    nifty = next((m for m in market if m.get("ticker") == "^NSEI"), None)
+    if nifty is None:
+        add("warn", "No Nifty 50 quote, so the estimate couldn't be cross-checked against the index.")
+    else:
+        for r in results:
+            if r.get("coverage_pct") and abs(r.get("nav_move_pct", 0) - nifty["move_pct"]) > 3.0:
+                add("warn", f"{r['name'].replace(' Direct Growth', '')}: estimate {r['nav_move_pct']:+.2f}% is far from the Nifty's {nifty['move_pct']:+.2f}%; check before trusting it.")
+        if abs(nifty["move_pct"]) > 8:
+            add("warn", f"The Nifty shows {nifty['move_pct']:+.1f}% for the day, which is unusual: verify the index data.")
+    status = "bad" if any(i["level"] == "bad" for i in issues) else "warn" if issues else "ok"
+    return {"status": status, "issues": issues, "checked_at": now_ist().isoformat(), "repaired": stats.get("repaired", 0), "gap": stats.get("gap", 0), "ignored": len(stats.get("outliers", []))}
 
 
 def build_movers(funds: list[dict], results: list[dict],
@@ -470,6 +519,17 @@ def main() -> None:
     # "final" = a run after the close with today's bar present: the number
     # reconcile.py will grade tonight. Everything else is a live batch.
     market = fetch_indices()
+    health = data_health(MOVE_STATS, resolved, len(moves), results, market)
+    print(f"[health] {health['status']}" + "".join(f"\n   - {i['level']}: {i['text']}" for i in health["issues"]))
+    if health["status"] == "bad":
+        # Hold the estimate back: keep what was published, attach the reason (the page shows it) and stop.
+        prev_latest = read_json("latest.json", None)
+        if prev_latest:
+            prev_latest["health"] = health
+            prev_latest["stale"] = True
+            write_json("latest.json", prev_latest)
+            print("[error] price data looks broken: estimate NOT updated; the previous one stays, with a warning", file=sys.stderr)
+            return
     commodities = fetch_commodities((read_json("latest.json", {}) or {}).get("commodities"))
     held = {h["ticker"] for f in funds for h in load_holdings(f["id"]).get("holdings") or []}
     pts = [moves[t] for t in held if moves.get(t) is not None]
@@ -524,6 +584,7 @@ def main() -> None:
         "market": market,
         "commodities": commodities,
         "breadth": breadth,
+        "health": health,
         "accuracy": read_json("accuracy.json", {"samples": 0}),
         "tickers_resolved": resolved,
         "tickers_total": len(moves),

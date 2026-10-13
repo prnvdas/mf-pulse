@@ -146,6 +146,33 @@ class ImportTransactions(unittest.TestCase):
         self.assertFalse(itx.is_transaction_report(f.name))
 
 
+class DataHealth(unittest.TestCase):
+    NIFTY = [{"ticker": "^NSEI", "move_pct": 1.6}]
+    FUND = [{"name": "A Fund Direct Growth", "coverage_pct": 90, "nav_move_pct": 1.2}]
+
+    def test_clean_data_is_ok(self):
+        h = estimate.data_health({"tickers": 100, "gap": 0, "repaired": 0, "unverified": 0, "outliers": [], "verifiable": True}, 100, 100, self.FUND, self.NIFTY)
+        self.assertEqual((h["status"], h["issues"]), ("ok", []))
+
+    def test_a_yahoo_gap_that_was_repaired_is_a_warning(self):
+        h = estimate.data_health({"tickers": 264, "gap": 261, "repaired": 261, "unverified": 0, "outliers": [], "verifiable": True}, 264, 264, self.FUND, self.NIFTY)
+        self.assertEqual(h["status"], "warn")
+        self.assertIn("261", h["issues"][0]["text"])
+
+    def test_unverifiable_closes_or_missing_prices_hold_the_estimate(self):
+        self.assertEqual(estimate.data_health({"tickers": 100, "gap": 40, "repaired": 5, "unverified": 35, "outliers": [], "verifiable": True}, 100, 100, self.FUND, self.NIFTY)["status"], "bad")
+        self.assertEqual(estimate.data_health({"tickers": 100, "verifiable": True}, 30, 100, self.FUND, self.NIFTY)["status"], "bad")
+
+    def test_oddities_are_flagged(self):
+        h = estimate.data_health({"tickers": 100, "gap": 0, "unverified": 0, "outliers": [("ABC.NS", -48.0)], "verifiable": True}, 99, 100,
+                                 [{"name": "B Fund", "coverage_pct": 90, "nav_move_pct": -2.5}], self.NIFTY)
+        texts = " ".join(i["text"] for i in h["issues"])
+        self.assertEqual(h["status"], "warn")
+        self.assertIn("ABC -48%", texts)                                        # split/bonus-style price, ignored
+        self.assertIn("far from the Nifty", texts)                              # -2.5% against +1.6%
+        self.assertEqual(estimate.data_health({"tickers": 1, "verifiable": True}, 1, 1, [], [])["issues"][0]["level"], "warn")   # no Nifty quote
+
+
 class PreviousCloses(unittest.TestCase):
     def series(self, days, closes):
         import pandas as pd

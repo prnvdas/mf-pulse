@@ -19,10 +19,13 @@ import argparse
 import datetime as dt
 import sys
 import time
+import urllib.parse
 
+import requests
 import yfinance as yf
 
 from common import (
+    IST,
     special_session,
     is_market_window,
     session_end,
@@ -45,17 +48,41 @@ INDICES = [
 ]
 
 
+def chart_quote(ticker: str) -> dict | None:
+    """Yahoo's chart feed for one symbol: last price, the previous session's close and the time of the last trade."""
+    try:
+        r = requests.get(f"https://query1.finance.yahoo.com/v8/finance/chart/{urllib.parse.quote(ticker)}", params={"interval": "1m", "range": "1d"},
+                         headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
+        m = r.json()["chart"]["result"][0]["meta"]
+        return {"level": float(m["regularMarketPrice"]), "prev": float(m["chartPreviousClose"]), "t": dt.datetime.fromtimestamp(m["regularMarketTime"], IST)}
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def quote_time(ticker: str) -> str | None:
+    """When Yahoo last had a trade for this symbol (ISO, IST). Lets the page say "previous close" instead of passing off
+    yesterday's level as live when a feed (the Sensex one is the usual culprit) is late to start the day."""
+    q = chart_quote(ticker)
+    return q["t"].isoformat() if q else None
+
+
 def fetch_indices() -> list[dict]:
     out = []
     for name, ticker in INDICES:
         try:
-            fi = yf.Ticker(ticker).fast_info
-            last, prev = float(fi["lastPrice"]), float(fi["previousClose"])
+            # Yahoo's ^BSESN `previousClose` has been seen a session behind (Friday's close on a Tuesday, turning a flat open
+            # into "-0.7%"). The chart feed's own previous close is right whenever it has a trade from today.
+            q = chart_quote(ticker)
+            if q and q["t"].date() == now_ist().date():
+                last, prev, as_of = q["level"], q["prev"], q["t"].isoformat()
+            else:
+                fi = yf.Ticker(ticker).fast_info
+                last, prev, as_of = float(fi["lastPrice"]), float(fi["previousClose"]), (q["t"].isoformat() if q else None)
             if last and prev:
                 out.append({
                     "name": name, "ticker": ticker, "level": round(last, 2),
                     "change": round(last - prev, 2),
-                    "move_pct": round((last / prev - 1) * 100, 2),
+                    "move_pct": round((last / prev - 1) * 100, 2), "as_of": as_of,
                 })
         except Exception as exc:  # noqa: BLE001 -- a missing chip must not fail the run
             print(f"[warn] index {name} unavailable: {exc}", file=sys.stderr)
@@ -75,7 +102,7 @@ def fetch_commodities(previous: list[dict] | None = None) -> list[dict]:
             last, prev = float(fi["lastPrice"]), float(fi["previousClose"])
             if last and prev:
                 out.append({"name": name, "ticker": ticker, "unit": unit, "level": round(last, 2),
-                            "change": round(last - prev, 2), "move_pct": round((last / prev - 1) * 100, 2)})
+                            "change": round(last - prev, 2), "move_pct": round((last / prev - 1) * 100, 2), "as_of": quote_time(ticker)})
                 continue
         except Exception as exc:  # noqa: BLE001
             print(f"[warn] {name} unavailable: {exc}", file=sys.stderr)

@@ -22,6 +22,11 @@ const URL=process.env.BASE||(process.env.BASE||'http://localhost:8000/index.html
   await p.click('#toTop'); await settle(p); ok(await p.evaluate(()=>scrollY<5),'back-to-top returns to the top');
   await p.waitForTimeout(300); ok(!(await p.$eval('#toTop',e=>e.classList.contains('show'))),'hidden again at the top');
   ok(!errs.length,'to-top errors',errs[0]); await ctx.close();}
+ // header: Refresh and the eye button stay together however long the status text is
+ for (const w of [1280,1080,900,760,600,390]) {const {p,ctx}=await page('2026-10-13T03:47:00Z',{},w);
+  await p.evaluate(()=>{document.getElementById('stamp').textContent="Market open · Tue, 13 Oct, 2026, 09:17 IST · data 7 h old · waiting for today's first update (due about 09:30) · ● auto-updating";});
+  const r=await p.evaluate(()=>{const g=id=>document.getElementById(id).getBoundingClientRect();const a=g('refresh'),e=g('hideAmt');return {same:Math.abs(a.top-e.top)<4,gap:Math.round(e.left-a.right),over:document.documentElement.scrollWidth>innerWidth+1}});
+  ok(r.same&&r.gap>=0&&r.gap<24,'header buttons together at '+w,JSON.stringify(r)); await ctx.close();}
  // gift in ticker
  {const {p,ctx}=await page('2026-10-10T11:00:00Z',{gift:j=>{j.quote_time='10-Oct-2026 16:00:00';j.last=22575.5;j.change=-27;j.change_pct=-0.119;return j;}});
   const t=await p.$eval('#tkRun',e=>e.innerText); ok(/GIFT Nifty/.test(t)&&/22,575.5/.test(t),'gift in ticker',t.slice(0,200)); ok(t.indexOf('Brent')<t.indexOf('GIFT')||t.indexOf('Brent')<0,'brent before gift'); await ctx.close();}

@@ -53,12 +53,18 @@ jobs:
           python src/adjust_investment.py
           --fund "$INPUT_FUND" --amount "$INPUT_AMOUNT" --note "$INPUT_NOTE"
       - run: python src/export_web.py
+      # keep the history chart, tax lots and the "history out of date" check in step with the new purchase (non-blocking)
+      - name: Update history and tax view
+        continue-on-error: true
+        run: |
+          python src/snapshot.py
+          python src/tax.py
       - name: Commit adjustment
         run: |
           git config user.name  "mf-pulse"
           git config user.email "actions@users.noreply.github.com"
           python3 src/validate_data.py --fix   # never publish a broken data file
-          git add docs/data
+          git add -A docs/data config
           MSG="adjust: $INPUT_FUND $INPUT_AMOUNT"
           if [ -n "$INPUT_NOTE" ]; then MSG="$MSG ($INPUT_NOTE)"; fi
           git commit -m "$MSG"

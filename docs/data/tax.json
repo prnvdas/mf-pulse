@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-13T06:53:49.345471+05:30",
+  "generated_at": "2026-10-13T08:34:56.004406+05:30",
   "as_of": "2026-10-12",
   "rates": {
     "stcg_pct": 20,
@@ -23,13 +23,13 @@
     }
   },
   "totals": {
-    "value": 10463002,
-    "cost": 8391641,
+    "value": 10476352,
+    "cost": 8404991,
     "gain": 2071362,
     "lt_gain": 2090887,
     "st_gain": -19526,
     "lt_value": 8494542,
-    "st_value": 1968460
+    "st_value": 1981810
   },
   "sell_all": {
     "lt_gain_after_setoff": 2071361,
@@ -2547,13 +2547,13 @@
       "warnings": [
         "fund launched 2025-10-17: units not explained by your SIP are dated at launch"
       ],
-      "value": 179500,
-      "cost": 186991,
+      "value": 192850,
+      "cost": 200341,
       "gain": -7490,
       "lt_gain": 0,
       "st_gain": -7490,
       "lt_value": 0,
-      "st_value": 179500,
+      "st_value": 192850,
       "lots": [
         {
           "folio": null,
@@ -2764,6 +2764,20 @@
           "opening": false,
           "held_days": 12,
           "long_term_on": "2027-10-02"
+        },
+        {
+          "folio": null,
+          "kind": null,
+          "xirr_pct": null,
+          "date": "2026-10-12",
+          "units": 1403.9036,
+          "cost": 13350.0,
+          "value": 13350.0,
+          "gain": 0.0,
+          "term": "short",
+          "opening": false,
+          "held_days": 1,
+          "long_term_on": "2027-10-13"
         }
       ]
     }

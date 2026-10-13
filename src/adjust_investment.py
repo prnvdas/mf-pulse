@@ -11,6 +11,10 @@ needs a terminal -- but it's a plain script, so `python src/adjust_investment.py
 
 Buys units at today's last known NAV (whatever reconcile.py last stored),
 same as a SIP purchase would. Use a negative --amount for a withdrawal.
+
+It also records the purchase in config/transactions.csv (when you have imported an order history) and brings
+latest.json's money figures up to date, so the dashboard, tax lots and history all agree straight away. The next
+monthly statement import replaces the estimated units with Groww's exact ones.
 """
 
 from __future__ import annotations
@@ -18,7 +22,10 @@ from __future__ import annotations
 import argparse
 import sys
 
+import datetime as dt
+
 from common import load_portfolio, now_ist, read_json, write_json
+from reconcile import log_sip_transaction, settle_latest
 
 
 def main() -> None:
@@ -57,6 +64,14 @@ def main() -> None:
     entry["last_adjusted"] = now_ist().date().isoformat()
 
     write_json("state.json", state)
+    try:
+        nav_day = dt.datetime.strptime(str(entry.get("last_nav_date")), "%d-%b-%Y").date()
+    except ValueError:
+        nav_day = now_ist().date()
+    log_sip_transaction(args.fund, nav_day, args.amount, bought_units, last_nav)
+    latest = read_json("latest.json", None)
+    if settle_latest(latest, state):
+        write_json("latest.json", latest)
 
     sign = "+" if args.amount >= 0 else ""
     print(

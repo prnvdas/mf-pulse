@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-13T23:36:58.320969+05:30",
-  "generated_label": "13 Oct 2026, 23:36 IST",
+  "generated_at": "2026-10-13T23:53:17.506520+05:30",
+  "generated_label": "13 Oct 2026, 23:53 IST",
   "stale": false,
   "phase": "final",
   "market_open": false,
@@ -9,7 +9,7 @@
     "invested": 8400002.53,
     "total_returns": 2150686.04,
     "total_returns_pct": 25.6,
-    "today_impact": 75117.21,
+    "today_impact": 75114.6,
     "today_pct": 0.712,
     "band_rupees": 7329.0
   },
@@ -171,18 +171,18 @@
       "name": "JioBlackRock Flexi Cap Fund Direct Growth",
       "current_value": 194770.92,
       "invested": 200340.66,
-      "nav_move_pct": 0.954,
-      "rupee_impact": 1858.43,
+      "nav_move_pct": 0.953,
+      "rupee_impact": 1855.82,
       "last_nav": 9.6039,
-      "projected_nav": 9.6955,
-      "band_rupees": 186.0,
-      "coverage_pct": 94.5,
+      "projected_nav": 9.6954,
+      "band_rupees": 180.0,
+      "coverage_pct": 95.0,
       "cash_pct": 6.22,
       "tail_pct": 0.0,
       "tail_move_pct": 1.22,
       "holdings_as_of": "2026-10-12",
       "holdings_count": 127,
-      "priced_count": 126,
+      "priced_count": 127,
       "top_contributors": [
         {
           "name": "Tata Consultancy Services Ltd",
@@ -492,11 +492,11 @@
     ],
     "breadth": {
       "up": 171,
-      "down": 89,
-      "total": 260
+      "down": 90,
+      "total": 261
     },
     "portfolio_pct": 0.712,
-    "portfolio_impact": 75117,
+    "portfolio_impact": 75115,
     "funds": [
       {
         "id": "axis-small-cap",
@@ -513,8 +513,8 @@
       {
         "id": "jioblackrock-flexicap",
         "name": "JioBlackRock Flexi Cap Fund Direct Growth",
-        "nav_move_pct": 0.954,
-        "impact": 1858
+        "nav_move_pct": 0.953,
+        "impact": 1856
       }
     ]
   },
@@ -549,16 +549,16 @@
       "name": "Brent crude",
       "ticker": "BZ=F",
       "unit": "$",
-      "level": 105.74,
-      "change": 0.3,
-      "move_pct": 0.28,
-      "as_of": "2026-10-13T23:27:31+05:30"
+      "level": 105.87,
+      "change": 0.43,
+      "move_pct": 0.41,
+      "as_of": "2026-10-13T23:43:50+05:30"
     }
   ],
   "breadth": {
     "up": 171,
-    "down": 89,
-    "total": 260
+    "down": 90,
+    "total": 261
   },
   "health": {
     "status": "ok",
@@ -568,7 +568,7 @@
         "text": "Yahoo's daily history had a hole for 261 of 264 stocks; their previous close was rebuilt from intraday prices (261 repaired)."
       }
     ],
-    "checked_at": "2026-10-13T23:37:31.132726+05:30",
+    "checked_at": "2026-10-13T23:53:54.193179+05:30",
     "repaired": 261,
     "gap": 261,
     "ignored": 0
@@ -599,6 +599,6 @@
       }
     }
   },
-  "tickers_resolved": 263,
+  "tickers_resolved": 264,
   "tickers_total": 264
 }

@@ -8,7 +8,7 @@
   "chips": [
     {
       "label": "Market mood",
-      "value": "38 \u00b7 fear",
+      "value": "36 \u00b7 fear",
       "effect": "+"
     },
     {
@@ -28,11 +28,11 @@
     },
     {
       "label": "Trend",
-      "value": "3.4% below average",
+      "value": "3.6% below average",
       "effect": "-"
     }
   ],
-  "generated_at": "2026-10-14T13:00:21.261714+05:30",
+  "generated_at": "2026-10-14T20:10:47.862139+05:30",
   "mood_as_of": "2026-10-14",
   "stance": "Hold and keep your SIPs running",
   "stance_key": "hold",
@@ -47,37 +47,44 @@
     {
       "key": "mood",
       "title": "Market mood",
-      "value": "38 \u00b7 Fear",
+      "value": "36 \u00b7 Fear",
       "effect": "+",
-      "text": "The Market Mood Index (Tickertape Market Mood Index) reads 38 of 100: fear. It was 27 a month ago and 56 a year ago. Investors often get most nervous near market lows and most confident near highs, so fear is usually the better time to invest and greed the time to be careful. That is a tendency, not a promise."
+      "text": "The Market Mood Index (Tickertape Market Mood Index) reads 36 of 100: fear. It was 27 a month ago and 56 a year ago. Investors often get most nervous near market lows and most confident near highs, so fear is usually the better time to invest and greed the time to be careful. That is a tendency, not a promise."
     },
     {
       "key": "val_axis-small-cap",
       "title": "Small caps \u00b7 your Axis Small Cap",
       "value": "P/E 34.4 \u00b7 above average",
       "effect": "-",
-      "text": "Its benchmark trades at a P/E of 34.4, against a typical 32.2 over the last ten years (a premium of 7%). Only 60% of the last ten years were cheaper, and 97% of the last five. Verdict: above average."
+      "text": "Its benchmark trades at a P/E of 34.4, against a typical 32.2 over the last ten years (a premium of 7%). Only 59% of the last ten years were cheaper, and 95% of the last five. Verdict: above average."
     },
     {
       "key": "val_mirae-large-midcap",
       "title": "Large + midcaps \u00b7 your Mirae Asset Large & Midcap",
       "value": "P/E 22.8 \u00b7 cheap",
       "effect": "+",
-      "text": "Its benchmark trades at a P/E of 22.8, against a typical 27.6 over the last ten years (a discount of 17%). Only 6% of the last ten years were cheaper, and 8% of the last five. Verdict: cheap."
+      "text": "Its benchmark trades at a P/E of 22.8, against a typical 27.6 over the last ten years (a discount of 18%). Only 6% of the last ten years were cheaper, and 8% of the last five. Verdict: cheap."
     },
     {
       "key": "val_jioblackrock-flexicap",
       "title": "Whole market \u00b7 your JioBlackRock Flexi Cap",
-      "value": "P/E 21.8 \u00b7 cheap",
+      "value": "P/E 21.7 \u00b7 cheap",
       "effect": "+",
-      "text": "Its benchmark trades at a P/E of 21.8, against a typical 26.1 over the last ten years (a discount of 17%). Only 7% of the last ten years were cheaper, and 13% of the last five. Verdict: cheap."
+      "text": "Its benchmark trades at a P/E of 21.7, against a typical 26.1 over the last ten years (a discount of 17%). Only 6% of the last ten years were cheaper, and 12% of the last five. Verdict: cheap."
     },
     {
       "key": "trend",
       "title": "Trend",
-      "value": "Nifty -3.4% vs its long average",
+      "value": "Nifty -3.6% vs its long average",
       "effect": "-",
-      "text": "The Nifty (22,666) is 3.4% below its longer-term average (23,475) and 1.0% below its shorter-term one. Prices are still falling, so cheap can get cheaper: this is why new money should go in over weeks, not on one day."
+      "text": "The Nifty (22,623) is 3.6% below its longer-term average (23,474) and 1.2% below its shorter-term one. Prices are still falling, so cheap can get cheaper: this is why new money should go in over weeks, not on one day."
+    },
+    {
+      "key": "flows",
+      "title": "Who is buying and selling",
+      "value": "foreign investors sold \u20b91,857 crore \u00b7 domestic funds bought \u20b92,670 crore",
+      "effect": "=",
+      "text": "On the last session foreign investors sold \u20b91,857 crore while domestic funds bought \u20b92,670 crore. Heavy foreign selling is a big part of why the market is under pressure; domestic buyers have been absorbing it. This explains the mood, it does not tell you what happens next."
     },
     {
       "key": "you",
@@ -89,7 +96,7 @@
     {
       "key": "tomorrow",
       "title": "Tomorrow",
-      "value": "GREEN \u00b7 52% (weak)",
+      "value": "RED \u00b7 52% (weak)",
       "effect": "=",
       "text": "The short-term call for the next session is a coin-flip with a small tilt. It is useful context for a day trader and irrelevant for a long-term investor: don't buy or sell on it."
     }
@@ -102,18 +109,18 @@
   ],
   "where_to_add": [
     {
+      "label": "Large caps (Nifty 50)",
+      "fund": [],
+      "pe": 19.3,
+      "verdict": "Cheap",
+      "score_pct": 0
+    },
+    {
       "label": "Large caps, next 50",
       "fund": [],
       "pe": 18.1,
       "verdict": "Cheap",
       "score_pct": 1
-    },
-    {
-      "label": "Large caps (Nifty 50)",
-      "fund": [],
-      "pe": 19.4,
-      "verdict": "Cheap",
-      "score_pct": 2
     },
     {
       "label": "Large + midcaps (Nifty LargeMidcap 250)",
@@ -129,9 +136,9 @@
       "fund": [
         "JioBlackRock Flexi Cap"
       ],
-      "pe": 21.8,
+      "pe": 21.7,
       "verdict": "Cheap",
-      "score_pct": 10
+      "score_pct": 9
     },
     {
       "label": "Midcaps (Nifty Midcap 150)",
@@ -154,12 +161,12 @@
       ],
       "pe": 34.4,
       "verdict": "Above average",
-      "score_pct": 78
+      "score_pct": 77
     },
     {
       "label": "Small caps (Nifty Smallcap 100)",
       "fund": [],
-      "pe": 37.9,
+      "pe": 37.7,
       "verdict": "Expensive",
       "score_pct": 89
     }
@@ -173,7 +180,7 @@
   "watch": [
     "If the Market Mood rises above 70 (extreme greed) and small caps are expensive against their own history, stop lump sums and think about booking some profit.",
     "If it stays below 30, nothing changes: keep investing in stages. Recoveries from fear usually take months, not days.",
-    "If the Nifty closes back above its longer-term average (23,475) the trend has turned: invest any remaining instalments."
+    "If the Nifty closes back above its longer-term average (23,474) the trend has turned: invest any remaining instalments."
   ],
   "evidence": "How much to trust this: on the Nifty 50 since 2012, months when it looked cheap against its own history were followed by a median 12.4% a year over three years, against 15.7% after dear months. So cheap or dear has told us little about average returns. It did tell us about the bad cases: the worst one-year result after cheap months was -8%, after dear months -26%. Treat the signals above as a reason for patience and for spreading out new money, not as a forecast.",
   "disclaimer": "Educational analysis of public market data, not personalised or SEBI-registered investment advice. It cannot know your goals, time horizon or income. Markets can stay cheap or expensive for long periods."

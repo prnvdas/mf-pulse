@@ -34,6 +34,12 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
   ok(/waiting for today/i.test(await p.$eval('#eyebrow',x=>x.textContent)),'open but no estimate yet says waiting'); await ctx.close();}
  {const {p,ctx}=await page({latest:j=>{j.generated_at='2026-10-14T09:50:00+05:30';j.phase='live';return j;}},[],'2026-10-14T04:30:00Z');   // 10:00 IST, fresh estimate
   ok(/live/i.test(await p.$eval('#eyebrow',x=>x.textContent))&&(await p.$eval('#pnl',x=>x.textContent))!=='—','a fresh estimate shows normally'); await ctx.close();}
+ // valuation back-test: plain English up front, the technical table folded away
+ {const {p,ctx,errs}=await page(); const t=await p.$eval('#valBody',e=>e.innerText);
+  ok(/bottom line/i.test(t)&&/a typical next year/i.test(t)&&/the worst next year/i.test(t),'backtest plain summary',t.slice(-500)); ok(await p.$eval('#valBody details',e=>!e.open),'full numbers folded away');
+  ok(!errs.length&&!/NaN|undefined|\[object/.test(t),'backtest clean',errs[0]); await ctx.close();}
+ for (const fn of [j=>{j.valuation_backtest={buckets:[{bucket:'x'},null]};return j;},j=>{j.valuation_backtest={buckets:[]};return j;},j=>{j.valuation_backtest={buckets:[{bucket:'Cheapest third',median_1y:null,worst_1y:'a'}],note:5};return j;}]) {const {p,ctx,errs}=await page({mood:fn});
+  ok(!errs.length&&!/NaN|undefined|\[object/.test(await p.evaluate(()=>document.body.innerText)),'backtest hostile data',errs[0]); await ctx.close();}
  // statement bar copy
  {const {p,ctx}=await page({analytics:j=>j});ok(true,'noop');await ctx.close();}
  console.log(`${n-fail}/${n} passed`);await b.close();process.exit(fail?1:0);})();

@@ -1545,9 +1545,25 @@ function renderValuation() {
       '<p class="sub2" style="margin:8px 0 0">P/E is the price you pay for each ₹1 of company profit. "Where it sits" ranks today against the last 5 and 10 years of the same index (history from NSE, one reading a month). Highlighted rows are the benchmarks of your funds.</p>';
   }
   if (B && (B.buckets || []).length) {
-    h += '<div class="rr-sub">Does cheap or expensive actually predict returns? A test on the Nifty 50</div><div class="scroll"><table><thead><tr><th>When the Nifty 50 looked…</th><th>Months</th><th>Median next 1 year</th><th>Median next 3 years (a year)</th><th>Worst next 1 year</th><th>Ended positive</th></tr></thead><tbody>' +
-      B.buckets.map(b => "<tr><td>" + esc(b.bucket.replace("Cheapest third", "cheap against its own past").replace("Dearest third", "dear against its own past").replace("Middle third", "in the middle")) + "</td><td>" + b.months + "</td><td>" + pcs(b.median_1y) + "</td><td>" + pcs(b.median_3y) + '</td><td class="' + (b.worst_1y < 0 ? "neg" : "") + '">' + pcs(b.worst_1y) + "</td><td>" + b.positive_1y_pct + "%</td></tr>").join("") + "</tbody></table></div>" +
-      '<p class="sub2" style="margin:8px 0 0">' + esc(B.note) + " Honest reading: cheap or dear told us little about average returns, but a bad year was less severe after cheap months.</p>";
+    // plain version: what you would typically have got in the next year, and how bad the worst year was, by how the market looked
+    const find = k => B.buckets.find(x => x && String(x.bucket).indexOf(k) === 0), cheap = find("Cheap"), mid = find("Middle"), dear = find("Dear");
+    const label = { Cheap: "Cheap", Middle: "In the middle", Dear: "Expensive" };
+    const row = (k, b) => b && num(b.median_1y) && num(b.worst_1y) ? "<tr><td>" + label[k] + '</td><td class="' + (b.median_1y >= 0 ? "pos" : "neg") + '">' + pcs(b.median_1y, 0) + '</td><td class="' + (b.worst_1y >= 0 ? "pos" : "neg") + '">' + pcs(b.worst_1y, 0) + "</td></tr>" : "";
+    const rows = row("Cheap", cheap) + row("Middle", mid) + row("Dear", dear);
+    let bottom = "";
+    if (cheap && dear && num(cheap.median_1y) && num(dear.median_1y) && num(cheap.worst_1y) && num(dear.worst_1y)) {
+      const same = Math.abs(cheap.median_1y - dear.median_1y) < 2.5;
+      bottom = "<b>Bottom line:</b> " + (same ? "it made almost no difference to the typical return (" + pcs(cheap.median_1y, 0) + " after cheap times, " + pcs(dear.median_1y, 0) + " after expensive ones)"
+        : "the typical return was " + pcs(cheap.median_1y, 0) + " after cheap times and " + pcs(dear.median_1y, 0) + " after expensive ones") +
+        (dear.worst_1y < cheap.worst_1y - 5 ? ", but the worst year was much worse after expensive times (" + pcs(dear.worst_1y, 0) + " against " + pcs(cheap.worst_1y, 0) + "). So treat \"expensive\" as a sign a fall could hurt more, not as a signal to stay out." : ". So don't use cheap or expensive to time your investing.");
+    }
+    if (rows) h += '<div class="rr-sub">Does buying when the market is cheap really pay? A look back at the Nifty 50</div>' +
+      '<p class="rr-v" style="margin-top:0">If you had put money in when the Nifty 50 looked cheap, ordinary or expensive compared with its own history, here is what the next 12 months turned out to be:</p>' +
+      '<table class="mini"><thead><tr><th>When it looked</th><th>A typical next year</th><th>The worst next year</th></tr></thead><tbody>' + rows + "</tbody></table>" +
+      (bottom ? '<p class="rr-v" style="margin-top:12px">' + bottom + "</p>" : "") +
+      '<details><summary>The full numbers</summary><div class="scroll"><table><thead><tr><th>When the Nifty 50 looked…</th><th>Months</th><th>Median next 1 year</th><th>Median next 3 years (a year)</th><th>Worst next 1 year</th><th>Ended positive</th></tr></thead><tbody>' +
+      B.buckets.map(b => "<tr><td>" + esc(String(b.bucket).replace("Cheapest third", "cheap against its own past").replace("Dearest third", "dear against its own past").replace("Middle third", "in the middle")) + "</td><td>" + esc(b.months) + "</td><td>" + pcs(b.median_1y) + "</td><td>" + pcs(b.median_3y) + '</td><td class="' + (b.worst_1y < 0 ? "neg" : "") + '">' + pcs(b.worst_1y) + "</td><td>" + esc(b.positive_1y_pct) + "%</td></tr>").join("") + "</tbody></table></div>" +
+      '<p class="sub2" style="margin:8px 0 0">' + esc(B.note) + " It covers only one market cycle, so read it as a tendency, not a rule.</p></details>";
   }
   $("valBody").innerHTML = h;
 }

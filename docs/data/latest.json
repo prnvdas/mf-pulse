@@ -9,9 +9,9 @@
     "invested": 8400002.53,
     "total_returns": 2150686.04,
     "total_returns_pct": 25.6,
-    "today_impact": 75114.6,
-    "today_pct": 0.712,
-    "band_rupees": 7329.0
+    "today_impact": 0.0,
+    "today_pct": 0.0,
+    "band_rupees": 0.0
   },
   "funds": [
     {
@@ -19,11 +19,11 @@
       "name": "Axis Small Cap Fund Direct Growth",
       "current_value": 5362020.76,
       "invested": 4124793.89,
-      "nav_move_pct": 0.299,
-      "rupee_impact": 16021.99,
+      "nav_move_pct": 0.0,
+      "rupee_impact": 0.0,
       "last_nav": 133.77,
-      "projected_nav": 134.1697,
-      "band_rupees": 5362.0,
+      "projected_nav": 133.77,
+      "band_rupees": 0.0,
       "coverage_pct": 86.6,
       "cash_pct": 13.41,
       "tail_pct": 0.0,
@@ -95,11 +95,11 @@
       "name": "Mirae Asset Large & Midcap Fund Direct Growth",
       "current_value": 4993896.89,
       "invested": 4074867.98,
-      "nav_move_pct": 1.146,
-      "rupee_impact": 57236.79,
+      "nav_move_pct": 0.0,
+      "rupee_impact": 0.0,
       "last_nav": 168.836,
-      "projected_nav": 170.7711,
-      "band_rupees": 4993.0,
+      "projected_nav": 168.836,
+      "band_rupees": 0.0,
       "coverage_pct": 97.2,
       "cash_pct": 2.82,
       "tail_pct": 0.0,
@@ -171,11 +171,11 @@
       "name": "JioBlackRock Flexi Cap Fund Direct Growth",
       "current_value": 194770.92,
       "invested": 200340.66,
-      "nav_move_pct": 0.953,
-      "rupee_impact": 1855.82,
+      "nav_move_pct": 0.0,
+      "rupee_impact": 0.0,
       "last_nav": 9.6039,
-      "projected_nav": 9.6954,
-      "band_rupees": 180.0,
+      "projected_nav": 9.6039,
+      "band_rupees": 0.0,
       "coverage_pct": 95.0,
       "cash_pct": 6.22,
       "tail_pct": 0.0,
@@ -600,5 +600,6 @@
     }
   },
   "tickers_resolved": 264,
-  "tickers_total": 264
+  "tickers_total": 264,
+  "nav_settled": "13-Oct-2026"
 }

@@ -146,6 +146,26 @@ class ImportTransactions(unittest.TestCase):
         self.assertFalse(itx.is_transaction_report(f.name))
 
 
+class SettledSessions(unittest.TestCase):
+    def test_nav_published_means_nothing_left_to_estimate(self):
+        f = lambda d: {"last_nav_date": d}
+        self.assertTrue(estimate.nav_published([f("13-Oct-2026"), f("13-Oct-2026")], D(2026, 10, 13)))
+        self.assertFalse(estimate.nav_published([f("13-Oct-2026"), f("12-Oct-2026")], D(2026, 10, 13)))   # one fund still waiting
+        self.assertFalse(estimate.nav_published([f("12-Oct-2026")], D(2026, 10, 13)))
+        self.assertFalse(estimate.nav_published([{"last_nav_date": None}], D(2026, 10, 13)))
+        self.assertFalse(estimate.nav_published([], D(2026, 10, 13)))
+
+    def test_settle_zeroes_a_stale_estimate_stacked_on_a_published_nav(self):
+        state = {"x": {"units": 100.0, "last_nav": 10.0}}
+        latest = {"funds": [{"id": "x", "last_nav": 10.0, "current_value": 1000.0, "invested": 900.0, "projected_nav": 10.5, "nav_move_pct": 5.0,
+                             "rupee_impact": 50.0, "band_rupees": 9.0}], "totals": {}}
+        self.assertTrue(reconcile.settle_latest(latest, state))
+        f = latest["funds"][0]
+        self.assertEqual((f["nav_move_pct"], f["rupee_impact"], f["projected_nav"]), (0.0, 0.0, 10.0))
+        self.assertEqual(latest["totals"]["today_impact"], 0.0)
+        self.assertFalse(reconcile.settle_latest(latest, state))      # idempotent
+
+
 class DataHealth(unittest.TestCase):
     NIFTY = [{"ticker": "^NSEI", "move_pct": 1.6}]
     FUND = [{"name": "A Fund Direct Growth", "coverage_pct": 90, "nav_move_pct": 1.2}]

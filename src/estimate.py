@@ -428,6 +428,16 @@ def estimate_fund(fund: dict, cfg: dict, moves: dict[str, float | None]) -> dict
     }
 
 
+def nav_published(funds: list[dict], today: dt.date) -> bool:
+    """True when every fund's NAV for `today` is already in state.json (reconcile ran tonight). Estimating after that would
+    stack the session's move on top of a NAV that already contains it (a run GitHub delayed past the 23:30 grading did exactly
+    that: yesterday's +0.7% reappeared as 'today's estimate' next morning)."""
+    try:
+        return bool(funds) and all(dt.datetime.strptime(str(f.get("last_nav_date")), "%d-%b-%Y").date() >= today for f in funds)
+    except ValueError:
+        return False
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--force", action="store_true", help="run outside market hours")
@@ -456,6 +466,10 @@ def main() -> None:
         merged = dict(f)
         merged.update(state.get(f["id"], {}))
         funds.append(merged)
+
+    if nav_published(funds, ts.date()):
+        print(f"[info] the published NAVs for {ts.date()} are already in; nothing left to estimate for this session (forced or not)")
+        return
 
     tickers: set[str] = set()
     for f in funds:

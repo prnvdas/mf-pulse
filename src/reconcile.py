@@ -198,8 +198,9 @@ def settle_latest(latest: dict | None, state: dict) -> bool:
         if not units or not nav:
             continue
         if f.get("last_nav") is not None and abs(f["last_nav"] - nav) < 1e-9 \
-                and abs(f["current_value"] - units * nav) < 1.0:
-            continue
+                and abs(f["current_value"] - units * nav) < 1.0 \
+                and not f.get("nav_move_pct") and not f.get("rupee_impact"):
+            continue            # already settled (a stale estimate re-applied on top of the new NAV is not: it gets zeroed again)
         f["current_value"] = round(units * nav, 2)
         f["invested"] = float(st.get("seed_invested") or f.get("invested") or 0.0)
         f["last_nav"] = nav

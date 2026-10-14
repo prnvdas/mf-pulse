@@ -67,6 +67,27 @@ def quote_time(ticker: str) -> str | None:
     return q["t"].isoformat() if q else None
 
 
+NSE_INDEX_NAMES = {"Nifty 50": "nifty 50", "Nifty Smallcap 250": "nifty smallcap 250", "Nifty LargeMidcap 250": "nifty largemidcap 250"}
+
+
+def nse_index_closes(day: dt.date) -> dict[str, float]:
+    """Official closing levels of every NSE index for one session (NSE's own end-of-day file), keyed by lower-case name."""
+    try:
+        r = requests.get(f"https://archives.nseindia.com/content/indices/ind_close_all_{day.strftime('%d%m%Y')}.csv", headers={"User-Agent": "Mozilla/5.0"}, timeout=20)
+        if r.status_code != 200:
+            return {}
+        import csv, io
+        out = {}
+        for row in csv.DictReader(io.StringIO(r.text)):
+            try:
+                out[row["Index Name"].strip().lower()] = float(row["Closing Index Value"])
+            except (KeyError, ValueError):
+                continue
+        return out
+    except Exception:  # noqa: BLE001
+        return {}
+
+
 def fetch_indices() -> list[dict]:
     """Index levels with the change since the PREVIOUS SESSION's close.
 
@@ -88,6 +109,10 @@ def fetch_indices() -> list[dict]:
     except Exception as exc:  # noqa: BLE001
         print(f"[warn] index daily bars unavailable: {exc}", file=sys.stderr)
     prevs = previous_closes(tickers, closes, sessions) if sessions else {}
+    # the official previous close, straight from NSE's end-of-day index file (covers indices Yahoo's history can't verify)
+    today = now_ist().date()
+    prev_day = next((d for d in reversed(sessions) if d < today), None)
+    official = nse_index_closes(prev_day) if prev_day else {}
     for name, ticker in INDICES:
         try:
             q = chart_quote(ticker)
@@ -95,7 +120,9 @@ def fetch_indices() -> list[dict]:
             c = closes.get(ticker)
             last = q["level"] if today else (float(c.iloc[-1]) if c is not None and len(c) else None)
             as_of = q["t"].isoformat() if q else None
-            prev = prevs.get(ticker)
+            prev = official.get(NSE_INDEX_NAMES.get(name, "")) or prevs.get(ticker)
+            if last is None and ticker == "NIFTY_LARGEMID250.NS" and q:
+                last = q["level"]
             if last is None or prev is None:
                 if sessions:                                # we can validate dates, so an index we can't validate is left out, not guessed
                     print(f"[warn] index {name}: no verifiable previous close; left out of the ticker", file=sys.stderr)
@@ -104,7 +131,7 @@ def fetch_indices() -> list[dict]:
                 last, prev = float(fi["lastPrice"]), float(fi["previousClose"])
             if last and prev:
                 out.append({"name": name, "ticker": ticker, "level": round(last, 2), "change": round(last - prev, 2),
-                            "move_pct": round((last / prev - 1) * 100, 2), "as_of": as_of})
+                            "move_pct": round((last / prev - 1) * 100, 2), "as_of": as_of, "prev_close": round(prev, 2)})
         except Exception as exc:  # noqa: BLE001 -- a missing chip must not fail the run
             print(f"[warn] index {name} unavailable: {exc}", file=sys.stderr)
     return out

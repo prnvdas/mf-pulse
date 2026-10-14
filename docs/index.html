@@ -192,6 +192,7 @@
   @keyframes tkscroll{from{transform:translate3d(0,0,0)}to{transform:translate3d(var(--tk-shift,-50%),0,0)}}
   .tk-run>*,.tk-unit{flex:none}
   .tk-unit{display:inline-flex;align-items:center}
+  .tk-item{display:inline-flex;align-items:center;flex:none}
   .tk-idx{display:inline-flex;align-items:baseline;gap:8px;padding:9px 0}
   .tk-idx b{font-weight:400;font-size:11px;color:var(--grey)}
   .tk-idx .lv{font-weight:600;font-size:13px;font-variant-numeric:tabular-nums}
@@ -1300,29 +1301,36 @@ function renderWhy() {
 // explicit pause/play button sits at the right. One set of items can be narrower
 // than the screen, so it is repeated until it covers the strip and the loop wraps
 // by exactly one set's width -- seamless, with no empty gap.
-function makeTicker(ids, buildUnit, label) {
-  const st = { dur: 0, key: "", items: [] };
+function makeTicker(ids, buildItems, label) {
+  const st = { dur: 0, key: "", parts: [], items: [] };
   const g = k => document.getElementById(ids[k]);
-  function render(items) {
+  function render(items, rebuild) {
     st.items = items;
     const bar = g("bar"), track = g("track"), run = g("run");
     if (!items.length) { bar.hidden = true; return; }
     bar.hidden = false;
     g("lab").innerHTML = label();
-    const unit = '<span class="tk-unit">' + buildUnit(items) + '<span class="gap"></span></span>';
+    const parts = buildItems(items), key = items.map(m => m && m.name).join("|");
+    // Same items as last time (only the numbers changed): update the text where it sits. Rebuilding the strip on every tick made
+    // the tape twitch, because the scrolling content was being replaced under the moving animation.
+    if (!rebuild && key === st.key && parts.length === st.parts.length && run.querySelector(".tk-item")) {
+      parts.forEach((h, i) => { if (h !== st.parts[i]) run.querySelectorAll('.tk-item[data-i="' + i + '"]').forEach(el => { el.innerHTML = h; }); });
+      st.parts = parts; return;
+    }
+    const unit = '<span class="tk-unit">' + parts.map((h, i) => '<span class="tk-item" data-i="' + i + '">' + h + "</span>").join("") + '<span class="gap"></span></span>';
     run.innerHTML = unit;
     const w = run.firstChild.getBoundingClientRect().width;
     if (!w) return;
     const copies = Math.ceil(track.clientWidth / w) + 1;
-    // Always rebuild the full strip. (Skipping it when the numbers were unchanged, which is every refresh on a
-    // weekend or holiday, left a single copy behind and the ticker ran dry.) The animation lives on #tkRun itself,
-    // which is never replaced, so refreshing the content does not interrupt the scroll.
+    // Always rebuild the full strip when the items change. (Skipping it when the numbers were unchanged left a single copy
+    // behind and the ticker ran dry.) The animation lives on #tkRun itself, which is never replaced.
     run.innerHTML = unit.repeat(copies);
     run.style.setProperty("--tk-shift", "-" + (100 / copies) + "%");               // exactly one copy: a seamless loop
-    const dur = Math.max(12, Math.round(w / 110));                                  // about 110 px a second (45 was too slow, 200 too fast)
+    const dur = Math.max(12, Math.round(w / 110));                                  // about 110 px a second
     if (Math.abs(dur - st.dur) >= 1) { st.dur = dur; run.style.setProperty("--tk-dur", dur + "s"); }
+    st.key = key; st.parts = parts;
   }
-  window.addEventListener("resize", () => render(st.items));
+  window.addEventListener("resize", () => render(st.items, true));
   return { render };
 }
 
@@ -1330,11 +1338,11 @@ const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(
 const INDEX_TICKER = makeTicker(
   { bar: "ticker", track: "tkTrack", run: "tkRun", lab: "tkLab", name: "index ticker" },
   items => items.map(m => {
-    const up = m.move_pct >= 0, arrow = up ? "▲" : "▼";
-    return '<span class="tk-idx"><b>' + esc(m.name) + '</b><span class="lv">' + (m.unit || "") + m.level.toLocaleString("en-IN", { maximumFractionDigits: 2 }) +
-      '</span><span class="' + (up ? "up" : "dn") + '">' + arrow + " " + Math.abs(m.change).toLocaleString("en-IN", { maximumFractionDigits: 2 }) +
+    const up = m.move_pct >= 0, arrow = up ? "▲" : "▼", dec = Number.isInteger(m.dec) ? m.dec : 2, f = v => v.toLocaleString("en-IN", { minimumFractionDigits: dec, maximumFractionDigits: dec });
+    return '<span class="tk-idx"><b>' + esc(m.name) + '</b><span class="lv">' + (m.unit || "") + f(m.level) +
+      '</span><span class="' + (up ? "up" : "dn") + '">' + arrow + " " + f(Math.abs(m.change)) +
       " (" + (up ? "+" : "−") + Math.abs(m.move_pct).toFixed(2) + '%)</span></span><span class="dot">|</span>';
-  }).join(""),
+  }),
   () => tickerLabel());
 // "LIVE" only when the numbers really are fresh. Showing yesterday's close under a LIVE tag
 // on a trading morning (before the first update lands) was misleading.
@@ -1350,7 +1358,8 @@ function renderTicker() {                                                       
   const ok = x => x && typeof x === "object" && x.name && Number.isFinite(x.level) && Number.isFinite(x.move_pct) && Number.isFinite(x.change);
   const gt = (() => { try { return giftTick(); } catch (e) { return null; } })();
   const lv = x => { try { return liveItem(x); } catch (e) { return x; } };
-  INDEX_TICKER.render((Array.isArray(COMMS) ? COMMS : []).map(lv).concat(gt ? [gt] : [], (Array.isArray(MARKET) ? MARKET : []).map(lv)).filter(ok));
+  const btc = (() => { try { return bitcoinTick(); } catch (e) { return null; } })();
+  INDEX_TICKER.render((Array.isArray(COMMS) ? COMMS : []).map(lv).concat(gt ? [gt] : [], (Array.isArray(MARKET) ? MARKET : []).map(lv), btc ? [btc] : []).filter(ok));
 }
 
 async function loadNews() {
@@ -3030,7 +3039,7 @@ function liveItem(m) {
   // the real-time stream wins when it has spoken recently: price from the stream, previous close from the verified daily bars
   const w = WS.quotes[m.ticker];
   if (w && Date.now() - w.at < (fx ? 10 : 3) * 60000 && (fx || marketOpen())) {
-    let base = q ? (fx || day(q.t) === today ? q.prev : q.level) : null;
+    let base = w.base > 0 ? w.base : m.prev_close > 0 ? m.prev_close : q ? (fx || day(q.t) === today ? q.prev : q.level) : null;     // official previous close first
     if (!(base > 0)) { const ao = typeof m.as_of === "string" ? m.as_of.slice(0, 10) : ""; base = ao && ao < today ? m.level : m.level - m.change; }   // the batch's own numbers
     if (base > 0) return { ...m, level: w.price, change: w.price - base, move_pct: (w.price / base - 1) * 100 };
   }
@@ -3043,7 +3052,7 @@ function liveItem(m) {
 let LIVE_STARTED = false;
 function startLiveQuotes() {
   if (LIVE_STARTED) return; LIVE_STARTED = true;                                          // called after every batch load: start once
-  startStream();
+  startStream(); startSensexPoll();
   let tick = 0;
   const go = () => { if (document.visibilityState === "hidden") return; tick++; if (marketOpen() || tick % 5 === 1) refreshLiveQuotes().catch(() => {}); };
   go(); setInterval(go, 60000);
@@ -3082,7 +3091,7 @@ function decodeQuote(b64) {                                   // a tiny protobuf
 }
 function streamSymbols() {
   const t = [].concat(Array.isArray(MARKET) ? MARKET : [], Array.isArray(COMMS) ? COMMS : []).map(m => m && m.ticker).filter(x => typeof x === "string" && x);
-  return [...new Set(t)];
+  return [...new Set(t.filter(x => x !== "^BSESN").concat(["BTC-USD", "INR=X"]))];          // Yahoo's Sensex runs ~15 minutes late: it comes from Moneycontrol below
 }
 function scheduleTickerRender() { if (!WS.pending) WS.pending = setTimeout(() => { WS.pending = null; renderTicker(); }, 1500); }
 function startStream() {
@@ -3095,7 +3104,7 @@ function startStream() {
     try {
       const m = JSON.parse(ev.data); if (!m || m.type !== "pricing" || typeof m.message !== "string") return;
       const q = decodeQuote(m.message);
-      if (typeof q.id !== "string" || !(q.price > 0) || !isFinite(q.price)) return;
+      if (typeof q.id !== "string" || q.id === "^BSESN" || !(q.price > 0) || !isFinite(q.price)) return;
       WS.quotes[q.id] = { price: q.price, chgPct: q.chgPct, chg: q.chg, at: Date.now() }; WS.last = Date.now(); scheduleTickerRender();
     } catch (e) { /* not a price message we understand: ignore */ }
   };
@@ -3105,6 +3114,28 @@ document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "hidden") { WS.want = false; try { if (WS.sock) WS.sock.close(); } catch (e) { /* already gone */ } WS.sock = null; }
   else { WS.want = true; startStream(); }
 });
+
+// ---- Sensex in real time: Moneycontrol's public price feed (open to browsers), every 5 seconds while the market is open.
+// Yahoo's Sensex feed is licensed with a 15-minute delay, so it is not used. The feed also carries the official previous close.
+async function pollSensex() {
+  if (document.visibilityState === "hidden" || !marketOpen()) return;
+  try {
+    const r = await fetchWithTimeout("https://priceapi.moneycontrol.com/pricefeed/notapplicable/inidicesindia/in%3BSEN", { cache: "no-store" }, 6000);
+    if (!r.ok) return;
+    const d = ((await r.json()) || {}).data || {}, price = parseFloat(d.pricecurrent), prev = parseFloat(d.priceprevclose);
+    if (!(price > 0 && prev > 0) || String(d.lastupd || "").slice(0, 10) !== istDate(istNow())) return;        // must be a quote from today
+    WS.quotes["^BSESN"] = { price, base: prev, at: Date.now() }; WS.last = Date.now(); scheduleTickerRender();
+  } catch (e) { /* the batch value stays */ }
+}
+function startSensexPoll() { setInterval(pollSensex, 5000); pollSensex(); }
+
+// ---- Bitcoin in rupees, just for fun: the real-time dollar price times the real-time dollar-rupee rate
+function bitcoinTick() {
+  const b = WS.quotes["BTC-USD"], fx = WS.quotes["INR=X"], now = Date.now();
+  if (!b || !fx || now - b.at > 5 * 60000 || now - fx.at > 10 * 60000 || !(fx.price > 20 && fx.price < 500) || !num(b.chgPct)) return null;
+  const level = b.price * fx.price;
+  return { name: "Bitcoin", level, change: level - level / (1 + b.chgPct / 100), move_pct: b.chgPct, unit: "₹", dec: 0 };
+}
 
 // ---- hide amounts
 // Some sentences are written by the nightly jobs ("your portfolio moved about +₹91,615", the tax figure in the advice). Those

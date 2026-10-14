@@ -934,7 +934,20 @@ function render(funds, meta) {
   $("orbWord").textContent = up ? "In the green" : "In the red";
   $("eyebrow").textContent = marketOpen() ? "Estimated impact — live" : "Estimated impact — session close";
 
-  $("sub").innerHTML = meta.phase === "holiday"
+  // A trading morning before today's first estimate exists: the batch on file is yesterday's, so don't dress it up as today's.
+  const ist0 = istNow(), min0 = ist0.getHours() * 60 + ist0.getMinutes(), batchDay = LAST_BATCH && LAST_BATCH.generatedAt ? String(LAST_BATCH.generatedAt).slice(0, 10) : "";
+  const waiting = meta.phase !== "holiday" && !closedAllDay() && !specialToday() && isTradingDay(istDate(ist0)) &&
+    (min0 < 555 || (marketOpen() && batchDay && batchDay < istDate(ist0)));
+  if (waiting) {
+    $("eyebrow").textContent = marketOpen() ? "Waiting for today's first estimate" : "Today's estimate starts at 09:15";
+    $("orbWord").textContent = "Awaiting"; $("orbPct").textContent = "—"; $("pnl").textContent = "—";
+    document.documentElement.style.setProperty("--state", "var(--green)");
+  }
+
+  $("sub").innerHTML = waiting
+    ? (marketOpen() ? "The market is open and today's first estimate is on its way (within about 15 minutes). " : "The market opens at 09:15; today's estimate starts then. ") +
+      "At the last close your portfolio is worth <b>" + inr(value) + "</b> — a total profit of <b>" + signed(value - invested) + "</b> (" + pc(invested ? (value - invested) / invested * 100 : 0) + ") since you started."
+    : meta.phase === "holiday"
     ? (closedAllDay() ? "Markets were closed, so no stock moved. Your" : preOpenNote() + "Showing the last close — your") +
       " portfolio is worth <b>" + inr(value) + "</b>" + (closedAllDay() ? " at the last close" : "") + " — a total profit of <b>" +
       signed(value - invested) + "</b> (" + pc(invested ? (value - invested) / invested * 100 : 0) + ") since you started."

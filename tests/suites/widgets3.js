@@ -26,6 +26,14 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
   const t=await p.$eval('#dataBar',e=>e.hidden?'':e.innerText); ok(re.test(t)&&/261 of 264/.test(t),'data bar '+label,t); ok(/price data/i.test(await p.$eval('#healthLine',e=>e.innerText)),'footer price-data item '+label); ok(!errs.length,'data bar errs '+label,errs[0]); await ctx.close();}
  for (const h of [{status:'ok',issues:[]},null,{status:'warn',issues:'x'},{status:'warn',issues:[null,{text:5}]},'str']) {const {p,ctx,errs}=await page({latest:j=>{if(h===null)delete j.health;else j.health=h;return j;}});
   ok(!errs.length&&!/NaN|undefined|\[object/.test(await p.evaluate(()=>document.body.innerText)),'health shape '+JSON.stringify(h).slice(0,30),errs[0]); await ctx.close();}
+ // before today's first estimate: say so instead of showing yesterday's close as today's
+ {const {p,ctx,errs}=await page({latest:j=>{j.generated_at='2026-10-13T23:53:00+05:30';j.phase='final';return j;}},[],'2026-10-14T02:40:00Z');   // Wed 08:10 IST
+  const e=await p.$eval('#eyebrow',x=>x.textContent), s=await p.$eval('#sub',x=>x.textContent), pn=await p.$eval('#pnl',x=>x.textContent);
+  ok(/starts at 09:15/i.test(e)&&/opens at 09:15/.test(s)&&pn==='—','pre-open morning shows no estimate',e+'|'+pn); ok(!errs.length,'pre-open errs',errs[0]); await ctx.close();}
+ {const {p,ctx}=await page({latest:j=>{j.generated_at='2026-10-13T23:53:00+05:30';j.phase='final';return j;}},[],'2026-10-14T04:30:00Z');   // Wed 10:00 IST, no estimate yet today
+  ok(/waiting for today/i.test(await p.$eval('#eyebrow',x=>x.textContent)),'open but no estimate yet says waiting'); await ctx.close();}
+ {const {p,ctx}=await page({latest:j=>{j.generated_at='2026-10-14T09:50:00+05:30';j.phase='live';return j;}},[],'2026-10-14T04:30:00Z');   // 10:00 IST, fresh estimate
+  ok(/live/i.test(await p.$eval('#eyebrow',x=>x.textContent))&&(await p.$eval('#pnl',x=>x.textContent))!=='—','a fresh estimate shows normally'); await ctx.close();}
  // statement bar copy
  {const {p,ctx}=await page({analytics:j=>j});ok(true,'noop');await ctx.close();}
  console.log(`${n-fail}/${n} passed`);await b.close();process.exit(fail?1:0);})();

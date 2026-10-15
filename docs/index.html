@@ -2749,6 +2749,10 @@ function renderScore() {
   if (both.length === day.length) {
     const pe = both.reduce((s, h) => s + h.predicted_pl_rupees, 0), pa = both.reduce((s, h) => s + h.actual_pl_rupees, 0);
     line = "On your money I estimated <b>" + sgc(pe) + "</b> and the published NAVs made it <b>" + sgc(pa) + "</b>: off by <b>" + cl(Math.abs(pe - pa)) + "</b>. ";
+    // was the miss inside the range the estimate itself advertised? (funds' bands add in quadrature, as on the front page)
+    const bs = day.map(h => h.band_rupees);
+    if (bs.every(x => num(x) && x > 0)) { const band = Math.sqrt(bs.reduce((t, x) => t + x * x, 0)), miss = Math.abs(pe - pa);
+      line += "I had said it would land within about <b>±" + cl(band) + "</b>: " + (miss <= band ? '<span class="ok">inside that range ✓</span>' : '<span class="bad">outside it ✗</span> (the range is meant to cover most days, not every one)') + ". "; }
   }
   line += "Right direction for <b>" + hits + " of " + day.length + "</b> funds, average miss <b>" + avg.toFixed(2) + " pp</b> of NAV.";
   const sessions = new Set(rows.map(h => h.date)).size, hitAll = rows.filter(h => h.direction_hit).length;

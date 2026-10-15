@@ -152,6 +152,7 @@ def main() -> None:
                         "actual_nav": new_nav,
                         "predicted_pl_rupees": latest_fund.get("rupee_impact"),
                         "data_health": (latest.get("health") or {}).get("status"),
+                        "band_rupees": latest_fund.get("band_rupees"),
                         "actual_pl_rupees": actual_pl,
                     }
                 )

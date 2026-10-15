@@ -46,6 +46,10 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
   ok(!errs.length,'chip errs',errs[0]); await ctx.close();}
  for (const [f,fn] of [['mood',j=>{j.mood={value:'x',zone:5};return j;}],['mood',j=>{j.mood=null;return j;}],['outlook',j=>{j.call={colour:'green',p_call:'?'};return j;}],['news',j=>{j.why={flows:{fii:null,dii:'a'}};return j;}]]) {const {p,ctx,errs}=await page({[f]:fn});
   ok(!errs.length&&!/NaN|undefined|\[object/.test(await p.$eval('#hChips',e=>e.innerText)),'chips hostile '+f,errs[0]); await ctx.close();}
+ // estimate-vs-actual card: was the miss inside the advertised range?
+ for (const [bands,re,label,act] of [[[5362,4993,180],/inside that range/,'inside',11000],[[500,400,50],/outside it/,'outside',13500]]) {const {p,ctx,errs}=await page({history:j=>{const d=j.reduce((m,r)=>r.date>m?r.date:m,'');let k=0;j.forEach(r=>{if(r.date===d){r.band_rupees=bands[k++%3];r.predicted_pl_rupees=10000;r.actual_pl_rupees=act;}});return j;}});
+  const t=await p.$eval('#scoreWrap',e=>e.innerText); ok(re.test(t)&&/within about/.test(t),'score card range check: '+label,t.slice(-300)); ok(!errs.length,'score errs',errs[0]); await ctx.close();}
+ {const {p,ctx}=await page({history:j=>{j.forEach(r=>{delete r.band_rupees;});return j;}}); ok(!/within about/.test(await p.$eval('#scoreWrap',e=>e.innerText)),'no range sentence when the band was not recorded'); await ctx.close();}
  // statement bar copy
  {const {p,ctx}=await page({analytics:j=>j});ok(true,'noop');await ctx.close();}
  console.log(`${n-fail}/${n} passed`);await b.close();process.exit(fail?1:0);})();

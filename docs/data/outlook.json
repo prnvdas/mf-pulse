@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-16T08:57:36.982571+05:30",
+  "generated_at": "2026-10-16T09:15:39.897262+05:30",
   "base_close_date": "2026-10-15",
   "base_close": 22997.35,
   "sigma_pct": 1.0,
@@ -20,31 +20,7 @@
       -1.44,
       1.77
     ],
-    "centre_pct": 0.11,
-    "gift_adjusted": {
-      "gap_pct": 0.31,
-      "last": 23068.0,
-      "quote_time": "16-Oct-2026 08:35:26",
-      "centre_pct": 0.29,
-      "typical": [
-        22898.1,
-        23223.6
-      ],
-      "wide": [
-        22770.9,
-        23378.2
-      ],
-      "typical_pct": [
-        -0.43,
-        0.98
-      ],
-      "wide_pct": [
-        -0.98,
-        1.66
-      ],
-      "validated": false,
-      "assumptions": "gap passes through x0.94; intraday vol 0.81x; GIFT-to-open noise 0.15%"
-    }
+    "centre_pct": 0.11
   },
   "portfolio": {
     "value": 10500259,
@@ -63,14 +39,14 @@
   },
   "call": {
     "colour": "green",
-    "p_up": 61.8,
-    "p_call": 61.8,
-    "basis": "gift",
-    "tier": "good",
-    "hit_pct": 72.3,
-    "why": "GIFT Nifty is +0.31% from the Nifty's last close",
-    "provisional": false,
-    "note": "Final pre-open reading."
+    "p_up": 55.4,
+    "p_call": 55.4,
+    "basis": "us",
+    "tier": "moderate",
+    "hit_pct": 61.5,
+    "why": "the S&P 500 moved +0.33% overnight",
+    "provisional": true,
+    "note": "Provisional: it firms up once GIFT Nifty's pre-open price is in (about 08:45 IST)."
   },
   "model": {
     "volatility": "GJR-GARCH(1,1) with Student-t errors",

@@ -50,6 +50,14 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
  for (const [bands,re,label,act] of [[[5362,4993,180],/inside that range/,'inside',11000],[[500,400,50],/outside it/,'outside',13500]]) {const {p,ctx,errs}=await page({history:j=>{const d=j.reduce((m,r)=>r.date>m?r.date:m,'');let k=0;j.forEach(r=>{if(r.date===d){r.band_rupees=bands[k++%3];r.predicted_pl_rupees=10000;r.actual_pl_rupees=act;}});return j;}});
   const t=await p.$eval('#scoreWrap',e=>e.innerText); ok(re.test(t)&&/within about/.test(t),'score card range check: '+label,t.slice(-300)); ok(!errs.length,'score errs',errs[0]); await ctx.close();}
  {const {p,ctx}=await page({history:j=>{j.forEach(r=>{delete r.band_rupees;});return j;}}); ok(!/within about/.test(await p.$eval('#scoreWrap',e=>e.innerText)),'no range sentence when the band was not recorded'); await ctx.close();}
+ // a tab running an old copy of the page is told a newer one exists
+ {const ctx=await b.newContext({viewport:{width:1200,height:900}});const p=await ctx.newPage();let n=0,altered=false;
+  await p.clock.install({time:new Date('2026-10-12T08:30:00Z')});
+  await p.route(/\/index\.html/,async r=>{n++;const resp=await r.fetch();let body=await resp.text();if(altered&&n>2)body+='<!-- newer -->';r.fulfill({response:resp,body});});
+  await p.goto(process.env.BASE||'http://localhost:8000/index.html',{waitUntil:'networkidle'});await p.waitForTimeout(500);
+  await p.clock.fastForward(5*60000+2000);await p.waitForTimeout(600); ok(!(await p.$('#newVer')),'no notice while the page is unchanged');
+  altered=true;await p.clock.fastForward(5*60000+2000);await p.waitForTimeout(800);
+  ok(await p.$eval('#newVer',e=>/newer version/.test(e.textContent)&&!!e.querySelector('button')),'notice appears when the published page changed'); await ctx.close();}
  // statement bar copy
  {const {p,ctx}=await page({analytics:j=>j});ok(true,'noop');await ctx.close();}
  console.log(`${n-fail}/${n} passed`);await b.close();process.exit(fail?1:0);})();

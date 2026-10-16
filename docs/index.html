@@ -352,6 +352,9 @@
   .totop:hover:not(:disabled){background:#fff;color:var(--ink)}
   .hline{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:12px;color:var(--grey);margin:26px 0 0}
   .hline .dotc{margin-right:6px}
+  .newver{position:fixed;left:18px;bottom:18px;z-index:40;max-width:min(420px,calc(100vw - 100px));background:var(--ink);color:#fff;padding:12px 16px;font-size:13px;line-height:1.45;box-shadow:0 6px 22px rgba(0,0,0,.3);border-left:3px solid var(--green)}
+  .newver button{margin-left:10px;padding:5px 12px;font-size:11px;background:var(--green);border-color:var(--green);color:#000}
+  .newver button:hover:not(:disabled){background:#fff;color:#000}
   /* money over time, score card, calendar, SIP, cost, fund health */
   .kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);margin-bottom:6px}
   .kgrid>div{background:var(--paper);padding:18px 20px}
@@ -3141,6 +3144,31 @@ function bitcoinTick() {
   return { name: "Bitcoin", level, change: level - level / (1 + b.chgPct / 100), move_pct: b.chgPct, unit: "₹", dec: 0 };
 }
 
+// ---- "a newer version of this page exists": a tab left open for days keeps running the code it loaded with (an old tape, old
+// bugs). Every 5 minutes, and whenever the tab comes back into view, compare the published page with the one running.
+let PAGE_SIG = null;
+async function pageSig() {
+  const r = await fetch(location.href.split("#")[0].split("?")[0] + "?v=" + Date.now(), { cache: "no-store" });
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  const t = await r.text(); let h = 0; for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) | 0;
+  return t.length + ":" + h;
+}
+async function checkNewVersion() {
+  if (document.visibilityState === "hidden" || !PAGE_SIG) return;
+  try { if ((await pageSig()) !== PAGE_SIG) showNewVersion(); } catch (e) { /* offline: try again later */ }
+}
+function showNewVersion() {
+  if ($("newVer")) return;
+  const d = document.createElement("div"); d.id = "newVer"; d.className = "newver"; d.setAttribute("role", "status");
+  d.innerHTML = "A newer version of this page is available. <button type=\"button\" id=\"newVerBtn\">Reload now</button>";
+  document.body.appendChild(d); $("newVerBtn").onclick = () => location.reload();
+}
+function startVersionWatch() {
+  pageSig().then(s => { PAGE_SIG = s; }).catch(() => {});
+  setInterval(checkNewVersion, 5 * 60000);
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") checkNewVersion(); });
+}
+
 // ---- hide amounts
 // Some sentences are written by the nightly jobs ("your portfolio moved about +₹91,615", the tax figure in the advice). Those
 // are scrubbed here instead. Market figures stay: crore amounts (flows, headlines) and per-unit NAVs are public.
@@ -3195,7 +3223,7 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   PICKS = await loadJson("data/picks.json", isObj, null);
   setupHide();
   renderReturns(); renderTax(); renderStatementBar();
-  safe(renderMoney, "moneyWrap"); safe(renderSectors, "sectorWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(setupToTop); safe(renderIdeas, "ideasWrap"); safe(renderHealthLine); safe(renderTxBar); safe(renderDataBar); safe(setupNav);
+  safe(renderMoney, "moneyWrap"); safe(renderSectors, "sectorWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(setupToTop); safe(renderIdeas, "ideasWrap"); safe(renderHealthLine); safe(renderTxBar); safe(renderDataBar); safe(startVersionWatch); safe(setupNav);
   renderCompare();
   loadNews();
   loadOutlook();

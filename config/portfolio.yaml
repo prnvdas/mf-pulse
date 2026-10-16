@@ -130,6 +130,7 @@ profile:
   name: Pranav
   fd_rate_pct: 7   # rough bank fixed-deposit yield, used only as a yardstick
   github_repo: prnvdas/mf-pulse   # used by the optional on-demand update button
+  recap_issue: false   # true = also email the daily recap (as a GitHub issue); the page card is always shown
   # github_token_expires: "2027-03-01"   # when the GitHub token you gave cron-job.org expires (shown in the footer; an issue reminds you 3 weeks ahead)
 
 # Capital-gains view (Tax panel). Equity-oriented mutual funds. These are the rules as last known to the

@@ -132,6 +132,45 @@ def backfill_from_transactions(cfg: dict, state: dict) -> list[dict] | None:
     return out
 
 
+BENCH = {"n": "^NSEI", "m": "^CRSLDX"}          # Nifty 50 and Nifty 500, price indices (no dividends)
+
+
+def add_benchmarks(points: list[dict]) -> list[str]:
+    """What the same money, invested on the same dates, would be worth in an index: p["n"] (Nifty 50), p["m"] (Nifty 500).
+    Each rupee you put in (or took out) on a day buys (or sells) index units at that day's close. Returns the keys added."""
+    import yfinance as yf
+    added = []
+    flows, prev = [], 0.0
+    for p in points:
+        flows.append(p["i"] - prev)
+        prev = p["i"]
+    for key, ticker in BENCH.items():
+        try:
+            df = yf.download(ticker, period="max", interval="1d", progress=False, auto_adjust=False, timeout=60)["Close"]
+            c = (df.iloc[:, 0] if hasattr(df, "columns") else df).dropna()
+            c.index = pd.to_datetime(c.index).tz_localize(None).normalize()
+            if len(c) < 500:
+                raise ValueError("too little index history")
+            units, got = 0.0, []
+            for p, fl in zip(points, flows):
+                px = float(c.asof(pd.Timestamp(p["d"])))
+                if not px or px != px:
+                    got.append(None)
+                    continue
+                units = max(0.0, units + fl / px)
+                got.append(round(units * px))
+            if sum(g is not None for g in got) > 0.9 * len(points):
+                for p, g in zip(points, got):
+                    if g is not None:
+                        p[key] = g
+                    else:
+                        p.pop(key, None)
+                added.append(key)
+        except Exception as exc:  # noqa: BLE001 -- the comparison is a bonus: never block the history
+            print(f"[warn] benchmark {ticker}: {exc}", file=sys.stderr)
+    return added
+
+
 def tx_check(cfg: dict, state: dict) -> dict:
     """Does config/transactions.csv still explain the units you hold? A purchase or sale made outside the SIPs
     (a lump sum, a redemption) makes it fall behind; the page then tells you to download the order history again."""
@@ -178,6 +217,8 @@ def main() -> None:
         by = {x["d"]: x for x in doc["points"]}
         by[p["d"]] = p
         doc["points"] = [by[k] for k in sorted(by)]
+    got = add_benchmarks(doc["points"])
+    doc["benchmarks"] = {"n": "Nifty 50", "m": "Nifty 500", "note": "the same money invested on the same dates; price index, so without dividends (about 1.3% a year)"} if got else None
     doc["tx_check"] = tx_check(cfg, state)
     doc["generated_at"] = now_ist().isoformat()
     write_json(OUT, doc)

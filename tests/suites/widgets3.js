@@ -58,6 +58,20 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
   await p.clock.fastForward(5*60000+2000);await p.waitForTimeout(600); ok(!(await p.$('#newVer')),'no notice while the page is unchanged');
   altered=true;await p.clock.fastForward(5*60000+2000);await p.waitForTimeout(800);
   ok(await p.$eval('#newVer',e=>/newer version/.test(e.textContent)&&!!e.querySelector('button')),'notice appears when the published page changed'); await ctx.close();}
+ // comparison with an index, falls and recoveries, fund overlap, the recap
+ {const {p,ctx,errs}=await page(); const g=async id=>p.$eval('#'+id,e=>e.hidden?'':e.innerText);
+  let t=await g('moneyVs'); ok(/same money/.test(t)&&/(ahead|behind) by/.test(t)&&/Nifty 50/.test(t),'index comparison sentence',t);
+  ok(await p.$$eval('#moneyCmp button',a=>a.length)===3,'comparison picker has none / Nifty 50 / Nifty 500');
+  await p.click('#moneyCmp button[data-c="m"]'); ok(/Nifty 500/.test(await g('moneyVs')),'switch to Nifty 500'); await p.click('#moneyCmp button[data-c=""]'); ok((await g('moneyVs'))==='','no comparison hides the sentence');
+  t=await g('ddWrap'); ok(/deepest fall/i.test(t)&&/right now/i.test(t)&&/fell from/i.test(t),'falls and recoveries section',t.slice(0,200));
+  t=await g('overlapWrap'); ok(/different stocks/.test(t)&&/ten biggest stocks/i.test(t)&&/stocks in common/i.test(t),'fund overlap section',t.slice(0,200));
+  t=await g('recapWrap'); ok(/your portfolio moved/i.test(t)&&/by fund/i.test(t),'recap card',t.slice(0,200));
+  ok(!errs.length&&!/NaN|undefined|\[object/.test(await p.evaluate(()=>document.body.innerText)),'new sections clean',errs[0]); await ctx.close();}
+ // hostile data for the new sections
+ for (const [f,fn] of [['portfolio_history',j=>{j.points.forEach(p=>{p.n=null;p.m='x'});return j;}],['portfolio_history',j=>{j.points=j.points.slice(0,30);return j;}],['portfolio_history',j=>{j.points.forEach((p,i)=>{if(i%7===0)p.v=0});return j;}],
+   ['recap',j=>({date:'x',lines:'y'})],['recap',j=>({date:'2026-10-15',lines:[null,{t:5},{t:'ok',k:'<b>'}]})],['recap',j=>[]],
+   ['config',j=>{j.funds.forEach(f=>{f.holdings=null});return j;}],['config',j=>{j.funds.forEach(f=>{f.holdings=[{t:5,w:'x'},null]});return j;}]]) {const {p,ctx,errs}=await page({[f]:fn});
+  ok(!errs.length&&!/NaN|undefined|\[object/.test(await p.evaluate(()=>document.body.innerText)),'hostile '+f,errs[0]); await ctx.close();}
  // statement bar copy
  {const {p,ctx}=await page({analytics:j=>j});ok(true,'noop');await ctx.close();}
  console.log(`${n-fail}/${n} passed`);await b.close();process.exit(fail?1:0);})();

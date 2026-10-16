@@ -17,6 +17,7 @@ import health  # noqa: E402
 import import_transactions as itx  # noqa: E402
 import estimate  # noqa: E402
 import picks  # noqa: E402
+import recap  # noqa: E402
 import reconcile  # noqa: E402
 import snapshot  # noqa: E402
 import validate_data  # noqa: E402
@@ -144,6 +145,39 @@ class ImportTransactions(unittest.TestCase):
         wb = openpyxl.Workbook(); wb.active.append(["Scheme Name", "Folio No.", "Units", "Invested Value"])
         f = tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False); wb.save(f.name)
         self.assertFalse(itx.is_transaction_report(f.name))
+
+
+class Recap(unittest.TestCase):
+    def test_formatting(self):
+        self.assertEqual(recap.money(-17983, True), "−₹17,983")
+        self.assertEqual(recap.money(2100000), "₹21.00 L")
+        self.assertEqual(recap.money(10500000), "₹1.05 Cr")
+        self.assertEqual(recap.pct(-0.173), "−0.17%")
+        self.assertEqual(recap.pct(1.6, 1), "+1.6%")
+
+    def test_next_session_skips_weekends_and_holidays_and_says_why(self):
+        hol = [{"date": "2026-10-20", "name": "Dussehra"}, {"date": "2026-10-17", "name": "Saturday thing", "weekend": True}]
+        self.assertEqual(recap.next_session(D(2026, 10, 16), hol), (D(2026, 10, 19), None))        # Friday -> Monday
+        self.assertEqual(recap.next_session(D(2026, 10, 19), hol), (D(2026, 10, 21), "Dussehra"))   # Monday -> Wednesday, because of the holiday
+
+
+class Benchmarks(unittest.TestCase):
+    def test_same_money_same_dates_in_an_index(self):
+        import pandas as pd
+        import yfinance
+        dates = pd.bdate_range("2023-01-02", periods=600)
+        prices = pd.Series([10.0] * 2 + [12.0] * 598, index=dates)
+        old, yfinance.download = yfinance.download, lambda *a, **k: pd.DataFrame({"Close": prices})
+        try:
+            pts = [{"d": dates[0].date().isoformat(), "v": 100.0, "i": 100.0}, {"d": dates[2].date().isoformat(), "v": 190.0, "i": 150.0}, {"d": dates[3].date().isoformat(), "v": 200.0, "i": 150.0}]
+            pts += [{"d": dates[k].date().isoformat(), "v": 200.0, "i": 150.0} for k in range(4, 600)]
+            got = snapshot.add_benchmarks(pts)
+        finally:
+            yfinance.download = old
+        self.assertIn("n", got)
+        self.assertEqual(pts[0]["n"], 100)                 # 100 in at price 10 -> 10 units worth 100
+        self.assertEqual(pts[2]["n"], round((10 + 50 / 12) * 12))   # +50 on day 3 buys 50/12 units; priced at 12
+        self.assertEqual(pts[3]["n"], pts[2]["n"])         # no new money, same price
 
 
 class SettledSessions(unittest.TestCase):

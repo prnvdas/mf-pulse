@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 concurrency:
   group: reconcile
@@ -77,6 +78,13 @@ jobs:
         run: |
           python src/mood.py
           python src/advisor.py
+      # The daily recap: a card on the page and (unless profile.recap_issue is false) a GitHub issue, which GitHub emails to you.
+      - name: Daily recap
+        continue-on-error: true
+        timeout-minutes: 3
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python src/recap.py --issue
       - name: Commit reconciliation
         run: |
           git config user.name  "mf-pulse"

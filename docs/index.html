@@ -352,6 +352,11 @@
   .totop:hover:not(:disabled){background:#fff;color:var(--ink)}
   .hline{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:12px;color:var(--grey);margin:26px 0 0}
   .hline .dotc{margin-right:6px}
+  ul.recap{list-style:none;margin:6px 0 0;padding:0}
+  ul.recap li{padding:7px 0 7px 26px;border-bottom:1px solid var(--rule);font-size:14px;line-height:1.55;position:relative}
+  ul.recap li:last-child{border-bottom:0}
+  ul.recap li::before{content:"";position:absolute;left:4px;top:15px;width:9px;height:9px;border-radius:50%;background:var(--grey-light)}
+  ul.recap li.k-result::before{background:var(--green-deep)}ul.recap li.k-estimate::before{background:#3d5a80}ul.recap li.k-tomorrow::before{background:#c98a0a}ul.recap li.k-health::before{background:var(--red)}
   .newver{position:fixed;left:18px;bottom:18px;z-index:40;max-width:min(420px,calc(100vw - 100px));background:var(--ink);color:#fff;padding:12px 16px;font-size:13px;line-height:1.45;box-shadow:0 6px 22px rgba(0,0,0,.3);border-left:3px solid var(--green)}
   .newver button{margin-left:10px;padding:5px 12px;font-size:11px;background:var(--green);border-color:var(--green);color:#000}
   .newver button:hover:not(:disabled){background:#fff;color:#000}
@@ -470,6 +475,12 @@
     <div class="outlook" id="bOutlook" hidden></div>
     <div id="bBull"></div>
   </section>
+  <section id="recapWrap" hidden>
+    <h2>Last session in one look <span id="recapNote"></span></h2>
+    <p class="scoreline" id="recapHead" style="margin:0 0 6px"></p>
+    <ul class="recap" id="recapList"></ul>
+  </section>
+
   <section id="advWrap" hidden>
     <h2>Should I buy or sell today? <span id="advNote"></span></h2>
     <div id="advBody"></div>
@@ -498,11 +509,20 @@
   <section id="moneyWrap" hidden>
     <h2>Your money over time <span id="moneyNote"></span></h2>
     <div id="moneyKpis" class="kgrid"></div>
-    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:16px"><div class="seg" id="moneySeg" role="tablist" aria-label="Chart view" style="margin:0"></div><div class="seg" id="moneyRange" role="tablist" aria-label="Period" style="margin:0"></div></div>
+    <p class="scoreline" id="moneyVs" hidden></p>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:16px"><div class="seg" id="moneySeg" role="tablist" aria-label="Chart view" style="margin:0"></div><div class="seg" id="moneyRange" role="tablist" aria-label="Period" style="margin:0"></div><div class="seg" id="moneyCmp" role="tablist" aria-label="Compare with an index" style="margin:0"></div></div>
     <div class="mchart" id="moneyChart"></div>
     <div class="legend" id="moneyLegend"></div>
     <p class="note" id="moneyFoot"></p>
   </section>
+  <section id="ddWrap" hidden>
+    <h2>Falls and recoveries <span id="ddNote"></span></h2>
+    <div id="ddKpis" class="kgrid"></div>
+    <div class="mchart" id="ddChart"></div>
+    <div class="legend" id="ddLegend"></div>
+    <div id="ddBody"></div>
+  </section>
+
   <section id="scoreWrap" hidden>
     <h2>Estimate vs actual NAV <span id="scoreNote"></span></h2>
     <div id="scoreBody"></div>
@@ -517,6 +537,11 @@
     <h2>Where your money sits <span id="sectorNote"></span></h2>
     <div id="sectorBody"></div>
   </section>
+  <section id="overlapWrap" hidden>
+    <h2>What your funds have in common <span id="overlapNote"></span></h2>
+    <div id="overlapBody"></div>
+  </section>
+
   <section id="sipWrap" hidden>
     <h2>SIP tracker <span id="sipNote"></span></h2>
     <div id="sipBody"></div>
@@ -2633,7 +2658,8 @@ function niceTicks(lo, hi, n) {
 }
 
 // ---- 1. Your money over time
-const MONEY = { mode: "value", range: "All" };
+const MONEY = { mode: "value", range: "All", cmp: "n" };
+const CMP_NAME = { n: "Nifty 50", m: "Nifty 500" };
 const RANGE_DAYS = { "1M": 31, "3M": 92, "1Y": 366 };
 function renderMoney() {
   const wrap = $("moneyWrap"), all = histPoints();
@@ -2653,11 +2679,25 @@ function renderMoney() {
     k("Put in", cl(z.i), z.i - a.i > 1 ? "of which " + cl(z.i - a.i) + " went in since " + dmon(a.d) : "nothing added since " + dmon(a.d)) +
     k("Gain", sgc(g1), pcs((z.v / z.i - 1) * 100, 1) + " on what you put in", g1 >= 0 ? "pos" : "neg") +
     k("The market's effect", sgc(g1 - g0), "change in your gain since " + dmon(a.d) + ", new money left out", g1 - g0 >= 0 ? "pos" : "neg");
+  // comparison with a plain index fund (same money, same dates): offered only when the history carries it
+  const cmpKeys = ["n", "m"].filter(k => all.filter(p => num(p[k])).length > 0.9 * all.length);
+  if (!cmpKeys.includes(MONEY.cmp) && MONEY.cmp !== "") MONEY.cmp = cmpKeys[0] || "";
+  const cmp = MONEY.cmp;
+  $("moneyCmp").innerHTML = cmpKeys.length ? [["", "No comparison"]].concat(cmpKeys.map(k => [k, "vs " + CMP_NAME[k]])).map(([k, t]) => '<button role="tab" aria-selected="' + (cmp === k) + '" data-c="' + k + '">' + t + "</button>").join("") : "";
+  $("moneyCmp").querySelectorAll("button").forEach(b => b.onclick = () => { MONEY.cmp = b.dataset.c; renderMoney(); });
+  const vs = $("moneyVs");
+  if (cmp && num(z[cmp])) {
+    const d = z.v - z[cmp], pct = z[cmp] > 0 ? d / z[cmp] * 100 : 0;
+    vs.hidden = false;
+    vs.innerHTML = "The same money, put in on the same dates into a plain <b>" + CMP_NAME[cmp] + "</b> index fund, would be worth <b>" + cl(z[cmp]) + "</b> today. You have <b>" + cl(z.v) + "</b>, so you are <b class=\"" + (d >= 0 ? "pos" : "neg") + "\">" +
+      (d >= 0 ? "ahead by " : "behind by ") + cl(Math.abs(d)) + " (" + pcs(pct, 1) + ")</b>. <span class=\"sub2\">The index is a price index, which leaves out about 1.3% a year of dividends, so the real gap is a little narrower.</span>";
+  } else vs.hidden = true;
   $("moneySeg").innerHTML = [["value", "Worth vs put in"], ["gain", "Gain only"]].map(([m, t]) => '<button role="tab" aria-selected="' + (MONEY.mode === m) + '" data-m="' + m + '">' + t + "</button>").join("");
   $("moneySeg").querySelectorAll("button").forEach(b => b.onclick = () => { MONEY.mode = b.dataset.m; renderMoney(); });
   $("moneyLegend").innerHTML = MONEY.mode === "gain"
     ? '<span><i></i>Gain = what it is worth minus what you put in</span>'
     : '<span><i></i>Worth</span><span><i class="d"></i>Put in</span><span><i class="g"></i>The gap is your gain</span>';
+  if (cmp && num(z[cmp])) $("moneyLegend").innerHTML += '<span><i style="border-top-color:#3d5a80"></i>' + CMP_NAME[cmp] + ", same money</span>";
   $("moneyFoot").innerHTML = PHIST && PHIST.basis === "your transaction report"
     ? "Built from your own transaction report: units and money in are running totals of what you actually bought and sold, valued at each day's published NAV. A new point is added every trading night."
     : "Rebuilt from your exact holdings today with each SIP taken back out at that day's NAV, so it assumes nothing else was bought or sold since " + dmon(a.d) +
@@ -2670,8 +2710,9 @@ function drawMoneyChart(pts) {
   const host = $("moneyChart"), gainMode = MONEY.mode === "gain";
   const W = Math.max(300, host.clientWidth || 800), narrow = W < 520, H = narrow ? 240 : 300;
   const m = { l: HIDE ? 12 : narrow ? 54 : 74, r: 16, t: 14, b: 28 };
-  const val = p => gainMode ? p.v - p.i : p.v;
-  const all = pts.flatMap(p => gainMode ? [val(p), 0] : [p.v, p.i]);
+  const val = p => gainMode ? p.v - p.i : p.v, cmpK = MONEY.cmp && pts.every(p => num(p[MONEY.cmp])) ? MONEY.cmp : "";
+  const cval = p => gainMode ? p[cmpK] - p.i : p[cmpK];
+  const all = pts.flatMap(p => (gainMode ? [val(p), 0] : [p.v, p.i]).concat(cmpK ? [cval(p)] : []));
   let lo = Math.min(...all), hi = Math.max(...all);
   if (hi - lo < 1) hi = lo + 1;
   const pad = (hi - lo) * .07; lo -= pad; hi += pad;
@@ -2680,7 +2721,7 @@ function drawMoneyChart(pts) {
   const t = d => Date.parse(d + "T00:00:00"), x0 = t(pts[0].d), x1 = t(pts[pts.length - 1].d);
   const X = d => m.l + (t(d) - x0) / ((x1 - x0) || 1) * (W - m.l - m.r), Y = v => H - m.b - (v - y0) / (y1 - y0) * (H - m.t - m.b);
   const f1 = n => n.toFixed(1), line = ps => ps.map((q, i) => (i ? "L" : "M") + f1(q[0]) + " " + f1(q[1])).join(" ");
-  const vp = pts.map(p => [X(p.d), Y(val(p))]);
+  const vp = pts.map(p => [X(p.d), Y(val(p))]), cp = cmpK ? pts.map(p => [X(p.d), Y(cval(p))]) : null;
   const ip = []; pts.forEach((p, i) => { if (i) ip.push([X(p.d), Y(pts[i - 1].i)]); ip.push([X(p.d), Y(p.i)]); });
   const up = pts[pts.length - 1].v - pts[pts.length - 1].i >= 0, col = !gainMode || up ? "#5f8a15" : "#da291c", fill = !gainMode || up ? "rgba(134,188,37,.2)" : "rgba(218,41,28,.14)";
   const poly = gainMode ? vp.concat([[vp[vp.length - 1][0], Y(0)], [vp[0][0], Y(0)]]) : vp.concat(ip.slice().reverse());
@@ -2693,6 +2734,7 @@ function drawMoneyChart(pts) {
     xi.map(i => '<text x="' + f1(X(pts[i].d)) + '" y="' + (H - 8) + '" font-size="10.5" text-anchor="' + (i === 0 ? "start" : i === n - 1 ? "end" : "middle") + '" fill="#97999b">' + xl(pts[i].d) + "</text>").join("") +
     '<path d="' + line(poly) + ' Z" fill="' + fill + '"/>' +
     (gainMode ? "" : '<path d="' + line(ip) + '" fill="none" stroke="#97999b" stroke-width="1.5" stroke-dasharray="4 4"/>') +
+    (cp ? '<path d="' + line(cp) + '" fill="none" stroke="#3d5a80" stroke-width="1.8" stroke-linejoin="round"/>' : "") +
     '<path d="' + line(vp) + '" fill="none" stroke="' + col + '" stroke-width="2.4" stroke-linejoin="round"/>' +
     '<circle cx="' + f1(vp[vp.length - 1][0]) + '" cy="' + f1(vp[vp.length - 1][1]) + '" r="4" fill="' + col + '"/>' +
     '<line id="mguide" y1="' + m.t + '" y2="' + (H - m.b) + '" stroke="#97999b" stroke-dasharray="3 3" visibility="hidden"/><circle id="mdot" r="4.5" fill="#fff" stroke="' + col + '" stroke-width="2" visibility="hidden"/>' +
@@ -2706,7 +2748,8 @@ function drawMoneyChart(pts) {
     $("mdot").setAttribute("cx", gx); $("mdot").setAttribute("cy", gy); $("mdot").setAttribute("visibility", "visible");
     tip.hidden = false;
     tip.innerHTML = "<b>" + (longSpan ? p.d.split("-").reverse().join("-") : dlong(p.d)) + "</b><br>worth <b>" + cl(p.v) + "</b><br><span class=\"m\">put in " + cl(p.i) + "<br>gain " + sgc(p.v - p.i) +
-      (prev ? "<br>that day " + sgc((p.v - prev.v) - (p.i - prev.i)) : "") + "</span>";
+      (prev ? "<br>that day " + sgc((p.v - prev.v) - (p.i - prev.i)) : "") +
+      (cmpK ? "<br>" + CMP_NAME[cmpK] + ", same money: " + cl(p[cmpK]) + "<br>you are " + (p.v - p[cmpK] >= 0 ? "ahead by " : "behind by ") + cl(Math.abs(p.v - p[cmpK])) : "") + "</span>";
     const tw = tip.offsetWidth, left = Math.min(Math.max(gx * (r.width / W) - tw / 2, 0), r.width - tw);
     tip.style.left = left + "px"; tip.style.top = Math.max(0, gy * (r.width / W) - tip.offsetHeight - 14) + "px";
   };
@@ -3169,6 +3212,119 @@ function startVersionWatch() {
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") checkNewVersion(); });
 }
 
+// ---- Falls and recoveries: how far below its previous high the portfolio is, how deep past falls went and how long they took to heal.
+// Measured on the portfolio's own percentage ups and downs (time-weighted), so new money neither hides nor fakes a fall.
+function twrIndex(pts, key) {
+  const idx = [1]; let prev = pts[0][key], prevI = pts[0].i, cum = 1;
+  for (let k = 1; k < pts.length; k++) {
+    const v = pts[k][key], flow = pts[k].i - prevI;
+    if (prev > 1000) cum *= (v - flow) / prev;                  // today's value minus the money that arrived today, over yesterday's value
+    idx.push(cum); prev = v; prevI = pts[k].i;
+  }
+  return idx;
+}
+function drawdowns(dates, idx) {
+  const dd = []; let peak = idx[0], peakAt = 0, ep = null; const eps = [];
+  idx.forEach((x, k) => {
+    if (x >= peak) { if (ep) { ep.recovered = dates[k]; eps.push(ep); ep = null; } peak = x; peakAt = k; dd.push(0); return; }
+    const d = (x / peak - 1) * 100; dd.push(d);
+    if (!ep) ep = { peak: dates[peakAt], peakK: peakAt, trough: dates[k], depth: d, recovered: null };
+    if (d < ep.depth) { ep.depth = d; ep.trough = dates[k]; }
+  });
+  if (ep) eps.push(ep);
+  return { dd, eps };
+}
+const dayDiff = (a, b) => Math.round((Date.parse(b + "T00:00:00") - Date.parse(a + "T00:00:00")) / 86400000);
+function span(d) { return d >= 540 ? (d / 365.25).toFixed(1) + " years" : d >= 60 ? Math.round(d / 30.4) + " months" : d + " days"; }
+function renderDrawdown() {
+  const wrap = $("ddWrap"), pts = histPoints();
+  if (pts.length < 60) { wrap.hidden = true; return; }
+  const dates = pts.map(p => p.d), me = drawdowns(dates, twrIndex(pts, "v"));
+  const key = ["n", "m"].find(k => pts.filter(p => num(p[k])).length > 0.9 * pts.length), bench = key && pts.every(p => num(p[key])) ? drawdowns(dates, twrIndex(pts, key)) : null;
+  const eps = me.eps.filter(e => e.depth <= -5).sort((a, b) => a.depth - b.depth).slice(0, 5), now = me.dd[me.dd.length - 1], last = dates[dates.length - 1];
+  const worst = me.eps.reduce((m, e) => !m || e.depth < m.depth ? e : m, null);
+  if (!worst) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  const peakNow = me.eps.length && !me.eps[me.eps.length - 1].recovered ? me.eps[me.eps.length - 1].peak : null;
+  $("ddNote").textContent = "from " + dmon(dates[0]) + " " + dates[0].slice(0, 4) + " · percentages, so new money doesn't distort them";
+  const k = (t, v, n, c) => '<div><div class="k">' + t + '</div><div class="v ' + (c || "") + '">' + v + '</div><div class="n">' + n + "</div></div>";
+  const long = me.eps.filter(e => e.depth <= -5).map(e => dayDiff(e.peak, e.recovered || last)).reduce((m, x) => Math.max(m, x), 0);
+  $("ddKpis").innerHTML =
+    k("Right now", now >= -0.05 ? "At a high" : pcs(now, 1), now >= -0.05 ? "the portfolio is at its best level so far" : "below its previous high" + (peakNow ? " of " + dmon(peakNow) : ""), now >= -0.05 ? "pos" : "neg") +
+    k("Deepest fall", pcs(worst.depth, 1), dmon(worst.peak) + " " + worst.peak.slice(0, 4) + " to " + dmon(worst.trough) + " " + worst.trough.slice(0, 4)) +
+    k("Back to the old high", worst.recovered ? span(dayDiff(worst.trough, worst.recovered)) : "not yet", worst.recovered ? "after the bottom of that fall" : "still recovering from it") +
+    k("Longest stretch below a high", span(long), "among falls of 5% or more");
+  // chart: the "underwater" line (0 at a high, negative below it)
+  const host = $("ddChart"), W = Math.max(300, host.clientWidth || 800), narrow = W < 520, H = narrow ? 200 : 240, m = { l: narrow ? 40 : 52, r: 14, t: 10, b: 26 };
+  const lo = Math.min(-5, Math.min(...me.dd, ...(bench ? bench.dd : [0]))) * 1.08, t = d => Date.parse(d + "T00:00:00"), x0 = t(dates[0]), x1 = t(last);
+  const X = d => m.l + (t(d) - x0) / ((x1 - x0) || 1) * (W - m.l - m.r), Y = v => m.t + (v / lo) * (H - m.t - m.b), f1 = n => n.toFixed(1);
+  const path = arr => arr.map((v, i) => (i ? "L" : "M") + f1(X(dates[i])) + " " + f1(Y(v))).join(" ");
+  const gl = [0, 0.25, 0.5, 0.75, 1].map(f => lo * f);
+  const xt = [0, 1, 2, 3, 4].map(i => dates[Math.round(i * (dates.length - 1) / 4)]);
+  host.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" height="' + H + '" role="img" aria-label="How far below its previous high the portfolio has been over time">' +
+    gl.map(v => '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + f1(Y(v)) + '" y2="' + f1(Y(v)) + '" stroke="' + (v === 0 ? "#97999b" : "#ececec") + '"/><text x="' + (m.l - 7) + '" y="' + f1(Y(v) + 3) + '" font-size="10.5" text-anchor="end" fill="#97999b">' + (v === 0 ? "0%" : Math.round(v) + "%") + "</text>").join("") +
+    xt.map((d, i) => '<text x="' + f1(X(d)) + '" y="' + (H - 7) + '" font-size="10.5" text-anchor="' + (i === 0 ? "start" : i === 4 ? "end" : "middle") + '" fill="#97999b">' + new Date(d + "T00:00:00").toLocaleDateString("en-IN", { month: "short", year: "2-digit" }) + "</text>").join("") +
+    '<path d="' + path(me.dd) + " L" + f1(X(last)) + " " + f1(Y(0)) + " L" + f1(X(dates[0])) + " " + f1(Y(0)) + ' Z" fill="rgba(218,41,28,.13)"/>' +
+    (bench ? '<path d="' + path(bench.dd) + '" fill="none" stroke="#3d5a80" stroke-width="1.4" stroke-dasharray="4 3"/>' : "") +
+    '<path d="' + path(me.dd) + '" fill="none" stroke="#da291c" stroke-width="1.8" stroke-linejoin="round"/>' +
+    '<line id="dguide" y1="' + m.t + '" y2="' + (H - m.b) + '" stroke="#97999b" stroke-dasharray="3 3" visibility="hidden"/><rect id="dhit" x="' + m.l + '" y="' + m.t + '" width="' + (W - m.l - m.r) + '" height="' + (H - m.t - m.b) + '" fill="transparent"/></svg><div class="ptip" id="dtip" hidden></div>';
+  const svg = host.querySelector("svg"), tip = $("dtip");
+  const move = e => { const r = svg.getBoundingClientRect(), px = ((e.touches ? e.touches[0].clientX : e.clientX) - r.left) * (W / r.width);
+    let bi = 0; dates.forEach((d, i) => { if (Math.abs(X(d) - px) < Math.abs(X(dates[bi]) - px)) bi = i; });
+    const gx = X(dates[bi]); $("dguide").setAttribute("x1", gx); $("dguide").setAttribute("x2", gx); $("dguide").setAttribute("visibility", "visible");
+    tip.hidden = false; tip.innerHTML = "<b>" + dates[bi].split("-").reverse().join("-") + "</b><br>" + (me.dd[bi] > -0.05 ? "at a high" : pcs(me.dd[bi], 1) + " below its high") + (bench ? '<br><span class="m">' + CMP_NAME[key] + ": " + (bench.dd[bi] > -0.05 ? "at a high" : pcs(bench.dd[bi], 1)) + "</span>" : "");
+    tip.style.left = Math.min(Math.max(gx * (r.width / W) - tip.offsetWidth / 2, 0), r.width - tip.offsetWidth) + "px"; tip.style.top = "6px"; };
+  const hide = () => { tip.hidden = true; $("dguide").setAttribute("visibility", "hidden"); };
+  const hit = $("dhit"); hit.addEventListener("mousemove", move); hit.addEventListener("mouseleave", hide); hit.addEventListener("touchstart", move, { passive: true }); hit.addEventListener("touchmove", move, { passive: true }); hit.addEventListener("touchend", hide);
+  $("ddLegend").innerHTML = '<span><i style="border-top-color:#da291c"></i>Your portfolio</span>' + (bench ? '<span><i class="d" style="border-top-color:#3d5a80"></i>' + CMP_NAME[key] + " (same dates)</span>" : "");
+  const avg = (() => { const r = me.eps.filter(e => e.depth <= -10 && e.recovered); return r.length ? Math.round(r.reduce((s, e) => s + dayDiff(e.trough, e.recovered), 0) / r.length / 30.4) : null; })();
+  const n10 = me.eps.filter(e => e.depth <= -10).length;
+  $("ddBody").innerHTML = (eps.length ? '<table class="mini" style="margin-top:14px"><thead><tr><th>Fell from</th><th>To the bottom</th><th>Depth</th><th>Back at the old high</th><th>Time down</th></tr></thead><tbody>' +
+    eps.map(e => "<tr><td>" + dmon(e.peak) + " " + e.peak.slice(0, 4) + "</td><td>" + dmon(e.trough) + " " + e.trough.slice(0, 4) + '</td><td class="neg">' + pcs(e.depth, 1) + "</td><td>" + (e.recovered ? dmon(e.recovered) + " " + e.recovered.slice(0, 4) : '<span class="sub2">not yet</span>') + "</td><td>" + span(dayDiff(e.peak, e.recovered || last)) + "</td></tr>").join("") + "</tbody></table>" : "") +
+    '<p class="note" style="margin-top:14px">' + (n10 ? "Falls of 10% or more have happened <b>" + n10 + (n10 === 1 ? " time" : " times") + "</b> in this history" + (avg != null ? "; the ones that healed took about <b>" + avg + (avg === 1 ? " month" : " months") + "</b> from the bottom to get back to the old high" : "") + ". " : "") +
+    "Falling and recovering is how equity behaves: what matters is not selling at the bottom of one. These are the portfolio's own percentage ups and downs, so early years (when the amount was small) show the same percentages with far less rupee impact. Past recoveries don't guarantee future ones.</p>";
+}
+
+// ---- Fund overlap: how many of the same stocks your funds hold, and how much of your money sits in your ten biggest stocks.
+function renderOverlap() {
+  const wrap = $("overlapWrap"), fs = ((CFG && CFG.funds) || []).filter(f => f && num(f.units) && num(f.last_nav) && Array.isArray(f.holdings) && f.holdings.length);
+  if (fs.length < 2) { wrap.hidden = true; return; }
+  const val = f => f.units * f.last_nav, total = fs.reduce((t, f) => t + val(f), 0), short = f => shortName(f.name);
+  const W = fs.map(f => { const m = {}; f.holdings.forEach(h => { if (h && typeof h.t === "string" && num(h.w) && h.w > 0) m[h.t] = { n: h.n, w: h.w }; }); return m; });
+  const stock = {};
+  fs.forEach((f, i) => Object.entries(W[i]).forEach(([t, h]) => { const e = stock[t] || (stock[t] = { t, n: h.n, amt: 0, in: [] }); e.amt += val(f) * h.w / 100; e.in.push(short(f)); }));
+  const all = Object.values(stock).sort((a, b) => b.amt - a.amt), shared = all.filter(e => e.in.length > 1), top10 = all.slice(0, 10), top10pct = top10.reduce((t, e) => t + e.amt, 0) / total * 100;
+  const pairs = [];
+  for (let i = 0; i < fs.length; i++) for (let j = i + 1; j < fs.length; j++) {
+    const common = Object.keys(W[i]).filter(t => W[j][t]), ov = common.reduce((t, k) => t + Math.min(W[i][k].w, W[j][k].w), 0);
+    pairs.push({ a: short(fs[i]), b: short(fs[j]), n: common.length, ov });
+  }
+  const level = x => x < 15 ? ["low", "pos"] : x < 35 ? ["moderate", ""] : ["high", "neg"];
+  const sharedPct = shared.reduce((t, e) => t + e.amt, 0) / total * 100, lv = sharedPct < 20 ? ["low", "pos"] : sharedPct < 50 ? ["moderate", ""] : ["high", "neg"];           // in rupees: a tiny fund can't make the whole picture look doubled-up
+  wrap.hidden = false;
+  $("overlapNote").textContent = "from each fund's latest disclosed holdings";
+  $("overlapBody").innerHTML = '<p class="scoreline" style="margin-top:0">Your ' + fs.length + " funds hold <b>" + all.length + "</b> different stocks between them, and <b>" + shared.length + "</b> of them are held by more than one fund. Together those are <b>" + sharedPct.toFixed(0) + '%</b> of your money: overlap is <b class="' + lv[1] + '">' + lv[0] + "</b>" +
+    (lv[0] === "low" ? ", so buying all of them really does spread your money" : lv[0] === "moderate" ? ": the funds share a fair number of the same big names, which is normal when one of them holds large caps, but worth knowing" : ": the funds largely hold the same things, so adding another of them adds little spread") + ". Your ten biggest stocks are <b>" + top10pct.toFixed(0) + "%</b> of your money.</p>" +
+    '<table class="mini"><thead><tr><th>Two funds</th><th>Stocks in common</th><th>Overlap</th></tr></thead><tbody>' +
+    pairs.map(p => { const l = level(p.ov); return "<tr><td>" + esc(p.a) + " + " + esc(p.b) + "</td><td>" + p.n + '</td><td class="' + l[1] + '">' + p.ov.toFixed(1) + "% · " + l[0] + "</td></tr>"; }).join("") + "</tbody></table>" +
+    '<div class="rr-sub" style="margin-top:22px">Your ten biggest stocks, across all funds</div><table class="mini"><thead><tr><th>Stock</th><th>Share of your money</th><th>About</th><th>Held by</th></tr></thead><tbody>' +
+    top10.map(e => "<tr><td>" + esc(e.n) + "</td><td><b>" + (e.amt / total * 100).toFixed(2) + "%</b></td><td>" + cl(e.amt) + '</td><td class="sub2" style="text-align:left;padding-left:14px">' + e.in.map(esc).join(", ") + "</td></tr>").join("") + "</tbody></table>" +
+    '<p class="sub2" style="margin-top:10px">The headline figure counts rupees (the share of your money in stocks that more than one fund holds), so a small fund can\'t make the picture look worse than it is. For each pair, overlap is the part of the two portfolios that is the same stocks in the same proportions. Below 15% is low, above 35% is high. The headline uses 20% and 50% as its cut-offs. Based on the funds\' monthly disclosures, so it lags real life a little.</p>';
+}
+
+// ---- the daily recap (data/recap.json from src/recap.py, written after the nightly grading)
+let RECAP = null;
+function renderRecap() {
+  const wrap = $("recapWrap"), R = RECAP;
+  if (!isObj(R) || !Array.isArray(R.lines) || typeof R.date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(R.date)) { wrap.hidden = true; return; }
+  const lines = R.lines.filter(l => l && typeof l.t === "string" && l.t);
+  if (!lines.length) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  $("recapNote").textContent = dlong(R.date) + " · written after the funds published";
+  $("recapHead").innerHTML = "<b>" + esc(typeof R.headline === "string" ? R.headline : "") + "</b>";
+  $("recapList").innerHTML = lines.map(l => '<li class="k-' + esc(String(l.k || "").replace(/[^a-z]/g, "")) + '">' + esc(l.t) + "</li>").join("");
+}
+
 // ---- hide amounts
 // Some sentences are written by the nightly jobs ("your portfolio moved about +₹91,615", the tax figure in the advice). Those
 // are scrubbed here instead. Market figures stay: crore amounts (flows, headlines) and per-unit NAVs are public.
@@ -3221,9 +3377,10 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   PHIST = await loadJson("data/portfolio_history.json", j => isObj(j) && Array.isArray(j.points), null);
   FHEALTH = await loadJson("data/fund_health.json", j => isObj(j) && Array.isArray(j.funds), null);
   PICKS = await loadJson("data/picks.json", isObj, null);
+  RECAP = await loadJson("data/recap.json", isObj, null);
   setupHide();
   renderReturns(); renderTax(); renderStatementBar();
-  safe(renderMoney, "moneyWrap"); safe(renderSectors, "sectorWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(setupToTop); safe(renderIdeas, "ideasWrap"); safe(renderHealthLine); safe(renderTxBar); safe(renderDataBar); safe(startVersionWatch); safe(setupNav);
+  safe(renderMoney, "moneyWrap"); safe(renderDrawdown, "ddWrap"); safe(renderSectors, "sectorWrap"); safe(renderOverlap, "overlapWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(setupToTop); safe(renderRecap, "recapWrap"); safe(renderIdeas, "ideasWrap"); safe(renderHealthLine); safe(renderTxBar); safe(renderDataBar); safe(startVersionWatch); safe(setupNav);
   renderCompare();
   loadNews();
   loadOutlook();

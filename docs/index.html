@@ -415,8 +415,26 @@
   @media(prefers-reduced-motion:reduce){.spin{animation:none}}
 
   /* ---- dark theme: the same page on a dark ground (toggle in the header; follows the system setting until you choose) ---- */
-  :root[data-theme="dark"]{color-scheme:dark;--ink:#ededed;--on-ink:#121212;--paper:#121212;--navbg:rgba(18,18,18,.94);--grey:#a4a8ad;--grey-light:#7d8288;--rule:#2b2d30;--wash:#1b1c1e;
+  :root[data-theme="dark"]{color-scheme:dark;--ink:#e9ecf6;--on-ink:#060814;--paper:#05070f;--navbg:rgba(5,7,15,.88);--grey:#aab0c8;--grey-light:#7e86a3;--rule:rgba(160,175,255,.16);--wash:rgba(130,150,255,.07);
     --green:#86bc25;--green-deep:#9ccf3d;--red:#ff6b5e;--amber:#e2a93b;--amber-deep:#ebb757;--green-dark:#b4de6a}
+  /* space: a deep navy sky with faint nebulae, two layers of stars (one of them twinkles) */
+  html[data-theme="dark"]{background:
+    radial-gradient(1100px 620px at 12% -8%,rgba(96,70,214,.26),transparent 62%),
+    radial-gradient(900px 540px at 95% 6%,rgba(24,126,210,.18),transparent 62%),
+    radial-gradient(900px 640px at 55% 112%,rgba(170,44,170,.16),transparent 62%),
+    #05070f;background-attachment:fixed}
+  [data-theme="dark"] body{background:transparent}
+  [data-theme="dark"] body::before,[data-theme="dark"] body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none}
+  [data-theme="dark"] body::before{opacity:1;background-image:
+    radial-gradient(1.6px 1.6px at 23px 41px,#fff,transparent),radial-gradient(1.5px 1.5px at 87px 133px,#dfe8ff,transparent),radial-gradient(1.4px 1.4px at 151px 77px,#fff,transparent),
+    radial-gradient(1.5px 1.5px at 197px 19px,#cfdcff,transparent),radial-gradient(1.5px 1.5px at 61px 189px,#fff,transparent),radial-gradient(1.2px 1.2px at 233px 171px,#e9e4ff,transparent);
+    background-size:257px 211px}
+  [data-theme="dark"] body::after{opacity:.8;background-image:
+    radial-gradient(1.6px 1.6px at 71px 53px,#fff,transparent),radial-gradient(1px 1px at 289px 201px,#ffe9c9,transparent),radial-gradient(1.3px 1.3px at 143px 247px,#cfe6ff,transparent),
+    radial-gradient(1px 1px at 331px 97px,#fff,transparent),radial-gradient(1.5px 1.5px at 19px 311px,#fff,transparent),radial-gradient(1px 1px at 257px 29px,#dcd4ff,transparent);
+    background-size:353px 331px;animation:twinkle 7s ease-in-out infinite alternate}
+  @keyframes twinkle{from{opacity:.25}to{opacity:.85}}
+  @media(prefers-reduced-motion:reduce){[data-theme="dark"] body::after{animation:none;opacity:.55}}
   [data-theme="dark"] .call .prov,[data-theme="dark"] .tag.reason{background:#3a2e12}
   [data-theme="dark"] .tag.fact,[data-theme="dark"] tr.mine td{background:#1f2a12}
   [data-theme="dark"] .gbar{background:#4a2a27}
@@ -432,6 +450,8 @@
   [data-theme="dark"] input,[data-theme="dark"] select{background:var(--wash);color:var(--ink);border-color:var(--rule)}
   [data-theme="dark"] .hchip.hc:hover{opacity:.85}
   [data-theme="dark"] .cal .d{background:var(--wash)}
+  [data-theme="dark"] .hv,[data-theme="dark"] .note,[data-theme="dark"] .brief,[data-theme="dark"] .hbar.soft{backdrop-filter:blur(3px)}
+  [data-theme="dark"] .orb{box-shadow:0 0 60px color-mix(in srgb,var(--state) 55%,transparent),0 0 0 1px rgba(255,255,255,.08) inset}
   [data-theme="dark"] img.nodark{filter:none}
   .themeb{padding:8px 11px;line-height:0;display:inline-flex;align-items:center}.themeb svg{width:18px;height:18px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 </style>

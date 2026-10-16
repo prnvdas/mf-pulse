@@ -99,7 +99,7 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
   await p.goto(U,{waitUntil:'networkidle'});await p.waitForTimeout(400);
   ok(await p.evaluate(()=>document.documentElement.dataset.theme)==='light','light system -> light page');
   await p.click('#themeBtn');ok(await p.evaluate(()=>document.documentElement.dataset.theme)==='dark','click switches to dark');
-  ok(await p.evaluate(()=>getComputedStyle(document.body).backgroundColor)==='rgb(18, 18, 18)','dark background applied');
+  ok(await p.evaluate(()=>getComputedStyle(document.documentElement).backgroundColor)==='rgb(5, 7, 15)','dark space background applied');
   ok(/light theme/i.test(await p.$eval('#themeBtn',e=>e.getAttribute('aria-label'))),'button now offers light');
   await p.reload({waitUntil:'networkidle'});ok(await p.evaluate(()=>document.documentElement.dataset.theme)==='dark','choice is remembered after reload');
   await p.click('#themeBtn');ok(await p.evaluate(()=>document.documentElement.dataset.theme)==='light'&&await p.evaluate(()=>localStorage.getItem('mfp_theme'))==='light','and switches back');

@@ -72,6 +72,42 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
    ['recap',j=>({date:'x',lines:'y'})],['recap',j=>({date:'2026-10-15',lines:[null,{t:5},{t:'ok',k:'<b>'}]})],['recap',j=>[]],
    ['config',j=>{j.funds.forEach(f=>{f.holdings=null});return j;}],['config',j=>{j.funds.forEach(f=>{f.holdings=[{t:5,w:'x'},null]});return j;}]]) {const {p,ctx,errs}=await page({[f]:fn});
   ok(!errs.length&&!/NaN|undefined|\[object/.test(await p.evaluate(()=>document.body.innerText)),'hostile '+f,errs[0]); await ctx.close();}
+ // fund by fund against its benchmark, fund changes watch, system status
+ {const {p,ctx,errs}=await page(); const g=async id=>p.$eval('#'+id,e=>e.hidden?'':e.innerText);
+  let t=await g('fundBenchWrap'); ok(/Nifty Smallcap 250/.test(t)&&/same money/i.test(t)&&/(ahead|behind)/.test(t),'fund vs benchmark section',t.slice(0,160));
+  await p.click('#fundBenchSeg button:nth-child(2)'); ok(/Mirae/.test(await g('fundBenchLine')),'fund tabs switch'); ok(await p.$$eval('#fundBenchChart path',a=>a.length)>=3,'fund chart draws three lines');
+  t=await g('changesWrap'); ok(/fund manager/i.test(t)&&/no change/i.test(t),'fund changes table',t.slice(0,160));
+  ok(!errs.length&&!/NaN|undefined|\[object/.test(await p.evaluate(()=>document.body.innerText)),'fund sections clean',errs[0]); await ctx.close();}
+ {const {p,ctx,errs}=await page({fund_changes:j=>{j.funds[0].events=[{date:'2026-10-10',kind:'manager',text:'Lead fund manager changed: A → B.'}];return j;}});
+  ok(/lead fund manager changed/i.test(await p.$eval('#changesBody',e=>e.innerText))&&/something changed/i.test(await p.$eval('#changesBody',e=>e.innerText)),'a recent change is shown and flagged'); ok(!errs.length,'changes errs',errs[0]); await ctx.close();}
+ for (const [f,fn] of [['fund_history',j=>{j.funds.axis_x={v:[1],i:[1],b:[1]};Object.values(j.funds).forEach(x=>{x.b=null});return j;}],['fund_history',j=>{j.dates=[];return j;}],['fund_history',j=>({dates:'x',funds:5})],['fund_history',j=>{Object.values(j.funds).forEach(x=>{x.v=x.v.map(()=>'a')});return j;}],
+   ['fund_changes',j=>({funds:[null,{name:5},{name:'x',events:'y',managers:5,aum_cr:'a'}]})],['fund_changes',j=>[]]]) {const {p,ctx,errs}=await page({[f]:fn});
+  ok(!errs.length&&!/NaN|undefined|\[object/.test(await p.evaluate(()=>document.body.innerText)),'hostile '+f,errs[0]); await ctx.close();}
+ {const ctx=await b.newContext({viewport:{width:1200,height:900}});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+  await p.clock.install({time:new Date('2026-10-12T08:30:00Z')});
+  await p.route(/api\.github\.com\/repos\/.*\/actions\/runs/,r=>r.fulfill({status:200,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify({workflow_runs:[{name:'estimate',conclusion:'success',created_at:'2026-10-12T08:00:00Z',html_url:'x'},{name:'estimate',conclusion:'failure',created_at:'2026-10-12T07:00:00Z',html_url:'x'},{name:'outlook',conclusion:'failure',created_at:'2026-10-12T06:00:00Z',html_url:'x'},{name:'pages build and deployment',conclusion:'success',created_at:'2026-10-12T08:00:00Z'},null,{name:5}]})}));
+  await p.goto(process.env.BASE||'http://localhost:8000/index.html',{waitUntil:'networkidle'});await p.waitForTimeout(400);await p.clock.fastForward(3000);
+  await p.click('#statusBox summary');await p.waitForTimeout(900);const t=await p.$eval('#statusBody',e=>e.innerText);
+  ok(/data on this page/i.test(t)&&/prices and today/i.test(t)&&/estimate/.test(t)&&/outlook/.test(t)&&!/pages build/i.test(t),'status lists data freshness and jobs',t.slice(0,300)); ok(/failure/.test(t),'a failed job is shown'); ok(!errs.length,'status errs',errs[0]); await ctx.close();}
+ {const ctx=await b.newContext({viewport:{width:1200,height:900}});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+  await p.clock.install({time:new Date('2026-10-12T08:30:00Z')}); await p.route(/api\.github\.com/,r=>r.fulfill({status:403,contentType:'application/json',body:'{}'}));
+  await p.goto(process.env.BASE||'http://localhost:8000/index.html',{waitUntil:'networkidle'});await p.waitForTimeout(400);await p.click('#statusBox summary');await p.waitForTimeout(900);
+  ok(/limit|reach/i.test(await p.$eval('#statusJobs',e=>e.innerText))&&!errs.length,'status copes with GitHub refusing',errs[0]); await ctx.close();}
+ // dark theme: follows the system on first visit, a click switches and is remembered
+ {const ctx=await b.newContext({viewport:{width:1200,height:900},colorScheme:'light'});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+  await p.clock.install({time:new Date('2026-10-12T08:30:00Z')});const U=process.env.BASE||'http://localhost:8000/index.html';
+  await p.goto(U,{waitUntil:'networkidle'});await p.waitForTimeout(400);
+  ok(await p.evaluate(()=>document.documentElement.dataset.theme)==='light','light system -> light page');
+  await p.click('#themeBtn');ok(await p.evaluate(()=>document.documentElement.dataset.theme)==='dark','click switches to dark');
+  ok(await p.evaluate(()=>getComputedStyle(document.body).backgroundColor)==='rgb(18, 18, 18)','dark background applied');
+  ok(/light theme/i.test(await p.$eval('#themeBtn',e=>e.getAttribute('aria-label'))),'button now offers light');
+  await p.reload({waitUntil:'networkidle'});ok(await p.evaluate(()=>document.documentElement.dataset.theme)==='dark','choice is remembered after reload');
+  await p.click('#themeBtn');ok(await p.evaluate(()=>document.documentElement.dataset.theme)==='light'&&await p.evaluate(()=>localStorage.getItem('mfp_theme'))==='light','and switches back');
+  ok(!errs.length,'theme errs',errs[0]);await ctx.close();}
+ {const ctx=await b.newContext({viewport:{width:1200,height:900},colorScheme:'dark'});const p=await ctx.newPage();await p.addInitScript(()=>{try{localStorage.clear()}catch(e){}});
+  await p.goto(process.env.BASE||'http://localhost:8000/index.html',{waitUntil:'networkidle'});ok(await p.evaluate(()=>document.documentElement.dataset.theme)==='dark','dark system -> dark page on the first visit');await ctx.close();}
+ {const ctx=await b.newContext({viewport:{width:1200,height:900},colorScheme:'light'});const p=await ctx.newPage();await p.addInitScript(()=>{try{localStorage.setItem('mfp_theme','purple')}catch(e){}});
+  await p.goto(process.env.BASE||'http://localhost:8000/index.html',{waitUntil:'networkidle'});ok(await p.evaluate(()=>document.documentElement.dataset.theme)==='light','an invalid stored value is ignored');await ctx.close();}
  // statement bar copy
  {const {p,ctx}=await page({analytics:j=>j});ok(true,'noop');await ctx.close();}
  console.log(`${n-fail}/${n} passed`);await b.close();process.exit(fail?1:0);})();

@@ -16,6 +16,7 @@ import detect_sips  # noqa: E402
 import health  # noqa: E402
 import import_transactions as itx  # noqa: E402
 import estimate  # noqa: E402
+import fund_meta  # noqa: E402
 import picks  # noqa: E402
 import recap  # noqa: E402
 import reconcile  # noqa: E402
@@ -145,6 +146,32 @@ class ImportTransactions(unittest.TestCase):
         wb = openpyxl.Workbook(); wb.active.append(["Scheme Name", "Folio No.", "Units", "Invested Value"])
         f = tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False); wb.save(f.name)
         self.assertFalse(itx.is_transaction_report(f.name))
+
+
+class FundChanges(unittest.TestCase):
+    def snap(self, **k):
+        base = {"expense_ratio": 0.69, "lead_manager": "A Lead", "managers": ["A Lead", "B Co"], "aum_cr": 1000.0}
+        base.update(k)
+        return base
+
+    def test_first_run_starts_the_history_with_no_events(self):
+        r = fund_meta.track_changes(None, self.snap(), "2026-10-16")
+        self.assertEqual(r["events"], [])
+        self.assertEqual(len(r["history"]), 1)
+
+    def test_manager_cost_and_size_changes_become_events(self):
+        old = fund_meta.track_changes(None, self.snap(), "2026-09-01")
+        new = fund_meta.track_changes(old, self.snap(lead_manager="C New", managers=["C New", "B Co"], expense_ratio=0.75, aum_cr=1300.0), "2026-10-06")
+        kinds = sorted(e["kind"] for e in new["events"])
+        self.assertEqual(kinds, ["cost", "manager", "size"])
+        self.assertTrue(any("A Lead → C New" in e["text"] for e in new["events"]))
+
+    def test_small_wobbles_are_not_events_and_a_rerun_the_same_day_is_idempotent(self):
+        old = fund_meta.track_changes(None, self.snap(), "2026-09-01")
+        new = fund_meta.track_changes(old, self.snap(expense_ratio=0.70, aum_cr=1100.0), "2026-10-06")
+        self.assertEqual(new["events"], [])
+        again = fund_meta.track_changes(new, self.snap(expense_ratio=0.70, aum_cr=1100.0), "2026-10-06")
+        self.assertEqual(len(again["history"]), len(new["history"]))
 
 
 class Recap(unittest.TestCase):

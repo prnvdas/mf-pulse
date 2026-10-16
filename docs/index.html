@@ -9,12 +9,13 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0b0b0b">
+<script>try{var t=localStorage.getItem("mfp_theme");if(t!=="light"&&t!=="dark")t=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#000;--paper:#fff;--green:#86bc25;--green-deep:#5f8a15;--red:#da291c;
+    --ink:#000;--on-ink:#fff;--paper:#fff;--navbg:rgba(255,255,255,.96);--amber:#a86d00;--amber-deep:#8a5a00;--green-dark:#3d6a0a;--green:#86bc25;--green-deep:#5f8a15;--red:#da291c;
     --grey:#63666a;--grey-light:#97999b;--rule:#e4e4e4;--wash:#f7f7f7;--state:var(--green);
   }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -32,7 +33,7 @@
   .call.c-red{border-left-color:var(--red)}.call.c-red .cw{color:var(--red)}
   .call .ct{font-size:14.5px;line-height:1.55}
   .call .ct .sub{display:block;font-size:12.5px;color:var(--grey);margin-top:3px}
-  .call .prov{display:inline-block;margin-left:6px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8a5a00;background:#fdf0d5;padding:2px 7px;border-radius:99px}
+  .call .prov{display:inline-block;margin-left:6px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--amber-deep);background:#fdf0d5;padding:2px 7px;border-radius:99px}
   @media(max-width:760px){.call{flex-direction:column;align-items:flex-start;gap:8px}}
   .glance{margin:14px 0 4px}
   .gtxt{font-size:15px;line-height:1.5}
@@ -69,10 +70,10 @@
   .hc .big{font-size:14px;font-weight:700;letter-spacing:-.01em}.hc .big em{font-style:normal;font-weight:600;font-size:12px;margin-left:2px}
   .hc .ln{font-size:12.5px;font-weight:600;line-height:1.35}
   .hc .ln i{font-style:normal;font-size:9px;margin-right:4px;vertical-align:1px}
-  .t-red{background:#fbe4e1;color:var(--red)}.t-amber{background:#fbefd3;color:#a86d00}.t-green{background:#e6f1cf;color:var(--green-deep)}.t-deep{background:#d5e8b3;color:#3d6a0a}.t-grey{background:var(--wash);color:var(--grey)}
-  .c-red{color:var(--red)}.c-amber{color:#a86d00}.c-green{color:var(--green-deep)}.c-deep{color:#3d6a0a}
+  .t-red{background:#fbe4e1;color:var(--red)}.t-amber{background:#fbefd3;color:var(--amber)}.t-green{background:#e6f1cf;color:var(--green-deep)}.t-deep{background:#d5e8b3;color:var(--green-dark)}.t-grey{background:var(--wash);color:var(--grey)}
+  .c-red{color:var(--red)}.c-amber{color:var(--amber)}.c-green{color:var(--green-deep)}.c-deep{color:var(--green-dark)}
   .mbar{position:relative;display:block;width:104px;height:5px;border-radius:3px;margin-top:5px;background:linear-gradient(90deg,#da291c 0%,#e8a33b 30%,#d9d36b 50%,#a6c94c 70%,#5f8a15 100%)}
-  .mbar i{position:absolute;top:-3px;width:11px;height:11px;margin-left:-5.5px;border-radius:50%;background:#fff;border:2px solid var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.25)}
+  .mbar i{position:absolute;top:-3px;width:11px;height:11px;margin-left:-5.5px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.25)}
   .dotc{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;background:var(--grey-light);vertical-align:1px}
   .dotc.xf{background:var(--red)}.dotc.f{background:#c98a0a}.dotc.g{background:var(--green-deep)}.dotc.xg{background:#3d6a0a}
   @media(max-width:760px){.hchips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-top:2px;padding-bottom:8px}.hchips::-webkit-scrollbar{display:none}.hchip.hc{flex:none}}
@@ -80,12 +81,12 @@
   .stamp b{font-weight:600;color:var(--ink)}
 
   button{font:inherit;cursor:pointer;border:1px solid var(--ink);background:var(--ink);
-    color:#fff;padding:9px 20px;font-size:12.5px;font-weight:700;letter-spacing:.09em;
+    color:var(--on-ink);padding:9px 20px;font-size:12.5px;font-weight:700;letter-spacing:.09em;
     text-transform:uppercase;transition:background .12s,color .12s}
-  button:hover:not(:disabled){background:#fff;color:var(--ink)}
+  button:hover:not(:disabled){background:var(--paper);color:var(--ink)}
   button:disabled{opacity:.4;cursor:progress}
   button.ghost{background:none;color:var(--ink);border-color:var(--rule);font-weight:600}
-  button.ghost[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:#fff}
+  button.ghost[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--on-ink)}
   button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   .spin{display:inline-block;width:9px;height:9px;border:2px solid currentColor;
     border-right-color:transparent;border-radius:50%;margin-right:7px;vertical-align:-1px;
@@ -167,7 +168,7 @@
   .seg{display:inline-flex;border:1px solid var(--rule);margin:2px 0 16px}
   .seg button{font:inherit;font-size:12.5px;background:var(--paper);color:var(--grey);border:0;border-right:1px solid var(--rule);padding:8px 18px;cursor:pointer}
   .seg button:last-child{border-right:0}
-  .seg button[aria-selected=true]{background:var(--ink);color:#fff}
+  .seg button[aria-selected=true]{background:var(--ink);color:var(--on-ink)}
   .seg button:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
   .pchart{position:relative;margin-top:22px}
   .pchart svg{display:block;width:100%;overflow:visible}
@@ -207,7 +208,7 @@
   .why li{display:grid;grid-template-columns:28px 1fr;gap:12px;font-size:14.5px;line-height:1.6}
   .why .n{width:24px;height:24px;border-radius:50%;background:var(--wash);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:2px}
   .tag{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:99px;margin-right:8px;vertical-align:1px}
-  .tag.fact{background:#e8f1d6;color:var(--green-deep)}.tag.reason{background:#fdf0d5;color:#8a5a00}
+  .tag.fact{background:#e8f1d6;color:var(--green-deep)}.tag.reason{background:#fdf0d5;color:var(--amber-deep)}
   .wsec{margin:24px 0 0}
   .wsec h3{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin:0 0 10px;font-weight:600}
   .sbars{display:grid;grid-template-columns:1fr 1fr;gap:7px 32px}
@@ -232,7 +233,7 @@
   .hbar{margin:22px 0 0;padding:3px 0 3px 14px;border-left:3px solid #c98a0a;font-size:13.5px;line-height:1.6;color:var(--ink)}
   .hbar+.hbar{margin-top:12px}
   .hbar .in{display:block}
-  .hbar .tg{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8a5a00;margin-right:10px;white-space:nowrap}
+  .hbar .tg{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--amber-deep);margin-right:10px;white-space:nowrap}
   .hbar.soft{border-left-color:var(--grey-light);color:var(--grey)}.hbar.soft .tg{color:var(--grey)}
   .hbar code{font-size:12px}
   .hbar ol{margin:6px 0 2px 20px}.hbar li{margin:2px 0}
@@ -306,7 +307,7 @@
   .note.bad{border-left-color:var(--red)}
   .note b{color:var(--ink)}
   .note code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;
-    background:#fff;padding:1px 5px;border:1px solid var(--rule)}
+    background:var(--paper);padding:1px 5px;border:1px solid var(--rule)}
   table.diag{width:100%;border-collapse:collapse;margin-top:14px;font-size:12.5px}
   table.diag td{padding:7px 0;border-bottom:1px solid var(--rule);text-align:left;
     vertical-align:top;word-break:break-word}
@@ -316,7 +317,7 @@
   .note .src{display:flex;gap:9px;margin-top:15px}
   .note .src button{padding:7px 15px;font-size:11.5px}
   .note input{font:inherit;font-size:13px;padding:9px 11px;border:1px solid var(--rule);
-    width:min(400px,100%);margin-top:13px;display:block;background:#fff}
+    width:min(400px,100%);margin-top:13px;display:block;background:var(--paper);color:var(--ink)}
   .note input:focus{outline:2px solid var(--ink);outline-offset:-1px;border-color:var(--ink)}
 
   footer{padding:32px 0 60px;font-size:12px;color:var(--grey-light);line-height:1.7}
@@ -337,7 +338,7 @@
     .hcards{grid-template-columns:1fr}
   }
 
-  .snav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);border-bottom:1px solid var(--rule);backdrop-filter:blur(6px)}
+  .snav{position:sticky;top:0;z-index:20;background:var(--navbg);border-bottom:1px solid var(--rule);backdrop-filter:blur(6px)}
   .snav .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-top:6px;padding-bottom:6px}
   .snav .wrap::-webkit-scrollbar{display:none}
   .snav button{background:none;color:var(--grey);border:0;border-bottom:2px solid transparent;padding:8px 14px;font-size:11.5px;letter-spacing:.09em;white-space:nowrap}
@@ -345,11 +346,11 @@
   .snav button[aria-current=true]{color:var(--ink);border-bottom-color:var(--green-deep)}
   .hero,section{scroll-margin-top:50px}
   .totop{position:fixed;right:18px;bottom:18px;z-index:30;width:46px;height:46px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;
-    background:var(--ink);color:#fff;border:1px solid var(--ink);box-shadow:0 4px 16px rgba(0,0,0,.25);opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .2s,transform .2s}
+    background:var(--ink);color:var(--on-ink);border:1px solid var(--ink);box-shadow:0 4px 16px rgba(0,0,0,.25);opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .2s,transform .2s}
   .totop.show{opacity:1;transform:none;pointer-events:auto}
   .totop[hidden]{display:none}
   .totop svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-  .totop:hover:not(:disabled){background:#fff;color:var(--ink)}
+  .totop:hover:not(:disabled){background:var(--paper);color:var(--ink)}
   .hline{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:12px;color:var(--grey);margin:26px 0 0}
   .hline .dotc{margin-right:6px}
   ul.recap{list-style:none;margin:6px 0 0;padding:0}
@@ -357,9 +358,9 @@
   ul.recap li:last-child{border-bottom:0}
   ul.recap li::before{content:"";position:absolute;left:4px;top:15px;width:9px;height:9px;border-radius:50%;background:var(--grey-light)}
   ul.recap li.k-result::before{background:var(--green-deep)}ul.recap li.k-estimate::before{background:#3d5a80}ul.recap li.k-tomorrow::before{background:#c98a0a}ul.recap li.k-health::before{background:var(--red)}
-  .newver{position:fixed;left:18px;bottom:18px;z-index:40;max-width:min(420px,calc(100vw - 100px));background:var(--ink);color:#fff;padding:12px 16px;font-size:13px;line-height:1.45;box-shadow:0 6px 22px rgba(0,0,0,.3);border-left:3px solid var(--green)}
+  .newver{position:fixed;left:18px;bottom:18px;z-index:40;max-width:min(420px,calc(100vw - 100px));background:var(--ink);color:var(--on-ink);padding:12px 16px;font-size:13px;line-height:1.45;box-shadow:0 6px 22px rgba(0,0,0,.3);border-left:3px solid var(--green)}
   .newver button{margin-left:10px;padding:5px 12px;font-size:11px;background:var(--green);border-color:var(--green);color:#000}
-  .newver button:hover:not(:disabled){background:#fff;color:#000}
+  .newver button:hover:not(:disabled){background:var(--paper);color:var(--ink)}
   /* money over time, score card, calendar, SIP, cost, fund health */
   .kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);margin-bottom:6px}
   .kgrid>div{background:var(--paper);padding:18px 20px}
@@ -402,16 +403,37 @@
   .pick .sc{height:5px;background:var(--rule);margin:10px 0 4px;max-width:150px}.pick .sc i{display:block;height:100%;background:var(--green-deep)}
   .pick .nums{font-size:12px;color:var(--grey);line-height:1.6}
   .pick ul{margin:0 0 0 17px;font-size:13px;line-height:1.55}.pick li{margin:2px 0}
-  .pick .watch{margin-top:8px;color:#8a5a00;font-size:12.5px}.pick .watch b{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase}
-  .pick .watch ul{color:#8a5a00;font-size:12.5px}
+  .pick .watch{margin-top:8px;color:var(--amber-deep);font-size:12.5px}.pick .watch b{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase}
+  .pick .watch ul{color:var(--amber-deep);font-size:12.5px}
   @media(max-width:760px){.pick{grid-template-columns:1fr}}
   .chip.new{background:var(--grey-light)}
   .statline{display:flex;align-items:center;gap:8px;font-size:13px}
   .hideb{padding:8px 11px;line-height:0;display:inline-flex;align-items:center}
   .hideb svg{width:18px;height:18px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-  body.hiding .hideb{background:#fff;color:var(--ink)}
+  body.hiding .hideb{background:var(--paper);color:var(--ink)}
   @media(max-width:760px){.kgrid{grid-template-columns:1fr 1fr}.cardsrow{grid-template-columns:1fr}.cal .d{min-height:46px;padding:3px 4px}.cal .d .a{font-size:10px}}
   @media(prefers-reduced-motion:reduce){.spin{animation:none}}
+
+  /* ---- dark theme: the same page on a dark ground (toggle in the header; follows the system setting until you choose) ---- */
+  :root[data-theme="dark"]{color-scheme:dark;--ink:#ededed;--on-ink:#121212;--paper:#121212;--navbg:rgba(18,18,18,.94);--grey:#a4a8ad;--grey-light:#7d8288;--rule:#2b2d30;--wash:#1b1c1e;
+    --green:#86bc25;--green-deep:#9ccf3d;--red:#ff6b5e;--amber:#e2a93b;--amber-deep:#ebb757;--green-dark:#b4de6a}
+  [data-theme="dark"] .call .prov,[data-theme="dark"] .tag.reason{background:#3a2e12}
+  [data-theme="dark"] .tag.fact,[data-theme="dark"] tr.mine td{background:#1f2a12}
+  [data-theme="dark"] .gbar{background:#4a2a27}
+  [data-theme="dark"] .t-red{background:#4a2420}[data-theme="dark"] .t-amber{background:#47360f}[data-theme="dark"] .t-green{background:#233414}[data-theme="dark"] .t-deep{background:#2b4116}
+  [data-theme="dark"] .legend i.g{background:rgba(134,188,37,.28)}
+  [data-theme="dark"] .zones i[style*="f3c9c5"]{background:#5a2b27!important}[data-theme="dark"] .zones i[style*="f7e2b8"]{background:#5a4719!important}[data-theme="dark"] .zones i[style*="e3efc6"]{background:#3a4d1d!important}[data-theme="dark"] .zones i[style*="bfdc7f"]{background:#4d6f1c!important}
+  [data-theme="dark"] .sbar i[style*="2f4a0b"]{background:#4a7a12!important}[data-theme="dark"] .sbar i[style*="d3d5d7"]{background:#4a4d52!important}[data-theme="dark"] .sbar i[style*="ececec"]{background:#34373b!important}[data-theme="dark"] .slegend i[style*="2f4a0b"]{background:#4a7a12!important}
+  [data-theme="dark"] svg [stroke="#ececec"]{stroke:var(--rule)}[data-theme="dark"] svg text[fill="#97999b"]{fill:var(--grey-light)}[data-theme="dark"] svg [fill="#fff"]{fill:var(--paper)}
+  [data-theme="dark"] svg [stroke="#3d5a80"],[data-theme="dark"] .legend i[style*="3d5a80"]{stroke:#7fa6d6;border-top-color:#7fa6d6!important}
+  [data-theme="dark"] svg [stroke="#5f8a15"]{stroke:#9ccf3d}[data-theme="dark"] svg [fill="#5f8a15"]{fill:#9ccf3d}[data-theme="dark"] svg [stroke="#da291c"]{stroke:#ff6b5e}
+  [data-theme="dark"] svg [fill="rgba(218,41,28,.13)"],[data-theme="dark"] svg [fill="rgba(218,41,28,.14)"]{fill:rgba(255,107,94,.18)}
+  [data-theme="dark"] .ptip,[data-theme="dark"] .toast{box-shadow:0 6px 22px rgba(0,0,0,.6)}
+  [data-theme="dark"] input,[data-theme="dark"] select{background:var(--wash);color:var(--ink);border-color:var(--rule)}
+  [data-theme="dark"] .hchip.hc:hover{opacity:.85}
+  [data-theme="dark"] .cal .d{background:var(--wash)}
+  [data-theme="dark"] img.nodark{filter:none}
+  .themeb{padding:8px 11px;line-height:0;display:inline-flex;align-items:center}.themeb svg{width:18px;height:18px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 </style>
 </head>
 <body>
@@ -425,6 +447,7 @@
       <span class="stamp" id="stamp">Ready</span>
       <span class="btns">
         <button id="refresh">Refresh live</button>
+        <button id="themeBtn" class="ghost themeb" type="button" aria-label="Switch to dark theme" title="Dark theme"></button>
         <button id="hideAmt" class="ghost hideb" aria-pressed="false" aria-label="Hide rupee amounts" title="Hide rupee amounts (for screen sharing or public places)"></button>
         <button id="auto" aria-pressed="false" hidden>Auto 60s</button>
       </span>
@@ -542,6 +565,11 @@
     <div id="overlapBody"></div>
   </section>
 
+  <section id="changesWrap" hidden>
+    <h2>Fund changes watch <span id="changesNote"></span></h2>
+    <div id="changesBody"></div>
+  </section>
+
   <section id="sipWrap" hidden>
     <h2>SIP tracker <span id="sipNote"></span></h2>
     <div id="sipBody"></div>
@@ -589,6 +617,16 @@
     <h2>How your funds compare <span>Each fund against its own benchmark, in plain terms</span></h2>
     <div id="compareBody"></div>
   </section>
+  <section id="fundBenchWrap" hidden>
+    <h2>Each fund against its own benchmark <span id="fundBenchNote"></span></h2>
+    <div id="fundBenchTable"></div>
+    <div class="seg" id="fundBenchSeg" role="tablist" aria-label="Fund" style="margin-top:20px"></div>
+    <p class="scoreline" id="fundBenchLine" style="margin:6px 0 0"></p>
+    <div class="mchart" id="fundBenchChart"></div>
+    <div class="legend" id="fundBenchLegend"></div>
+    <p class="note" id="fundBenchFoot"></p>
+  </section>
+
   <section id="healthWrap" hidden>
     <h2>Fund health check <span id="healthNote"></span></h2>
     <div id="healthBody"></div>
@@ -627,6 +665,11 @@
 
   <div class="hline" id="healthLine" hidden></div>
   <p class="sub2" style="margin:14px 0 8px"><button class="ghost" id="diag" title="Test where the prices come from and say exactly what failed">Check data connection</button> <span style="margin-left:8px">tests where the prices come from and says what failed</span></p>
+
+  <details id="statusBox" class="od">
+    <summary>System status: data freshness and scheduled jobs</summary>
+    <div id="statusBody"><p class="sub2">Opens a live check.</p></div>
+  </details>
 
   <details id="odBox" class="od">
     <summary>Reliable updates (optional)</summary>
@@ -3325,6 +3368,130 @@ function renderRecap() {
   $("recapList").innerHTML = lines.map(l => '<li class="k-' + esc(String(l.k || "").replace(/[^a-z]/g, "")) + '">' + esc(l.t) + "</li>").join("");
 }
 
+// ---- Fund changes watch (data/fund_changes.json from fund_meta.py, weekly): manager, cost and size, and what changed lately
+let FCHANGES = null;
+function renderChanges() {
+  const wrap = $("changesWrap"), C = FCHANGES, fs = isObj(C) && Array.isArray(C.funds) ? C.funds.filter(f => f && typeof f.name === "string") : [];
+  if (!fs.length) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  const since = typeof C.tracking_since === "string" && /^\d{4}-\d{2}-\d{2}$/.test(C.tracking_since) ? C.tracking_since : "";
+  $("changesNote").textContent = since ? "tracking since " + new Date(since + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) + " · checked weekly" : "";
+  const today = istDate(istNow()), recent = e => e && typeof e.text === "string" && typeof e.date === "string" && dayDiff(e.date, today) <= 120;
+  const rows = fs.map(f => { const ev = (Array.isArray(f.events) ? f.events : []).filter(recent);
+    return "<tr><td>" + esc(shortName(f.name)) + '</td><td style="text-align:left;padding-left:14px">' + esc(f.lead || "—") + (Array.isArray(f.managers) && f.managers.length > 1 ? '<br><span class="sub2">with ' + f.managers.filter(m => m !== f.lead).map(esc).join(", ") + "</span>" : "") + "</td><td>" +
+      (num(f.expense_ratio) ? f.expense_ratio.toFixed(2) + "%" : "—") + "</td><td>" + (num(f.aum_cr) ? "₹" + Math.round(f.aum_cr).toLocaleString("en-IN") + " cr" : "—") + '</td><td style="text-align:left;padding-left:14px">' +
+      (ev.length ? ev.map(e => '<span class="neg">●</span> ' + esc(dmon(e.date)) + ": " + esc(e.text)).join("<br>") : '<span class="ok">No change</span>') + "</td></tr>"; }).join("");
+  const any = fs.some(f => (Array.isArray(f.events) ? f.events : []).some(recent));
+  $("changesBody").innerHTML = '<table class="mini"><thead><tr><th>Fund</th><th style="text-align:left;padding-left:14px">Fund manager</th><th>Cost a year</th><th>Fund size</th><th style="text-align:left;padding-left:14px">Changes in the last 4 months</th></tr></thead><tbody>' + rows + "</tbody></table>" +
+    '<p class="sub2" style="margin-top:10px">' + (any ? "Something changed: worth a look at the fund\'s own announcement. " : "") + "A new manager, a higher cost or a sudden swing in fund size are the things that can change how a fund behaves. Source: Groww, once a week. Not every change is bad news.</p>";
+}
+
+// ---- Each fund against its own benchmark, with your real purchase dates (data/fund_history.json from snapshot.py)
+let FUNDHIST = null; const FB = { id: null };
+function fundHistValid() {
+  const H = FUNDHIST; if (!isObj(H) || !Array.isArray(H.dates) || !isObj(H.funds)) return [];
+  return Object.entries(H.funds).filter(([, f]) => f && ["v", "i", "b"].every(k => Array.isArray(f[k]) && f[k].length === H.dates.length) && num(f.v[f.v.length - 1]) && num(f.i[f.i.length - 1]) && num(f.b[f.b.length - 1]));
+}
+function renderFundBench() {
+  const wrap = $("fundBenchWrap"), fs = fundHistValid();
+  if (!fs.length) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  $("fundBenchNote").textContent = "the same money, invested on the same dates, in the benchmark";
+  const last = a => a[a.length - 1];
+  $("fundBenchTable").innerHTML = '<table class="mini"><thead><tr><th>Fund</th><th>Put in</th><th>Worth now</th><th>Same money in its benchmark</th><th>Ahead or behind</th></tr></thead><tbody>' + fs.map(([id, f]) => {
+    const d = last(f.v) - last(f.b), p = last(f.b) > 0 ? d / last(f.b) * 100 : 0;
+    return "<tr><td>" + esc(shortName(f.name)) + '<div class="sub2">' + esc(f.benchmark || "") + "</div></td><td>" + cl(last(f.i)) + "</td><td>" + cl(last(f.v)) + "</td><td>" + cl(last(f.b)) + '</td><td class="' + (d >= 0 ? "pos" : "neg") + '">' + (d >= 0 ? "ahead " : "behind ") + cl(Math.abs(d)) + " (" + pcs(p, 1) + ")</td></tr>"; }).join("") + "</tbody></table>";
+  if (!fs.some(([id]) => id === FB.id)) FB.id = fs[0][0];
+  $("fundBenchSeg").innerHTML = fs.map(([id, f]) => '<button role="tab" aria-selected="' + (id === FB.id) + '" data-id="' + esc(id) + '">' + esc(shortName(f.name)) + "</button>").join("");
+  $("fundBenchSeg").querySelectorAll("button").forEach(b => b.onclick = () => { FB.id = b.dataset.id; renderFundBench(); });
+  const f = FUNDHIST.funds[FB.id], H = FUNDHIST, from = f.i.findIndex(x => num(x) && x > 0);
+  if (from < 0) { $("fundBenchChart").innerHTML = ""; return; }
+  const dates = H.dates.slice(from), v = f.v.slice(from), i = f.i.slice(from), b = f.b.slice(from).map((x, k) => num(x) ? x : v[k]);
+  const d = last(v) - last(b);
+  $("fundBenchLine").innerHTML = "Since your first purchase in " + esc(shortName(f.name)) + " (" + dmon(dates[0]) + " " + dates[0].slice(0, 4) + "), the same money in the <b>" + esc(f.benchmark || "benchmark") + "</b> would be worth <b>" + cl(last(b)) + "</b>. The fund is worth <b>" + cl(last(v)) + "</b>: <b class=\"" + (d >= 0 ? "pos" : "neg") + "\">" + (d >= 0 ? "ahead by " : "behind by ") + cl(Math.abs(d)) + "</b>.";
+  $("fundBenchLegend").innerHTML = '<span><i></i>The fund</span><span><i class="d"></i>Put in</span><span><i style="border-top-color:#3d5a80"></i>' + esc(f.benchmark || "Benchmark") + ", same money</span>";
+  $("fundBenchFoot").textContent = (H.note || "") + ". Past results say little about the future, and a gap of a few percent either way is within what a fund and its index normally drift apart.";
+  drawFundChart($("fundBenchChart"), dates, v, i, b, f.benchmark);
+}
+function drawFundChart(host, dates, v, iv, b, bname) {
+  const W = Math.max(300, host.clientWidth || 800), narrow = W < 520, H = narrow ? 230 : 290, m = { l: HIDE ? 12 : narrow ? 54 : 74, r: 14, t: 12, b: 26 };
+  const all = v.concat(iv, b), lo0 = Math.min(...all), hi0 = Math.max(...all), pad = (hi0 - lo0) * .06, ticks = niceTicks(Math.max(0, lo0 - pad), hi0 + pad, 4), y0 = ticks[0], y1 = ticks[ticks.length - 1];
+  const t = d => Date.parse(d + "T00:00:00"), x0 = t(dates[0]), x1 = t(dates[dates.length - 1]), X = d => m.l + (t(d) - x0) / ((x1 - x0) || 1) * (W - m.l - m.r), Y = q => H - m.b - (q - y0) / (y1 - y0) * (H - m.t - m.b), f1 = n => n.toFixed(1);
+  const path = arr => arr.map((q, k) => (k ? "L" : "M") + f1(X(dates[k])) + " " + f1(Y(q))).join(" "), long = (x1 - x0) > 400 * 86400000;
+  const xl = d => long ? new Date(d + "T00:00:00").toLocaleDateString("en-IN", { month: "short", year: "2-digit" }) : dmon(d), xi = [0, 1, 2, 3, 4].map(k => Math.round(k * (dates.length - 1) / 4));
+  host.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" height="' + H + '" role="img" aria-label="Fund worth against its benchmark">' +
+    ticks.map(q => '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + f1(Y(q)) + '" y2="' + f1(Y(q)) + '" stroke="#ececec"/>' + (HIDE ? "" : '<text x="' + (m.l - 8) + '" y="' + f1(Y(q) + 3) + '" font-size="10.5" text-anchor="end" fill="#97999b">' + (q === 0 ? "0" : cx(q)) + "</text>")).join("") +
+    xi.map((k, n) => '<text x="' + f1(X(dates[k])) + '" y="' + (H - 7) + '" font-size="10.5" text-anchor="' + (n === 0 ? "start" : n === 4 ? "end" : "middle") + '" fill="#97999b">' + xl(dates[k]) + "</text>").join("") +
+    '<path d="' + path(iv) + '" fill="none" stroke="#97999b" stroke-width="1.5" stroke-dasharray="4 4"/><path d="' + path(b) + '" fill="none" stroke="#3d5a80" stroke-width="1.8" stroke-linejoin="round"/>' +
+    '<path d="' + path(v) + '" fill="none" stroke="#5f8a15" stroke-width="2.4" stroke-linejoin="round"/>' +
+    '<line id="fguide" y1="' + m.t + '" y2="' + (H - m.b) + '" stroke="#97999b" stroke-dasharray="3 3" visibility="hidden"/><rect id="fhit" x="' + m.l + '" y="' + m.t + '" width="' + (W - m.l - m.r) + '" height="' + (H - m.t - m.b) + '" fill="transparent"/></svg><div class="ptip" id="ftip" hidden></div>';
+  const svg = host.querySelector("svg"), tip = $("ftip");
+  const move = e => { const r = svg.getBoundingClientRect(), px = ((e.touches ? e.touches[0].clientX : e.clientX) - r.left) * (W / r.width); let bi = 0;
+    dates.forEach((d, k) => { if (Math.abs(X(d) - px) < Math.abs(X(dates[bi]) - px)) bi = k; });
+    const gx = X(dates[bi]); $("fguide").setAttribute("x1", gx); $("fguide").setAttribute("x2", gx); $("fguide").setAttribute("visibility", "visible"); tip.hidden = false;
+    tip.innerHTML = "<b>" + dates[bi].split("-").reverse().join("-") + "</b><br>fund " + cl(v[bi]) + '<br><span class="m">put in ' + cl(iv[bi]) + "<br>" + esc(bname || "benchmark") + " " + cl(b[bi]) + "<br>" + (v[bi] >= b[bi] ? "ahead by " : "behind by ") + cl(Math.abs(v[bi] - b[bi])) + "</span>";
+    tip.style.left = Math.min(Math.max(gx * (r.width / W) - tip.offsetWidth / 2, 0), r.width - tip.offsetWidth) + "px"; tip.style.top = "4px"; };
+  const hide = () => { tip.hidden = true; $("fguide").setAttribute("visibility", "hidden"); }, hit = $("fhit");
+  hit.addEventListener("mousemove", move); hit.addEventListener("mouseleave", hide); hit.addEventListener("touchstart", move, { passive: true }); hit.addEventListener("touchmove", move, { passive: true }); hit.addEventListener("touchend", hide);
+}
+window.addEventListener("resize", () => { if (!$("fundBenchWrap").hidden) safe(renderFundBench, "fundBenchWrap"); });
+
+// ---- System status: how fresh each data file is, and how the scheduled jobs on GitHub did (their public run list, fetched only when opened)
+const STAT = { jobsAt: 0, jobs: null, err: "" };
+function statusFresh() {
+  const ist = istNow(), quiet = closedAllDay(), now = Date.now(), ts = x => { const t = Date.parse(x || ""); return isFinite(t) ? t : null; };
+  const day = quiet ? 80 : 26;
+  const rows = [
+    ["Prices and today's estimate", LAST_BATCH && LAST_BATCH.generatedAt, marketOpen() ? 0.6 : day, "refreshed every 15 minutes in market hours"],
+    ["Next-session call", OUTLOOK && OUTLOOK.generated_at, day, "morning and evening"], ["GIFT Nifty snapshot", GIFT && GIFT.fetched_at, day, "morning and evening"],
+    ["Mood and advice", (MOOD && MOOD.generated_at) || (ADVISOR && ADVISOR.generated_at), 30 + (quiet ? 50 : 0), "nightly"], ["Why the market moved", NEWS && NEWS.generated_at, 30 + (quiet ? 50 : 0), "nightly"],
+    ["Returns, tax and history", (PHIST && PHIST.generated_at) || (ANALYTICS && ANALYTICS.generated_at), 30 + (quiet ? 50 : 0), "nightly"], ["Last session's recap", RECAP && RECAP.generated_at, 30 + (quiet ? 50 : 0), "nightly, after the NAVs are in"],
+    ["Fund health and changes", (FHEALTH && FHEALTH.generated_at), 8 * 24, "weekly"], ["Weekly ideas", PICKS && PICKS.generated_at, 8 * 24, "every Sunday"]];
+  return rows.map(([name, iso, max, how]) => { const t = ts(iso), age = t == null ? null : (now - t) / 3600000;
+    return { name, how, age, cls: age == null ? "xf" : age <= max ? "g" : age <= max * 1.6 ? "f" : "xf", at: t == null ? "no data" : new Date(t).toLocaleString("en-IN", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }) }; });
+}
+const ageText = h => h == null ? "" : h < 1 ? Math.round(h * 60) + " min ago" : h < 48 ? Math.round(h) + " h ago" : Math.round(h / 24) + " days ago";
+async function loadJobs() {
+  if (STAT.jobs && Date.now() - STAT.jobsAt < 5 * 60000) return;
+  const repo = (CFG && CFG.profile && CFG.profile.github_repo) || "prnvdas/mf-pulse";
+  try {
+    const r = await fetchWithTimeout("https://api.github.com/repos/" + repo + "/actions/runs?per_page=100", { headers: { Accept: "application/vnd.github+json" } }, 9000);
+    if (!r.ok) throw new Error(r.status === 403 ? "GitHub's limit for anonymous requests was reached: try again in a few minutes" : "GitHub answered HTTP " + r.status);
+    const runs = ((await r.json()).workflow_runs || []).filter(x => x && typeof x.name === "string"), by = {};
+    runs.forEach(x => { const k = x.name, e = by[k] || (by[k] = { name: k, n: 0, fails: 0, last: null }); const t = Date.parse(x.created_at);
+      if (Date.now() - t < 24 * 3600000) { e.n++; if (x.conclusion === "failure") e.fails++; }
+      if (!e.last || t > e.last.t) e.last = { t, concl: x.conclusion || x.status, url: x.html_url }; });
+    STAT.jobs = Object.values(by); STAT.jobsAt = Date.now(); STAT.err = "";
+  } catch (e) { STAT.err = String(e && e.message || e); }
+}
+async function renderStatus() {
+  const box = $("statusBody"); if (!box) return;
+  const f = statusFresh();
+  box.innerHTML = '<div class="rr-sub" style="margin-top:6px">Data on this page</div><table class="mini"><thead><tr><th>What</th><th>Last updated</th><th>How often</th><th></th></tr></thead><tbody>' +
+    f.map(r => "<tr><td>" + esc(r.name) + '</td><td style="text-align:left;padding-left:14px">' + esc(r.at) + (r.age != null ? ' <span class="sub2">· ' + ageText(r.age) + "</span>" : "") + '</td><td class="sub2" style="text-align:left;padding-left:14px">' + esc(r.how) + '</td><td><i class="dotc ' + r.cls + '"></i></td></tr>').join("") + "</tbody></table>" +
+    '<div class="rr-sub" style="margin-top:20px">Scheduled jobs on GitHub (last 24 hours)</div><div id="statusJobs" class="sub2">Checking…</div>';
+  await loadJobs();
+  const el = $("statusJobs"); if (!el) return;
+  if (!STAT.jobs) { el.innerHTML = "Couldn't reach GitHub: " + esc(STAT.err || "no answer") + "."; return; }
+  const jobs = STAT.jobs.filter(j => !/pages build/i.test(j.name)).sort((a, b) => b.fails - a.fails || a.name.localeCompare(b.name));
+  el.className = ""; el.innerHTML = '<table class="mini"><thead><tr><th>Job</th><th>Last run</th><th>Result</th><th>Runs</th><th>Failed</th></tr></thead><tbody>' + jobs.map(j => { const h = j.last ? (Date.now() - j.last.t) / 3600000 : null, ok = j.last && j.last.concl === "success";
+    return "<tr><td>" + esc(j.name) + '</td><td style="text-align:left;padding-left:14px">' + (j.last ? esc(ageText(h)) : "—") + '</td><td class="' + (ok ? "ok" : j.last && /failure/.test(j.last.concl) ? "bad" : "") + '">' + esc(j.last ? j.last.concl : "—") + "</td><td>" + j.n + '</td><td class="' + (j.fails ? "bad" : "") + '">' + j.fails + "</td></tr>"; }).join("") + "</tbody></table>" +
+    '<p class="sub2" style="margin-top:8px">From GitHub\'s public run list for this site\'s repository. A job that failed once and then ran fine is usually a dropped connection that has since healed.</p>';
+}
+function setupStatus() { const d = $("statusBox"); if (d) d.addEventListener("toggle", () => { if (d.open) safe(renderStatus); }); }
+
+// ---- theme: light or dark, remembered per browser (the first visit follows the system setting; see the script in <head>)
+function setupTheme() {
+  const b = $("themeBtn"); if (!b) return;
+  const MOON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>', SUN = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.2 5.2l1.8 1.8M17 17l1.8 1.8M5.2 18.8L7 17M17 7l1.8-1.8"/></svg>';
+  const cur = () => document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+  const paint = () => { const d = cur() === "dark"; b.innerHTML = d ? SUN : MOON; b.setAttribute("aria-label", d ? "Switch to light theme" : "Switch to dark theme"); b.title = d ? "Light theme" : "Dark theme"; b.setAttribute("aria-pressed", String(d));
+    const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = d ? "#121212" : "#0b0b0b"; };
+  b.onclick = () => { const n = cur() === "dark" ? "light" : "dark"; document.documentElement.setAttribute("data-theme", n); try { localStorage.setItem("mfp_theme", n); } catch (e) { /* not remembered */ } paint();
+    ["moneyWrap", "ddWrap", "fundBenchWrap"].forEach(id => { const w = $(id); if (w && !w.hidden) { if (id === "moneyWrap") safe(renderMoney, id); else if (id === "ddWrap") safe(renderDrawdown, id); else safe(renderFundBench, id); } }); };
+  paint();
+}
+
 // ---- hide amounts
 // Some sentences are written by the nightly jobs ("your portfolio moved about +₹91,615", the tax figure in the advice). Those
 // are scrubbed here instead. Market figures stay: crore amounts (flows, headlines) and per-unit NAVs are public.
@@ -3378,9 +3545,11 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   FHEALTH = await loadJson("data/fund_health.json", j => isObj(j) && Array.isArray(j.funds), null);
   PICKS = await loadJson("data/picks.json", isObj, null);
   RECAP = await loadJson("data/recap.json", isObj, null);
+  FCHANGES = await loadJson("data/fund_changes.json", isObj, null);
+  FUNDHIST = await loadJson("data/fund_history.json", isObj, null);
   setupHide();
   renderReturns(); renderTax(); renderStatementBar();
-  safe(renderMoney, "moneyWrap"); safe(renderDrawdown, "ddWrap"); safe(renderSectors, "sectorWrap"); safe(renderOverlap, "overlapWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(setupToTop); safe(renderRecap, "recapWrap"); safe(renderIdeas, "ideasWrap"); safe(renderHealthLine); safe(renderTxBar); safe(renderDataBar); safe(startVersionWatch); safe(setupNav);
+  safe(renderMoney, "moneyWrap"); safe(renderDrawdown, "ddWrap"); safe(renderSectors, "sectorWrap"); safe(renderOverlap, "overlapWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(setupToTop); safe(renderFundBench, "fundBenchWrap"); safe(renderChanges, "changesWrap"); safe(renderRecap, "recapWrap"); safe(renderIdeas, "ideasWrap"); safe(renderHealthLine); safe(renderTxBar); safe(renderDataBar); safe(startVersionWatch); safe(setupStatus); safe(setupTheme); safe(setupNav);
   renderCompare();
   loadNews();
   loadOutlook();

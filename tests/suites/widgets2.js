@@ -25,7 +25,7 @@ const URL=process.env.BASE||(process.env.BASE||'http://localhost:8000/index.html
  // header: Refresh and the eye button stay together however long the status text is
  for (const w of [1280,1080,900,760,600,390]) {const {p,ctx}=await page('2026-10-13T03:47:00Z',{},w);
   await p.evaluate(()=>{document.getElementById('stamp').textContent="Market open · Tue, 13 Oct, 2026, 09:17 IST · data 7 h old · waiting for today's first update (due about 09:30) · ● auto-updating";});
-  const r=await p.evaluate(()=>{const g=id=>document.getElementById(id).getBoundingClientRect();const a=g('refresh'),e=g('hideAmt');return {same:Math.abs(a.top-e.top)<4,gap:Math.round(e.left-a.right),over:document.documentElement.scrollWidth>innerWidth+1}});
+  const r=await p.evaluate(()=>{const g=id=>document.getElementById(id).getBoundingClientRect();const a=g('refresh'),t=g('themeBtn'),e=g('hideAmt');return {same:Math.abs(a.top-e.top)<4&&Math.abs(a.top-t.top)<4,gap:Math.max(Math.round(t.left-a.right),Math.round(e.left-t.right)),over:document.documentElement.scrollWidth>innerWidth+1}});
   ok(r.same&&r.gap>=0&&r.gap<24,'header buttons together at '+w,JSON.stringify(r)); await ctx.close();}
  // gift in ticker
  {const {p,ctx}=await page('2026-10-10T11:00:00Z',{gift:j=>{j.quote_time='10-Oct-2026 16:00:00';j.last=22575.5;j.change=-27;j.change_pct=-0.119;return j;}});

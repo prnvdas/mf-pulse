@@ -22,7 +22,7 @@ import sys
 
 import pandas as pd
 
-from analytics import fetch_nav_series
+from analytics import blended_level, fetch_nav_series, fetch_prices
 from analytics import load_transactions
 from common import CONFIG, load_portfolio, now_ist, read_json, write_json
 
@@ -171,6 +171,58 @@ def add_benchmarks(points: list[dict]) -> list[str]:
     return added
 
 
+def build_fund_history(cfg: dict, state: dict) -> dict | None:
+    """Fund by fund: worth, money put in, and what the same money would be worth in the fund's own benchmark (same dates).
+    Needs the imported order history (config/transactions.csv with units); None without it. -> docs/data/fund_history.json"""
+    tx, un = load_transactions(), tx_units()
+    if not tx:
+        return None
+    def parts(f):                                       # the benchmark used elsewhere: the long-history proxy when one is configured
+        ab = f.get("analytics_benchmark") or {}
+        return ab.get("xirr_returns") or ab.get("returns") or []
+    prices = fetch_prices(sorted({q["ticker"] for f in cfg["funds"] for q in parts(f)}))
+    navs, cum, bench = {}, {}, {}
+    for f in cfg["funds"]:
+        fid, rows = f["id"], tx.get(f["id"])
+        s = fetch_nav_series(f["amfi_code"])
+        if not rows or s is None:
+            continue
+        money = pd.Series({pd.Timestamp(d): 0.0 for d, _ in rows})
+        for d, a in rows:
+            money[pd.Timestamp(d)] += a
+        units = pd.Series(un.get(fid, {}), dtype=float)
+        if units.empty:
+            units = pd.Series({d: float(a) / float(s.asof(d)) for d, a in money.items()})
+        navs[fid], cum[fid], bench[fid] = s, (units.sort_index().cumsum(), money.sort_index().cumsum()), blended_level(parts(f), prices)
+    if not cum:
+        return None
+    start = min(c[0].index[0] for c in cum.values())
+    dates = sorted(set.union(*[set(s.index[s.index >= start]) for s in navs.values()]))
+    out = {}
+    for f in cfg["funds"]:
+        fid = f["id"]
+        if fid not in cum:
+            continue
+        u, m, lv = cum[fid][0], cum[fid][1], bench[fid]
+        v, i, b, bu, prev_i = [], [], [], 0.0, 0.0
+        for d in dates:
+            uu, mm = u[u.index <= d], m[m.index <= d]
+            units_now, money_now = (float(uu.iloc[-1]) if len(uu) else 0.0), (float(mm.iloc[-1]) if len(mm) else 0.0)
+            nav = float(navs[fid].asof(d)) if units_now else 0.0
+            v.append(round(units_now * nav if nav == nav and nav > 0 else money_now if units_now else 0.0))
+            i.append(round(money_now))
+            px = float(lv.asof(d)) if lv is not None and d >= lv.index[0] else None
+            if px and px == px:
+                bu = max(0.0, bu + (money_now - prev_i) / px)
+                b.append(round(bu * px))
+            else:
+                b.append(None)
+            prev_i = money_now
+        out[fid] = {"name": f["name"], "benchmark": (f.get("analytics_benchmark") or {}).get("name"), "v": v, "i": i, "b": b}
+    return {"generated_at": now_ist().isoformat(), "dates": [d.date().isoformat() for d in dates], "funds": out,
+            "note": "the same money invested on the same dates in the fund's benchmark index; price indices, so without dividends (about 1.3% a year)"}
+
+
 def tx_check(cfg: dict, state: dict) -> dict:
     """Does config/transactions.csv still explain the units you hold? A purchase or sale made outside the SIPs
     (a lump sum, a redemption) makes it fall behind; the page then tells you to download the order history again."""
@@ -219,6 +271,13 @@ def main() -> None:
         doc["points"] = [by[k] for k in sorted(by)]
     got = add_benchmarks(doc["points"])
     doc["benchmarks"] = {"n": "Nifty 50", "m": "Nifty 500", "note": "the same money invested on the same dates; price index, so without dividends (about 1.3% a year)"} if got else None
+    try:
+        fh = build_fund_history(cfg, state)
+        if fh:
+            write_json("fund_history.json", fh)
+            print(f"[ok] fund_history.json: {len(fh['dates'])} days, {len(fh['funds'])} funds")
+    except Exception as exc:  # noqa: BLE001 -- a bonus view: never block the main history
+        print(f"[warn] fund history: {exc}", file=sys.stderr)
     doc["tx_check"] = tx_check(cfg, state)
     doc["generated_at"] = now_ist().isoformat()
     write_json(OUT, doc)

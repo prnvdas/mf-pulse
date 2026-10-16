@@ -1,38 +1,94 @@
 {
   "axis-small-cap": {
-    "fetched": "2026-10-12",
+    "fetched": "2026-10-16",
     "scheme_code": 125354,
     "name": "Axis Small Cap Fund Direct Growth",
     "expense_ratio": 0.69,
     "base_expense_ratio": 0.51,
+    "lead_manager": "Ashish Naik",
+    "managers": [
+      "Krishnaa Narayan",
+      "Mayank Hyanki",
+      "Tejas Sheth"
+    ],
     "sub_category": "Small Cap",
     "benchmark_name": "NIFTY Smallcap 250 Total Return Index",
-    "aum_cr": 30677.5261,
+    "aum_cr": 30677.53,
     "launch_date": "29-Nov-2013",
-    "closed": false
+    "closed": false,
+    "history": [
+      {
+        "date": "2026-10-16",
+        "expense_ratio": 0.69,
+        "lead": "Ashish Naik",
+        "managers": [
+          "Krishnaa Narayan",
+          "Mayank Hyanki",
+          "Tejas Sheth"
+        ],
+        "aum_cr": 30677.53
+      }
+    ],
+    "events": []
   },
   "mirae-large-midcap": {
-    "fetched": "2026-10-12",
+    "fetched": "2026-10-16",
     "scheme_code": 118834,
     "name": "Mirae Asset Large & Midcap Fund Direct Growth",
-    "expense_ratio": 0.85,
+    "expense_ratio": 0.86,
     "base_expense_ratio": 0.51,
+    "lead_manager": "Neelesh Surana",
+    "managers": [
+      "Ankit Jain",
+      "Neelesh Surana"
+    ],
     "sub_category": "Large & MidCap",
     "benchmark_name": "NIFTY Large Midcap 250 Total Return Index",
-    "aum_cr": 45811.3492,
+    "aum_cr": 42834.08,
     "launch_date": "01-Jan-2013",
-    "closed": false
+    "closed": false,
+    "history": [
+      {
+        "date": "2026-10-16",
+        "expense_ratio": 0.86,
+        "lead": "Neelesh Surana",
+        "managers": [
+          "Ankit Jain",
+          "Neelesh Surana"
+        ],
+        "aum_cr": 42834.08
+      }
+    ],
+    "events": []
   },
   "jioblackrock-flexicap": {
-    "fetched": "2026-10-12",
+    "fetched": "2026-10-16",
     "scheme_code": 153859,
     "name": "JioBlackRock Flexi Cap Fund Direct Growth",
     "expense_ratio": 1.11,
     "base_expense_ratio": 0.5,
+    "lead_manager": "Tanvi Kacheria",
+    "managers": [
+      "Sahil Chaudhary",
+      "Tanvi Kacheria"
+    ],
     "sub_category": "Flexi Cap",
     "benchmark_name": "NIFTY 500 Total Return Index",
-    "aum_cr": 3175.44469248,
+    "aum_cr": 3175.44,
     "launch_date": "13-Oct-2025",
-    "closed": false
+    "closed": false,
+    "history": [
+      {
+        "date": "2026-10-16",
+        "expense_ratio": 1.11,
+        "lead": "Tanvi Kacheria",
+        "managers": [
+          "Sahil Chaudhary",
+          "Tanvi Kacheria"
+        ],
+        "aum_cr": 3175.44
+      }
+    ],
+    "events": []
   }
 }

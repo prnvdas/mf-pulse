@@ -30,7 +30,8 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -r requirements-forecast.txt
-      - run: python src/outlook.py
+      # one retry: a single dropped connection to a data source (this step failed once, at 07:15 on 16 Oct, and ran fine minutes later)
+      - run: python src/outlook.py || (sleep 30 && python src/outlook.py)
       - name: GIFT Nifty snapshot
         continue-on-error: true
         timeout-minutes: 3

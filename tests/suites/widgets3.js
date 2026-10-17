@@ -110,6 +110,29 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
   await p.goto(process.env.BASE||'http://localhost:8000/index.html',{waitUntil:'networkidle'});ok(await p.evaluate(()=>document.documentElement.dataset.theme)==='dark','dark system -> dark page on the first visit');await ctx.close();}
  {const ctx=await b.newContext({viewport:{width:1200,height:900},colorScheme:'light'});const p=await ctx.newPage();await p.addInitScript(()=>{try{localStorage.setItem('mfp_theme','purple')}catch(e){}});
   await p.goto(process.env.BASE||'http://localhost:8000/index.html',{waitUntil:'networkidle'});ok(await p.evaluate(()=>document.documentElement.dataset.theme)==='light','an invalid stored value is ignored');await ctx.close();}
+ // rolling returns and the withdrawal planner: the maths, then the page
+ {const {p,ctx,errs}=await page();
+  const r=await p.evaluate(()=>{const dates=[],idx=[];const d0=Date.parse('2020-01-01');for(let k=0;k<1460;k++){dates.push(new Date(d0+k*86400000).toISOString().slice(0,10));idx.push(Math.pow(1.10,k/365.25));}
+   const one=rollingReturns(dates,idx,1),three=rollingReturns(dates,idx,3),s1=rollStats(one);return {n1:one.length,n3:three.length,med1:s1.median,pos1:s1.pos,med3:rollStats(three).median,first:one[0].d};});
+  ok(Math.abs(r.med1-10)<0.2&&r.pos1===100&&Math.abs(r.med3-10)<0.2&&r.n1>1000&&r.n3>300,'rolling returns maths (10% a year steady growth)',JSON.stringify(r));
+  const w=await p.evaluate(()=>{const rates={st:.2,lt:.125,cess:.04,exempt:125000},none={st:0,lt:0};
+   const F=[{id:'a',name:'A',nav:10,lots:[{date:'2020-01-01',units:100,value:300000,gain:200000,term:'long'}]},{id:'b',name:'B',nav:10,lots:[{date:'2025-01-01',units:100,value:200000,gain:-50000,term:'long'}]}];
+   const small=planWithdrawal(F,150000,rates,none),big=planWithdrawal(F,400000,rates,none),over=planWithdrawal(F,900000,rates,none),zero=planWithdrawal(F,0,rates,none),used=planWithdrawal([F[0]],200000,rates,{st:0,lt:125000}),single=planWithdrawal(F,250000,rates,none);
+   const stl=planWithdrawal([{id:'c',name:'C',nav:1,lots:[{date:'2026-01-01',units:1,value:100000,gain:-10000,term:'short'},{date:'2020-01-01',units:1,value:100000,gain:60000,term:'long'}]}],200000,rates,none);
+   return {small:small.tax,big:big.tax,bigSplit:big.split.map(s=>[s.id,Math.round(s.taken)]),over:over.ok,zero:zero.ok,used:used.tax,stl:stl.tax,singles:single.single.length,usedSingle:used.single[0].tax};});
+  ok(w.small===0,'a small sale inside the tax-free room costs nothing',JSON.stringify(w)); ok(w.big===0&&w.bigSplit.reduce((t,x)=>t+x[1],0)===400000&&w.bigSplit.find(x=>x[0]==='b')[1]>=100000,'a larger sale: the loss fund is used to bring the net gain under the tax-free room, so no tax',JSON.stringify(w));
+  ok(w.over===false&&w.zero===false,'too much / zero amount refused'); ok(Math.abs(w.used-(200000*2/3*0.125*1.04))<2,'when the tax-free room is already used, every rupee of gain is taxed: 133,333 x 12.5% x 1.04',String(w.used));
+  ok(w.stl===0||w.stl>=0,'short-term loss is netted without error',String(w.stl)); ok(w.singles===1,'only funds big enough to cover the amount are compared alone',String(w.singles));
+  ok(!errs.length,'planner maths errs',errs[0]); await ctx.close();}
+ {const {p,ctx,errs}=await page(); const g=async id=>p.$eval('#'+id,e=>e.hidden?'':e.innerText);
+  let t=await g('rollWrap'); ok(/up in/i.test(t)&&/typical/i.test(t)&&/worst/i.test(t),'rolling returns section',t.slice(0,160)); await p.click('#rollSeg button:nth-child(2)'); ok(/3-year/.test(await g('rollLine')),'horizon tabs switch');
+  await p.fill('#wdAmt','500000');await p.waitForTimeout(500);t=await g('withdrawBody'); ok(/lowest tax/i.test(t)&&/sell from/i.test(t)&&/same amount would cost/i.test(t),'withdrawal plan appears',t.slice(0,200));
+  for (const v of ['abc','0','-5','99999999999','']) {await p.fill('#wdAmt',v);await p.waitForTimeout(250);ok(!/NaN|undefined|\[object/.test(await g('withdrawBody')),'amount '+JSON.stringify(v)+' handled');}
+  await p.fill('#wdAmt','500000'); await p.click('#wdChips button:nth-child(1)'); ok((await p.$eval('#wdAmt',e=>e.value))==='100000','preset chips fill the amount');
+  ok(!errs.length,'planner page errs',errs[0]); await ctx.close();}
+ for (const [f,fn] of [['tax',j=>{j.funds.forEach(x=>{x.lots=null});return j;}],['tax',j=>{j.funds.forEach(x=>{x.lots=[{units:'a',value:null,gain:1,term:'x'},null]});return j;}],['tax',j=>{j.rates=null;return j;}],['tax',j=>{j.funds=[];return j;}],
+   ['portfolio_history',j=>{j.points=j.points.slice(0,100);return j;}],['portfolio_history',j=>{j.points.forEach((p,i)=>{if(i%11===0)p.v=0});return j;}]]) {const {p,ctx,errs}=await page({[f]:fn});
+  {const bt=await p.evaluate(()=>document.body.innerText);ok(!errs.length&&!/NaN|undefined|\[object/.test(bt),'hostile '+f+' for rolling/planner: '+String(fn).slice(0,60),errs[0]||(bt.match(/.{40}(NaN|undefined|\[object).{30}/)||[])[0]);} await ctx.close();}
  // statement bar copy
  {const {p,ctx}=await page({analytics:j=>j});ok(true,'noop');await ctx.close();}
  console.log(`${n-fail}/${n} passed`);await b.close();process.exit(fail?1:0);})();

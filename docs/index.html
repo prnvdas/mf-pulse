@@ -353,6 +353,11 @@
   .totop:hover:not(:disabled){background:var(--paper);color:var(--ink)}
   .hline{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:12px;color:var(--grey);margin:26px 0 0}
   .hline .dotc{margin-right:6px}
+  .wd-in{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 16px}.wd-in label{font-size:13px;color:var(--grey)}
+  .wd-in input{font:inherit;font-size:18px;font-weight:600;width:190px;padding:8px 12px;border:1px solid var(--rule);background:var(--paper);color:var(--ink)}
+  .wd-in input:focus{outline:2px solid var(--ink);outline-offset:-1px}.wd-rs{font-size:18px;font-weight:600;margin-right:-6px}
+  .wd-chips button{padding:6px 12px;font-size:11px;margin-right:6px}
+  tr.best td{background:var(--wash)}
   ul.recap{list-style:none;margin:6px 0 0;padding:0}
   ul.recap li{padding:7px 0 7px 26px;border-bottom:1px solid var(--rule);font-size:14px;line-height:1.55;position:relative}
   ul.recap li:last-child{border-bottom:0}
@@ -577,6 +582,16 @@
     <div id="ddBody"></div>
   </section>
 
+  <section id="rollWrap" hidden>
+    <h2>What a typical stretch looks like <span id="rollNote"></span></h2>
+    <div class="seg" id="rollSeg" role="tablist" aria-label="Length of the stretch" style="margin-bottom:10px"></div>
+    <p class="scoreline" id="rollLine" style="margin:0 0 6px"></p>
+    <div class="mchart" id="rollChart"></div>
+    <div class="legend" id="rollLegend"></div>
+    <div id="rollTable"></div>
+    <p class="note" id="rollFoot"></p>
+  </section>
+
   <section id="scoreWrap" hidden>
     <h2>Estimate vs actual NAV <span id="scoreNote"></span></h2>
     <div id="scoreBody"></div>
@@ -692,6 +707,13 @@
     <div class="seg" id="ideasSeg" role="tablist" aria-label="Asset type"></div>
     <div id="ideasBody"></div>
     <div id="ideasRecord"></div>
+  </section>
+
+  <section id="withdrawWrap" hidden>
+    <h2>Need money? The cheapest way to raise it <span id="withdrawNote"></span></h2>
+    <div class="wd-in"><label for="wdAmt">I need</label><span class="wd-rs">₹</span><input id="wdAmt" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 500000" aria-label="Amount you need in rupees">
+      <span class="wd-chips" id="wdChips"></span></div>
+    <div id="withdrawBody"></div>
   </section>
 
   <div class="hline" id="healthLine" hidden></div>
@@ -3523,6 +3545,148 @@ function setupTheme() {
   paint();
 }
 
+// ---- Rolling returns: how any 1, 3 or 5 year stretch of this portfolio's history turned out (time-weighted, so new money doesn't flatter it)
+function rollingReturns(dates, idx, years) {
+  const ts = dates.map(d => Date.parse(d + "T00:00:00")), out = []; let j = 0;
+  for (let i = 0; i < dates.length; i++) {
+    const target = ts[i] - years * 365.25 * 86400000;
+    if (target < ts[0]) continue;
+    while (j + 1 <= i && ts[j + 1] <= target) j++;
+    const r = idx[i] / idx[j];
+    if (r > 0 && isFinite(r)) out.push({ d: dates[i], v: years === 1 ? (r - 1) * 100 : (Math.pow(r, 1 / years) - 1) * 100 });
+  }
+  return out;
+}
+function rollStats(rs) {
+  if (!rs.length) return null;
+  const v = rs.map(x => x.v).sort((a, b) => a - b), q = f => v[Math.min(v.length - 1, Math.max(0, Math.floor(f * (v.length - 1))))], last = rs[rs.length - 1];
+  return { n: rs.length, pos: v.filter(x => x > 0).length / v.length * 100, median: q(0.5), p10: q(0.1), worst: v[0], best: v[v.length - 1], latest: last.v, lastD: last.d,
+    rank: v.filter(x => x <= last.v).length / v.length * 100, worstD: rs.find(x => x.v === v[0]).d };
+}
+const ROLL = { y: 1 };
+function renderRolling() {
+  const wrap = $("rollWrap"), pts = histPoints();
+  if (pts.length < 300) { wrap.hidden = true; return; }
+  const dates = pts.map(p => p.d), me = twrIndex(pts, "v"), key = ["n", "m"].find(k => pts.filter(p => num(p[k])).length > 0.9 * pts.length), bench = key && pts.every(p => num(p[key])) ? twrIndex(pts, key) : null;
+  const years = [1, 3, 5].filter(y => rollingReturns(dates, me, y).length > 60);
+  if (!years.length) { wrap.hidden = true; return; }
+  if (!years.includes(ROLL.y)) ROLL.y = years[0];
+  wrap.hidden = false;
+  $("rollNote").textContent = "every " + ROLL.y + "-year stretch in your history · percentages, new money left out";
+  $("rollSeg").innerHTML = years.map(y => '<button role="tab" aria-selected="' + (y === ROLL.y) + '" data-y="' + y + '">' + y + " year" + (y > 1 ? "s" : "") + "</button>").join("");
+  $("rollSeg").querySelectorAll("button").forEach(b => b.onclick = () => { ROLL.y = +b.dataset.y; renderRolling(); });
+  const rs = rollingReturns(dates, me, ROLL.y), st = rollStats(rs), bst = bench ? rollStats(rollingReturns(dates, bench, ROLL.y)) : null, per = ROLL.y > 1 ? " a year" : "";
+  const word = ROLL.y === 1 ? "12-month" : ROLL.y + "-year";
+  $("rollLine").innerHTML = "Over <b>" + st.n.toLocaleString("en-IN") + "</b> different " + word + " stretches in your history, you were up in <b>" + st.pos.toFixed(0) + "%</b> of them. A typical one returned <b>" + pcs(st.median, 1) + per + "</b>; a bad one (the worst tenth) <b>" + pcs(st.p10, 1) + per + "</b>; the very worst was <b class=\"neg\">" + pcs(st.worst, 1) + per + "</b> (ending " + dmon(st.worstD) + " " + st.worstD.slice(0, 4) + "). " +
+    "The latest " + word + " stretch: <b class=\"" + (st.latest >= 0 ? "pos" : "neg") + "\">" + pcs(st.latest, 1) + per + "</b>, better than <b>" + st.rank.toFixed(0) + "%</b> of the stretches so far.";
+  // chart: the rolling return over time, zero line, green above and red below
+  const host = $("rollChart"), W = Math.max(300, host.clientWidth || 800), narrow = W < 520, H = narrow ? 200 : 240, m = { l: narrow ? 40 : 52, r: 14, t: 10, b: 26 };
+  const vals = rs.map(x => x.v), lo0 = Math.min(0, ...vals), hi0 = Math.max(0, ...vals), pad = (hi0 - lo0) * .08, ticks = niceTicks(lo0 - pad, hi0 + pad, 4), y0 = ticks[0], y1 = ticks[ticks.length - 1];
+  const t = d => Date.parse(d + "T00:00:00"), x0 = t(rs[0].d), x1 = t(rs[rs.length - 1].d), X = d => m.l + (t(d) - x0) / ((x1 - x0) || 1) * (W - m.l - m.r), Y = q => H - m.b - (q - y0) / (y1 - y0) * (H - m.t - m.b), f1 = n => n.toFixed(1);
+  const line = rs.map((x, k) => (k ? "L" : "M") + f1(X(x.d)) + " " + f1(Y(x.v))).join(" "), area = line + " L" + f1(X(rs[rs.length - 1].d)) + " " + f1(Y(0)) + " L" + f1(X(rs[0].d)) + " " + f1(Y(0)) + " Z";
+  const xt = [0, 1, 2, 3, 4].map(k => rs[Math.round(k * (rs.length - 1) / 4)].d), id = "rc" + ROLL.y;
+  host.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" height="' + H + '" role="img" aria-label="Rolling ' + ROLL.y + ' year return of the portfolio"><defs><clipPath id="' + id + 'u"><rect x="0" y="0" width="' + W + '" height="' + f1(Y(0)) + '"/></clipPath><clipPath id="' + id + 'd"><rect x="0" y="' + f1(Y(0)) + '" width="' + W + '" height="' + H + '"/></clipPath></defs>' +
+    ticks.map(q => '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + f1(Y(q)) + '" y2="' + f1(Y(q)) + '" stroke="' + (q === 0 ? "#97999b" : "#ececec") + '"/><text x="' + (m.l - 7) + '" y="' + f1(Y(q) + 3) + '" font-size="10.5" text-anchor="end" fill="#97999b">' + (q === 0 ? "0%" : Math.round(q) + "%") + "</text>").join("") +
+    xt.map((d, k) => '<text x="' + f1(X(d)) + '" y="' + (H - 7) + '" font-size="10.5" text-anchor="' + (k === 0 ? "start" : k === 4 ? "end" : "middle") + '" fill="#97999b">' + new Date(d + "T00:00:00").toLocaleDateString("en-IN", { month: "short", year: "2-digit" }) + "</text>").join("") +
+    '<path d="' + area + '" clip-path="url(#' + id + 'u)" fill="rgba(134,188,37,.22)"/><path d="' + area + '" clip-path="url(#' + id + 'd)" fill="rgba(218,41,28,.16)"/>' +
+    (bench ? '<path d="' + rollingReturns(dates, bench, ROLL.y).map((x, k) => (k ? "L" : "M") + f1(X(x.d)) + " " + f1(Y(x.v))).join(" ") + '" fill="none" stroke="#3d5a80" stroke-width="1.3" stroke-dasharray="4 3"/>' : "") +
+    '<path d="' + line + '" fill="none" stroke="#5f8a15" stroke-width="1.9" stroke-linejoin="round"/><circle cx="' + f1(X(rs[rs.length - 1].d)) + '" cy="' + f1(Y(st.latest)) + '" r="4" fill="#5f8a15"/>' +
+    '<line id="rguide" y1="' + m.t + '" y2="' + (H - m.b) + '" stroke="#97999b" stroke-dasharray="3 3" visibility="hidden"/><rect id="rhit" x="' + m.l + '" y="' + m.t + '" width="' + (W - m.l - m.r) + '" height="' + (H - m.t - m.b) + '" fill="transparent"/></svg><div class="ptip" id="rtip" hidden></div>';
+  const svg = host.querySelector("svg"), tip = $("rtip"), bs = bench ? rollingReturns(dates, bench, ROLL.y) : null;
+  const move = e => { const r = svg.getBoundingClientRect(), px = ((e.touches ? e.touches[0].clientX : e.clientX) - r.left) * (W / r.width); let bi = 0;
+    rs.forEach((x, k) => { if (Math.abs(X(x.d) - px) < Math.abs(X(rs[bi].d) - px)) bi = k; });
+    const gx = X(rs[bi].d); $("rguide").setAttribute("x1", gx); $("rguide").setAttribute("x2", gx); $("rguide").setAttribute("visibility", "visible"); tip.hidden = false;
+    const bv = bs && bs.find(z => z.d === rs[bi].d);
+    tip.innerHTML = "<b>" + rs[bi].d.split("-").reverse().join("-") + "</b><br>" + pcs(rs[bi].v, 1) + per + " over the " + word + " stretch ending here" + (bv ? '<br><span class="m">' + CMP_NAME[key] + ": " + pcs(bv.v, 1) + per + "</span>" : "");
+    tip.style.left = Math.min(Math.max(gx * (r.width / W) - tip.offsetWidth / 2, 0), r.width - tip.offsetWidth) + "px"; tip.style.top = "6px"; };
+  const hide = () => { tip.hidden = true; $("rguide").setAttribute("visibility", "hidden"); }, hit = $("rhit");
+  hit.addEventListener("mousemove", move); hit.addEventListener("mouseleave", hide); hit.addEventListener("touchstart", move, { passive: true }); hit.addEventListener("touchmove", move, { passive: true }); hit.addEventListener("touchend", hide);
+  $("rollLegend").innerHTML = '<span><i></i>Your portfolio</span>' + (bench ? '<span><i class="d" style="border-top-color:#3d5a80"></i>' + CMP_NAME[key] + " (same dates)</span>" : "");
+  $("rollTable").innerHTML = '<table class="mini" style="margin-top:12px"><thead><tr><th>Over any…</th><th>Up in</th><th>Typical</th><th>Bad (worst tenth)</th><th>Worst</th><th>Best</th>' + (bst ? "<th>" + esc(CMP_NAME[key]) + " typical</th>" : "") + "</tr></thead><tbody>" +
+    years.map(y => { const s2 = rollStats(rollingReturns(dates, me, y)), b2 = bench ? rollStats(rollingReturns(dates, bench, y)) : null, u = y > 1 ? " a yr" : "";
+      return "<tr" + (y === ROLL.y ? ' class="best"' : "") + "><td>" + y + (y === 1 ? " year" : " years") + "</td><td>" + s2.pos.toFixed(0) + '%</td><td class="' + (s2.median >= 0 ? "pos" : "neg") + '">' + pcs(s2.median, 1) + u + '</td><td class="neg">' + pcs(s2.p10, 1) + u + '</td><td class="neg">' + pcs(s2.worst, 1) + u + '</td><td class="pos">' + pcs(s2.best, 1) + u + "</td>" + (bst ? "<td>" + (b2 ? pcs(b2.median, 1) + u : "—") + "</td>" : "") + "</tr>"; }).join("") + "</tbody></table>";
+  $("rollFoot").textContent = "Every stretch counts, including overlapping ones, so a single bad market shows up in many of them. This is one slice of history (mostly a rising market for equities), measured on your portfolio as it was held at each time, so it is a guide to how bumpy the road can be, not a forecast. Returns over 3 and 5 years are per year.";
+}
+window.addEventListener("resize", () => { if (!$("rollWrap").hidden) safe(renderRolling, "rollWrap"); });
+
+// ---- Need money? Which fund to sell from to pay the least tax (oldest units are sold first, as platforms do)
+function taxOn(st, lt, rates, realized) {                      // short-term and long-term gains in this sale -> tax, with this year's gains so far and the tax-free allowance
+  let s = st + (realized.st || 0), l = lt + (realized.lt || 0);
+  if (s < 0) { l += s; s = 0; }                                 // a short-term loss can be set against long-term gains
+  l = Math.max(0, l);
+  const taxable = Math.max(0, l - rates.exempt);
+  return (Math.max(0, s) * rates.st + taxable * rates.lt) * (1 + rates.cess);
+}
+function planWithdrawal(funds, amount, rates, realized) {
+  // funds: [{id,name,lots:[{date,units,value,gain,term}]}] (lots in the order they would be sold); amount in rupees
+  const state = funds.map(f => ({ id: f.id, name: f.name, i: 0, left: f.lots.length ? f.lots[0].value : 0, taken: 0, st: 0, lt: 0, first: null, last: null, lotsTouched: 0, units: 0, nav: f.nav }));
+  const lots = funds.map(f => f.lots), avail = f => state[f].i < lots[f].length, base = taxOn(0, 0, rates, realized);
+  const take = (fi, amt) => { const sf = state[fi], out = { st: 0, lt: 0 }; let need = amt;
+    while (need > 0.5 && avail(fi)) { const lot = lots[fi][sf.i], piece = Math.min(need, sf.left), frac = lot.value > 0 ? piece / lot.value : 0;
+      out[lot.term === "short" ? "st" : "lt"] += lot.gain * frac; need -= piece; sf.left -= piece; sf.taken += piece; sf.units += lot.units * frac;
+      if (!sf.first && sf.first !== 0) sf.first = lot.date; sf.last = lot.date; sf.lotsTouched++;
+      if (sf.left <= 0.5) { sf.i++; sf.left = avail(fi) ? lots[fi][sf.i].value : 0; } }
+    sf[ "st" ] += out.st; sf[ "lt" ] += out.lt; return amt - need; };
+  const total = funds.reduce((t, f) => t + f.lots.reduce((u, l) => u + l.value, 0), 0);
+  if (!(amount > 0) || amount > total + 0.5) return { ok: false, total };
+  // greedy: hand out the money in small steps, each time to the fund whose next step adds the least tax
+  const step = Math.max(500, amount / 250); let given = 0;
+  while (given < amount - 0.5) {
+    const chunk = Math.min(step, amount - given); let best = -1, bestTax = Infinity;
+    for (let fi = 0; fi < funds.length; fi++) { if (!avail(fi)) continue;
+      const snap = JSON.stringify(state[fi]), idx = state[fi].i, left = state[fi].left, got = take(fi, chunk);
+      const tax = taxOn(state.reduce((t, s) => t + s.st, 0), state.reduce((t, s) => t + s.lt, 0), rates, realized);
+      Object.assign(state[fi], JSON.parse(snap)); state[fi].i = idx; state[fi].left = left;                      // undo the trial
+      if (got > 0 && tax < bestTax - 1e-9) { bestTax = tax; best = fi; } }
+    if (best < 0) break;
+    given += take(best, chunk);
+  }
+  const split = state.filter(s => s.taken > 0.5), tax = taxOn(split.reduce((t, s) => t + s.st, 0), split.reduce((t, s) => t + s.lt, 0), rates, realized) - base;
+  // the same amount from each single fund, for comparison
+  const single = funds.map((f, fi) => { const one = planOne(f, amount, rates, realized); return one && { id: f.id, name: f.name, tax: one.tax, st: one.st, lt: one.lt }; }).filter(Boolean);
+  return { ok: true, total, split, tax, single, st: split.reduce((t, s) => t + s.st, 0), lt: split.reduce((t, s) => t + s.lt, 0) };
+}
+function planOne(f, amount, rates, realized) {
+  let need = amount, st = 0, lt = 0;
+  for (const lot of f.lots) { if (need <= 0.5) break; const piece = Math.min(need, lot.value), frac = lot.value > 0 ? piece / lot.value : 0; (lot.term === "short" ? (st += lot.gain * frac) : (lt += lot.gain * frac)); need -= piece; }
+  return need > 0.5 ? null : { st, lt, tax: taxOn(st, lt, rates, realized) - taxOn(0, 0, rates, realized) };
+}
+const WD = { amt: "" };
+function wdFunds() {
+  const T = TAX; if (!isObj(T) || !Array.isArray(T.funds) || !isObj(T.rates)) return null;
+  const r = T.rates, fy = T.fy || {}, rates = { st: (+r.stcg_pct || 0) / 100, lt: (+r.ltcg_pct || 0) / 100, cess: (+r.cess_pct || 0) / 100, exempt: +r.ltcg_exempt_inr || 0 };
+  const funds = T.funds.filter(f => f && typeof f.name === "string" && Array.isArray(f.lots) && num(f.nav)).map(f => ({ id: f.id, name: f.name, nav: f.nav,
+    lots: f.lots.filter(l => l && num(l.units) && num(l.value) && num(l.gain) && l.value > 0 && (l.term === "long" || l.term === "short")).slice().sort((a, b) => (a.date || "0000") < (b.date || "0000") ? -1 : (a.date || "0000") > (b.date || "0000") ? 1 : 0) })).filter(f => f.lots.length);
+  return funds.length ? { funds, rates, realized: { st: num(fy.realized_stcg) ? fy.realized_stcg : 0, lt: num(fy.realized_ltcg) ? fy.realized_ltcg : 0 } } : null;
+}
+function renderWithdraw() {
+  const wrap = $("withdrawWrap"), D = wdFunds();
+  if (!D) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  $("withdrawNote").textContent = "uses your real purchase lots and this year's tax-free room";
+  $("wdChips").innerHTML = [100000, 500000, 1000000].map(v => '<button type="button" class="ghost" data-v="' + v + '">' + cl(v) + "</button>").join("");
+  const input = $("wdAmt"), run = () => {
+    WD.amt = input.value; const amount = parseFloat(String(input.value).replace(/[^\d.]/g, "")), body = $("withdrawBody");
+    if (!input.value.trim()) { body.innerHTML = '<p class="sub2">Type an amount (or tap one) and I will show which fund to sell from so the tax is as low as it can be.</p>'; return; }
+    if (!(amount > 0)) { body.innerHTML = '<p class="sub2">Enter the amount as a number, for example 500000.</p>'; return; }
+    const P = planWithdrawal(D.funds, amount, D.rates, D.realized);
+    if (!P.ok) { body.innerHTML = '<p class="note">That is more than your funds are worth (' + cl(P.total) + "). Try a smaller amount.</p>"; return; }
+    const short = f => shortName(f.name || f), room = Math.max(0, D.rates.exempt - Math.max(0, D.realized.lt));
+    const best = P.single.length ? P.single.reduce((m, x) => x.tax < m.tax ? x : m, P.single[0]) : null;
+    body.innerHTML = '<p class="scoreline" style="margin-top:0">To raise <b>' + cl(amount) + "</b>, " + (P.tax < -1 ? "selling these units would actually <b>lower</b> this year's tax by <b>" + cl(-P.tax) + "</b>, because their losses offset gains you have already booked" : "the lowest tax is <b>" + (P.tax < 1 ? "nothing" : cl(P.tax)) + "</b>" + (P.tax < 1 ? ", because the gains fit inside your tax-free room" : "")) + ". You would receive about <b>" + cl(amount - Math.max(0, P.tax)) + "</b>" + (P.tax >= 1 ? " after that" : "") + ".</p>" +
+      '<table class="mini"><thead><tr><th>Sell from</th><th>Amount</th><th>Units (about)</th><th>Which units</th><th>Gain made</th></tr></thead><tbody>' +
+      P.split.map(s => "<tr><td>" + esc(shortName(s.name)) + "</td><td><b>" + cl(s.taken) + "</b></td><td>" + Math.round(s.units).toLocaleString("en-IN") + '</td><td style="text-align:left;padding-left:14px" class="sub2">oldest first' + (s.first ? ", from " + dshort(s.first) : "") + (s.st > 0.5 && s.lt <= 0.5 ? " · short-term" : s.st > 0.5 ? " · includes short-term" : " · all long-term") + "</td><td>" + sgc(s.st + s.lt) + "</td></tr>").join("") + "</tbody></table>" +
+      (best && best.tax - P.tax > 1 && P.split.length > 1 ? '<p class="sub2" style="margin:10px 0 0">Simplest alternative: sell it all from ' + esc(shortName(best.name)) + ", which costs " + cl(best.tax) + " (" + cl(best.tax - P.tax) + " more).</p>" : "") +
+      '<div class="rr-sub" style="margin-top:18px">What the same amount would cost from one fund alone</div><table class="mini"><thead><tr><th>Only from</th><th>Tax</th><th>Long-term gain</th><th>Short-term gain</th></tr></thead><tbody>' +
+      P.single.map(x => "<tr" + (best && x.id === best.id ? ' class="best"' : "") + "><td>" + esc(shortName(x.name)) + '</td><td class="' + (x.tax < 1 ? "pos" : "") + '">' + (x.tax < -1 ? "saves " + cl(-x.tax) : x.tax < 1 ? "₹0" : cl(x.tax)) + "</td><td>" + sgc(x.lt) + "</td><td>" + sgc(x.st) + "</td></tr>").join("") + "</tbody></table>" +
+      '<p class="note" style="margin-top:14px">Rates used: short-term ' + Math.round(D.rates.st * 100) + "%, long-term " + D.rates.lt * 100 + "% above " + cl(D.rates.exempt) + " a year, plus " + Math.round(D.rates.cess * 100) + "% cess; about <b>" + cl(room) + "</b> of this year's tax-free long-term room is still unused. Mutual-fund platforms redeem the oldest units first, so that is what this assumes. " +
+      "Not included: exit load (many equity funds charge about 1% on units sold within a year), the very small transaction tax, and gains or losses on anything outside these funds. Check the current rules for the year: this is a planning estimate, not tax advice.</p>";
+  };
+  input.oninput = run; input.value = WD.amt;
+  $("wdChips").querySelectorAll("button").forEach(b => b.onclick = () => { input.value = b.dataset.v; run(); });
+  run();
+}
+
 // ---- hide amounts
 // Some sentences are written by the nightly jobs ("your portfolio moved about +₹91,615", the tax figure in the advice). Those
 // are scrubbed here instead. Market figures stay: crore amounts (flows, headlines) and per-unit NAVs are public.
@@ -3579,8 +3743,8 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   FCHANGES = await loadJson("data/fund_changes.json", isObj, null);
   FUNDHIST = await loadJson("data/fund_history.json", isObj, null);
   setupHide();
-  renderReturns(); renderTax(); renderStatementBar();
-  safe(renderMoney, "moneyWrap"); safe(renderDrawdown, "ddWrap"); safe(renderSectors, "sectorWrap"); safe(renderOverlap, "overlapWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(setupToTop); safe(renderFundBench, "fundBenchWrap"); safe(renderChanges, "changesWrap"); safe(renderRecap, "recapWrap"); safe(renderIdeas, "ideasWrap"); safe(renderHealthLine); safe(renderTxBar); safe(renderDataBar); safe(startVersionWatch); safe(setupStatus); safe(setupTheme); safe(setupNav);
+  safe(renderReturns, "retWrap"); safe(renderTax, "taxWrap"); safe(renderStatementBar, "stmtBar");
+  safe(renderMoney, "moneyWrap"); safe(renderDrawdown, "ddWrap"); safe(renderRolling, "rollWrap"); safe(renderSectors, "sectorWrap"); safe(renderOverlap, "overlapWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(setupToTop); safe(renderFundBench, "fundBenchWrap"); safe(renderChanges, "changesWrap"); safe(renderRecap, "recapWrap"); safe(renderWithdraw, "withdrawWrap"); safe(renderIdeas, "ideasWrap"); safe(renderHealthLine); safe(renderTxBar); safe(renderDataBar); safe(startVersionWatch); safe(setupStatus); safe(setupTheme); safe(setupNav);
   renderCompare();
   loadNews();
   loadOutlook();

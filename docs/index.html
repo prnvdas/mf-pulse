@@ -12,7 +12,8 @@
 <script>try{var t=localStorage.getItem("mfp_theme");if(t!=="light"&&t!=="dark")t=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"></noscript>
 <style>
   :root{
     --ink:#000;--on-ink:#fff;--paper:#fff;--navbg:rgba(255,255,255,.96);--amber:#a86d00;--amber-deep:#8a5a00;--green-dark:#3d6a0a;--green:#86bc25;--green-deep:#5f8a15;--red:#da291c;
@@ -1630,8 +1631,7 @@ function renderOutlook() {
     '<div class="orow"><span class="ok">Track record</span><span>' + recTxt + callRec + early + gRec + "</span></div>" + detail;
 }
 async function loadOutlook() {
-  OUTLOOK = await fetch("data/outlook.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => OUTLOOK);
-  GIFT = await loadJson("data/gift.json?t=" + Date.now(), isObj, GIFT);
+  [OUTLOOK, GIFT] = await Promise.all([fetch("data/outlook.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => OUTLOOK), loadJson("data/gift.json?t=" + Date.now(), isObj, GIFT)]);
   renderOutlook(); renderHeaderChips(); renderTicker();
 }
 
@@ -1673,8 +1673,7 @@ function renderHeaderChips() {
 }
 
 async function loadAdvisor() {
-  MOOD = await loadJson("data/mood.json?t=" + Date.now(), isObj, MOOD);
-  ADVISOR = await loadJson("data/advisor.json?t=" + Date.now(), isObj, ADVISOR);
+  [MOOD, ADVISOR] = await Promise.all([loadJson("data/mood.json?t=" + Date.now(), isObj, MOOD), loadJson("data/advisor.json?t=" + Date.now(), isObj, ADVISOR)]);
   renderTicker(); renderValuation(); renderAdvisor(); renderHeaderChips();
 }
 
@@ -3726,22 +3725,30 @@ function loadJson(url, valid, fallback) {
 const isObj = j => j && typeof j === "object" && !Array.isArray(j);
 
 (async () => {
-  CFG = await loadJson("data/config.json", j => isObj(j) && Array.isArray(j.funds) && j.funds.length, DEMO);
-  ACC = await loadJson("data/accuracy.json", isObj, { samples: 0 });
-  HIST = await loadJson("data/history.json", Array.isArray, []);
-  ANALYTICS = await fetch("data/analytics.json", { cache: "no-store" })
-    .then(r => r.ok ? r.json() : null).catch(() => null);
+  // Start every data request at once: they used to run one after another (about fifteen round trips before anything but the
+  // header could appear), which is what makes a page feel slow on a real connection. Each is still awaited where it is used.
+  const get = (u, v, f) => loadJson(u, v, f);
+  const pCfg = get("data/config.json", j => isObj(j) && Array.isArray(j.funds) && j.funds.length, DEMO), pAcc = get("data/accuracy.json", isObj, { samples: 0 }), pHist = get("data/history.json", Array.isArray, []),
+    pAn = fetch("data/analytics.json", { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => null), pHol = get("data/holidays.json", isObj, null), pTax = get("data/tax.json", isObj, null),
+    pPhist = get("data/portfolio_history.json", j => isObj(j) && Array.isArray(j.points), null), pFh = get("data/fund_health.json", j => isObj(j) && Array.isArray(j.funds), null), pPicks = get("data/picks.json", isObj, null),
+    pRecap = get("data/recap.json", isObj, null), pChanges = get("data/fund_changes.json", isObj, null), pFundHist = get("data/fund_history.json", isObj, null),
+    pMovers = get("data/movers.json", Array.isArray, []),
+    pLatest = fetch("data/latest.json", { cache: "no-store" }).then(r => r.ok ? r.json() : Promise.reject()).catch(() => null);
+  CFG = await pCfg;
+  ACC = await pAcc;
+  HIST = await pHist;
+  ANALYTICS = await pAn;
   loadAdvisor();
-  const hd = await loadJson("data/holidays.json", isObj, null);
+  const hd = await pHol;
   HOLS = {}; ((hd && hd.holidays) || []).forEach(h => { if (h && h.date) HOLS[h.date] = h; });
   renderHolidayBar();
-  TAX = await loadJson("data/tax.json", isObj, null);
-  PHIST = await loadJson("data/portfolio_history.json", j => isObj(j) && Array.isArray(j.points), null);
-  FHEALTH = await loadJson("data/fund_health.json", j => isObj(j) && Array.isArray(j.funds), null);
-  PICKS = await loadJson("data/picks.json", isObj, null);
-  RECAP = await loadJson("data/recap.json", isObj, null);
-  FCHANGES = await loadJson("data/fund_changes.json", isObj, null);
-  FUNDHIST = await loadJson("data/fund_history.json", isObj, null);
+  TAX = await pTax;
+  PHIST = await pPhist;
+  FHEALTH = await pFh;
+  PICKS = await pPicks;
+  RECAP = await pRecap;
+  FCHANGES = await pChanges;
+  FUNDHIST = await pFundHist;
   setupHide();
   safe(renderReturns, "retWrap"); safe(renderTax, "taxWrap"); safe(renderStatementBar, "stmtBar");
   safe(renderMoney, "moneyWrap"); safe(renderDrawdown, "ddWrap"); safe(renderRolling, "rollWrap"); safe(renderSectors, "sectorWrap"); safe(renderOverlap, "overlapWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(setupToTop); safe(renderFundBench, "fundBenchWrap"); safe(renderChanges, "changesWrap"); safe(renderRecap, "recapWrap"); safe(renderWithdraw, "withdrawWrap"); safe(renderIdeas, "ideasWrap"); safe(renderHealthLine); safe(renderTxBar); safe(renderDataBar); safe(startVersionWatch); safe(setupStatus); safe(setupTheme); safe(setupNav);
@@ -3751,15 +3758,14 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   renderHistoryTable();
   renderHitMiss();
 
-  const latest = await fetch("data/latest.json", { cache: "no-store" })
-    .then(r => r.ok ? r.json() : Promise.reject()).catch(() => null);
+  const latest = await pLatest;
 
   if (latest && latest.funds) {
     const a = adaptLatest(latest);
     LAST_BATCH = a;
     render(a.funds, { priced: a.priced, requested: a.total || a.priced,
       blend: "estimate.py, " + a.resolved + "/" + a.total + " tickers", phase: a.phase });
-    MOVERS = await loadJson("data/movers.json", Array.isArray, []);
+    MOVERS = await pMovers;
     setupMoversPicker(latest.movers);
       stampBatch(a);
     MARKET = a.market || []; COMMS = a.commodities || []; renderTicker(); safe(startLiveQuotes);

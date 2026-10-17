@@ -98,9 +98,11 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
   await p.clock.install({time:new Date('2026-10-12T08:30:00Z')});const U=process.env.BASE||'http://localhost:8000/index.html';
   await p.goto(U,{waitUntil:'networkidle'});await p.waitForTimeout(400);
   ok(await p.evaluate(()=>document.documentElement.dataset.theme)==='light','light system -> light page');
+  ok(await p.$eval('.sky',e=>getComputedStyle(e).display==='none'),'no sky in the light theme');
   await p.click('#themeBtn');ok(await p.evaluate(()=>document.documentElement.dataset.theme)==='dark','click switches to dark');
   ok(await p.evaluate(()=>getComputedStyle(document.documentElement).backgroundColor)==='rgb(5, 7, 15)','dark space background applied');
   ok(/light theme/i.test(await p.$eval('#themeBtn',e=>e.getAttribute('aria-label'))),'button now offers light');
+  ok(await p.$eval('.sky',e=>getComputedStyle(e).display==='block')&&await p.$$eval('.sky i',a=>a.length)===3,'sky with shooting stars in the dark theme');
   await p.reload({waitUntil:'networkidle'});ok(await p.evaluate(()=>document.documentElement.dataset.theme)==='dark','choice is remembered after reload');
   await p.click('#themeBtn');ok(await p.evaluate(()=>document.documentElement.dataset.theme)==='light'&&await p.evaluate(()=>localStorage.getItem('mfp_theme'))==='light','and switches back');
   ok(!errs.length,'theme errs',errs[0]);await ctx.close();}

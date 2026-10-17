@@ -40,7 +40,6 @@ const URL=process.env.BASE||(process.env.BASE||'http://localhost:8000/index.html
  for (const w of [1200,390]) {const {p,ctx,errs}=await page('2026-10-12T08:30:00Z',{portfolio_history:longHist},w);
   ok(await p.$$eval('#moneyRange button',b=>b.length===4),'range tabs '+w); await p.click('#moneyRange button[data-r="1Y"]'); ok(/1 trading days|trading days/.test(await p.$eval('#moneyNote',e=>e.textContent)),'1Y range');
   const n1=parseInt((await p.$eval('#moneyNote',e=>e.textContent)).match(/(\d+) trading/)[1]); await p.click('#moneyRange button[data-r="All"]'); const n2=parseInt((await p.$eval('#moneyNote',e=>e.textContent)).match(/(\d+) trading/)[1]); ok(n1<n2,'range filters',n1+' vs '+n2);
-  ok(/transaction report/.test(await p.$eval('#moneyFoot',e=>e.textContent)),'tx footnote');
   await p.hover('#mhit',{position:{x:200,y:60}}); ok(await p.$eval('#mtip',e=>!e.hidden),'tooltip long'); await p.click('#calPrev'); ok(!errs.length,'long history errors '+w,errs[0]);
   await (await p.$('#moneyWrap')).screenshot({path:`w_long_${w}.png`}); await ctx.close();}
  console.log(`${n-fail}/${n} passed`); await b.close(); process.exit(fail?1:0);})();

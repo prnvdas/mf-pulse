@@ -585,7 +585,6 @@
     <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:16px"><div class="seg" id="moneySeg" role="tablist" aria-label="Chart view" style="margin:0"></div><div class="seg" id="moneyRange" role="tablist" aria-label="Period" style="margin:0"></div><div class="seg" id="moneyCmp" role="tablist" aria-label="Compare with an index" style="margin:0"></div></div>
     <div class="mchart" id="moneyChart"></div>
     <div class="legend" id="moneyLegend"></div>
-    <p class="note" id="moneyFoot"></p>
   </section>
   <section id="ddWrap" hidden>
     <h2>Falls and recoveries <span id="ddNote"></span></h2>
@@ -602,7 +601,6 @@
     <div class="mchart" id="rollChart"></div>
     <div class="legend" id="rollLegend"></div>
     <div id="rollTable"></div>
-    <p class="note" id="rollFoot"></p>
   </section>
 
   <section id="scoreWrap" hidden>
@@ -649,11 +647,6 @@
         <tbody id="projTable"></tbody>
       </table></div>
     </details>
-    <p class="note">Illustration only, not a forecast. It compounds today's value and your SIP at one fixed
-      yearly return, with no interruptions, fund switches or SIP changes; the first year counts only the SIPs
-      still to come. 12% is a common long-run planning assumption; 15%, 18% and 22% are optimistic scenarios,
-      and holding 22% for decades would be exceptional. Real markets move unevenly and results can differ a
-      lot. Edit the scenarios under <code>projection</code> in <code>config/portfolio.yaml</code>.</p>
   </section>
   <section id="whyWrap" class="why" hidden>
     <h2 id="whyTitle">Why the market moved</h2>
@@ -683,7 +676,6 @@
     <p class="scoreline" id="fundBenchLine" style="margin:6px 0 0"></p>
     <div class="mchart" id="fundBenchChart"></div>
     <div class="legend" id="fundBenchLegend"></div>
-    <p class="note" id="fundBenchFoot"></p>
   </section>
 
   <section id="healthWrap" hidden>
@@ -1817,8 +1809,6 @@ function renderReturns() {
     h += '<div class="rr-sub">By fund and folio</div><div class="scroll"><table><thead><tr><th>Fund</th><th>Invested</th><th>Value</th><th>Total return</th><th>XIRR</th><th>Benchmark XIRR</th><th>Difference</th></tr></thead><tbody>' + rows.join("") + "</tbody></table></div>";
   }
   const rb = P && P.rebuilt_xirr_pct;
-  h += '<p class="note" style="margin-top:18px">Portfolio and folio XIRRs are Groww\'s exact figures. Fund-level XIRRs (marked ≈) are estimated by rebuilding when each folio\'s money went in; doing that for the whole portfolio gives ' + (rb != null ? pcs(rb, 2) : "about the same") + " against Groww's " + (x != null ? pcs(x, 2) : "figure") +
-    ", so read the fund-level ones as good to about half a point. Benchmark XIRR invests the same amounts on the same dates in the fund's benchmark index (price index, so it leaves out about 1% a year of dividends, which makes the benchmark look slightly worse than it is). For exact per-fund figures, add your purchase history in <code>config/transactions.csv</code>.</p>";
   $("retBody").innerHTML = h;
 }
 
@@ -1867,8 +1857,6 @@ function renderTax() {
     h += '<div class="rr-sub">Short-term units about to turn long-term</div><div class="scroll"><table><thead><tr><th>Fund</th><th>Bought</th><th>Turns long-term on</th><th>Days</th><th>Gain</th><th>Tax saved by waiting</th></tr></thead><tbody>' +
       U.map(u => "<tr><td>" + esc(u.fund.replace(" Direct Growth", "").replace(" Fund", "")) + (u.folio ? " " + esc(u.folio) : "") + "</td><td>" + (u.approx ? "≈ " : "") + dshort(u.date) + "</td><td>" + new Date(u.turns_long_on + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) + "</td><td>" + u.days_left + "</td><td>" + signed(u.gain) + "</td><td>" + inr(u.tax_saved_by_waiting) + "</td></tr>").join("") + "</tbody></table></div>";
   }
-  h += '<p class="note" style="margin-top:20px">Rates used: short-term ' + rt.stcg_pct + "%, long-term " + rt.ltcg_pct + "% above " + cl(rt.ltcg_exempt_inr) + " a year, plus " + rt.cess_pct + "% cess, for equity-oriented funds held more than " + Math.round(rt.long_term_days / 30) + " months for long-term. " +
-    "These are the rules as last known to the author; <b>check the current year's rules</b> and edit <code>tax:</code> in config/portfolio.yaml if they changed. Surcharge, exit loads and gains or losses outside these funds are not included. A planning estimate, not tax advice.</p>";
   $("taxBody").innerHTML = h;
 }
 
@@ -2820,10 +2808,6 @@ function renderMoney() {
     ? '<span><i></i>Gain = what it is worth minus what you put in</span>'
     : '<span><i></i>Worth</span><span><i class="d"></i>Put in</span><span><i class="g"></i>The gap is your gain</span>';
   if (cmp && num(z[cmp])) $("moneyLegend").innerHTML += '<span><i style="border-top-color:#3d5a80"></i>' + CMP_NAME[cmp] + ", same money</span>";
-  $("moneyFoot").innerHTML = PHIST && PHIST.basis === "your transaction report"
-    ? "Built from your own transaction report: units and money in are running totals of what you actually bought and sold, valued at each day's published NAV. A new point is added every trading night."
-    : "Rebuilt from your exact holdings today with each SIP taken back out at that day's NAV, so it assumes nothing else was bought or sold since " + dmon(a.d) +
-    ". A new point is added every trading night, so this grows into a long history. Earlier years aren't recorded anywhere, because a Groww statement only gives today's totals.";
   MONEY.pts = pts;
   drawMoneyChart(pts);
 }
@@ -2986,8 +2970,7 @@ function renderHealth() {
     return "<div><h3><span>" + esc(shortName(f.name)) + '</span><span class="chip ' + (chipCls[f.verdict] || "new") + '">' + esc(f.label || "") + "</span></h3>" +
       "<p>" + esc(f.text || "") + '</p><table class="mini"><thead><tr><th>Over</th><th>Fund</th><th>Index</th><th>Category</th><th>Rank</th></tr></thead><tbody>' + rows + "</tbody></table>" +
       '<p class="sub2" style="margin-top:8px">Yearly returns (3 and 5 yr annualised). "Index" is its benchmark; "Category" is the middle fund of its category.' + (num(f.beat_benchmark_pct) ? " Ahead of its benchmark in <b>" + f.beat_benchmark_pct + "%</b> of recent one-year periods." : "") + (num(f.category_size) ? " Category of " + f.category_size + " funds." : "") + (num(f.ter_pct) ? " Costs " + f.ter_pct + "% a year." : "") + "</p>" +
-      (peers ? '<details><summary>The category\'s best over ' + String(f.best_window || "3Y").replace("Y", " yr") + '</summary><table class="mini"><thead><tr><th>Fund</th><th>1 yr</th><th>3 yr</th><th>5 yr</th></tr></thead><tbody>' + peers + "</tbody></table></details>" : "") + "</div>"; }).join("") + "</div>" +
-    '<p class="note">' + esc(FHEALTH.note || "") + " The benchmark gets a " + by + " point a year head start because an index leaves out dividends. A fund can trail for a year or two and still be a good one: treat this as a prompt to look closer, never as a signal to sell. The category is found automatically from AMFI's list and refreshed about weekly.</p>";
+      (peers ? '<details><summary>The category\'s best over ' + String(f.best_window || "3Y").replace("Y", " yr") + '</summary><table class="mini"><thead><tr><th>Fund</th><th>1 yr</th><th>3 yr</th><th>5 yr</th></tr></thead><tbody>' + peers + "</tbody></table></details>" : "") + "</div>"; }).join("") + "</div>";
 }
 
 // ---- 5. SIP tracker
@@ -3017,8 +3000,7 @@ function renderSip() {
   const k = (t, v, n) => '<div><div class="k">' + t + '</div><div class="v">' + v + '</div><div class="n">' + n + "</div></div>";
   $("sipBody").innerHTML = '<div class="kgrid">' + k("Every month", cl(total), sips.length + " SIPs") + k("Over a year", cl(total * 12), "if none is skipped") +
     k("This month", counted + " of " + sips.length, counted === sips.length ? "all counted" : "counted so far") + k("Next units arrive", nextIso ? dlong(nextIso) : "—", "with that day's NAV") + "</div>" +
-    '<table style="margin-top:14px"><thead><tr><th>Fund</th><th>Units on</th><th style="text-align:left;padding-left:20px">This month</th></tr></thead><tbody>' + rows + "</tbody></table>" +
-    '<p class="note">This shows what the dashboard has counted into your units, not what your bank did. Each SIP is added automatically in the first 4 days after its date, when the night\'s NAV arrives. If one says "not counted", check on Groww that it actually ran (a low balance or an expired mandate is the usual cause). Your next monthly statement import corrects the units either way.</p>';
+    '<table style="margin-top:14px"><thead><tr><th>Fund</th><th>Units on</th><th style="text-align:left;padding-left:20px">This month</th></tr></thead><tbody>' + rows + "</tbody></table>";
 }
 
 // ---- 6. Cost of owning
@@ -3034,8 +3016,7 @@ function renderCost() {
   $("costBody").innerHTML = '<div class="kgrid">' + k("A year", cl(cost), "taken by the funds' running costs") + k("A month", cl(cost / 12), "") + k("A day", inr(cost / 365), "") +
     k("Over 10 years", cl(drag), "of growth, if the funds earn 12% after costs and your SIPs continue") + "</div>" +
     '<table style="margin-top:14px"><thead><tr><th>Fund</th><th>Worth</th><th>Yearly cost</th><th>A year</th></tr></thead><tbody>' +
-    fs.map(f => "<tr><td>" + esc(shortName(f.name)) + "</td><td>" + cl(val(f)) + "</td><td>" + f.ter_annual_pct.toFixed(2) + "%</td><td>" + cl(val(f) * f.ter_annual_pct / 100) + "</td></tr>").join("") + "</tbody></table>" +
-    '<p class="note">You are never sent a bill: a small slice comes out of each fund\'s NAV every day, so the returns you see are already after costs. What you hold are <b>Direct</b> plans, which charge roughly half a percentage point to a full point a year less than the same funds bought as Regular plans. The rates are each fund\'s current total expense ratio, read from Groww and refreshed weekly. Costs matter, but a good fund can earn them back many times over, so compare them with the fund health check above, not on their own.</p>';
+    fs.map(f => "<tr><td>" + esc(shortName(f.name)) + "</td><td>" + cl(val(f)) + "</td><td>" + f.ter_annual_pct.toFixed(2) + "%</td><td>" + cl(val(f) * f.ter_annual_pct / 100) + "</td></tr>").join("") + "</tbody></table>";
 }
 
 // ---- 7. Sector exposure (concise)
@@ -3402,9 +3383,7 @@ function renderDrawdown() {
   const avg = (() => { const r = me.eps.filter(e => e.depth <= -10 && e.recovered); return r.length ? Math.round(r.reduce((s, e) => s + dayDiff(e.trough, e.recovered), 0) / r.length / 30.4) : null; })();
   const n10 = me.eps.filter(e => e.depth <= -10).length;
   $("ddBody").innerHTML = (eps.length ? '<table class="mini" style="margin-top:14px"><thead><tr><th>Fell from</th><th>To the bottom</th><th>Depth</th><th>Back at the old high</th><th>Time down</th></tr></thead><tbody>' +
-    eps.map(e => "<tr><td>" + dmon(e.peak) + " " + e.peak.slice(0, 4) + "</td><td>" + dmon(e.trough) + " " + e.trough.slice(0, 4) + '</td><td class="neg">' + pcs(e.depth, 1) + "</td><td>" + (e.recovered ? dmon(e.recovered) + " " + e.recovered.slice(0, 4) : '<span class="sub2">not yet</span>') + "</td><td>" + span(dayDiff(e.peak, e.recovered || last)) + "</td></tr>").join("") + "</tbody></table>" : "") +
-    '<p class="note" style="margin-top:14px">' + (n10 ? "Falls of 10% or more have happened <b>" + n10 + (n10 === 1 ? " time" : " times") + "</b> in this history" + (avg != null ? "; the ones that healed took about <b>" + avg + (avg === 1 ? " month" : " months") + "</b> from the bottom to get back to the old high" : "") + ". " : "") +
-    "Falling and recovering is how equity behaves: what matters is not selling at the bottom of one. These are the portfolio's own percentage ups and downs, so early years (when the amount was small) show the same percentages with far less rupee impact. Past recoveries don't guarantee future ones.</p>";
+    eps.map(e => "<tr><td>" + dmon(e.peak) + " " + e.peak.slice(0, 4) + "</td><td>" + dmon(e.trough) + " " + e.trough.slice(0, 4) + '</td><td class="neg">' + pcs(e.depth, 1) + "</td><td>" + (e.recovered ? dmon(e.recovered) + " " + e.recovered.slice(0, 4) : '<span class="sub2">not yet</span>') + "</td><td>" + span(dayDiff(e.peak, e.recovered || last)) + "</td></tr>").join("") + "</tbody></table>" : "");
 }
 
 // ---- Fund overlap: how many of the same stocks your funds hold, and how much of your money sits in your ten biggest stocks.
@@ -3493,7 +3472,6 @@ function renderFundBench() {
   const d = last(v) - last(b);
   $("fundBenchLine").innerHTML = "Since your first purchase in " + esc(shortName(f.name)) + " (" + dmon(dates[0]) + " " + dates[0].slice(0, 4) + "), the same money in the <b>" + esc(f.benchmark || "benchmark") + "</b> would be worth <b>" + cl(last(b)) + "</b>. The fund is worth <b>" + cl(last(v)) + "</b>: <b class=\"" + (d >= 0 ? "pos" : "neg") + "\">" + (d >= 0 ? "ahead by " : "behind by ") + cl(Math.abs(d)) + "</b>.";
   $("fundBenchLegend").innerHTML = '<span><i></i>The fund</span><span><i class="d"></i>Put in</span><span><i style="border-top-color:#3d5a80"></i>' + esc(f.benchmark || "Benchmark") + ", same money</span>";
-  $("fundBenchFoot").textContent = (H.note || "") + ". Past results say little about the future, and a gap of a few percent either way is within what a fund and its index normally drift apart.";
   drawFundChart($("fundBenchChart"), dates, v, i, b, f.benchmark);
 }
 function drawFundChart(host, dates, v, iv, b, bname) {
@@ -3635,7 +3613,6 @@ function renderRolling() {
   $("rollTable").innerHTML = '<table class="mini" style="margin-top:12px"><thead><tr><th>Over any…</th><th>Up in</th><th>Typical</th><th>Bad (worst tenth)</th><th>Worst</th><th>Best</th>' + (bst ? "<th>" + esc(CMP_NAME[key]) + " typical</th>" : "") + "</tr></thead><tbody>" +
     years.map(y => { const s2 = rollStats(rollingReturns(dates, me, y)), b2 = bench ? rollStats(rollingReturns(dates, bench, y)) : null, u = y > 1 ? " a yr" : "";
       return "<tr" + (y === ROLL.y ? ' class="best"' : "") + "><td>" + y + (y === 1 ? " year" : " years") + "</td><td>" + s2.pos.toFixed(0) + '%</td><td class="' + (s2.median >= 0 ? "pos" : "neg") + '">' + pcs(s2.median, 1) + u + '</td><td class="neg">' + pcs(s2.p10, 1) + u + '</td><td class="neg">' + pcs(s2.worst, 1) + u + '</td><td class="pos">' + pcs(s2.best, 1) + u + "</td>" + (bst ? "<td>" + (b2 ? pcs(b2.median, 1) + u : "—") + "</td>" : "") + "</tr>"; }).join("") + "</tbody></table>";
-  $("rollFoot").textContent = "Every stretch counts, including overlapping ones, so a single bad market shows up in many of them. This is one slice of history (mostly a rising market for equities), measured on your portfolio as it was held at each time, so it is a guide to how bumpy the road can be, not a forecast. Returns over 3 and 5 years are per year.";
 }
 window.addEventListener("resize", () => { if (!$("rollWrap").hidden) safe(renderRolling, "rollWrap"); });
 
@@ -3708,9 +3685,7 @@ function renderWithdraw() {
       P.split.map(s => "<tr><td>" + esc(shortName(s.name)) + "</td><td><b>" + cl(s.taken) + "</b></td><td>" + Math.round(s.units).toLocaleString("en-IN") + '</td><td style="text-align:left;padding-left:14px" class="sub2">oldest first' + (s.first ? ", from " + dshort(s.first) : "") + (s.st > 0.5 && s.lt <= 0.5 ? " · short-term" : s.st > 0.5 ? " · includes short-term" : " · all long-term") + "</td><td>" + sgc(s.st + s.lt) + "</td></tr>").join("") + "</tbody></table>" +
       (best && best.tax - P.tax > 1 && P.split.length > 1 ? '<p class="sub2" style="margin:10px 0 0">Simplest alternative: sell it all from ' + esc(shortName(best.name)) + ", which costs " + cl(best.tax) + " (" + cl(best.tax - P.tax) + " more).</p>" : "") +
       '<div class="rr-sub" style="margin-top:18px">What the same amount would cost from one fund alone</div><table class="mini"><thead><tr><th>Only from</th><th>Tax</th><th>Long-term gain</th><th>Short-term gain</th></tr></thead><tbody>' +
-      P.single.map(x => "<tr" + (best && x.id === best.id ? ' class="best"' : "") + "><td>" + esc(shortName(x.name)) + '</td><td class="' + (x.tax < 1 ? "pos" : "") + '">' + (x.tax < -1 ? "saves " + cl(-x.tax) : x.tax < 1 ? "₹0" : cl(x.tax)) + "</td><td>" + sgc(x.lt) + "</td><td>" + sgc(x.st) + "</td></tr>").join("") + "</tbody></table>" +
-      '<p class="note" style="margin-top:14px">Rates used: short-term ' + Math.round(D.rates.st * 100) + "%, long-term " + D.rates.lt * 100 + "% above " + cl(D.rates.exempt) + " a year, plus " + Math.round(D.rates.cess * 100) + "% cess; about <b>" + cl(room) + "</b> of this year's tax-free long-term room is still unused. Mutual-fund platforms redeem the oldest units first, so that is what this assumes. " +
-      "Not included: exit load (many equity funds charge about 1% on units sold within a year), the very small transaction tax, and gains or losses on anything outside these funds. Check the current rules for the year: this is a planning estimate, not tax advice.</p>";
+      P.single.map(x => "<tr" + (best && x.id === best.id ? ' class="best"' : "") + "><td>" + esc(shortName(x.name)) + '</td><td class="' + (x.tax < 1 ? "pos" : "") + '">' + (x.tax < -1 ? "saves " + cl(-x.tax) : x.tax < 1 ? "₹0" : cl(x.tax)) + "</td><td>" + sgc(x.lt) + "</td><td>" + sgc(x.st) + "</td></tr>").join("") + "</tbody></table>";
   };
   input.oninput = run; input.value = WD.amt;
   $("wdChips").querySelectorAll("button").forEach(b => b.onclick = () => { input.value = b.dataset.v; run(); });

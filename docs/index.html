@@ -165,6 +165,7 @@
   .outlook .oh{display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-weight:600;font-size:14px}
   .outlook .ou{font-size:11.5px;color:var(--grey-light);margin:2px 0 10px}
   .outlook .orow{display:grid;grid-template-columns:120px 1fr;gap:12px;padding:6px 0;border-top:1px solid var(--rule)}
+  .outlook details.omore>summary{margin:14px 0 4px}
   .outlook .ok{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);padding-top:3px}
   .outlook table{font-size:12px;margin-top:8px}.outlook td,.outlook th{padding:7px 0}
   .chip.flat{background:var(--grey-light)}
@@ -549,6 +550,7 @@
     <h2>Last session in one look <span id="recapNote"></span></h2>
     <p class="scoreline" id="recapHead" style="margin:0 0 6px"></p>
     <ul class="recap" id="recapList"></ul>
+    <div id="recapMore"></div>
   </section>
 
   <section id="advWrap" hidden>
@@ -1597,7 +1599,7 @@ function renderOutlook() {
       (L.status === "ok" ? "" : " The S&amp;P 500 lean is added once the US market has closed.") + "</div>" +
       (L.status === "ok" || Cc ? '<div class="gbar" title="Probability that the Nifty rises next session"><i style="width:' + Math.round(pBar) + '%"></i><span class="gu">Up ' + Math.round(pBar) +
         '%</span><span class="gd">Down ' + (100 - Math.round(pBar)) + '%</span><em style="left:53%" title="On an ordinary day about 53% of sessions rise"></em></div>' +
-        '<div class="gnote">The thin marker is the everyday baseline (about 53% of sessions rise). A few points of edge is small: a tilt, not a call.</div>' : "") + "</div>"
+        '<div class="gnote">The marker is the everyday baseline: about 53% of sessions rise.</div>' : "") + "</div>"
     : "";
 
   const giftRow = G ? '<div class="orow"><span class="ok">GIFT Nifty</span><span>Trading at <b>' + pts(G.last) + "</b>" + (G.t ? " (as of " + G.t + " IST)" : "") + ", <b>" + sg(G.gap) +
@@ -1647,12 +1649,13 @@ function renderOutlook() {
 
   box.innerHTML = '<div class="oh">Next session setup' + (Cc ? "" : ' <span class="chip ' + chip[0] + '">' + chip[1] + "</span>") + "</div>" + callBox + glance +
     '<div class="ou">Updated ' + upd + " IST · Nifty 50 last closed at " + pts(o.base_close) + " (" + d(o.base_close_date) + ")</div>" +
+    '<details class="omore"><summary>Ranges, track record and how this was tested</summary>' +
     '<div class="orow"><span class="ok">Likely range</span><span>Between <b>' + pts(N.typical[0]) + "</b> and <b>" + pts(N.typical[1]) + "</b> (" + sg(typPct[0]) + " to " + sg(typPct[1]) + ")" +
       (p ? ", about <b>±" + inr(p.typical_rupees) + "</b> on your portfolio" : "") + ". About 7 in 10 sessions end inside" + (btNew.coverage70_pct ? " (backtest: " + btNew.coverage70_pct + "%)" : "") + ".</span></div>" +
     '<div class="orow"><span class="ok">A wide day</span><span>Between ' + pts(N.wide[0]) + " and " + pts(N.wide[1]) + " (" + sg(widePct[0]) + " to " + sg(widePct[1]) + ")" +
       (p ? ", about ±" + inr(p.wide_rupees) : "") + ". Covers about 19 in 20 sessions" + (btNew.coverage95_pct ? " (backtest: " + btNew.coverage95_pct + "%)" : "") + ".</span></div>" +
     '<div class="orow"><span class="ok">Overnight lean</span><span>' + leanText + "</span></div>" + giftRow +
-    '<div class="orow"><span class="ok">Track record</span><span>' + recTxt + callRec + early + gRec + "</span></div>" + detail;
+    '<div class="orow"><span class="ok">Track record</span><span>' + recTxt + callRec + early + gRec + "</span></div>" + detail + "</details>";
 }
 async function loadOutlook() {
   [OUTLOOK, GIFT] = await Promise.all([fetch("data/outlook.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => OUTLOOK), loadJson("data/gift.json?t=" + Date.now(), isObj, GIFT)]);
@@ -3442,7 +3445,10 @@ function renderRecap() {
   $("recapNote").textContent = dlong(R.date) + " · written after the funds published";
   heroPill();
   $("recapHead").innerHTML = "<b>" + esc(typeof R.headline === "string" ? R.headline : "") + "</b>";
-  $("recapList").innerHTML = lines.map(l => '<li class="k-' + esc(String(l.k || "").replace(/[^a-z]/g, "")) + '">' + esc(l.t) + "</li>").join("");
+  const li = l => '<li class="k-' + esc(String(l.k || "").replace(/[^a-z]/g, "")) + '">' + esc(l.t) + "</li>";
+  const main = lines.filter(l => ["result", "estimate", "health"].includes(l.k)), more = lines.filter(l => !main.includes(l));
+  $("recapList").innerHTML = (main.length ? main : lines).map(li).join("");
+  $("recapMore").innerHTML = main.length && more.length ? '<details><summary>By fund, the market and what moved your money</summary><ul class="recap">' + more.map(li).join("") + "</ul></details>" : "";
 }
 
 // ---- Fund changes watch (data/fund_changes.json from fund_meta.py, weekly): manager, cost and size, and what changed lately
@@ -3773,7 +3779,7 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   PICKS = await pPicks;
   RECAP = await pRecap;
   FCHANGES = await pChanges;
-  FUNDHIST = await pFundHist;
+  pFundHist.then(h => { FUNDHIST = h; safe(renderFundBench, "fundBenchWrap"); });   // large and below the fold: render it when it arrives
   setupHide();
   safe(renderReturns, "retWrap"); safe(renderTax, "taxWrap"); safe(renderStatementBar, "stmtBar");
   safe(renderMoney, "moneyWrap"); safe(renderDrawdown, "ddWrap"); safe(renderRolling, "rollWrap"); safe(renderSectors, "sectorWrap"); safe(renderOverlap, "overlapWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(setupToTop); safe(renderFundBench, "fundBenchWrap"); safe(renderChanges, "changesWrap"); safe(renderRecap, "recapWrap"); safe(renderWithdraw, "withdrawWrap"); safe(renderIdeas, "ideasWrap"); safe(renderHealthLine); safe(renderTxBar); safe(renderDataBar); safe(startVersionWatch); safe(setupStatus); safe(setupTheme); safe(setupNav);

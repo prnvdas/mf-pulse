@@ -42,7 +42,7 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
   ok(!errs.length&&!/NaN|undefined|\[object/.test(await p.evaluate(()=>document.body.innerText)),'backtest hostile data',errs[0]); await ctx.close();}
  // header chips: three icon cards
  {const {p,ctx,errs}=await page(); const n=await p.$$eval('#hChips .hc',a=>a.length), t=await p.$eval('#hChips',e=>e.innerText);
-  ok(n===3&&/market mood/i.test(t)&&/next session/i.test(t)&&/institutional flows/i.test(t)&&/FII/.test(t)&&/DII/.test(t),'three header cards',String(n)+t.slice(0,160)); ok(await p.$$eval('#hChips .hc svg',a=>a.length)===3,'each card has an icon'); ok(await p.$eval('#hChips .mbar i',e=>/%$/.test(e.style.left)),'mood meter marker');
+  ok(n===3&&/market mood/i.test(t)&&/next session/i.test(t)&&/FPI and DII flows/i.test(t)&&/FPI/.test(t)&&/DII/.test(t),'three header cards',String(n)+t.slice(0,160)); ok(await p.$$eval('#hChips .hc svg',a=>a.length)===3,'each card has an icon'); ok(await p.$eval('#hChips .mbar i',e=>/%$/.test(e.style.left)),'mood meter marker');
   ok(!errs.length,'chip errs',errs[0]); await ctx.close();}
  for (const [f,fn] of [['mood',j=>{j.mood={value:'x',zone:5};return j;}],['mood',j=>{j.mood=null;return j;}],['outlook',j=>{j.call={colour:'green',p_call:'?'};return j;}],['news',j=>{j.why={flows:{fii:null,dii:'a'}};return j;}]]) {const {p,ctx,errs}=await page({[f]:fn});
   ok(!errs.length&&!/NaN|undefined|\[object/.test(await p.$eval('#hChips',e=>e.innerText)),'chips hostile '+f,errs[0]); await ctx.close();}

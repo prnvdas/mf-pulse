@@ -347,7 +347,7 @@ def summary(direction: str, nifty_pct: float | None, sec: dict | None, flows: di
     if flows and ("fii" in flows or "dii" in flows):
         f = []
         if "fii" in flows:
-            f.append(f"FIIs {'bought' if flows['fii'] >= 0 else 'sold'} {_cr(flows['fii'])}")
+            f.append(f"FPIs (foreign investors) {'bought' if flows['fii'] >= 0 else 'sold'} {_cr(flows['fii'])}")
         if "dii" in flows:
             f.append(f"DIIs {'bought' if flows['dii'] >= 0 else 'sold'} {_cr(flows['dii'])}")
         src = flows.get("source") or "NSE"

@@ -1371,12 +1371,12 @@ function renderWhy() {
   const chips = [];
   const F = w.flows || {};
   const cr = v => "₹" + Math.abs(v).toLocaleString("en-IN") + " cr";
-  if (F.fii != null) chips.push('<span class="chip2 notable"><b>FIIs</b> ' + (F.fii >= 0 ? "bought " : "sold ") + cr(F.fii) + "</span>");
+  if (F.fii != null) chips.push('<span class="chip2 notable"><b>FPIs</b> ' + (F.fii >= 0 ? "bought " : "sold ") + cr(F.fii) + "</span>");
   if (F.dii != null) chips.push('<span class="chip2 notable"><b>DIIs</b> ' + (F.dii >= 0 ? "bought " : "sold ") + cr(F.dii) + "</span>");
-  if (F.fii == null && F.dii == null) chips.push('<span class="chip2" style="color:var(--grey)" title="NSE publishes these after the close; this card refreshes by itself">FII / DII flows: not published yet</span>');
+  if (F.fii == null && F.dii == null) chips.push('<span class="chip2" style="color:var(--grey)" title="NSE publishes these after the close; this card refreshes by itself">FPI / DII flows: not published yet</span>');
   (w.macro || []).forEach(m => chips.push('<span class="chip2' + (m.notable ? " notable" : "") + '" title="' + (m.notable ? "A bigger move than usual for this series" : "An ordinary move") + '"><b>' + esc(m.name) + "</b> " +
     esc(m.unit === "$" || m.unit === "₹" ? m.unit : "") + m.level.toLocaleString("en-IN", { maximumFractionDigits: 2 }) + (m.unit === "%" ? "%" : "") + ' <span class="' + (m.pct >= 0 ? "pos" : "neg") + '">' + sgn(m.pct, 2) + "</span></span>"));
-  html += sec("Money flows and global cues", chips.length ? '<div class="chips">' + chips.join("") + '</div><p class="sub2" style="margin:8px 0 0">Outlined chips are the ones that moved more than usual. FII/DII figures are the provisional net numbers for the day' + (F.source ? " (source: " + esc(F.source) + ")" : "") + ".</p>" : "");
+  html += sec("Money flows and global cues", chips.length ? '<div class="chips">' + chips.join("") + '</div><p class="sub2" style="margin:8px 0 0">Outlined chips are the ones that moved more than usual. FPI (foreign investor) and DII figures are the provisional net numbers for the day' + (F.source ? " (source: " + esc(F.source) + ")" : "") + ".</p>" : "");
 
   // 3. your biggest movers, each with the real headlines found for that company
   const mine = (w.points || []).filter(p => /\byour\b|\byou\b/i.test(p.text)).map(p => "<li>" + esc(p.text) + "</li>").join("");
@@ -1617,7 +1617,7 @@ async function loadOutlook() {
 // Market mood, valuation and the "should I buy or sell today?" read. Data: data/mood.json and data/advisor.json
 // (src/mood.py, src/advisor.py). Rules-based and transparent: every line shows the number it rests on.
 // ======================================================================================
-// The header chips: market mood, the next session's call, and the day's FII/DII flows (each hides itself if its data is missing).
+// The header chips: market mood, the next session's call, and the day's FPI/DII flows (each hides itself if its data is missing).
 function renderHeaderChips() {
   const el = $("hChips");
   if (!el) return;
@@ -1644,7 +1644,7 @@ function renderHeaderChips() {
   if (F && (num(F.fii) || num(F.dii))) {
     const todayIso = istDate(istNow()), day = W.date && W.date !== todayIso ? new Date(W.date + "T00:00:00").toLocaleDateString("en-IN", { weekday: "short" }) + " " : "";
     const line = (nm, v) => num(v) ? '<span class="ln ' + (v >= 0 ? "c-green" : "c-red") + '"><i>' + (v >= 0 ? "▲" : "▼") + "</i>" + nm + " " + cr(v) + "</span>" : "";
-    chips.push('<a class="hchip hc" href="#whyWrap" title="Net buying (+) or selling (−) by foreign (FII) and domestic (DII) institutions, in ₹ crore"><span class="ic t-grey">' + ICON.swap + '</span><span class="tx"><small>' + day + "institutional flows</small>" + line("FII", F.fii) + line("DII", F.dii) + "</span></a>");
+    chips.push('<a class="hchip hc" href="#whyWrap" title="Net buying (+) or selling (−) by foreign portfolio investors (FPI, earlier called FII) and domestic institutions (DII), in ₹ crore"><span class="ic t-grey">' + ICON.swap + '</span><span class="tx"><small>' + day + "FPI and DII flows</small>" + line("FPI", F.fii) + line("DII", F.dii) + "</span></a>");
   }
   el.hidden = !chips.length;
   el.innerHTML = chips.join("");

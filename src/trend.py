@@ -178,6 +178,40 @@ def trend_pace(c: pd.Series, years: int = 3) -> dict | None:
     return {"years": years, "annual_pct": round(annual * 100, 1), "level_12m": round(float(c.iloc[-1]) * (1 + annual))}
 
 
+def tentative_view(code: str, dd: float, hist: dict, sim: dict | None) -> dict:
+    """The one-line answer a beginner needs, in plain words, with the evidence it rests on."""
+    ev = f" In {sim['up_pct']}% of {sim['episodes']} similar past spells the market was higher a year later." if sim else ""
+    bear_m = (hist.get("bear") or {}).get("median_months")
+    if code == "bear":
+        return {"label": "Bear market", "text": "Prices are 20% or more below their high." + (f" Past bear markets took about {bear_m} months from top to bottom." if bear_m else "") + ev}
+    if code == "strong":
+        return {"label": "Strong uptrend", "text": "The market is rising and almost every signal agrees: bull-run conditions. Falls of 10% along the way are normal, even in a bull run."}
+    if code == "up":
+        return {"label": "Healthy uptrend", "text": "More signals point up than down: conditions look like a bull run, though a pullback can come at any time."}
+    if code == "mixed":
+        return {"label": "Undecided", "text": "The signals disagree, so there is no clear bull or bear market yet. A direction is confirmed when the price moves clearly above or below its 200-day average."}
+    return {"label": "Weak, but not a bear market" if dd > -0.20 else "Weak", "text": "Prices are below their long-term average and more signals point down than up. A bear market needs a fall of 20% from the high; this is smaller than that." + ev}
+
+
+def signposts(last: pd.Series) -> list[dict]:
+    """What would turn the picture bullish, as plain ticks."""
+    hi = float(last["c"] / (1 + last["dd"]))
+    return [
+        {"text": "Price back above its 200-day average", "level": round(float(last["ma200"])), "done": bool(last["c"] > last["ma200"])},
+        {"text": "50-day average moves above the 200-day", "level": None, "done": bool(last["ma50"] > last["ma200"])},
+        {"text": "Higher than a year ago", "level": round(float(last["c"] / (1 + last["r12"]))) if pd.notna(last["r12"]) else None, "done": bool(last["r12"] > 0)},
+        {"text": "Back within 10% of the 52-week high", "level": round(hi * 0.9), "done": bool(last["dd"] >= -0.10)},
+    ]
+
+
+def weekly(c: pd.Series, years: int = 3) -> list[list]:
+    seg = c[c.index > c.index[-1] - pd.DateOffset(years=years)]
+    w = seg.resample("W-FRI").last().dropna()
+    if w.index[-1] != seg.index[-1]:
+        w = pd.concat([w, seg.iloc[[-1]]])
+    return [[d.date().isoformat(), round(float(v))] for d, v in w.items()]
+
+
 def build(nifty: pd.Series, n500: pd.Series | None) -> dict:
     df = indicators(nifty)
     last = df.iloc[-1]
@@ -210,6 +244,9 @@ def build(nifty: pd.Series, n500: pd.Series | None) -> dict:
         "levels": {"ma200": round(float(last["ma200"])), "high52": round(float(last["c"] / (1 + last["dd"]))), "bear_line": round(float(last["c"] / (1 + last["dd"]) * 0.8))},
         "history": history_summary(nifty), "similar": similar_outcomes(df, score(last, 0), float(last["dd"])), "pace": trend_pace(nifty),
     }
+    out["view"] = tentative_view(code, float(last["dd"]), out["history"], out["similar"])
+    out["signposts"] = signposts(last)
+    out["series"] = weekly(nifty)
     if out["similar"]:
         for k in ("p10", "p50", "p90"):
             out["similar"]["level_" + k] = round(float(last["c"]) * (1 + out["similar"][k] / 100))

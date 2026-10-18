@@ -471,6 +471,23 @@
   [data-theme="dark"] .hv,[data-theme="dark"] .note,[data-theme="dark"] .brief,[data-theme="dark"] .hbar.soft{backdrop-filter:blur(3px)}
   [data-theme="dark"] img.nodark{filter:none}
   .themeb{padding:8px 11px;line-height:0;display:inline-flex;align-items:center}.themeb svg{width:18px;height:18px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .trdash{display:grid;grid-template-columns:5fr 7fr;gap:16px;margin-top:16px}
+  .trcard{border:1px solid var(--rule);border-radius:var(--r);padding:20px 22px;min-width:0}
+  .trcard p{margin:12px 0 0;font-size:14px;line-height:1.6}
+  .trk{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--grey)}
+  .trbig{font-size:27px;font-weight:700;letter-spacing:-.025em;line-height:1.15;margin:8px 0 16px}
+  .trmeter{position:relative;height:9px;border-radius:5px;background:linear-gradient(90deg,#da291c 0%,#e8a33b 28%,#d9d36b 50%,#a6c94c 72%,#5f8a15 100%)}
+  .trmeter i{position:absolute;top:-4px;width:17px;height:17px;margin-left:-8.5px;border-radius:50%;background:var(--paper);border:3px solid var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.3)}
+  .trlab{display:flex;margin-top:9px;font-size:11px;color:var(--grey-light)}.trlab span{flex:1;text-align:center}
+  .trsp{list-style:none;margin:10px 0 0;display:grid;gap:7px}
+  .trsp li{display:grid;grid-template-columns:22px 1fr;font-size:13.5px;line-height:1.45;color:var(--grey)}
+  .trsp li b{font-weight:700;color:var(--grey-light)}.trsp li.done{color:var(--ink)}.trsp li.done b{color:var(--green-deep)}.trsp em{font-style:normal;color:var(--grey-light)}
+  .trtiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
+  .trtiles>div{border-radius:10px;background:var(--wash);padding:10px 12px;border-top:3px solid var(--grey-light)}
+  .trtiles .hi{border-top-color:var(--green-deep)}.trtiles .mid{border-top-color:#3d5a80}.trtiles .lo{border-top-color:var(--red)}
+  .trtiles small{display:block;font-size:10.5px;color:var(--grey);letter-spacing:.04em}.trtiles b{display:block;font-size:17px;font-weight:700;letter-spacing:-.02em;margin-top:2px}.trtiles span{font-size:12px;color:var(--grey)}
+  @media(max-width:900px){.trdash{grid-template-columns:1fr}}
+  @media(max-width:560px){.trtiles{grid-template-columns:1fr 1fr}.trbig{font-size:23px}}
   /* one radius for every surface; grids built from 1px gaps get a hairline frame */
   .call,.advbox,.note,.hv,.outlook,.hbanner,.ptip,.toast,.newver,.chip2,.chip3,.hchip,.seg,.cal .d,.odrow input,.note input,.wd-in input{border-radius:10px}
   .seg button{border-radius:0}.seg{overflow:hidden}
@@ -3425,32 +3442,63 @@ function renderTrend() {
   const wrap = $("trendWrap"), T = TREND;
   if (!isObj(T) || !Array.isArray(T.signals) || !T.signals.length || !num(T.level) || !isObj(T.regime) || typeof T.as_of !== "string") { wrap.hidden = true; return; }
   wrap.hidden = false;
-  const my = iso => new Date(iso + "T00:00:00").toLocaleDateString("en-IN", { month: "short", year: "numeric" });
   const pts = n => Math.round(n).toLocaleString("en-IN"), sg = (n, d = 0) => (n >= 0 ? "+" : "−") + Math.abs(n).toFixed(d) + "%";
   const sigs = T.signals.filter(x => isObj(x) && typeof x.label === "string");
   const bulls = sigs.filter(x => x.state === "bull").length, of = sigs.length;
-  const H = isObj(T.history) ? T.history : {}, B = isObj(H.bull) ? H.bull : {}, R = isObj(H.bear) ? H.bear : {}, L = isObj(T.levels) ? T.levels : {};
-  const dd = num(T.drawdown_pct) ? T.drawdown_pct : 0;
-  const chipCls = { strong: "healthy", up: "healthy", mixed: "flat", down: "watch", weak: "caution", bear: "caution" }[T.regime.code] || "flat";
-  const where = dd <= -20 ? "That is a bear market: a fall of 20% or more from the high."
-    : dd <= -10 ? "That is a correction (10–20% off the high), not yet a bear market" + (num(L.bear_line) ? ", which starts below " + pts(L.bear_line) : "") + "."
-    : "It is within 10% of its high.";
-  const head = '<p class="scoreline"><span class="chip ' + chipCls + '">' + esc(String(T.regime.label || "")) + "</span> &nbsp;" + bulls + " of " + of + " signals are bullish; the Nifty 50 is " +
-    Math.abs(dd).toFixed(1) + "% " + (dd < 0 ? "below" : "from") + " its 52-week high. " + where + (T.stretched ? " It looks stretched after a strong run (RSI above 70 or well above its 200-day average)." : "") + "</p>";
-  const dot = { bull: "g", bear: "xf" };
-  const pills = '<div class="chips2">' + sigs.map(x => '<span class="chip3"><i class="dotc ' + (dot[x.state] || "") + '"></i>' + esc(x.label) + " <b>" + esc(String(x.value == null ? "" : x.value)) + "</b></span>").join("") + "</div>";
-  const lastB = isObj(B.last) ? B.last : null, lastR = isObj(R.last) ? R.last : null, S = isObj(T.similar) ? T.similar : null, P = isObj(T.pace) ? T.pace : null;
-  const bullTxt = num(B.median_gain_pct) ? "Since " + esc(String(H.since || "").slice(0, 4)) + " the Nifty has had " + B.n + " bull runs: typically <b>" + sg(B.median_gain_pct) + "</b> over about " + B.median_months + " months" +
-    (num(B.pullbacks_median) ? ", with around " + B.pullbacks_median + " falls of 10% or more on the way" : "") + "." +
-    (lastB && num(lastB.gain_pct) ? " The latest began in " + my(lastB.start) + " and reached " + sg(lastB.gain_pct) + " by " + my(lastB.end) + (lastB.ongoing && num(lastB.now_pct) ? " (" + sg(lastB.now_pct) + " today)" : "") + "." : "") : "Not enough history.";
-  const bearTxt = num(R.median_fall_pct) ? R.n + " bear markets since " + esc(String(H.since || "").slice(0, 4)) + ": typically <b>" + sg(R.median_fall_pct) + "</b> over about " + R.median_months + " months from top to bottom." +
-    (lastR && num(lastR.fall_pct) ? " The latest: " + my(lastR.peak) + " to " + my(lastR.trough) + ", " + sg(lastR.fall_pct) + (lastR.ongoing ? " so far" : "") + "." : "") : "Not enough history.";
-  const trendTxt = (P && num(P.annual_pct) ? "If the last " + P.years + " years' pace simply continued: <b>" + sg(P.annual_pct, 1) + " a year</b>, the Nifty near <b>" + pts(P.level_12m) + "</b> in a year. " : "") +
-    (S && num(S.p50) ? "In " + S.episodes + " similar spells since " + esc(String(H.since || "").slice(0, 4)) + " (" + ({ near: "near the high", correction: "10–20% below the high", deep: "more than 20% below the high" }[S.depth] || "like today") + ", signals in " + ({ up: "an uptrend", down: "a downtrend", mixed: "a mixed picture" }[S.bucket] || "a similar state") + "), the next 12 months were higher <b>" + S.up_pct + "%</b> of the time: typically <b>" + sg(S.p50) + "</b>, ranging " + sg(S.p10) + " to " + sg(S.p90) + ". That is a small sample." : "");
-  const watch = num(L.ma200) && T.signals.some(x => x.k === "above200" && x.state === "bear") ? "A close back above the 200-day average (" + pts(L.ma200) + ") would be the first sign of recovery." : num(L.ma200) ? "Falling below the 200-day average (" + pts(L.ma200) + ") would be the first sign of weakness." : "";
+  const H = isObj(T.history) ? T.history : {}, B = isObj(H.bull) ? H.bull : {}, R = isObj(H.bear) ? H.bear : {};
+  const V = isObj(T.view) ? T.view : {}, S = isObj(T.similar) && num(T.similar.p50) ? T.similar : null, P = isObj(T.pace) && num(T.pace.level_12m) ? T.pace : null;
+  const dd = num(T.drawdown_pct) ? T.drawdown_pct : 0, code = T.regime.code;
+  const tone = { strong: "c-green", up: "c-green", mixed: "", down: "c-amber", weak: "c-red", bear: "c-red" }[code] || "";
+  const pos = { bear: 0, weak: 0, down: 1, mixed: 2, up: 3, strong: 4 }[code], since = esc(String(H.since || "").slice(0, 4));
+  const kpi = (k, v, n, cls) => '<div><div class="k">' + k + '</div><div class="v ' + (cls || "") + '">' + v + '</div><div class="n">' + n + "</div></div>";
+  const kpis = '<div class="kgrid">' + kpi("Nifty vs its 52-week high", sg(dd, 1), dd <= -20 ? "a bear market" : dd <= -10 ? "a correction" : "close to the high", dd < -10 ? "c-red" : "") +
+    kpi("Signals pointing up", bulls + " of " + of, "trend and momentum checks", bulls * 2 >= of ? "c-green" : "c-red") +
+    kpi("A typical bull run", num(B.median_gain_pct) ? sg(B.median_gain_pct) : "—", num(B.median_months) ? "over about " + B.median_months + " months · " + B.n + " since " + since : "", "c-green") +
+    kpi("A typical bear market", num(R.median_fall_pct) ? sg(R.median_fall_pct) : "—", num(R.median_months) ? "over about " + R.median_months + " months · " + R.n + " since " + since : "", "c-red") + "</div>";
+  const labels = ["Bear", "Down", "Mixed", "Up", "Strong"];
+  const verdict = '<div class="trcard"><div class="trk">Tentative view</div><div class="trbig ' + tone + '">' + esc(String(V.label || T.regime.label || "")) + "</div>" +
+    (pos != null ? '<div class="trmeter"><i style="left:' + (pos * 20 + 10) + '%"></i></div><div class="trlab">' + labels.map(x => "<span>" + x + "</span>").join("") + "</div>" : "") +
+    "<p>" + esc(String(V.text || "")) + "</p>" +
+    (Array.isArray(T.signposts) && T.signposts.length ? '<div class="trk" style="margin-top:16px">What would turn it bullish</div><ul class="trsp">' + T.signposts.filter(x => isObj(x) && typeof x.text === "string").map(x =>
+      '<li class="' + (x.done ? "done" : "") + '"><b>' + (x.done ? "✓" : "○") + "</b><span>" + esc(x.text) + (num(x.level) ? " <em>(" + pts(x.level) + ")</em>" : "") + "</span></li>").join("") + "</ul>" : "") + "</div>";
+  const fan = '<div class="trcard"><div class="trk">Where could the Nifty be in a year?</div>' + trendChart(T, S, P) +
+    (S ? '<div class="trtiles"><div class="hi"><small>High case</small><b>' + pts(S.level_p90 || T.level * (1 + S.p90 / 100)) + "</b><span>" + sg(S.p90) + "</span></div>" +
+      '<div class="mid"><small>Middle</small><b>' + pts(T.level * (1 + S.p50 / 100)) + "</b><span>" + sg(S.p50) + "</span></div>" +
+      '<div class="lo"><small>Low case</small><b>' + pts(S.level_p10 || T.level * (1 + S.p10 / 100)) + "</b><span>" + sg(S.p10) + "</span></div>" +
+      (P ? '<div class="pace"><small>Last 3 years\' pace</small><b>' + pts(P.level_12m) + "</b><span>" + sg(P.annual_pct, 1) + "</span></div>" : "") + "</div>" +
+      '<p class="sub2">From ' + S.episodes + " similar spells since " + since + ": higher a year later " + S.up_pct + "% of the time. High and low case are the 9th and 1st best of 10. A small sample, so a guide, not a promise.</p>"
+      : (P ? '<p class="scoreline">If the last ' + P.years + " years' pace simply continued, the Nifty would be near <b>" + pts(P.level_12m) + "</b> in a year (" + sg(P.annual_pct, 1) + ").</p>" : "")) + "</div>";
   $("trendNote").textContent = "Nifty 50 · " + dmon(T.as_of) + " · an extrapolation of the past, not a forecast";
-  $("trendBody").innerHTML = head + pills + '<div class="cardsrow" style="margin-top:6px"><div><h3>What a bull run looks like</h3><p>' + bullTxt + "</p></div><div><h3>What a bear market looks like</h3><p>" + bearTxt +
-    "</p></div><div><h3>If the trend continues</h3><p>" + (trendTxt || "Not enough history.") + "</p></div></div>" + (watch ? '<p class="sub2" style="margin-top:12px">' + watch + "</p>" : "");
+  $("trendBody").innerHTML = kpis + '<div class="trdash">' + verdict + fan + "</div>" +
+    '<details><summary>The ' + of + ' signals behind this</summary><div class="chips2">' + sigs.map(x => '<span class="chip3"><i class="dotc ' + ({ bull: "g", bear: "xf" }[x.state] || "") + '"></i>' + esc(x.label) + " <b>" + esc(String(x.value == null ? "" : x.value)) + "</b></span>").join("") + "</div></details>";
+}
+
+// The picture: the last three years of the Nifty, then a cone to twelve months ahead (high / middle / low case) and the pace line's end point
+function trendChart(T, S, P) {
+  const ser = (Array.isArray(T.series) ? T.series : []).filter(r => Array.isArray(r) && /^\d{4}-\d{2}-\d{2}$/.test(String(r[0])) && num(r[1]) && r[1] > 0);
+  if (ser.length < 20) return "";
+  const t = d => Date.parse(d + "T00:00:00"), x0 = t(ser[0][0]), xn = t(ser[ser.length - 1][0]), x1 = xn + 365 * 86400000, last = ser[ser.length - 1][1];
+  const hi = S ? last * (1 + S.p90 / 100) : null, mid = S ? last * (1 + S.p50 / 100) : null, lo = S ? last * (1 + S.p10 / 100) : null, pace = P ? P.level_12m : null;
+  const vals = ser.map(r => r[1]).concat([hi, lo, pace].filter(num));
+  let y0 = Math.min(...vals), y1 = Math.max(...vals); const padY = (y1 - y0) * 0.08; y0 -= padY; y1 += padY;
+  const W = 700, Ht = 250, L = 40, Rr = 46, Tp = 10, Bt = 24, X = ms => L + (ms - x0) / (x1 - x0) * (W - L - Rr), Y = v => Tp + (1 - (v - y0) / (y1 - y0)) * (Ht - Tp - Bt);
+  const f = n => n.toFixed(1), step = [1000, 2000, 5000, 10000].find(s => (y1 - y0) / s <= 6) || 10000;
+  let g = "";
+  for (let v = Math.ceil(y0 / step) * step; v <= y1; v += step) g += '<line x1="' + L + '" x2="' + (W - Rr) + '" y1="' + f(Y(v)) + '" y2="' + f(Y(v)) + '" stroke="#ececec"/><text x="' + (L - 6) + '" y="' + f(Y(v) + 4) + '" text-anchor="end" font-size="11" fill="#97999b">' + (v / 1000) + "k</text>";
+  for (let y = new Date(x0).getFullYear() + 1; y <= new Date(x1).getFullYear(); y++) { const m = Date.parse(y + "-01-01T00:00:00"); if (m > x0 && m < x1) g += '<text x="' + f(X(m)) + '" y="' + (Ht - 6) + '" text-anchor="middle" font-size="11" fill="#97999b">' + y + "</text>"; }
+  const hist = "M" + ser.map(r => f(X(t(r[0]))) + " " + f(Y(r[1]))).join("L");
+  const xe = X(x1), xt = X(xn), yt = Y(last);
+  let cone = "";
+  if (S) cone = '<polygon points="' + f(xt) + "," + f(yt) + " " + f(xe) + "," + f(Y(hi)) + " " + f(xe) + "," + f(Y(lo)) + '" fill="rgba(134,188,37,.16)"/>' +
+    '<line x1="' + f(xt) + '" y1="' + f(yt) + '" x2="' + f(xe) + '" y2="' + f(Y(hi)) + '" stroke="#5f8a15" stroke-width="1.6"/>' +
+    '<line x1="' + f(xt) + '" y1="' + f(yt) + '" x2="' + f(xe) + '" y2="' + f(Y(mid)) + '" stroke="#3d5a80" stroke-width="1.8" stroke-dasharray="5 4"/>' +
+    '<line x1="' + f(xt) + '" y1="' + f(yt) + '" x2="' + f(xe) + '" y2="' + f(Y(lo)) + '" stroke="#da291c" stroke-width="1.6"/>' +
+    [[hi, "#5f8a15"], [mid, "#3d5a80"], [lo, "#da291c"]].map(a => '<circle cx="' + f(xe) + '" cy="' + f(Y(a[0])) + '" r="3.5" fill="' + a[1] + '"/>').join("");
+  const paceDot = pace ? '<circle cx="' + f(xe) + '" cy="' + f(Y(pace)) + '" r="4.5" fill="none" stroke="#97999b" stroke-width="1.6"/>' : "";
+  return '<svg viewBox="0 0 ' + W + " " + Ht + '" role="img" aria-label="The Nifty over the last three years and a range for the next twelve months" style="width:100%;height:auto;display:block;margin:10px 0 4px">' + g +
+    '<line x1="' + f(xt) + '" x2="' + f(xt) + '" y1="' + Tp + '" y2="' + (Ht - Bt) + '" stroke="#97999b" stroke-dasharray="2 4"/>' + cone + paceDot +
+    '<path d="' + hist + '" fill="none" style="stroke:var(--ink)" stroke-width="1.8" stroke-linejoin="round"/><circle cx="' + f(xt) + '" cy="' + f(yt) + '" r="3.5" style="fill:var(--ink)"/>' +
+    '<text x="' + f(xt - 6) + '" y="' + (Tp + 10) + '" text-anchor="end" font-size="11" fill="#97999b">Today</text></svg>';
 }
 
 let RECAP = null;

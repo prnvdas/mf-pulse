@@ -132,7 +132,7 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
   ok(w.stl===0||w.stl>=0,'short-term loss is netted without error',String(w.stl)); ok(w.singles===1,'only funds big enough to cover the amount are compared alone',String(w.singles));
   ok(!errs.length,'planner maths errs',errs[0]); await ctx.close();}
  {const {p,ctx,errs}=await page(); const g=async id=>p.$eval('#'+id,e=>e.hidden?'':e.innerText);
-  let t=await g('rollWrap'); ok(/up in/i.test(t)&&/typical/i.test(t)&&/worst/i.test(t),'rolling returns section',t.slice(0,160)); await p.click('#rollSeg button:nth-child(2)'); ok(/3-year/.test(await g('rollLine')),'horizon tabs switch');
+  let t=await g('rollWrap'); ok(/of all 12-month stretches/i.test(t)&&/typical/i.test(t)&&/worst/i.test(t)&&/best/i.test(t)&&!/NaN|undefined/.test(t),'rolling returns section',t.slice(0,200)); await p.click('#rollSeg button:nth-child(2)'); ok(/3-year/.test(await g('rollLine')),'horizon tabs switch');
   await p.fill('#wdAmt','500000');await p.waitForTimeout(500);t=await g('withdrawBody'); ok(/lowest tax/i.test(t)&&/sell from/i.test(t)&&/same amount would cost/i.test(t),'withdrawal plan appears',t.slice(0,200));
   for (const v of ['abc','0','-5','99999999999','']) {await p.fill('#wdAmt',v);await p.waitForTimeout(250);ok(!/NaN|undefined|\[object/.test(await g('withdrawBody')),'amount '+JSON.stringify(v)+' handled');}
   await p.fill('#wdAmt','500000'); await p.click('#wdChips button:nth-child(1)'); ok((await p.$eval('#wdAmt',e=>e.value))==='100000','preset chips fill the amount');

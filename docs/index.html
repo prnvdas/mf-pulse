@@ -494,6 +494,8 @@
   .ddwhen b{display:block;font-size:22px;letter-spacing:-.02em}.ddwhen span{font-size:12.5px;color:var(--grey)}
   .ddbar{height:10px;border-radius:5px;background:var(--wash)}.ddbar i{display:block;height:100%;border-radius:5px;background:var(--red)}
   .ddsay{margin-top:7px;font-size:13.5px;color:var(--grey)}
+  .kgrid.k3{grid-template-columns:repeat(3,1fr);margin-top:16px}
+  @media(max-width:560px){.kgrid.k3{grid-template-columns:1fr}}
   .ddtake{margin:16px 0 0;font-size:14px;line-height:1.6}
   @media(max-width:560px){.ddnow{flex-direction:column;align-items:flex-start;gap:8px}.ddrow{grid-template-columns:1fr}}
   /* one radius for every surface; grids built from 1px gaps get a hairline frame */
@@ -623,10 +625,8 @@
   <section id="rollWrap" hidden>
     <h2>What a typical stretch looks like <span id="rollNote"></span></h2>
     <div class="seg" id="rollSeg" role="tablist" aria-label="Length of the stretch" style="margin-bottom:10px"></div>
-    <p class="scoreline" id="rollLine" style="margin:0 0 6px"></p>
-    <div class="mchart" id="rollChart"></div>
-    <div class="legend" id="rollLegend"></div>
-    <div id="rollTable"></div>
+    <div id="rollLine"></div>
+    <div id="rollBody"></div>
   </section>
 
   <section id="scoreWrap" hidden>
@@ -3651,39 +3651,20 @@ function renderRolling() {
   if (!years.length) { wrap.hidden = true; return; }
   if (!years.includes(ROLL.y)) ROLL.y = years[0];
   wrap.hidden = false;
-  $("rollNote").textContent = "every " + ROLL.y + "-year stretch in your history · percentages, new money left out";
-  $("rollSeg").innerHTML = years.map(y => '<button role="tab" aria-selected="' + (y === ROLL.y) + '" data-y="' + y + '">' + y + " year" + (y > 1 ? "s" : "") + "</button>").join("");
+  $("rollNote").textContent = "pick any starting day, hold for the time below: how did it usually end?";
+  $("rollSeg").innerHTML = years.map(y => '<button role="tab" aria-selected="' + (y === ROLL.y) + '" data-y="' + y + '">Hold ' + y + " year" + (y > 1 ? "s" : "") + "</button>").join("");
   $("rollSeg").querySelectorAll("button").forEach(b => b.onclick = () => { ROLL.y = +b.dataset.y; renderRolling(); });
   const rs = rollingReturns(dates, me, ROLL.y), st = rollStats(rs), bst = bench ? rollStats(rollingReturns(dates, bench, ROLL.y)) : null, per = ROLL.y > 1 ? " a year" : "";
-  const word = ROLL.y === 1 ? "12-month" : ROLL.y + "-year";
-  $("rollLine").innerHTML = "Over <b>" + st.n.toLocaleString("en-IN") + "</b> different " + word + " stretches in your history, you were up in <b>" + st.pos.toFixed(0) + "%</b> of them. A typical one returned <b>" + pcs(st.median, 1) + per + "</b>; a bad one (the worst tenth) <b>" + pcs(st.p10, 1) + per + "</b>; the very worst was <b class=\"neg\">" + pcs(st.worst, 1) + per + "</b> (ending " + dmon(st.worstD) + " " + st.worstD.slice(0, 4) + "). " +
-    "The latest " + word + " stretch: <b class=\"" + (st.latest >= 0 ? "pos" : "neg") + "\">" + pcs(st.latest, 1) + per + "</b>, better than <b>" + st.rank.toFixed(0) + "%</b> of the stretches so far.";
-  // chart: the rolling return over time, zero line, green above and red below
-  const host = $("rollChart"), W = Math.max(300, host.clientWidth || 800), narrow = W < 520, H = narrow ? 200 : 240, m = { l: narrow ? 40 : 52, r: 14, t: 10, b: 26 };
-  const vals = rs.map(x => x.v), lo0 = Math.min(0, ...vals), hi0 = Math.max(0, ...vals), pad = (hi0 - lo0) * .08, ticks = niceTicks(lo0 - pad, hi0 + pad, 4), y0 = ticks[0], y1 = ticks[ticks.length - 1];
-  const t = d => Date.parse(d + "T00:00:00"), x0 = t(rs[0].d), x1 = t(rs[rs.length - 1].d), X = d => m.l + (t(d) - x0) / ((x1 - x0) || 1) * (W - m.l - m.r), Y = q => H - m.b - (q - y0) / (y1 - y0) * (H - m.t - m.b), f1 = n => n.toFixed(1);
-  const line = rs.map((x, k) => (k ? "L" : "M") + f1(X(x.d)) + " " + f1(Y(x.v))).join(" "), area = line + " L" + f1(X(rs[rs.length - 1].d)) + " " + f1(Y(0)) + " L" + f1(X(rs[0].d)) + " " + f1(Y(0)) + " Z";
-  const xt = [0, 1, 2, 3, 4].map(k => rs[Math.round(k * (rs.length - 1) / 4)].d), id = "rc" + ROLL.y;
-  host.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" height="' + H + '" role="img" aria-label="Rolling ' + ROLL.y + ' year return of the portfolio"><defs><clipPath id="' + id + 'u"><rect x="0" y="0" width="' + W + '" height="' + f1(Y(0)) + '"/></clipPath><clipPath id="' + id + 'd"><rect x="0" y="' + f1(Y(0)) + '" width="' + W + '" height="' + H + '"/></clipPath></defs>' +
-    ticks.map(q => '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + f1(Y(q)) + '" y2="' + f1(Y(q)) + '" stroke="' + (q === 0 ? "#97999b" : "#ececec") + '"/><text x="' + (m.l - 7) + '" y="' + f1(Y(q) + 3) + '" font-size="10.5" text-anchor="end" fill="#97999b">' + (q === 0 ? "0%" : Math.round(q) + "%") + "</text>").join("") +
-    xt.map((d, k) => '<text x="' + f1(X(d)) + '" y="' + (H - 7) + '" font-size="10.5" text-anchor="' + (k === 0 ? "start" : k === 4 ? "end" : "middle") + '" fill="#97999b">' + new Date(d + "T00:00:00").toLocaleDateString("en-IN", { month: "short", year: "2-digit" }) + "</text>").join("") +
-    '<path d="' + area + '" clip-path="url(#' + id + 'u)" fill="rgba(134,188,37,.22)"/><path d="' + area + '" clip-path="url(#' + id + 'd)" fill="rgba(218,41,28,.16)"/>' +
-    (bench ? '<path d="' + rollingReturns(dates, bench, ROLL.y).map((x, k) => (k ? "L" : "M") + f1(X(x.d)) + " " + f1(Y(x.v))).join(" ") + '" fill="none" stroke="#3d5a80" stroke-width="1.3" stroke-dasharray="4 3"/>' : "") +
-    '<path d="' + line + '" fill="none" stroke="#5f8a15" stroke-width="1.9" stroke-linejoin="round"/><circle cx="' + f1(X(rs[rs.length - 1].d)) + '" cy="' + f1(Y(st.latest)) + '" r="4" fill="#5f8a15"/>' +
-    '<line id="rguide" y1="' + m.t + '" y2="' + (H - m.b) + '" stroke="#97999b" stroke-dasharray="3 3" visibility="hidden"/><rect id="rhit" x="' + m.l + '" y="' + m.t + '" width="' + (W - m.l - m.r) + '" height="' + (H - m.t - m.b) + '" fill="transparent"/></svg><div class="ptip" id="rtip" hidden></div>';
-  const svg = host.querySelector("svg"), tip = $("rtip"), bs = bench ? rollingReturns(dates, bench, ROLL.y) : null;
-  const move = e => { const r = svg.getBoundingClientRect(), px = ((e.touches ? e.touches[0].clientX : e.clientX) - r.left) * (W / r.width); let bi = 0;
-    rs.forEach((x, k) => { if (Math.abs(X(x.d) - px) < Math.abs(X(rs[bi].d) - px)) bi = k; });
-    const gx = X(rs[bi].d); $("rguide").setAttribute("x1", gx); $("rguide").setAttribute("x2", gx); $("rguide").setAttribute("visibility", "visible"); tip.hidden = false;
-    const bv = bs && bs.find(z => z.d === rs[bi].d);
-    tip.innerHTML = "<b>" + rs[bi].d.split("-").reverse().join("-") + "</b><br>" + pcs(rs[bi].v, 1) + per + " over the " + word + " stretch ending here" + (bv ? '<br><span class="m">' + CMP_NAME[key] + ": " + pcs(bv.v, 1) + per + "</span>" : "");
-    tip.style.left = Math.min(Math.max(gx * (r.width / W) - tip.offsetWidth / 2, 0), r.width - tip.offsetWidth) + "px"; tip.style.top = "6px"; };
-  const hide = () => { tip.hidden = true; $("rguide").setAttribute("visibility", "hidden"); }, hit = $("rhit");
-  hit.addEventListener("mousemove", move); hit.addEventListener("mouseleave", hide); hit.addEventListener("touchstart", move, { passive: true }); hit.addEventListener("touchmove", move, { passive: true }); hit.addEventListener("touchend", hide);
-  $("rollLegend").innerHTML = '<span><i></i>Your portfolio</span>' + (bench ? '<span><i class="d" style="border-top-color:#3d5a80"></i>' + CMP_NAME[key] + " (same dates)</span>" : "");
-  $("rollTable").innerHTML = '<table class="mini" style="margin-top:12px"><thead><tr><th>Over any…</th><th>Up in</th><th>Typical</th><th>Bad (worst tenth)</th><th>Worst</th><th>Best</th>' + (bst ? "<th>" + esc(CMP_NAME[key]) + " typical</th>" : "") + "</tr></thead><tbody>" +
-    years.map(y => { const s2 = rollStats(rollingReturns(dates, me, y)), b2 = bench ? rollStats(rollingReturns(dates, bench, y)) : null, u = y > 1 ? " a yr" : "";
-      return "<tr" + (y === ROLL.y ? ' class="best"' : "") + "><td>" + y + (y === 1 ? " year" : " years") + "</td><td>" + s2.pos.toFixed(0) + '%</td><td class="' + (s2.median >= 0 ? "pos" : "neg") + '">' + pcs(s2.median, 1) + u + '</td><td class="neg">' + pcs(s2.p10, 1) + u + '</td><td class="neg">' + pcs(s2.worst, 1) + u + '</td><td class="pos">' + pcs(s2.best, 1) + u + "</td>" + (bst ? "<td>" + (b2 ? pcs(b2.median, 1) + u : "—") + "</td>" : "") + "</tr>"; }).join("") + "</tbody></table>";
+  const word = ROLL.y === 1 ? "12-month" : ROLL.y + "-year", mon = d => new Date(d + "T00:00:00").toLocaleDateString("en-IN", { month: "short", year: "numeric" });
+  const pos = Math.round(st.pos);
+  $("rollLine").innerHTML = '<div class="ddnow"><div class="ddbig ' + (pos >= 50 ? "pos" : "neg") + '">' + pos + "%</div><div>of all " + word + " stretches in your history ended <b>with a gain</b>. I checked " + st.n.toLocaleString("en-IN") + " of them.</div></div>" +
+    '<div class="ddbar" style="margin-top:14px;background:rgba(218,41,28,.28)"><i style="width:' + pos + '%;background:var(--green-deep)"></i></div>';
+  const tile = (k, v, n, cls) => '<div><div class="k">' + k + '</div><div class="v ' + cls + '">' + v + '</div><div class="n">' + n + "</div></div>";
+  $("rollBody").innerHTML = '<div class="kgrid k3">' + tile("Worst", pcs(st.worst, 1) + per, "ended " + mon(st.worstD), st.worst >= 0 ? "pos" : "neg") +
+    tile("Typical", pcs(st.median, 1) + per, bst ? esc(CMP_NAME[key]) + ": " + pcs(bst.median, 1) + per : "the middle result", st.median >= 0 ? "pos" : "neg") +
+    tile("Best", pcs(st.best, 1) + per, "the luckiest start", "pos") + "</div>" +
+    '<p class="ddtake">The latest ' + word + ' stretch is <b class="' + (st.latest >= 0 ? "pos" : "neg") + '">' + pcs(st.latest, 1) + per + "</b>, better than " + st.rank.toFixed(0) + "% of the earlier ones." +
+    (ROLL.y === years[0] && years.length > 1 ? " Try the longer tabs: the longer you hold, the fewer losses." : "") + "</p>";
 }
 window.addEventListener("resize", () => { if (!$("rollWrap").hidden) safe(renderRolling, "rollWrap"); });
 

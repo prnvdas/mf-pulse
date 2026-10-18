@@ -63,7 +63,7 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
   let t=await g('moneyVs'); ok(/same money/.test(t)&&/(ahead|behind) by/.test(t)&&/Nifty 50/.test(t),'index comparison sentence',t);
   ok(await p.$$eval('#moneyCmp button',a=>a.length)===3,'comparison picker has none / Nifty 50 / Nifty 500');
   await p.click('#moneyCmp button[data-c="m"]'); ok(/Nifty 500/.test(await g('moneyVs')),'switch to Nifty 500'); await p.click('#moneyCmp button[data-c=""]'); ok((await g('moneyVs'))==='','no comparison hides the sentence');
-  t=await g('ddWrap'); ok(/deepest fall/i.test(t)&&/right now/i.test(t)&&/fell from/i.test(t),'falls and recoveries section',t.slice(0,200));
+  t=await g('ddWrap'); ok(/your biggest falls/i.test(t)&&/below its highest level|at its best/i.test(t)&&/back to the old level|still below/i.test(t)&&!/NaN|undefined/.test(t),'falls and recoveries section',t.slice(0,240));
   t=await g('overlapWrap'); ok(/different stocks/.test(t)&&/ten biggest stocks/i.test(t)&&/stocks in common/i.test(t),'fund overlap section',t.slice(0,200));
   t=await g('recapWrap'); ok(/your portfolio moved/i.test(t)&&/by fund/i.test(t),'recap card',t.slice(0,200));
   ok(!errs.length&&!/NaN|undefined|\[object/.test(await p.evaluate(()=>document.body.innerText)),'new sections clean',errs[0]); await ctx.close();}

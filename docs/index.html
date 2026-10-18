@@ -600,6 +600,12 @@
     <h2>Price source</h2>
     <div class="note bad" id="setup"></div>
   </section>
+  <section id="calWrap" hidden>
+    <h2>Day by day <span id="calNote">What the market did to your money each day (new SIP money left out)</span></h2>
+    <div class="calnav"><button class="ghost" id="calPrev" aria-label="Previous month">‹</button><b id="calMonth"></b><button class="ghost" id="calNext" aria-label="Next month">›</button></div>
+    <div class="cal" id="calGrid"></div>
+    <div class="calsum" id="calSum"></div>
+  </section>
   <section id="fundsSec">
     <h2>By fund <span id="fundNote"></span></h2>
     <table class="fundtbl">
@@ -632,12 +638,6 @@
   <section id="scoreWrap" hidden>
     <h2>Estimate vs actual NAV <span id="scoreNote"></span></h2>
     <div id="scoreBody"></div>
-  </section>
-  <section id="calWrap" hidden>
-    <h2>Day by day <span id="calNote">What the market did to your money each day (new SIP money left out)</span></h2>
-    <div class="calnav"><button class="ghost" id="calPrev" aria-label="Previous month">‹</button><b id="calMonth"></b><button class="ghost" id="calNext" aria-label="Next month">›</button></div>
-    <div class="cal" id="calGrid"></div>
-    <div class="calsum" id="calSum"></div>
   </section>
   <section id="sectorWrap" hidden>
     <h2>Where your money sits <span id="sectorNote"></span></h2>
@@ -3065,7 +3065,7 @@ function renderSectors() {
 }
 
 // ---- section menu
-const NAV = [["Today", ["hero"]], ["Advice", ["advWrap", "valWrap", "trendWrap"]], ["Money", ["fundsSec"]], ["Market", ["whyWrap", "moveSec"]], ["Funds", ["compareWrap", "healthWrap", "accSec"]], ["Returns & tax", ["retWrap", "taxWrap"]], ["Ideas", ["ideasWrap"]]];
+const NAV = [["Today", ["hero"]], ["Advice", ["advWrap", "valWrap"]], ["Bull or bear", ["trendWrap"]], ["Day by day", ["calWrap"]], ["Money", ["fundsSec"]], ["Market", ["whyWrap", "moveSec"]], ["Funds", ["compareWrap", "healthWrap", "accSec"]], ["Returns & tax", ["retWrap", "taxWrap"]], ["Ideas", ["ideasWrap"]]];
 function navTarget(ids) { for (const id of ids) { const e = $(id); if (e && !e.hidden) return e; } return null; }
 function setupNav() {
   const bar = $("snav"), inner = $("snavIn"); if (!bar) return;

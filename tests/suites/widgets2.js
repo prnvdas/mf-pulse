@@ -9,9 +9,10 @@ const URL=process.env.BASE||(process.env.BASE||'http://localhost:8000/index.html
  const settle=async p=>{let last=-1,same=0;for(let i=0;i<60&&same<4;i++){await p.waitForTimeout(100);const y=await p.evaluate(()=>Math.round(scrollY));same=y===last?same+1:0;last=y;}};
  // nav
  {const {p,ctx,errs}=await page('2026-10-12T08:30:00Z');
-  ok(await p.$eval('#snav',e=>!e.hidden),'nav visible'); const labels=await p.$$eval('#snavIn button',b=>b.map(x=>x.textContent)); ok(labels.length===7,'nav buttons',labels.join());
-  await p.click('#snavIn button:nth-child(6)'); await settle(p); const y=await p.$eval('#retWrap',e=>Math.round(e.getBoundingClientRect().top)); ok(y<120&&y>=0,'nav jumps to returns',String(y));
-  ok((await p.$eval('#snavIn button:nth-child(6)',e=>e.getAttribute('aria-current')))==='true','scroll-spy marks Returns');
+  ok(await p.$eval('#snav',e=>!e.hidden),'nav visible'); const labels=await p.$$eval('#snavIn button',b=>b.map(x=>x.textContent)); ok(labels.length===9&&labels.includes('Day by day')&&labels.includes('Bull or bear'),'nav buttons',labels.join());
+  for (const [i,id] of [[3,'trendWrap'],[4,'calWrap']]) {await p.click('#snavIn button:nth-child('+i+')'); await settle(p); const yy=await p.$eval('#'+id,e=>Math.round(e.getBoundingClientRect().top)); ok(yy<120&&yy>=0,'nav jumps to '+id,String(yy)); ok((await p.$eval('#snavIn button:nth-child('+i+')',e=>e.getAttribute('aria-current')))==='true','scroll-spy marks '+id);}
+  await p.click('#snavIn button:nth-child(8)'); await settle(p); const y=await p.$eval('#retWrap',e=>Math.round(e.getBoundingClientRect().top)); ok(y<120&&y>=0,'nav jumps to returns',String(y));
+  ok((await p.$eval('#snavIn button:nth-child(8)',e=>e.getAttribute('aria-current')))==='true','scroll-spy marks Returns');
   await p.click('#snavIn button:nth-child(1)'); await settle(p); ok(await p.evaluate(()=>scrollY<50),'nav back to top');
   ok(!errs.length,'nav errors',errs[0]); await ctx.close();}
  // back to top

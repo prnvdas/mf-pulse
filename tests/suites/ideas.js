@@ -23,7 +23,7 @@ const URL = process.env.BASE; let n = 0, fail = 0; const ok = (c, name, d) => { 
     ok(/Watch out/i.test(await p.$eval('#ideasBody', e => e.innerText)) && /How these were chosen/.test(await p.$eval('#ideasBody', e => e.innerText)), 'risks and method shown');
     ok(/not a prediction/i.test(await p.$eval('#ideasWrap', e => e.innerText)), 'disclaimer shown');
     ok(!/undefined|NaN|\[object/.test(await p.$eval('#ideasWrap', e => e.innerText)), 'no undefined in ideas');
-    await p.click('#snavIn button:nth-child(7)'); await p.waitForTimeout(1200); ok(await p.$eval('#ideasWrap', e => e.getBoundingClientRect().top < 400), 'menu jumps to ideas');
+    await p.click('#snavIn button:nth-child(9)'); await p.waitForTimeout(1200); ok(await p.$eval('#ideasWrap', e => e.getBoundingClientRect().top < 400), 'menu jumps to ideas');
     ok(!errs.length, 'ideas errors', errs[0]); await ctx.close(); }
   // --- hostile data
   for (const [m, fn] of Object.entries({

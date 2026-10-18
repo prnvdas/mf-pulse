@@ -80,6 +80,12 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
   ok(!errs.length&&!/NaN|undefined|\[object/.test(await p.evaluate(()=>document.body.innerText)),'fund sections clean',errs[0]); await ctx.close();}
  {const {p,ctx,errs}=await page({fund_changes:j=>{j.funds[0].events=[{date:'2026-10-10',kind:'manager',text:'Lead fund manager changed: A → B.'}];return j;}});
   ok(/lead fund manager changed/i.test(await p.$eval('#changesBody',e=>e.innerText))&&/something changed/i.test(await p.$eval('#changesBody',e=>e.innerText)),'a recent change is shown and flagged'); ok(!errs.length,'changes errs',errs[0]); await ctx.close();}
+ // bull or bear? section: reads the trend file, says what it is, and survives broken data
+ {const {p,ctx,errs}=await page(); const t=await p.$eval('#trendWrap',e=>e.hidden?'':e.innerText);
+  ok(/bull or bear/i.test(t)&&/of 9 signals are bullish/i.test(t)&&/what a bull run looks like/i.test(t)&&/what a bear market looks like/i.test(t)&&/if the trend continues/i.test(t)&&/not a forecast/i.test(t),'trend section reads',t.slice(0,200));
+  ok(/200-day average \(/.test(t),'trend names the level to watch'); ok(!errs.length&&!/NaN|undefined|\[object/.test(t),'trend clean',errs[0]); await (await p.$('#trendWrap')).screenshot({path:'trend.png'}); await ctx.close();}
+ for (const [m,fn] of Object.entries({empty:j=>({}),list:j=>[],nosimilar:j=>{j.similar=null;j.pace=null;j.history={};j.levels=null;return j;},junk:j=>{j.signals=[null,{label:5},{label:'x',value:{}}];j.history={bull:{median_gain_pct:'a'},bear:5};j.similar={p50:'x'};j.regime={code:'zzz'};return j;}})) {const {p,ctx,errs}=await page({trend:fn});
+  ok(!errs.length&&!/NaN|undefined|\[object/.test(await p.evaluate(()=>document.body.innerText)),'trend hostile '+m,errs[0]); await ctx.close();}
  for (const [f,fn] of [['fund_history',j=>{j.funds.axis_x={v:[1],i:[1],b:[1]};Object.values(j.funds).forEach(x=>{x.b=null});return j;}],['fund_history',j=>{j.dates=[];return j;}],['fund_history',j=>({dates:'x',funds:5})],['fund_history',j=>{Object.values(j.funds).forEach(x=>{x.v=x.v.map(()=>'a')});return j;}],
    ['fund_changes',j=>({funds:[null,{name:5},{name:'x',events:'y',managers:5,aum_cr:'a'}]})],['fund_changes',j=>[]]]) {const {p,ctx,errs}=await page({[f]:fn});
   ok(!errs.length&&!/NaN|undefined|\[object/.test(await p.evaluate(()=>document.body.innerText)),'hostile '+f,errs[0]); await ctx.close();}

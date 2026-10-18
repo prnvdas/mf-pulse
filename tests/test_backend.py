@@ -21,6 +21,7 @@ import picks  # noqa: E402
 import recap  # noqa: E402
 import reconcile  # noqa: E402
 import snapshot  # noqa: E402
+import trend  # noqa: E402
 import validate_data  # noqa: E402
 
 D = dt.date
@@ -363,6 +364,45 @@ class LoadPortfolioOverlay(unittest.TestCase):
         self.assertEqual([f["id"] for f in cfg["funds"]], ["a", "b", "c"])
         self.assertEqual({f["id"]: f["ter_annual_pct"] for f in cfg["funds"] if "ter_annual_pct" in f}, {"a": 0.9, "b": 0.4})
         self.assertEqual(sorted((s["fund_id"], s["amount"], s["day_of_month"]) for s in cfg["sips"]), [("a", 5000, 1), ("b", 2000, 3)])
+
+
+class Trend(unittest.TestCase):
+    def _series(self, vals, start="2010-01-01"):
+        import pandas as pd
+        return pd.Series(vals, index=pd.bdate_range(start, periods=len(vals)))
+
+    def test_bull_and_bear_phases_use_the_20_percent_rule(self):
+        # up to 100, down 25% to 75 (a bear), back up 25% to 94 (the bear ends), on to 150 (a bull from the low)
+        path = list(range(50, 101)) + list(range(100, 74, -1)) + list(range(75, 151))
+        bulls, bears = trend.phases(self._series(path))
+        self.assertEqual(len(bears), 1)
+        self.assertAlmostEqual(bears[0]["fall"], -0.25, places=2)
+        self.assertEqual(len(bulls), 1)
+        self.assertAlmostEqual(bulls[0]["gain"], 150 / 75 - 1, places=2)
+        self.assertTrue(bulls[0].get("ongoing"))
+
+    def test_a_dip_under_20_percent_is_not_a_bear_market(self):
+        path = list(range(50, 101)) + list(range(100, 85, -1)) + list(range(86, 130))
+        _, bears = trend.phases(self._series(path))
+        self.assertEqual(bears, [])
+
+    def test_pullbacks_counts_separate_falls(self):
+        s = self._series([100, 120, 100, 125, 130, 110, 140])
+        self.assertEqual(trend.pullbacks(s), 2)
+
+    def test_regime_labels(self):
+        self.assertEqual(trend.regime(8, 9, -0.02)[0], "strong")
+        self.assertEqual(trend.regime(-4, 9, -0.12)[0], "down")
+        self.assertEqual(trend.regime(5, 9, -0.25)[0], "bear")          # a 20% fall outranks the signals
+        self.assertEqual(trend.regime(0, 9, -0.05)[0], "mixed")
+
+    def test_build_is_finite_json_on_a_long_steady_rise(self):
+        import numpy as np
+        s = self._series(list(100 * np.exp(np.linspace(0, 1.5, 3000) + 0.01 * np.sin(np.arange(3000) / 7))))
+        doc = trend.build(s, s)
+        json.dumps(doc, allow_nan=False)                                  # no NaN may reach the page
+        self.assertIn(doc["regime"]["code"], ("strong", "up"))
+        self.assertEqual(doc["of"], 9)
 
 
 if __name__ == "__main__":

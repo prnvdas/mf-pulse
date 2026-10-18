@@ -1,0 +1,125 @@
+{
+  "generated_at": "2026-10-18T11:22:09.661957+05:30",
+  "as_of": "2026-10-16",
+  "index": "Nifty 50",
+  "level": 23146.15,
+  "score": -4,
+  "of": 9,
+  "regime": {
+    "code": "down",
+    "label": "Downtrend"
+  },
+  "stretched": false,
+  "drawdown_pct": -12.1,
+  "rsi": 53.0,
+  "signals": [
+    {
+      "k": "above200",
+      "label": "Price above its 200-day average",
+      "state": "bear",
+      "value": "-4.3%"
+    },
+    {
+      "k": "cross",
+      "label": "50-day average above the 200-day",
+      "state": "bear",
+      "value": "no"
+    },
+    {
+      "k": "rising200",
+      "label": "200-day average rising",
+      "state": "bear",
+      "value": "-1.3% in a month"
+    },
+    {
+      "k": "mom12",
+      "label": "Higher than a year ago",
+      "state": "bear",
+      "value": "-7.6%"
+    },
+    {
+      "k": "mom3",
+      "label": "Higher than three months ago",
+      "state": "bear",
+      "value": "-4.9%"
+    },
+    {
+      "k": "rsi",
+      "label": "Momentum (RSI) above 50",
+      "state": "bull",
+      "value": "53"
+    },
+    {
+      "k": "macd",
+      "label": "MACD above its signal line",
+      "state": "bull",
+      "value": "yes"
+    },
+    {
+      "k": "high",
+      "label": "Within 10% of the 52-week high",
+      "state": "neutral",
+      "value": "-12.1%"
+    },
+    {
+      "k": "n500",
+      "label": "Nifty 500 above its 200-day average",
+      "state": "bear",
+      "value": "no"
+    }
+  ],
+  "levels": {
+    "ma200": 24191,
+    "high52": 26329,
+    "bear_line": 21063
+  },
+  "history": {
+    "since": "2007-09-17",
+    "bull": {
+      "n": 5,
+      "median_gain_pct": 88,
+      "median_months": 31,
+      "pullbacks_median": 4,
+      "last": {
+        "start": "2020-03-23",
+        "end": "2026-01-02",
+        "gain_pct": 246,
+        "now_pct": 204,
+        "ongoing": true
+      }
+    },
+    "bear": {
+      "n": 5,
+      "median_fall_pct": -38,
+      "median_months": 6,
+      "last": {
+        "peak": "2020-01-14",
+        "trough": "2020-03-23",
+        "fall_pct": -38,
+        "months": 2,
+        "ongoing": false
+      }
+    }
+  },
+  "similar": {
+    "days": 338,
+    "years": 1.3,
+    "episodes": 11,
+    "bucket": "down",
+    "depth": "correction",
+    "up_pct": 92,
+    "p10": 0.6,
+    "p25": 5.9,
+    "p50": 12.7,
+    "p75": 21.1,
+    "p90": 42.3,
+    "level_p10": 23285,
+    "level_p50": 26086,
+    "level_p90": 32937
+  },
+  "pace": {
+    "years": 3,
+    "annual_pct": 4.5,
+    "level_12m": 24195
+  }
+}

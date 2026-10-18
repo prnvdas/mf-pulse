@@ -561,6 +561,10 @@
     <h2>Market mood and valuation <span id="valNote"></span></h2>
     <div id="valBody"></div>
   </section>
+  <section id="trendWrap" hidden>
+    <h2>Bull or bear? <span id="trendNote"></span></h2>
+    <div id="trendBody"></div>
+  </section>
   <section id="amfiWrap" hidden>
     <h2>Tonight's actual NAV <span>AMFI, checked live — not yet in the scored history below</span></h2>
     <div class="note" id="amfiNote"></div>
@@ -3039,7 +3043,7 @@ function renderSectors() {
 }
 
 // ---- section menu
-const NAV = [["Today", ["hero"]], ["Advice", ["advWrap", "valWrap"]], ["Money", ["fundsSec"]], ["Market", ["whyWrap", "moveSec"]], ["Funds", ["compareWrap", "healthWrap", "accSec"]], ["Returns & tax", ["retWrap", "taxWrap"]], ["Ideas", ["ideasWrap"]]];
+const NAV = [["Today", ["hero"]], ["Advice", ["advWrap", "valWrap", "trendWrap"]], ["Money", ["fundsSec"]], ["Market", ["whyWrap", "moveSec"]], ["Funds", ["compareWrap", "healthWrap", "accSec"]], ["Returns & tax", ["retWrap", "taxWrap"]], ["Ideas", ["ideasWrap"]]];
 function navTarget(ids) { for (const id of ids) { const e = $(id); if (e && !e.hidden) return e; } return null; }
 function setupNav() {
   const bar = $("snav"), inner = $("snavIn"); if (!bar) return;
@@ -3414,6 +3418,41 @@ function renderOverlap() {
 }
 
 // ---- the daily recap (data/recap.json from src/recap.py, written after the nightly grading)
+// ---- Bull or bear? (data/trend.json from trend.py, nightly): classic trend and momentum signals on the Nifty 50, what bull and bear
+// markets have looked like since 2007, and an extrapolation (the trend carried forward; what followed in similar spells). Not a forecast.
+let TREND = null;
+function renderTrend() {
+  const wrap = $("trendWrap"), T = TREND;
+  if (!isObj(T) || !Array.isArray(T.signals) || !T.signals.length || !num(T.level) || !isObj(T.regime) || typeof T.as_of !== "string") { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  const my = iso => new Date(iso + "T00:00:00").toLocaleDateString("en-IN", { month: "short", year: "numeric" });
+  const pts = n => Math.round(n).toLocaleString("en-IN"), sg = (n, d = 0) => (n >= 0 ? "+" : "−") + Math.abs(n).toFixed(d) + "%";
+  const sigs = T.signals.filter(x => isObj(x) && typeof x.label === "string");
+  const bulls = sigs.filter(x => x.state === "bull").length, of = sigs.length;
+  const H = isObj(T.history) ? T.history : {}, B = isObj(H.bull) ? H.bull : {}, R = isObj(H.bear) ? H.bear : {}, L = isObj(T.levels) ? T.levels : {};
+  const dd = num(T.drawdown_pct) ? T.drawdown_pct : 0;
+  const chipCls = { strong: "healthy", up: "healthy", mixed: "flat", down: "watch", weak: "caution", bear: "caution" }[T.regime.code] || "flat";
+  const where = dd <= -20 ? "That is a bear market: a fall of 20% or more from the high."
+    : dd <= -10 ? "That is a correction (10–20% off the high), not yet a bear market" + (num(L.bear_line) ? ", which starts below " + pts(L.bear_line) : "") + "."
+    : "It is within 10% of its high.";
+  const head = '<p class="scoreline"><span class="chip ' + chipCls + '">' + esc(String(T.regime.label || "")) + "</span> &nbsp;" + bulls + " of " + of + " signals are bullish; the Nifty 50 is " +
+    Math.abs(dd).toFixed(1) + "% " + (dd < 0 ? "below" : "from") + " its 52-week high. " + where + (T.stretched ? " It looks stretched after a strong run (RSI above 70 or well above its 200-day average)." : "") + "</p>";
+  const dot = { bull: "g", bear: "xf" };
+  const pills = '<div class="chips2">' + sigs.map(x => '<span class="chip3"><i class="dotc ' + (dot[x.state] || "") + '"></i>' + esc(x.label) + " <b>" + esc(String(x.value == null ? "" : x.value)) + "</b></span>").join("") + "</div>";
+  const lastB = isObj(B.last) ? B.last : null, lastR = isObj(R.last) ? R.last : null, S = isObj(T.similar) ? T.similar : null, P = isObj(T.pace) ? T.pace : null;
+  const bullTxt = num(B.median_gain_pct) ? "Since " + esc(String(H.since || "").slice(0, 4)) + " the Nifty has had " + B.n + " bull runs: typically <b>" + sg(B.median_gain_pct) + "</b> over about " + B.median_months + " months" +
+    (num(B.pullbacks_median) ? ", with around " + B.pullbacks_median + " falls of 10% or more on the way" : "") + "." +
+    (lastB && num(lastB.gain_pct) ? " The latest began in " + my(lastB.start) + " and reached " + sg(lastB.gain_pct) + " by " + my(lastB.end) + (lastB.ongoing && num(lastB.now_pct) ? " (" + sg(lastB.now_pct) + " today)" : "") + "." : "") : "Not enough history.";
+  const bearTxt = num(R.median_fall_pct) ? R.n + " bear markets since " + esc(String(H.since || "").slice(0, 4)) + ": typically <b>" + sg(R.median_fall_pct) + "</b> over about " + R.median_months + " months from top to bottom." +
+    (lastR && num(lastR.fall_pct) ? " The latest: " + my(lastR.peak) + " to " + my(lastR.trough) + ", " + sg(lastR.fall_pct) + (lastR.ongoing ? " so far" : "") + "." : "") : "Not enough history.";
+  const trendTxt = (P && num(P.annual_pct) ? "If the last " + P.years + " years' pace simply continued: <b>" + sg(P.annual_pct, 1) + " a year</b>, the Nifty near <b>" + pts(P.level_12m) + "</b> in a year. " : "") +
+    (S && num(S.p50) ? "In " + S.episodes + " similar spells since " + esc(String(H.since || "").slice(0, 4)) + " (" + ({ near: "near the high", correction: "10–20% below the high", deep: "more than 20% below the high" }[S.depth] || "like today") + ", signals in " + ({ up: "an uptrend", down: "a downtrend", mixed: "a mixed picture" }[S.bucket] || "a similar state") + "), the next 12 months were higher <b>" + S.up_pct + "%</b> of the time: typically <b>" + sg(S.p50) + "</b>, ranging " + sg(S.p10) + " to " + sg(S.p90) + ". That is a small sample." : "");
+  const watch = num(L.ma200) && T.signals.some(x => x.k === "above200" && x.state === "bear") ? "A close back above the 200-day average (" + pts(L.ma200) + ") would be the first sign of recovery." : num(L.ma200) ? "Falling below the 200-day average (" + pts(L.ma200) + ") would be the first sign of weakness." : "";
+  $("trendNote").textContent = "Nifty 50 · " + dmon(T.as_of) + " · an extrapolation of the past, not a forecast";
+  $("trendBody").innerHTML = head + pills + '<div class="cardsrow" style="margin-top:6px"><div><h3>What a bull run looks like</h3><p>' + bullTxt + "</p></div><div><h3>What a bear market looks like</h3><p>" + bearTxt +
+    "</p></div><div><h3>If the trend continues</h3><p>" + (trendTxt || "Not enough history.") + "</p></div></div>" + (watch ? '<p class="sub2" style="margin-top:12px">' + watch + "</p>" : "");
+}
+
 let RECAP = null;
 function renderRecap() {
   const wrap = $("recapWrap"), R = RECAP;
@@ -3506,7 +3545,7 @@ function statusFresh() {
     ["Prices and today's estimate", LAST_BATCH && LAST_BATCH.generatedAt, marketOpen() ? 0.6 : day, "refreshed every 15 minutes in market hours"],
     ["Next-session call", OUTLOOK && OUTLOOK.generated_at, day, "morning and evening"], ["GIFT Nifty snapshot", GIFT && GIFT.fetched_at, day, "morning and evening"],
     ["Mood and advice", (MOOD && MOOD.generated_at) || (ADVISOR && ADVISOR.generated_at), 30 + (quiet ? 50 : 0), "nightly"], ["Why the market moved", NEWS && NEWS.generated_at, 30 + (quiet ? 50 : 0), "nightly"],
-    ["Returns, tax and history", (PHIST && PHIST.generated_at) || (ANALYTICS && ANALYTICS.generated_at), 30 + (quiet ? 50 : 0), "nightly"], ["Last session's recap", RECAP && RECAP.generated_at, 30 + (quiet ? 50 : 0), "nightly, after the NAVs are in"],
+    ["Returns, tax and history", (PHIST && PHIST.generated_at) || (ANALYTICS && ANALYTICS.generated_at), 30 + (quiet ? 50 : 0), "nightly"], ["Last session's recap", RECAP && RECAP.generated_at, 30 + (quiet ? 50 : 0), "nightly, after the NAVs are in"], ["Bull or bear check", TREND && TREND.generated_at, 30 + (quiet ? 50 : 0), "nightly"],
     ["Fund health and changes", (FHEALTH && FHEALTH.generated_at), 8 * 24, "weekly"], ["Weekly ideas", PICKS && PICKS.generated_at, 8 * 24, "every Sunday"]];
   return rows.map(([name, iso, max, how]) => { const t = ts(iso), age = t == null ? null : (now - t) / 3600000;
     return { name, how, age, cls: age == null ? "xf" : age <= max ? "g" : age <= max * 1.6 ? "f" : "xf", at: t == null ? "no data" : new Date(t).toLocaleString("en-IN", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }) }; });
@@ -3737,7 +3776,7 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   const pCfg = get("data/config.json", j => isObj(j) && Array.isArray(j.funds) && j.funds.length, DEMO), pAcc = get("data/accuracy.json", isObj, { samples: 0 }), pHist = get("data/history.json", Array.isArray, []),
     pAn = fetch("data/analytics.json", { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => null), pHol = get("data/holidays.json", isObj, null), pTax = get("data/tax.json", isObj, null),
     pPhist = get("data/portfolio_history.json", j => isObj(j) && Array.isArray(j.points), null), pFh = get("data/fund_health.json", j => isObj(j) && Array.isArray(j.funds), null), pPicks = get("data/picks.json", isObj, null),
-    pRecap = get("data/recap.json", isObj, null), pChanges = get("data/fund_changes.json", isObj, null), pFundHist = get("data/fund_history.json", isObj, null),
+    pRecap = get("data/recap.json", isObj, null), pChanges = get("data/fund_changes.json", isObj, null), pFundHist = get("data/fund_history.json", isObj, null), pTrend = get("data/trend.json", isObj, null),
     pMovers = get("data/movers.json", Array.isArray, []),
     pLatest = fetch("data/latest.json", { cache: "no-store" }).then(r => r.ok ? r.json() : Promise.reject()).catch(() => null);
   CFG = await pCfg;
@@ -3752,12 +3791,12 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   PHIST = await pPhist;
   FHEALTH = await pFh;
   PICKS = await pPicks;
-  RECAP = await pRecap;
+  RECAP = await pRecap; TREND = await pTrend;
   FCHANGES = await pChanges;
   pFundHist.then(h => { FUNDHIST = h; safe(renderFundBench, "fundBenchWrap"); });   // large and below the fold: render it when it arrives
   setupHide();
   safe(renderReturns, "retWrap"); safe(renderTax, "taxWrap"); safe(renderStatementBar, "stmtBar");
-  safe(renderMoney, "moneyWrap"); safe(renderDrawdown, "ddWrap"); safe(renderRolling, "rollWrap"); safe(renderSectors, "sectorWrap"); safe(renderOverlap, "overlapWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(setupToTop); safe(renderFundBench, "fundBenchWrap"); safe(renderChanges, "changesWrap"); safe(renderRecap, "recapWrap"); safe(renderWithdraw, "withdrawWrap"); safe(renderIdeas, "ideasWrap"); safe(renderHealthLine); safe(renderTxBar); safe(renderDataBar); safe(startVersionWatch); safe(setupStatus); safe(setupTheme); safe(setupNav);
+  safe(renderTrend, "trendWrap"); safe(renderMoney, "moneyWrap"); safe(renderDrawdown, "ddWrap"); safe(renderRolling, "rollWrap"); safe(renderSectors, "sectorWrap"); safe(renderOverlap, "overlapWrap"); safe(renderCalendar, "calWrap"); safe(renderHealth, "healthWrap"); safe(renderSip, "sipWrap"); safe(renderCost, "costWrap"); safe(renderScore, "scoreWrap"); safe(setupToTop); safe(renderFundBench, "fundBenchWrap"); safe(renderChanges, "changesWrap"); safe(renderRecap, "recapWrap"); safe(renderWithdraw, "withdrawWrap"); safe(renderIdeas, "ideasWrap"); safe(renderHealthLine); safe(renderTxBar); safe(renderDataBar); safe(startVersionWatch); safe(setupStatus); safe(setupTheme); safe(setupNav);
   renderCompare();
   loadNews();
   loadOutlook();

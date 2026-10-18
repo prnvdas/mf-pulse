@@ -95,7 +95,7 @@
     animation:sp .6s linear infinite}
   @keyframes sp{to{transform:rotate(360deg)}}
 
-  .hero{padding:56px 0 40px}
+  .hero{display:grid;grid-template-columns:1fr auto;gap:48px;align-items:center;padding:52px 0 40px}
   .eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
     color:var(--grey);margin-bottom:14px}
   .headline{font-size:clamp(42px,7.5vw,72px);font-weight:600;line-height:1.02;
@@ -103,13 +103,10 @@
   .hero.flat .headline{color:var(--ink)}
   .subline{margin-top:16px;font-size:14.5px;line-height:1.6;color:var(--grey);max-width:58ch}
   .subline b{color:var(--ink);font-weight:600;white-space:nowrap}
-  .orb{display:inline-flex;align-items:baseline;gap:10px;margin-top:18px;padding:6px 14px;border-radius:99px;background:var(--state-soft);color:var(--state-ink)}
+  .orb{width:172px;height:172px;border-radius:50%;background:var(--state);display:grid;place-content:center;text-align:center;color:#fff}
   .orb[hidden]{display:none}
-  .orb>div{display:contents}
-  .orb .pct{font-size:14px;font-weight:700;letter-spacing:-.01em}
-  .orb .word{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.85}
-  .hero.flat .orb{background:var(--wash);color:var(--grey)}
-  .hero.flat .orb .pct{font-weight:600}
+  .orb .pct{font-size:34px;font-weight:600;letter-spacing:-.03em;line-height:1}
+  .orb .word{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;margin-top:8px;opacity:.85}
 
   .strip{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--rule)}
   .stat{padding:24px 22px 24px 0}
@@ -330,7 +327,8 @@
 
   @media(max-width:760px){
     .wrap{padding:0 20px}
-    .hero{padding:36px 0 30px}
+    .hero{grid-template-columns:1fr;gap:30px;padding:36px 0 30px}
+    .orb{width:132px;height:132px}.orb .pct{font-size:27px}
     .strip{grid-template-columns:1fr 1fr}
     .stat{padding:17px 15px 17px 0}
     .stat:nth-child(3),.stat:nth-child(4){border-top:1px solid var(--rule)}
@@ -434,6 +432,7 @@
     radial-gradient(0.8px 0.8px at 13px 17px,rgba(255,255,255,.7),transparent),radial-gradient(0.8px 0.8px at 47px 61px,rgba(200,215,255,.6),transparent),radial-gradient(0.7px 0.7px at 29px 83px,rgba(255,255,255,.55),transparent),
     radial-gradient(0.8px 0.8px at 71px 9px,rgba(235,225,255,.6),transparent),radial-gradient(0.7px 0.7px at 89px 47px,rgba(255,255,255,.5),transparent);background-size:auto,auto,auto,97px 101px,97px 101px,97px 101px,97px 101px,97px 101px}
   [data-theme="dark"] body{background:transparent}
+  [data-theme="dark"] .orb{box-shadow:0 0 60px color-mix(in srgb,var(--state) 55%,transparent),0 0 0 1px rgba(255,255,255,.08) inset}
   .sky{display:none}
   [data-theme="dark"] .sky{display:block;position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
   [data-theme="dark"] .sky i{position:absolute;width:110px;height:2px;border-radius:2px;opacity:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.95));transform:rotate(-32deg);animation:meteor 19s linear infinite}
@@ -550,12 +549,12 @@
     <div>
       <div class="eyebrow" id="eyebrow">Estimated impact today</div>
       <div class="headline" id="pnl">—</div>
-      <div class="orb" id="orb"><div>
-        <span class="pct" id="orbPct">—</span>
-        <span class="word" id="orbWord">Awaiting</span>
-      </div></div>
       <p class="subline" id="sub">Press <b>Refresh live</b> to price every stock underneath your funds and infer today's NAV move.</p>
     </div>
+    <div class="orb" id="orb"><div>
+      <div class="pct" id="orbPct">—</div>
+      <div class="word" id="orbWord">Awaiting</div>
+    </div></div>
   </div>
 
   <div class="strip">
@@ -1089,11 +1088,12 @@ function setState(up) {
   st.setProperty("--state-ink", up ? "var(--green-deep)" : "var(--red)");
   st.setProperty("--state-soft", up ? "var(--soft-green)" : "var(--soft-red)");
 }
-// On a day with nothing to estimate the pill says how the last session ended (from the nightly recap)
+// On a day with nothing to estimate the circle says how the last session ended (from the nightly recap)
 function heroPill() {
   if (!$("hero").classList.contains("flat")) return;
-  const last = isObj(RECAP) && typeof RECAP.headline === "string" ? RECAP.headline : "";
-  $("orbPct").textContent = last; $("orbWord").textContent = ""; $("orb").hidden = !last;
+  const m = isObj(RECAP) && typeof RECAP.headline === "string" ? RECAP.headline.match(/\(([+−-][\d.]+%)\)/) : null;
+  $("orb").hidden = !m;
+  if (m) { $("orbPct").textContent = m[1].replace("-", "−"); $("orbWord").textContent = "Last session"; setState(m[1][0] === "+"); }
 }
 
 function render(funds, meta) {
@@ -1128,7 +1128,7 @@ function render(funds, meta) {
   // Nothing to estimate (holiday, weekend, or the NAVs are already in): show what the portfolio is worth, not a zero
   const flat = !waiting && (meta.phase === "holiday" || closedAllDay() || (!marketOpen() && Math.abs(impact) < 1));
   $("hero").classList.toggle("flat", flat);
-  $("orb").hidden = waiting;
+  $("orb").hidden = false;
   if (flat) { $("pnl").textContent = inr(value); $("eyebrow").textContent = "Portfolio value · last close"; heroPill(); }
 
   const gainTxt = signed(value - invested) + " (" + pc(invested ? (value - invested) / invested * 100 : 0) + ")";
@@ -3835,7 +3835,7 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   $("pnl").textContent = "—";
   $("orbPct").textContent = "—";
   $("orbWord").textContent = "Awaiting";
-  $("orb").hidden = true; $("hero").classList.remove("flat");
+  $("hero").classList.remove("flat");
   $("movedNote").textContent = "";
   $("sub").innerHTML = "Press <b>Refresh live</b> to price every stock underneath your funds and infer today's NAV move.";
   setState(true);

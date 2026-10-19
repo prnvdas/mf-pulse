@@ -95,7 +95,7 @@
     animation:sp .6s linear infinite}
   @keyframes sp{to{transform:rotate(360deg)}}
 
-  .hero{display:grid;grid-template-columns:1fr auto;gap:48px;align-items:center;padding:52px 0 40px}
+  .hero{display:grid;grid-template-columns:1fr 300px;gap:48px;align-items:center;padding:52px 0 40px}
   .eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
     color:var(--grey);margin-bottom:14px}
   .headline{font-size:clamp(42px,7.5vw,72px);font-weight:600;line-height:1.02;
@@ -103,10 +103,23 @@
   .hero.flat .headline{color:var(--ink)}
   .subline{margin-top:16px;font-size:14.5px;line-height:1.6;color:var(--grey);max-width:58ch}
   .subline b{color:var(--ink);font-weight:600;white-space:nowrap}
-  .orb{width:172px;height:172px;border-radius:50%;background:var(--state);display:grid;place-content:center;text-align:center;color:#fff}
-  .orb[hidden]{display:none}
-  .orb .pct{font-size:34px;font-weight:600;letter-spacing:-.03em;line-height:1}
-  .orb .word{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;margin-top:8px;opacity:.85}
+  .hcombo{min-width:0;border:1px solid var(--rule);border-radius:var(--r);padding:14px 16px 16px}
+  .hcombo[hidden]{display:none}
+  .hcombo .dialwrap{display:flex;flex-direction:column;align-items:center}
+  .hcombo svg{display:block;max-width:100%;height:auto}
+  .hcombo svg text{fill:var(--grey-light);font-size:10.5px}
+  .hcombo .dialnum{font-size:26px;font-weight:700;letter-spacing:-.03em;line-height:1;margin-top:-2px;color:var(--grey)}
+  .hcombo .dialnum.up{color:var(--green-deep)}.hcombo .dialnum.dn{color:var(--red)}
+  .hcombo .dialcap{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--grey-light);margin-top:5px}
+  .hcombo .funds{display:grid;gap:9px;margin-top:16px;padding-top:14px;border-top:1px solid var(--rule)}
+  .hcombo .funds[hidden]{display:none}
+  .hcombo .fb{display:grid;grid-template-columns:78px 1fr 58px;gap:10px;align-items:center;font-size:13px}
+  .hcombo .fb .nm{color:var(--grey);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hcombo .fb .tr{position:relative;height:10px;background:var(--wash);border-radius:5px}
+  .hcombo .fb .tr::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--grey-light);opacity:.6}
+  .hcombo .fb .tr i{position:absolute;top:0;bottom:0;border-radius:5px}
+  .hcombo .fb .v{text-align:right;font-weight:700;font-size:12.5px}
+  .hcombo .up{color:var(--green-deep)}.hcombo .dn{color:var(--red)}
 
   .strip{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--rule)}
   .stat{padding:24px 22px 24px 0}
@@ -328,7 +341,6 @@
   @media(max-width:760px){
     .wrap{padding:0 20px}
     .hero{grid-template-columns:1fr;gap:30px;padding:36px 0 30px}
-    .orb{width:132px;height:132px}.orb .pct{font-size:27px}
     .strip{grid-template-columns:1fr 1fr}
     .stat{padding:17px 15px 17px 0}
     .stat:nth-child(3),.stat:nth-child(4){border-top:1px solid var(--rule)}
@@ -432,7 +444,6 @@
     radial-gradient(0.8px 0.8px at 13px 17px,rgba(255,255,255,.7),transparent),radial-gradient(0.8px 0.8px at 47px 61px,rgba(200,215,255,.6),transparent),radial-gradient(0.7px 0.7px at 29px 83px,rgba(255,255,255,.55),transparent),
     radial-gradient(0.8px 0.8px at 71px 9px,rgba(235,225,255,.6),transparent),radial-gradient(0.7px 0.7px at 89px 47px,rgba(255,255,255,.5),transparent);background-size:auto,auto,auto,97px 101px,97px 101px,97px 101px,97px 101px,97px 101px}
   [data-theme="dark"] body{background:transparent}
-  [data-theme="dark"] .orb{box-shadow:0 0 60px color-mix(in srgb,var(--state) 55%,transparent),0 0 0 1px rgba(255,255,255,.08) inset}
   .sky{display:none}
   [data-theme="dark"] .sky{display:block;position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
   [data-theme="dark"] .sky i{position:absolute;width:110px;height:2px;border-radius:2px;opacity:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.95));transform:rotate(-32deg);animation:meteor 19s linear infinite}
@@ -551,10 +562,10 @@
       <div class="headline" id="pnl">—</div>
       <p class="subline" id="sub">Press <b>Refresh live</b> to price every stock underneath your funds and infer today's NAV move.</p>
     </div>
-    <div class="orb" id="orb"><div>
-      <div class="pct" id="orbPct">—</div>
-      <div class="word" id="orbWord">Awaiting</div>
-    </div></div>
+    <div class="hcombo" id="orb">
+      <div class="dialwrap"><div id="dialBox"></div><div class="dialnum" id="orbPct">—</div><div class="dialcap" id="orbWord">Awaiting</div></div>
+      <div class="funds" id="orbFunds" hidden></div>
+    </div>
   </div>
 
   <div class="strip">
@@ -1088,12 +1099,33 @@ function setState(up) {
   st.setProperty("--state-ink", up ? "var(--green-deep)" : "var(--red)");
   st.setProperty("--state-soft", up ? "var(--soft-green)" : "var(--soft-red)");
 }
-// On a day with nothing to estimate the circle says how the last session ended (from the nightly recap)
+// The dial and the fund bars: one overall move, and which fund is behind it
+let HEROV = { pct: null, band: 0, rows: [] };
+function heroDial() {
+  const H = HEROV, has = num(H.pct), pct = has ? H.pct : 0, mx = Math.abs(pct) <= 1 ? 1 : Math.abs(pct) <= 2 ? 2 : 5;
+  const W = 220, cx = 110, cy = 100, r = 82, ang = v => Math.max(-1, Math.min(1, v / mx)) * Math.PI / 2, pt = (t, rr = r) => [cx + rr * Math.sin(t), cy - rr * Math.cos(t)];
+  const arc = (t0, t1, c, w, rr, op) => { const a = pt(t0, rr || r), b = pt(t1, rr || r); return '<path d="M' + a.map(n => n.toFixed(1)) + " A" + (rr || r) + " " + (rr || r) + " 0 0 1 " + b.map(n => n.toFixed(1)) + '" fill="none" style="stroke:' + c + '" stroke-width="' + w + '" stroke-linecap="round" opacity="' + (op || .9) + '"/>'; };
+  const tip = pt(ang(pct), r - 16);
+  $("dialBox").innerHTML = '<svg viewBox="0 0 ' + W + ' 124" width="220" role="img" aria-label="Today\'s move on a dial from −' + mx + '% to +' + mx + '%">' +
+    arc(-Math.PI / 2, -0.2, "var(--red)", 10) + arc(-0.12, 0.12, "var(--grey-light)", 10, r, .7) + arc(0.2, Math.PI / 2, "var(--green)", 10) +
+    (has && H.band > 0 ? arc(ang(pct - H.band), ang(pct + H.band), "#3d5a80", 4, r + 11, 1) : "") +
+    '<line x1="' + cx + '" y1="' + cy + '" x2="' + tip[0].toFixed(1) + '" y2="' + tip[1].toFixed(1) + '" style="stroke:var(--ink)" stroke-width="3.2" stroke-linecap="round"/><circle cx="' + cx + '" cy="' + cy + '" r="6.5" style="fill:var(--ink)"/>' +
+    '<text x="14" y="118">−' + mx + '%</text><text x="' + cx + '" y="118" text-anchor="middle">0</text><text x="' + (W - 14) + '" y="118" text-anchor="end">+' + mx + '%</text></svg>';
+  $("orbPct").className = "dialnum " + (has ? (pct >= 0 ? "up" : "dn") : "");
+  const rows = (Array.isArray(H.rows) ? H.rows : []).filter(x => Array.isArray(x) && num(x[1])), sc = Math.max(0.6, ...rows.map(x => Math.abs(x[1])) ) * 1.05;
+  $("orbFunds").hidden = !rows.length || !has;
+  $("orbFunds").innerHTML = rows.map(x => '<div class="fb"><span class="nm" title="' + esc(x[0]) + '">' + esc(String(x[0]).split(" ")[0]) + '</span><span class="tr"><i style="' + (x[1] >= 0 ? "left" : "right") + ':50%;width:' + (Math.min(1, Math.abs(x[1]) / sc) * 50).toFixed(1) + '%;background:' + (x[1] >= 0 ? "var(--green-deep)" : "var(--red)") + '"></i></span><span class="v ' + (x[1] >= 0 ? "up" : "dn") + '">' + pc(x[1]) + "</span></div>").join("");
+}
+// On a day with nothing to estimate the dial shows how the last session ended (from the nightly recap)
 function heroPill() {
   if (!$("hero").classList.contains("flat")) return;
-  const m = isObj(RECAP) && typeof RECAP.headline === "string" ? RECAP.headline.match(/\(([+−-][\d.]+%)\)/) : null;
+  const m = isObj(RECAP) && typeof RECAP.headline === "string" ? RECAP.headline.match(/\(([+−-][\d.]+)%\)/) : null;
   $("orb").hidden = !m;
-  if (m) { $("orbPct").textContent = m[1].replace("-", "−"); $("orbWord").textContent = "Last session"; setState(m[1][0] === "+"); }
+  if (!m) return;
+  const pct = parseFloat(m[1].replace("−", "-")), fl = isObj(RECAP) && Array.isArray(RECAP.lines) ? RECAP.lines.find(l => l && l.k === "funds" && typeof l.t === "string") : null;
+  const rows = fl ? fl.t.replace(/^[^:]*:\s*/, "").split(/;\s*/).map(x => { const q = x.match(/^(.*?)\s+([+−-][\d.]+)%/); return q ? [q[1], parseFloat(q[2].replace("−", "-"))] : null; }).filter(Boolean) : [];
+  HEROV = { pct, band: 0, rows };
+  $("orbPct").textContent = pc(pct); $("orbWord").textContent = "Last session"; setState(pct >= 0); heroDial();
 }
 
 function render(funds, meta) {
@@ -1114,6 +1146,7 @@ function render(funds, meta) {
   $("pnl").textContent = signed(impact);
   $("orbPct").textContent = pc(todayPct);
   $("orbWord").textContent = up ? "In the green" : "In the red";
+  HEROV = { pct: todayPct, band: value ? band / value * 100 : 0, rows: funds.map(f => [shortName(f.name), f.navMove]) };
   $("eyebrow").textContent = marketOpen() ? "Estimated impact — live" : "Estimated impact — session close";
 
   // A trading morning before today's first estimate exists: the batch on file is yesterday's, so don't dress it up as today's.
@@ -1123,13 +1156,14 @@ function render(funds, meta) {
   if (waiting) {
     $("eyebrow").textContent = marketOpen() ? "Waiting for today's first estimate" : "Today's estimate starts at 09:15";
     $("orbWord").textContent = "Awaiting"; $("orbPct").textContent = "—"; $("pnl").textContent = "—";
+    HEROV = { pct: null, band: 0, rows: [] };
     setState(true);
   }
   // Nothing to estimate (holiday, weekend, or the NAVs are already in): show what the portfolio is worth, not a zero
   const flat = !waiting && (meta.phase === "holiday" || closedAllDay() || (!marketOpen() && Math.abs(impact) < 1));
   $("hero").classList.toggle("flat", flat);
   $("orb").hidden = false;
-  if (flat) { $("pnl").textContent = inr(value); $("eyebrow").textContent = "Portfolio value · last close"; heroPill(); }
+  if (flat) { $("pnl").textContent = inr(value); $("eyebrow").textContent = "Portfolio value · last close"; heroPill(); } else heroDial();
 
   const gainTxt = signed(value - invested) + " (" + pc(invested ? (value - invested) / invested * 100 : 0) + ")";
   $("sub").title = meta.blend ? "Priced from " + meta.priced + " stocks (" + meta.blend + ")" : "";
@@ -3836,6 +3870,7 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   $("orbPct").textContent = "—";
   $("orbWord").textContent = "Awaiting";
   $("hero").classList.remove("flat");
+  HEROV = { pct: null, band: 0, rows: [] }; heroDial();
   $("movedNote").textContent = "";
   $("sub").innerHTML = "Press <b>Refresh live</b> to price every stock underneath your funds and infer today's NAV move.";
   setState(true);

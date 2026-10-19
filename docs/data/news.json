@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-20T03:31:04.885204+05:30",
+  "generated_at": "2026-10-20T04:26:10.107585+05:30",
   "market": [
     {
       "title": "Treasuries Fall as Tech Shares Rebound, Denting Haven Demand",
@@ -377,11 +377,11 @@
       },
       {
         "name": "Brent crude",
-        "level": 109.21,
-        "pct": -0.59,
+        "level": 109.3,
+        "pct": -0.51,
         "unit": "$",
         "notable": false,
-        "z": -0.3,
+        "z": -0.2,
         "date": "2026-10-19"
       },
       {
@@ -575,6 +575,14 @@
       "Company news": true,
       "Market-wrap news": true
     },
-    "rich_at": "2026-10-19T21:45:59.687491+00:00"
+    "trace": {
+      "nse_session": "blocked or unreachable",
+      "nse_sectors": false,
+      "nse_flows": false,
+      "moneycontrol_flows": "error: 403 Client Error: Forbidden for url: https://www.moneycontro",
+      "flows_cache": true,
+      "nse_archive_sectors": true
+    },
+    "rich_at": "2026-10-19T22:55:47.320828+00:00"
   }
 }

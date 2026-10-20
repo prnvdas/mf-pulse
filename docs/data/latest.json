@@ -586,9 +586,14 @@
     "total": 261
   },
   "health": {
-    "status": "ok",
-    "issues": [],
-    "checked_at": "2026-10-19T23:16:15.426279+05:30",
+    "status": "bad",
+    "issues": [
+      {
+        "level": "bad",
+        "text": "Prices came through for only 0 of 264 stocks."
+      }
+    ],
+    "checked_at": "2026-10-20T15:55:41.175725+05:30",
     "repaired": 0,
     "gap": 0,
     "ignored": 0

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-21T03:30:43.568338+05:30",
+  "generated_at": "2026-10-21T03:50:15.074009+05:30",
   "risk_free_pct": 6.5,
   "portfolio_xirr_pct": 11.0,
   "portfolio_returns": {
@@ -10,7 +10,7 @@
     "xirr_pct": 11.57,
     "xirr_source": "Groww statement (exact)",
     "rebuilt_xirr_pct": 11.35,
-    "nifty50_same_flows_pct": 0.1,
+    "nifty50_same_flows_pct": null,
     "fd_pct": 7.0,
     "since": "2022-12-10"
   },
@@ -231,7 +231,7 @@
         "pct": 9.8,
         "source": "transactions",
         "since": "2019-04-30",
-        "bench_pct": 6.6
+        "bench_pct": null
       },
       "folios": [
         {

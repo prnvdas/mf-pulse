@@ -1,46 +1,46 @@
 {
-  "generated_at": "2026-10-20T00:11:04.225272+05:30",
-  "base_close_date": "2026-10-16",
-  "base_close": 23146.15,
-  "sigma_pct": 0.97,
+  "generated_at": "2026-10-20T07:15:44.347174+05:30",
+  "base_close_date": "2026-10-19",
+  "base_close": 22888.95,
+  "sigma_pct": 1.03,
   "nifty": {
     "typical": [
-      22891.5,
-      23274.7
+      22713.9,
+      23116.9
     ],
     "wide": [
-      22741.7,
-      23456.9
+      22556.4,
+      23308.5
     ],
     "typical_pct": [
-      -1.1,
-      0.56
+      -0.76,
+      1.0
     ],
     "wide_pct": [
-      -1.75,
-      1.34
+      -1.45,
+      1.83
     ],
-    "centre_pct": -0.26,
+    "centre_pct": 0.13,
     "gift_adjusted": {
-      "gap_pct": -1.21,
-      "last": 22866.0,
-      "quote_time": "19-Oct-2026 23:16:38",
-      "centre_pct": -1.14,
+      "gap_pct": -0.1,
+      "last": 22866.5,
+      "quote_time": "20-Oct-2026 00:08:35",
+      "centre_pct": -0.09,
       "typical": [
-        22722.0,
-        23038.0
+        22699.1,
+        23030.8
       ],
       "wide": [
-        22598.4,
-        23188.3
+        22569.5,
+        23188.5
       ],
       "typical_pct": [
-        -1.83,
-        -0.47
+        -0.83,
+        0.62
       ],
       "wide_pct": [
-        -2.37,
-        0.18
+        -1.4,
+        1.31
       ],
       "validated": false,
       "assumptions": "gap passes through x0.94; intraday vol 0.81x; GIFT-to-open noise 0.15%"
@@ -48,27 +48,27 @@
   },
   "portfolio": {
     "value": 10403113,
-    "sigma_pct": 0.8,
-    "typical_rupees": 73935,
-    "wide_rupees": 137987
+    "sigma_pct": 0.81,
+    "typical_rupees": 78502,
+    "wide_rupees": 146522
   },
   "lean": {
     "status": "ok",
-    "label": "slight tilt down",
-    "p_up": 42.7,
-    "mu_pct": -0.26,
-    "sp_date": "2026-10-16",
-    "sp_move_pct": -1.09,
+    "label": "slight tilt up",
+    "p_up": 56.1,
+    "mu_pct": 0.13,
+    "sp_date": "2026-10-19",
+    "sp_move_pct": 0.41,
     "us_sessions": 1
   },
   "call": {
     "colour": "red",
-    "p_up": 11.2,
-    "p_call": 88.8,
+    "p_up": 44.8,
+    "p_call": 55.2,
     "basis": "gift",
-    "tier": "very high",
-    "hit_pct": 84.8,
-    "why": "GIFT Nifty is -1.21% from the Nifty's last close",
+    "tier": "weak",
+    "hit_pct": 54.6,
+    "why": "GIFT Nifty is -0.10% from the Nifty's last close",
     "provisional": true,
     "note": "Provisional: it firms up once GIFT Nifty's pre-open price is in (about 08:45 IST)."
   },
@@ -76,8 +76,8 @@
     "volatility": "GJR-GARCH(1,1) with Student-t errors",
     "signal": "S&P 500 last US session (ridge for the centre, logistic for P(up))",
     "band_errors_from": "model's own out-of-sample errors, last 5 years",
-    "fitted_sessions": 4609,
-    "ewma_sigma_pct": 0.93
+    "fitted_sessions": 4610,
+    "ewma_sigma_pct": 0.94
   },
   "backtest": {
     "generated_at": "2026-10-10T13:03:50.456531+05:30",

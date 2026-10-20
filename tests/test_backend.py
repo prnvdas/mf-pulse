@@ -228,6 +228,16 @@ class SettledSessions(unittest.TestCase):
         self.assertFalse(reconcile.settle_latest(latest, state))      # idempotent
 
 
+class HolidayHealth(unittest.TestCase):
+    def test_no_prices_on_a_holiday_is_not_a_fault(self):
+        self.assertEqual(estimate.holiday_health()["status"], "ok")
+        self.assertEqual(estimate.holiday_health()["issues"], [])
+
+    def test_the_same_zero_prices_on_a_trading_day_still_hold_the_estimate_back(self):
+        h = estimate.data_health({"tickers": 264, "gap": 0, "repaired": 0, "unverified": 0, "outliers": [], "verifiable": True}, 0, 264, [], [])
+        self.assertEqual(h["status"], "bad")
+
+
 class DataHealth(unittest.TestCase):
     NIFTY = [{"ticker": "^NSEI", "move_pct": 1.6}]
     FUND = [{"name": "A Fund Direct Growth", "coverage_pct": 90, "nav_move_pct": 1.2}]

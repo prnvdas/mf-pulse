@@ -307,6 +307,11 @@ def fetch_moves(
     return moves, latest_bar_date, week
 
 
+def holiday_health() -> dict:
+    """A market holiday has no prices by definition: that is not a data fault, so there is nothing to grade."""
+    return {"status": "ok", "issues": [], "checked_at": now_ist().isoformat(), "repaired": 0, "gap": 0, "ignored": 0}
+
+
 def data_health(stats: dict, resolved: int, total: int, results: list[dict], market: list[dict]) -> dict:
     """Is the price data behind this estimate trustworthy? status ok / warn / bad, with plain-English reasons.
     `bad` means the estimate is held back (the previous one stays); `warn` is published with a notice on the page."""
@@ -562,7 +567,7 @@ def main() -> None:
     # "final" = a run after the close with today's bar present: the number
     # reconcile.py will grade tonight. Everything else is a live batch.
     market = fetch_indices()
-    health = data_health(MOVE_STATS, resolved, len(moves), results, market)
+    health = holiday_health() if is_holiday else data_health(MOVE_STATS, resolved, len(moves), results, market)
     print(f"[health] {health['status']}" + "".join(f"\n   - {i['level']}: {i['text']}" for i in health["issues"]))
     if health["status"] == "bad":
         # Hold the estimate back: keep what was published, attach the reason (the page shows it) and stop.

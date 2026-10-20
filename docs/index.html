@@ -3127,7 +3127,7 @@ function renderHealthLine() {
     else items.push(gd >= closedSession ? dot("g", "Prices: close of " + dlong(closedSession)) : dot("f", "Prices from " + dlong(gd) + "; fresh ones come with the next session"));
   }
   const dh = LAST_BATCH && LAST_BATCH.health;
-  if (isObj(dh) && typeof dh.status === "string") items.push(dh.status === "ok" ? dot("g", "Price data clean" + (num(dh.repaired) && dh.repaired ? " (" + dh.repaired + " stocks' history rebuilt)" : "")) : dh.status === "warn" ? dot("f", "Price data repaired" + (num(dh.repaired) && dh.repaired ? " (" + dh.repaired + " stocks)" : "")) : dot("xf", "Price data problem: estimate on hold"));
+  if (isObj(dh) && typeof dh.status === "string" && !(closedAllDay() && dh.status !== "ok")) items.push(dh.status === "ok" ? dot("g", "Price data clean" + (num(dh.repaired) && dh.repaired ? " (" + dh.repaired + " stocks' history rebuilt)" : "")) : dh.status === "warn" ? dot("f", "Price data repaired" + (num(dh.repaired) && dh.repaired ? " (" + dh.repaired + " stocks)" : "")) : dot("xf", "Price data problem: estimate on hold"));
   const graded = (Array.isArray(HIST) ? HIST : []).reduce((m, h) => h && typeof h.date === "string" && h.date > m ? h.date : m, "");
   if (graded && closedSession) {
     const due = closedSession === today && mins < 23 * 60 + 45 ? prevTradingDay(today) : closedSession;
@@ -3275,7 +3275,7 @@ function startLiveQuotes() {
 function renderDataBar() {
   const bar = $("dataBar"); if (!bar) return;
   const h = LAST_BATCH && LAST_BATCH.health;
-  if (!isObj(h) || (h.status !== "warn" && h.status !== "bad") || !Array.isArray(h.issues)) { bar.hidden = true; return; }
+  if (!isObj(h) || (h.status !== "warn" && h.status !== "bad") || !Array.isArray(h.issues) || closedAllDay()) { bar.hidden = true; return; }   // nothing trades on a holiday: no prices is not a fault
   const items = h.issues.filter(i => i && typeof i.text === "string").map(i => "<li>" + esc(i.text) + "</li>").join("");
   const at = h.checked_at ? new Date(h.checked_at).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }) : "";
   bar.className = "hbar" + (h.status === "warn" ? " soft" : "");

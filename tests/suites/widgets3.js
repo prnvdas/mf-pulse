@@ -24,6 +24,9 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
  // price-data health notice
  for (const [st,re,label] of [['warn',/data check/i,'warn'],['bad',/estimate on hold/i,'bad']]) {const {p,ctx,errs}=await page({latest:j=>{j.health={status:st,issues:[{level:st,text:'Yahoo had a hole for 261 of 264 stocks.'}],checked_at:'2026-10-12T14:00:00+05:30',repaired:261};return j;}});
   const t=await p.$eval('#dataBar',e=>e.hidden?'':e.innerText); ok(re.test(t)&&/261 of 264/.test(t),'data bar '+label,t); ok(/price data/i.test(await p.$eval('#healthLine',e=>e.innerText)),'footer price-data item '+label); ok(!errs.length,'data bar errs '+label,errs[0]); await ctx.close();}
+ // a holiday has no prices by definition: a stale "bad" health file must not raise an alarm on the page
+ {const {p,ctx,errs}=await page({latest:j=>{j.health={status:'bad',issues:[{level:'bad',text:'Prices came through for only 0 of 264 stocks.'}],checked_at:'2026-10-17T16:55:00+05:30',repaired:0};return j;}},[],'2026-10-17T05:30:00Z');   // a Saturday
+  ok(await p.$eval('#dataBar',e=>e.hidden),'closed day: no "estimate on hold" banner'); ok(!/price data/i.test(await p.$eval('#healthLine',e=>e.innerText)),'closed day: no price-data complaint in the footer'); ok(!errs.length,'closed-day health errs',errs[0]); await ctx.close();}
  for (const h of [{status:'ok',issues:[]},null,{status:'warn',issues:'x'},{status:'warn',issues:[null,{text:5}]},'str']) {const {p,ctx,errs}=await page({latest:j=>{if(h===null)delete j.health;else j.health=h;return j;}});
   ok(!errs.length&&!/NaN|undefined|\[object/.test(await p.evaluate(()=>document.body.innerText)),'health shape '+JSON.stringify(h).slice(0,30),errs[0]); await ctx.close();}
  // before today's first estimate: say so instead of showing yesterday's close as today's

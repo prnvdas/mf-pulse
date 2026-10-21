@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-21T03:50:15.074009+05:30",
+  "generated_at": "2026-10-21T23:30:50.396903+05:30",
   "risk_free_pct": 6.5,
-  "portfolio_xirr_pct": 11.0,
+  "portfolio_xirr_pct": 10.3,
   "portfolio_returns": {
     "as_on": "2026-10-10",
     "invested": 8386652.53,
@@ -10,7 +10,7 @@
     "xirr_pct": 11.57,
     "xirr_source": "Groww statement (exact)",
     "rebuilt_xirr_pct": 11.35,
-    "nifty50_same_flows_pct": null,
+    "nifty50_same_flows_pct": 0.1,
     "fd_pct": 7.0,
     "since": "2022-12-10"
   },
@@ -18,7 +18,7 @@
     "rows": [
       {
         "sector": "Financials",
-        "pct": 22.1
+        "pct": 22.2
       },
       {
         "sector": "Healthcare",
@@ -77,8 +77,8 @@
       },
       "mine": {
         "invested": 4124793.89,
-        "value": 5234153,
-        "gain_pct": 26.89
+        "value": 5136749,
+        "gain_pct": 24.53
       },
       "returns": {
         "1M": {
@@ -138,10 +138,10 @@
         "peak_date": "2026-09-08"
       },
       "xirr": {
-        "pct": 12.5,
+        "pct": 11.5,
         "source": "transactions",
         "since": "2021-01-08",
-        "bench_pct": 11.2
+        "bench_pct": 9.9
       },
       "folios": [
         {
@@ -167,8 +167,8 @@
       },
       "mine": {
         "invested": 4074867.98,
-        "value": 4975647,
-        "gain_pct": 22.11
+        "value": 4927020,
+        "gain_pct": 20.91
       },
       "returns": {
         "1M": {
@@ -228,10 +228,10 @@
         "peak_date": "2026-08-03"
       },
       "xirr": {
-        "pct": 9.8,
+        "pct": 9.4,
         "source": "transactions",
         "since": "2019-04-30",
-        "bench_pct": null
+        "bench_pct": 6.3
       },
       "folios": [
         {
@@ -257,8 +257,8 @@
       },
       "mine": {
         "invested": 200340.66,
-        "value": 193313,
-        "gain_pct": -3.51
+        "value": 191548,
+        "gain_pct": -4.39
       },
       "returns": {
         "1M": {
@@ -305,7 +305,7 @@
         "since": "2005-09-27",
         "years": 21.1,
         "worst": -60.3,
-        "p25": 0.7,
+        "p25": 0.6,
         "median": 9.7,
         "p75": 26.8,
         "best": 116.3,
@@ -318,10 +318,10 @@
         "peak_date": "2026-08-07"
       },
       "xirr": {
-        "pct": -5.8,
+        "pct": -7.2,
         "source": "transactions",
         "since": "2025-10-13",
-        "bench_pct": -6.4
+        "bench_pct": -7.9
       },
       "folios": [
         {

@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-21T16:55:22.659605+05:30",
-  "generated_label": "21 Oct 2026, 16:55 IST",
+  "generated_at": "2026-10-21T20:52:21.588667+05:30",
+  "generated_label": "21 Oct 2026, 20:52 IST",
   "stale": false,
   "phase": "final",
   "market_open": false,
@@ -9,9 +9,9 @@
     "invested": 8400002.53,
     "total_returns": 2003110.43,
     "total_returns_pct": 23.85,
-    "today_impact": -149526.76,
-    "today_pct": -1.437,
-    "band_rupees": 7344.0
+    "today_impact": -150577.96,
+    "today_pct": -1.447,
+    "band_rupees": 7405.0
   },
   "funds": [
     {
@@ -19,14 +19,14 @@
       "name": "Axis Small Cap Fund Direct Growth",
       "current_value": 5234153.18,
       "invested": 4124793.89,
-      "nav_move_pct": -1.849,
-      "rupee_impact": -96766.12,
+      "nav_move_pct": -1.869,
+      "rupee_impact": -97817.32,
       "last_nav": 130.58,
-      "projected_nav": 128.1659,
-      "band_rupees": 5400.0,
-      "coverage_pct": 86.1,
+      "projected_nav": 128.1397,
+      "band_rupees": 5483.0,
+      "coverage_pct": 85.9,
       "cash_pct": 13.41,
-      "tail_pct": 0.5,
+      "tail_pct": 0.7,
       "tail_move_pct": -2.26,
       "holdings_as_of": "2026-10-12",
       "holdings_count": 119,
@@ -502,18 +502,18 @@
       }
     ],
     "breadth": {
-      "up": 41,
-      "down": 219,
+      "up": 40,
+      "down": 220,
       "total": 260
     },
-    "portfolio_pct": -1.437,
-    "portfolio_impact": -149527,
+    "portfolio_pct": -1.447,
+    "portfolio_impact": -150578,
     "funds": [
       {
         "id": "axis-small-cap",
         "name": "Axis Small Cap Fund Direct Growth",
-        "nav_move_pct": -1.849,
-        "impact": -96766
+        "nav_move_pct": -1.869,
+        "impact": -97817
       },
       {
         "id": "mirae-large-midcap",
@@ -572,21 +572,21 @@
       "name": "Brent crude",
       "ticker": "BZ=F",
       "unit": "$",
-      "level": 110.17,
-      "change": -0.32,
-      "move_pct": -0.29,
-      "as_of": "2026-10-21T16:44:47+05:30"
+      "level": 109.2,
+      "change": -1.29,
+      "move_pct": -1.17,
+      "as_of": "2026-10-21T20:42:49+05:30"
     }
   ],
   "breadth": {
-    "up": 41,
-    "down": 219,
+    "up": 40,
+    "down": 220,
     "total": 260
   },
   "health": {
     "status": "ok",
     "issues": [],
-    "checked_at": "2026-10-21T16:55:38.792588+05:30",
+    "checked_at": "2026-10-21T20:52:51.055450+05:30",
     "repaired": 0,
     "gap": 1,
     "ignored": 0

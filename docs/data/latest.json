@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-21T21:25:01.849346+05:30",
-  "generated_label": "21 Oct 2026, 21:25 IST",
+  "generated_at": "2026-10-21T21:29:44.562557+05:30",
+  "generated_label": "21 Oct 2026, 21:29 IST",
   "stale": false,
   "phase": "final",
   "market_open": false,
@@ -9,9 +9,9 @@
     "invested": 8400002.53,
     "total_returns": 2003110.43,
     "total_returns_pct": 23.85,
-    "today_impact": -149910.16,
-    "today_pct": -1.441,
-    "band_rupees": 7327.0
+    "today_impact": -149509.87,
+    "today_pct": -1.437,
+    "band_rupees": 7223.0
   },
   "funds": [
     {
@@ -19,18 +19,18 @@
       "name": "Axis Small Cap Fund Direct Growth",
       "current_value": 5234153.18,
       "invested": 4124793.89,
-      "nav_move_pct": -1.856,
-      "rupee_impact": -97149.65,
+      "nav_move_pct": -1.848,
+      "rupee_impact": -96749.23,
       "last_nav": 130.58,
-      "projected_nav": 128.1563,
-      "band_rupees": 5377.0,
-      "coverage_pct": 86.2,
+      "projected_nav": 128.1663,
+      "band_rupees": 5235.0,
+      "coverage_pct": 86.6,
       "cash_pct": 13.41,
-      "tail_pct": 0.4,
+      "tail_pct": 0.0,
       "tail_move_pct": -2.26,
       "holdings_as_of": "2026-10-12",
       "holdings_count": 119,
-      "priced_count": 118,
+      "priced_count": 119,
       "top_contributors": [
         {
           "name": "Sansera Engineering Ltd",
@@ -172,7 +172,7 @@
       "current_value": 193312.76,
       "invested": 200340.66,
       "nav_move_pct": -0.819,
-      "rupee_impact": -1583.6,
+      "rupee_impact": -1583.73,
       "last_nav": 9.532,
       "projected_nav": 9.4539,
       "band_rupees": 179.0,
@@ -182,7 +182,7 @@
       "tail_move_pct": -0.92,
       "holdings_as_of": "2026-10-12",
       "holdings_count": 127,
-      "priced_count": 126,
+      "priced_count": 127,
       "top_contributors": [
         {
           "name": "Infosys Ltd",
@@ -503,17 +503,17 @@
     ],
     "breadth": {
       "up": 41,
-      "down": 219,
-      "total": 260
+      "down": 220,
+      "total": 261
     },
-    "portfolio_pct": -1.441,
-    "portfolio_impact": -149910,
+    "portfolio_pct": -1.437,
+    "portfolio_impact": -149510,
     "funds": [
       {
         "id": "axis-small-cap",
         "name": "Axis Small Cap Fund Direct Growth",
-        "nav_move_pct": -1.856,
-        "impact": -97150
+        "nav_move_pct": -1.848,
+        "impact": -96749
       },
       {
         "id": "mirae-large-midcap",
@@ -572,23 +572,23 @@
       "name": "Brent crude",
       "ticker": "BZ=F",
       "unit": "$",
-      "level": 108.71,
-      "change": -1.78,
-      "move_pct": -1.61,
-      "as_of": "2026-10-21T21:15:12+05:30"
+      "level": 108.74,
+      "change": -1.75,
+      "move_pct": -1.58,
+      "as_of": "2026-10-21T21:20:00+05:30"
     }
   ],
   "breadth": {
     "up": 41,
-    "down": 219,
-    "total": 260
+    "down": 220,
+    "total": 261
   },
   "health": {
     "status": "ok",
     "issues": [],
-    "checked_at": "2026-10-21T21:25:16.165533+05:30",
+    "checked_at": "2026-10-21T21:30:05.481979+05:30",
     "repaired": 0,
-    "gap": 1,
+    "gap": 0,
     "ignored": 0
   },
   "accuracy": {
@@ -617,6 +617,6 @@
       }
     }
   },
-  "tickers_resolved": 263,
+  "tickers_resolved": 264,
   "tickers_total": 264
 }

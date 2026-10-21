@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-21T23:31:35.805624+05:30",
-  "as_of": "2026-10-21",
+  "generated_at": "2026-10-22T02:25:49.701123+05:30",
+  "as_of": "2026-10-19",
   "index": "Nifty 50",
-  "level": 22811.35,
+  "level": 22888.95,
   "score": -6,
   "of": 9,
   "regime": {
@@ -10,14 +10,14 @@
     "label": "Downtrend"
   },
   "stretched": false,
-  "drawdown_pct": -13.4,
-  "rsi": 46.0,
+  "drawdown_pct": -13.1,
+  "rsi": 48.0,
   "signals": [
     {
       "k": "above200",
       "label": "Price above its 200-day average",
       "state": "bear",
-      "value": "-5.6%"
+      "value": "-5.3%"
     },
     {
       "k": "cross",
@@ -35,19 +35,19 @@
       "k": "mom12",
       "label": "Higher than a year ago",
       "state": "bear",
-      "value": "-9.8%"
+      "value": "-9.1%"
     },
     {
       "k": "mom3",
       "label": "Higher than three months ago",
       "state": "bear",
-      "value": "-5.7%"
+      "value": "-5.6%"
     },
     {
       "k": "rsi",
       "label": "Momentum (RSI) above 50",
       "state": "bear",
-      "value": "46"
+      "value": "48"
     },
     {
       "k": "macd",
@@ -59,7 +59,7 @@
       "k": "high",
       "label": "Within 10% of the 52-week high",
       "state": "neutral",
-      "value": "-13.4%"
+      "value": "-13.1%"
     },
     {
       "k": "n500",
@@ -69,7 +69,7 @@
     }
   ],
   "levels": {
-    "ma200": 24158,
+    "ma200": 24174,
     "high52": 26329,
     "bear_line": 21063
   },
@@ -84,7 +84,7 @@
         "start": "2020-03-23",
         "end": "2026-01-02",
         "gain_pct": 246,
-        "now_pct": 200,
+        "now_pct": 201,
         "ongoing": true
       }
     },
@@ -113,14 +113,14 @@
     "p50": 12.7,
     "p75": 21.1,
     "p90": 42.3,
-    "level_p10": 22948,
-    "level_p50": 25708,
-    "level_p90": 32461
+    "level_p10": 23026,
+    "level_p50": 25796,
+    "level_p90": 32571
   },
   "pace": {
     "years": 3,
-    "annual_pct": 4.3,
-    "level_12m": 23798
+    "annual_pct": 4.4,
+    "level_12m": 23895
   },
   "view": {
     "label": "Weak, but not a bear market",
@@ -129,7 +129,7 @@
   "signposts": [
     {
       "text": "Price back above its 200-day average",
-      "level": 24158,
+      "level": 24174,
       "done": false
     },
     {
@@ -139,7 +139,7 @@
     },
     {
       "text": "Higher than a year ago",
-      "level": 25285,
+      "level": 25182,
       "done": false
     },
     {
@@ -149,6 +149,10 @@
     }
   ],
   "series": [
+    [
+      "2023-10-20",
+      19543
+    ],
     [
       "2023-10-27",
       19047
@@ -775,11 +779,11 @@
     ],
     [
       "2026-10-23",
-      22811
+      22889
     ],
     [
-      "2026-10-21",
-      22811
+      "2026-10-19",
+      22889
     ]
   ]
 }

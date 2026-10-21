@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-10-22T02:25:16.973907+05:30",
-  "as_of": "2026-10-19",
+  "generated_at": "2026-10-22T03:32:30.563756+05:30",
+  "as_of": "2026-10-21",
   "value": 10255318,
   "risk_free_pct": 6.5,
   "fd_rate_pct": 7.000000000000001,
-  "basis": "today's mix applied to each fund's real NAV history (3,402 sessions, since 2013-01-03)",
+  "basis": "today's mix applied to each fund's real NAV history (3,403 sessions, since 2013-01-03)",
   "reward": {
-    "cagr_1y": 1.7,
-    "cagr_3y": 12.6,
+    "cagr_1y": -0.4,
+    "cagr_3y": 11.8,
     "cagr_5y": 12.4,
-    "cagr_all": 20.8,
+    "cagr_all": 20.6,
     "nifty_cagr": {
       "1y": -9.1,
       "3y": 5.2,
@@ -18,11 +18,11 @@
     "rolling": [
       {
         "years": 1,
-        "windows": 3150,
+        "windows": 3151,
         "worst": -20.1,
         "p5": -2.9,
         "p25": 6.3,
-        "median": 18.7,
+        "median": 18.6,
         "p75": 36.7,
         "best": 117.9,
         "positive_pct": 91.0,
@@ -30,7 +30,7 @@
       },
       {
         "years": 3,
-        "windows": 2646,
+        "windows": 2647,
         "worst": 0.1,
         "p5": 9.5,
         "p25": 16.4,
@@ -42,9 +42,9 @@
       },
       {
         "years": 5,
-        "windows": 2142,
+        "windows": 2143,
         "worst": 5.9,
-        "p5": 12.8,
+        "p5": 12.7,
         "p25": 17.6,
         "median": 22.3,
         "p75": 26.0,
@@ -55,15 +55,15 @@
     ]
   },
   "risk": {
-    "vol_1y_pct": 14.3,
+    "vol_1y_pct": 14.4,
     "vol_3y_pct": 14.4,
     "max_drawdown_pct": -35.4,
-    "current_drawdown_pct": -6.4,
-    "sharpe": 0.42,
-    "sortino": 0.57,
-    "calmar": 0.35,
-    "beta": 1.01,
-    "downside_beta": 1.13,
+    "current_drawdown_pct": -7.7,
+    "sharpe": 0.37,
+    "sortino": 0.49,
+    "calmar": 0.33,
+    "beta": 1.02,
+    "downside_beta": 1.12,
     "correlation": 0.86,
     "var95_pct": 1.54,
     "var99_pct": 2.57,
@@ -78,67 +78,67 @@
   "stress": [
     {
       "nifty_pct": -10,
-      "portfolio_pct": -11.3,
-      "rupees": -1156879,
+      "portfolio_pct": -11.2,
+      "rupees": -1152527,
       "funds": [
         {
           "id": "axis-small-cap",
-          "pct": -10.8,
-          "rupees": -552931
+          "pct": -10.7,
+          "rupees": -550068
         },
         {
           "id": "mirae-large-midcap",
           "pct": -11.8,
-          "rupees": -581426
+          "rupees": -579988
         },
         {
           "id": "jioblackrock-flexicap",
           "pct": -11.0,
-          "rupees": -21156
+          "rupees": -21070
         }
       ]
     },
     {
       "nifty_pct": -20,
-      "portfolio_pct": -22.6,
-      "rupees": -2313758,
+      "portfolio_pct": -22.5,
+      "rupees": -2305053,
       "funds": [
         {
           "id": "axis-small-cap",
-          "pct": -21.5,
-          "rupees": -1105862
+          "pct": -21.4,
+          "rupees": -1100135
         },
         {
           "id": "mirae-large-midcap",
-          "pct": -23.6,
-          "rupees": -1162853
+          "pct": -23.5,
+          "rupees": -1159976
         },
         {
           "id": "jioblackrock-flexicap",
-          "pct": -22.1,
-          "rupees": -42313
+          "pct": -22.0,
+          "rupees": -42139
         }
       ]
     },
     {
       "nifty_pct": -30,
-      "portfolio_pct": -33.8,
-      "rupees": -3470636,
+      "portfolio_pct": -33.7,
+      "rupees": -3457580,
       "funds": [
         {
           "id": "axis-small-cap",
-          "pct": -32.3,
-          "rupees": -1658794
+          "pct": -32.1,
+          "rupees": -1650203
         },
         {
           "id": "mirae-large-midcap",
-          "pct": -35.4,
-          "rupees": -1744279
+          "pct": -35.3,
+          "rupees": -1739964
         },
         {
           "id": "jioblackrock-flexicap",
-          "pct": -33.1,
-          "rupees": -63469
+          "pct": -33.0,
+          "rupees": -63209
         }
       ]
     }
@@ -198,8 +198,8 @@
       "value": 5136749,
       "vol_pct": 15.0,
       "max_drawdown_pct": -34.6,
-      "beta": 0.95,
-      "downside_beta": 1.08,
+      "beta": 0.96,
+      "downside_beta": 1.07,
       "risk_share_pct": 51.0,
       "history_years": 12.6
     },

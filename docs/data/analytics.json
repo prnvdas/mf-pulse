@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-22T02:25:05.470136+05:30",
+  "generated_at": "2026-10-22T03:32:18.898346+05:30",
   "risk_free_pct": 6.5,
   "portfolio_xirr_pct": 10.3,
   "portfolio_returns": {
@@ -132,9 +132,9 @@
         "share_positive": 89
       },
       "recovery": {
-        "nav_last": 130.58,
+        "nav_last": 128.15,
         "nav_peak_6m": 138.49,
-        "gap_pct": 6.1,
+        "gap_pct": 8.1,
         "peak_date": "2026-09-08"
       },
       "xirr": {
@@ -172,33 +172,33 @@
       },
       "returns": {
         "1M": {
-          "fund": -4.69,
-          "bench": -2.82,
-          "diff": -1.87
+          "fund": -5.69,
+          "bench": -4.75,
+          "diff": -0.94
         },
         "3M": {
-          "fund": -5.7,
-          "bench": -5.1,
-          "diff": -0.6
+          "fund": -5.55,
+          "bench": -6.28,
+          "diff": 0.73
         },
         "6M": {
-          "fund": -1.9,
-          "bench": -3.53,
-          "diff": 1.63
+          "fund": -3.25,
+          "bench": -5.72,
+          "diff": 2.47
         },
         "1Y": {
-          "fund": -3.4,
-          "bench": -5.36,
-          "diff": 1.96
+          "fund": -5.03,
+          "bench": -7.85,
+          "diff": 2.82
         }
       },
       "risk": {
-        "window_days": 364,
+        "window_days": 363,
         "beta": 0.85,
-        "alpha_pct": 0.53,
+        "alpha_pct": 0.7,
         "vol_pct": 14.9,
-        "bench_vol_pct": 14.7,
-        "sharpe": -0.64,
+        "bench_vol_pct": 14.8,
+        "sharpe": -0.73,
         "max_drawdown_pct": -14.4,
         "bench_max_drawdown_pct": -14.5
       },
@@ -208,8 +208,8 @@
         "fund_pb": 3.1,
         "bench_pe": 21.2
       },
-      "history_days": 594,
-      "as_of": "2026-10-19",
+      "history_days": 596,
+      "as_of": "2026-10-21",
       "scenarios": {
         "basis": "fund",
         "since": "2013-01-02",
@@ -222,9 +222,9 @@
         "share_positive": 88
       },
       "recovery": {
-        "nav_last": 168.219,
+        "nav_last": 166.575,
         "nav_peak_6m": 181.884,
-        "gap_pct": 8.1,
+        "gap_pct": 9.2,
         "peak_date": "2026-08-03"
       },
       "xirr": {
@@ -312,9 +312,9 @@
         "share_positive": 77
       },
       "recovery": {
-        "nav_last": 9.532,
+        "nav_last": 9.445,
         "nav_peak_6m": 10.2047,
-        "gap_pct": 7.1,
+        "gap_pct": 8.0,
         "peak_date": "2026-08-07"
       },
       "xirr": {

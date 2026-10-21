@@ -1,6 +1,12 @@
 {
-  "generated_at": "2026-10-21T20:10:46.242976+05:30",
+  "generated_at": "2026-10-21T20:41:19.961753+05:30",
   "market": [
+    {
+      "title": "Netflix shares slide 4% as slowing sales growth raises fresh concerns",
+      "link": "https://economictimes.indiatimes.com/markets/us-stocks/wall-street-guide/netflix-shares-slide-4-as-slowing-sales-growth-raises-fresh-concerns/articleshow/135094744.cms",
+      "source": "Economic Times",
+      "published": "2026-10-21T14:40:40+00:00"
+    },
     {
       "title": "Reliance Jio IPO subscription status day 1: QIB, NII, Retail, Employees, RIL Shareholders; category wise investor detail",
       "link": "https://www.livemint.com/market/ipo/reliance-jio-ipo-subscription-status-day-1-qib-nii-retail-employees-ril-shareholders-category-wise-investor-detail-11792584622711.html",
@@ -86,7 +92,7 @@
       "published": "2026-10-21T12:24:24+00:00"
     },
     {
-      "title": "Dow Jones| Nasdaq | S&P 500 | US Stock Market Today |Live Updates: Nasdaq surges at open as SpaceX, SuperMicro results lift AI stocks",
+      "title": "Dow Jones| Nasdaq | S&P 500 | US Stock Market Today |Live Updates: US stocks trade mixed as SpaceX, AI stocks rise while Netflix slips",
       "link": "https://economictimes.indiatimes.com/markets/us-stocks/wall-street-guide/dow-jones-stock-market-live-updates-nasdaq-sp-500-us-iran-israel-war-hormuz-deal-brent-crude-oil-earnings-forecast-nvidia-ai-stocks-spacex-super-micro-tesla-netflix-fed-rate-hike-treasury-yields-stock-price-news-21st-september-2026/liveblog/135092299.cms",
       "source": "Economic Times",
       "published": "2026-10-21T12:10:08+00:00"
@@ -174,12 +180,6 @@
       "link": "https://news.google.com/rss/articles/CBMizwFBVV95cUxQX0ptQm9rVUR3WmhXT1hsYVFkZ1FDeXFBQ21Ma0hFU3N5Uzg5V3A4WW9ydXFNNW1BMFNRalB2V0NZNUZrMTB6SmlvMnBfUzYtaUdSTUt3emRnTjdZakRpRERJMkdiZ2lYX3hEQ2RRZ0pMamRYWi1RUzh3T0VwdmhkSXowNUtmcDRaYXR0dVdySHlRWjRFblRMWlJoZnBQZ3B6d05RVnA5b3BxeHhNal9xeWF3Y2hUXzhlVEF2SkxPSHlVOXVwNU1RWHpfTzl2bHM?oc=5",
       "source": "Liquide Blog",
       "published": "2026-10-21T11:12:17+00:00"
-    },
-    {
-      "title": "Nifty, Sensex Fall as Crude Spikes; IT Stocks Outperform",
-      "link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxOSC1OUkVPMEpSVlpIcVNUZG52TmhYbV8wNzlvZDJlcDk5bkJxOG1kTVJYMW5VRFI0RDBKdnFOcGViemt1VkZ0VUNxcVhpMjNRMEtKa21od1lkZ3FqNFVaYS1DUDVIZGJydXlreWZWMUloN2xnM0NuN0NfdHBabEZjZE5QQmhqbXBlUThyR1RncVNjQQ?oc=5",
-      "source": "HDFC Sky",
-      "published": "2026-10-21T11:03:20+00:00"
     }
   ],
   "why": {
@@ -187,7 +187,7 @@
     "date": "2026-10-21",
     "direction": "down",
     "title": "Why the market fell today",
-    "summary": "The Nifty fell \u22120.34%, dragged by Consumer durables (\u22121.9%), Metals (\u22121.7%), while IT (+2.9%) held up. Notable global and macro moves: USD/INR \u22120.6%.",
+    "summary": "The Nifty fell \u22120.34%, dragged by Consumer durables (\u22121.9%), Metals (\u22121.7%), while IT (+2.9%) held up. FPIs (foreign investors) bought \u20b91,022 cr while DIIs bought \u20b91,614 cr (net, provisional, per Moneycontrol). Notable global and macro moves: USD/INR \u22120.6%.",
     "points": [
       {
         "kind": "fact",
@@ -361,7 +361,13 @@
       }
     ],
     "breadth": null,
-    "flows": null,
+    "flows": {
+      "date": "2026-10-21",
+      "source": "Moneycontrol",
+      "fii": 1022.0,
+      "dii": 1614.0,
+      "fii_index_futures": 256.0
+    },
     "macro": [
       {
         "name": "S&P 500 (overnight)",
@@ -371,15 +377,6 @@
         "notable": false,
         "z": 0.5,
         "date": "2026-10-20"
-      },
-      {
-        "name": "Nikkei 225",
-        "level": 64621.24,
-        "pct": 0.85,
-        "unit": "",
-        "notable": false,
-        "z": 0.5,
-        "date": "2026-10-21"
       },
       {
         "name": "Hang Seng",
@@ -392,11 +389,11 @@
       },
       {
         "name": "Brent crude",
-        "level": 108.85,
-        "pct": 0.06,
+        "level": 109.3,
+        "pct": 0.47,
         "unit": "$",
         "notable": false,
-        "z": 0.0,
+        "z": 0.2,
         "date": "2026-10-21"
       },
       {
@@ -483,16 +480,16 @@
         ],
         "headlines": [
           {
-            "title": "Persistent Systems opens QIP with floor price of \u20b95,550 per share",
-            "source": "scanx.trade",
-            "link": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNaU5fTXExNmpKZ2h1dDZZS1JIWFFPVHJfbXNRWnE4cDhhRXdOUVNwaTRvZF83OUhvcHhmTjFfQlJNSEZIVllycXhCakpLUnZKTXhGSS1PaDdBblgtN0VjZXREcV84VzNKMGpRSXlnd2Q1ZGs0Wl9SZVNpU3R0N1hwNkNuMFpFVnkxQkpZbXBWREJrb2JwUWZJUHFablhJLWVDYTZUUmM0RGt1dVlySE9WSkFDdw?oc=5",
-            "published": "2026-10-21T14:07:48+00:00"
+            "title": "Persistent Systems launches \u20b94,265-crore QIP; sets floor price at \u20b95,550 per share",
+            "source": "CNBC TV18",
+            "link": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxPZUxEQzFPNng4Rkh2V2h3SXFzelRucEUtcHZsYWdGYi0wQmpKYWdncGh2SVNnWFRuQUVqUEx5MWF0R041ZDNnUmg2R1VEaTFmVUtqR3pBczlzamwtZXFqdmFFLUFodjVKbHB4XzdwZTJXNmRrVTd5YVZkcjlscTk1VXkwd2pta04yZ3pzQTFUXzV0UGN2ZVVmNTJVMXlWeVo2RU9hckRPX2gycGEwLVJ1R1hhTGRfelliV3IzeU1jX1FJN1JIVXV1a0NCSmRINl9Sd3J3QThwWElGV21B0gHcAUFVX3lxTE9lTERDMU82eDhGSHZXaHdJcXN6VG5wRS1wdmxhZ0ZiLTBCakphZ2dwaHZJU2dYVG5BRWpQTHkxYXRHTjVkM2dSaDZHVURpMWZVS2pHekFzOXNqbC1lcWp2YUUtQWh2NUpscHhfN3BlMlc2ZGtVN3lhVmRyOWxxOTVVeTB3am1rTjJnenNBMVRfNXRQY3ZlVWY1MlUxeVZ5WjZFT2FyRE9faDJwYTAtUnVHWGFMZF96WWJXcjN5TWNfUUk3UkhVdXVrQ0JKZEg2X1J3cndBOHBYSUZXbUE?oc=5",
+            "published": "2026-10-21T14:45:36+00:00"
           },
           {
-            "title": "Persistent Systems announces QIP issue of approximately USD 450 million",
+            "title": "Persistent Systems sets floor price for equity issue at INR 5,761 per share",
             "source": "Business Upturn",
-            "link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxQZWFUY2h5R2hGZm1GVUFBbVNhWW1Hd0JfQUJ4d29GXzk0amR0M3lLajR5R1pvYzI2TGxFQ2lKUzhOTlQ5VFNjNUxNbFRpeU1yN2lxTFFvNU0wa0JwUF9YLWJfWTdOX1N1MThKWE41eFVMdGs5dUJWZmdPdGhzOUdhX2M2Zks4NnJPeVVSc2NlZ2J4cWxOb2RLZHFkeXhsYTdSZHpZZVRkYWZkVkZNaUI1Y0dn?oc=5",
-            "published": "2026-10-21T13:56:59+00:00"
+            "link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxQZUJXc1dRdy1CQ2xOcFA2aHdxdzBhT1FienFFNGxOdTZaYnVSWWJ5aFBvODBUdEpSUGxaSHpPT3pwZ3VQaWFoQkdoZWgzS3lXVFI3bEtpX2hTMUEwRUtQWUJyaUtqdjR2clhqTFdmcnRRMjg0WDVtdTFSbkFsb3B1YWNxcU9NSXpJOVdoSDJlalcyV3BDVUhCZlpBelBjMUYzandrSDZWMV9lSXZETDMyRnFn?oc=5",
+            "published": "2026-10-21T14:36:58+00:00"
           }
         ]
       },
@@ -579,11 +576,18 @@
     ],
     "sources_ok": {
       "Sectors": true,
-      "FII/DII flows": false,
+      "FII/DII flows": true,
       "Yahoo macro": true,
       "Company news": true,
       "Market-wrap news": true
     },
-    "rich_at": "2026-10-21T14:31:34.570179+00:00"
+    "trace": {
+      "nse_session": "blocked or unreachable",
+      "nse_sectors": false,
+      "nse_flows": false,
+      "moneycontrol_flows": true,
+      "nse_archive_sectors": true
+    },
+    "rich_at": "2026-10-21T15:10:56.844656+00:00"
   }
 }

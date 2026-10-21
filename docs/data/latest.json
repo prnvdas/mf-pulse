@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-21T15:55:26.329975+05:30",
-  "generated_label": "21 Oct 2026, 15:55 IST",
+  "generated_at": "2026-10-21T16:55:22.659605+05:30",
+  "generated_label": "21 Oct 2026, 16:55 IST",
   "stale": false,
   "phase": "final",
   "market_open": false,
@@ -9,9 +9,9 @@
     "invested": 8400002.53,
     "total_returns": 2003110.43,
     "total_returns_pct": 23.85,
-    "today_impact": -149509.87,
+    "today_impact": -149526.76,
     "today_pct": -1.437,
-    "band_rupees": 7223.0
+    "band_rupees": 7344.0
   },
   "funds": [
     {
@@ -19,18 +19,18 @@
       "name": "Axis Small Cap Fund Direct Growth",
       "current_value": 5234153.18,
       "invested": 4124793.89,
-      "nav_move_pct": -1.848,
-      "rupee_impact": -96749.23,
+      "nav_move_pct": -1.849,
+      "rupee_impact": -96766.12,
       "last_nav": 130.58,
-      "projected_nav": 128.1663,
-      "band_rupees": 5235.0,
-      "coverage_pct": 86.6,
+      "projected_nav": 128.1659,
+      "band_rupees": 5400.0,
+      "coverage_pct": 86.1,
       "cash_pct": 13.41,
-      "tail_pct": 0.0,
+      "tail_pct": 0.5,
       "tail_move_pct": -2.26,
       "holdings_as_of": "2026-10-12",
       "holdings_count": 119,
-      "priced_count": 119,
+      "priced_count": 118,
       "top_contributors": [
         {
           "name": "Sansera Engineering Ltd",
@@ -503,17 +503,17 @@
     ],
     "breadth": {
       "up": 41,
-      "down": 220,
-      "total": 261
+      "down": 219,
+      "total": 260
     },
     "portfolio_pct": -1.437,
-    "portfolio_impact": -149510,
+    "portfolio_impact": -149527,
     "funds": [
       {
         "id": "axis-small-cap",
         "name": "Axis Small Cap Fund Direct Growth",
-        "nav_move_pct": -1.848,
-        "impact": -96749
+        "nav_move_pct": -1.849,
+        "impact": -96766
       },
       {
         "id": "mirae-large-midcap",
@@ -572,23 +572,23 @@
       "name": "Brent crude",
       "ticker": "BZ=F",
       "unit": "$",
-      "level": 111.2,
-      "change": 0.71,
-      "move_pct": 0.64,
-      "as_of": "2026-10-21T15:45:38+05:30"
+      "level": 110.17,
+      "change": -0.32,
+      "move_pct": -0.29,
+      "as_of": "2026-10-21T16:44:47+05:30"
     }
   ],
   "breadth": {
     "up": 41,
-    "down": 220,
-    "total": 261
+    "down": 219,
+    "total": 260
   },
   "health": {
     "status": "ok",
     "issues": [],
-    "checked_at": "2026-10-21T15:55:44.310388+05:30",
+    "checked_at": "2026-10-21T16:55:38.792588+05:30",
     "repaired": 0,
-    "gap": 0,
+    "gap": 1,
     "ignored": 0
   },
   "accuracy": {
@@ -617,6 +617,6 @@
       }
     }
   },
-  "tickers_resolved": 264,
+  "tickers_resolved": 263,
   "tickers_total": 264
 }

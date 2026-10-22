@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-22T14:50:30.337127+05:30",
+  "generated_at": "2026-10-22T14:51:42.227996+05:30",
   "market": [
     {
       "title": "RIL stock: Jio's listing could unlock value, but will it drive a re-rating?",
@@ -187,35 +187,35 @@
     "date": "2026-10-22",
     "direction": "down",
     "title": "Why the market fell today",
-    "summary": "The Nifty fell \u22120.65%, dragged by IT (\u22121.4%), Banks (\u22120.3%). Notable global and macro moves: Nikkei 225 \u22122.6%; Hang Seng \u22123.0%; Brent crude +3.2%.",
+    "summary": "The Nifty fell \u22120.72%, dragged by IT (\u22121.4%), Banks (\u22120.3%). Notable global and macro moves: Nikkei 225 \u22122.6%; Hang Seng \u22123.0%; Brent crude +3.0%.",
     "points": [
       {
         "kind": "fact",
-        "text": "The market fell: Sensex \u22120.5%, Nifty 50 \u22120.7%, Nifty Smallcap 250 \u22121.1%, Nifty LargeMidcap 250 \u22120.8%."
+        "text": "The market fell: Sensex \u22120.5%, Nifty 50 \u22120.7%, Nifty Smallcap 250 \u22121.2%, Nifty LargeMidcap 250 \u22120.8%."
       },
       {
         "kind": "fact",
-        "text": "Small companies moved more than big ones (\u22121.1% vs \u22120.7%). Small and mid-sized stocks swing harder, both up and down."
+        "text": "Small companies moved more than big ones (\u22121.2% vs \u22120.7%). Small and mid-sized stocks swing harder, both up and down."
       },
       {
         "kind": "fact",
-        "text": "More stocks fell than rose in your funds (193 down, 66 up)."
+        "text": "Almost everything fell: only 65 of the 261 stocks in your funds rose. This was a fall across the board, not one bad stock."
       },
       {
         "kind": "fact",
-        "text": "Biggest drag on your money: HDFC Bank Ltd (\u22121.9%), which cost you about \u20b96,931 because you hold roughly \u20b93.7L of it."
+        "text": "Biggest drag on your money: HDFC Bank Ltd (\u22121.9%), which cost you about \u20b97,220 because you hold roughly \u20b93.7L of it."
       },
       {
         "kind": "fact",
-        "text": "Helping most: PB Fintech Ltd (+2.4%), adding about \u20b93,872 to your money."
+        "text": "Helping most: PB Fintech Ltd (+2.3%), adding about \u20b93,710 to your money."
       },
       {
         "kind": "fact",
-        "text": "Your three worst stocks (HDFC Bank Ltd, Swiggy Ltd., Welspun Corp Ltd) together cost about \u20b915,617."
+        "text": "Your three worst stocks (HDFC Bank Ltd, Swiggy Ltd., Gland Pharma Ltd) together cost about \u20b916,214."
       },
       {
         "kind": "fact",
-        "text": "Estimated effect on your funds: Axis Small Cap \u22120.68%, Mirae Asset Large & Midcap \u22120.69%, JioBlackRock Flexi Cap \u22120.83%. In total your portfolio moved about \u2212\u20b970,680 (\u22120.69%)."
+        "text": "Estimated effect on your funds: Axis Small Cap \u22120.74%, Mirae Asset Large & Midcap \u22120.74%, JioBlackRock Flexi Cap \u22120.87%. In total your portfolio moved about \u2212\u20b976,223 (\u22120.74%)."
       }
     ],
     "reads": [
@@ -228,22 +228,22 @@
     "sectors": [
       {
         "name": "Pharma",
-        "pct": -0.18,
-        "last": 25520.150390625,
+        "pct": -0.2,
+        "last": 25515.30078125,
         "up": null,
         "down": null
       },
       {
         "name": "Banks",
-        "pct": -0.32,
-        "last": 54799.3515625,
+        "pct": -0.34,
+        "last": 54788.6015625,
         "up": null,
         "down": null
       },
       {
         "name": "IT",
-        "pct": -1.36,
-        "last": 31982.19921875,
+        "pct": -1.41,
+        "last": 31965.30078125,
         "up": null,
         "down": null
       }
@@ -281,20 +281,20 @@
       },
       {
         "name": "Brent crude",
-        "level": 112.27,
-        "pct": 3.17,
+        "level": 112.12,
+        "pct": 3.03,
         "unit": "$",
         "notable": true,
-        "z": 1.7,
+        "z": 1.6,
         "date": "2026-10-22"
       },
       {
         "name": "USD/INR",
-        "level": 94.91,
-        "pct": 0.2,
+        "level": 94.92,
+        "pct": 0.21,
         "unit": "\u20b9",
         "notable": false,
-        "z": 0.5,
+        "z": 0.6,
         "date": "2026-10-22"
       },
       {
@@ -308,8 +308,8 @@
       },
       {
         "name": "India VIX",
-        "level": 15.89,
-        "pct": 1.31,
+        "level": 15.91,
+        "pct": 1.45,
         "unit": "",
         "notable": false,
         "z": 0.2,
@@ -319,8 +319,8 @@
     "portfolio": [
       {
         "name": "HDFC Bank Ltd",
-        "move_pct": -1.87,
-        "impact": -6931,
+        "move_pct": -1.94,
+        "impact": -7220,
         "exposure": 371199,
         "funds": [
           "Axis Small Cap",
@@ -344,8 +344,8 @@
       },
       {
         "name": "Swiggy Ltd.",
-        "move_pct": -6.22,
-        "impact": -4722,
+        "move_pct": -6.26,
+        "impact": -4756,
         "exposure": 75975,
         "funds": [
           "Mirae Asset Large & Midcap"
@@ -366,10 +366,10 @@
         ]
       },
       {
-        "name": "Welspun Corp Ltd",
-        "move_pct": -4.87,
-        "impact": -3964,
-        "exposure": 81370,
+        "name": "Gland Pharma Ltd",
+        "move_pct": -3.44,
+        "impact": -4238,
+        "exposure": 123166,
         "funds": [
           "Axis Small Cap",
           "JioBlackRock Flexi Cap",
@@ -392,8 +392,8 @@
       },
       {
         "name": "PB Fintech Ltd",
-        "move_pct": 2.37,
-        "impact": 3872,
+        "move_pct": 2.27,
+        "impact": 3710,
         "exposure": 163292,
         "funds": [
           "Axis Small Cap",
@@ -403,8 +403,8 @@
       },
       {
         "name": "ICICI Bank Ltd",
-        "move_pct": 0.91,
-        "impact": 1847,
+        "move_pct": 0.82,
+        "impact": 1656,
         "exposure": 203004,
         "funds": [
           "Mirae Asset Large & Midcap",
@@ -427,8 +427,8 @@
       },
       {
         "name": "Vijaya Diagnostic Centre Ltd",
-        "move_pct": 2.65,
-        "impact": 1316,
+        "move_pct": 2.58,
+        "impact": 1280,
         "exposure": 49621,
         "funds": [
           "Axis Small Cap"
@@ -485,6 +485,6 @@
       "nse_archive_sectors": false,
       "yahoo_sectors_fallback": true
     },
-    "rich_at": "2026-10-22T09:20:07.706564+00:00"
+    "rich_at": "2026-10-22T09:21:20.074168+00:00"
   }
 }

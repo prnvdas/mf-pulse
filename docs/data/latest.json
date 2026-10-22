@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-22T21:11:26.020293+05:30",
-  "generated_label": "22 Oct 2026, 21:11 IST",
+  "generated_at": "2026-10-22T21:21:26.541391+05:30",
+  "generated_label": "22 Oct 2026, 21:21 IST",
   "stale": false,
   "phase": "final",
   "market_open": false,
@@ -9,7 +9,7 @@
     "invested": 8400002.53,
     "total_returns": 1855315.33,
     "total_returns_pct": 22.09,
-    "today_impact": -62789.0,
+    "today_impact": -62788.81,
     "today_pct": -0.612,
     "band_rupees": 7119.0
   },
@@ -20,14 +20,14 @@
       "current_value": 5136749.35,
       "invested": 4124793.89,
       "nav_move_pct": -0.62,
-      "rupee_impact": -31873.09,
+      "rupee_impact": -31872.9,
       "last_nav": 128.15,
       "projected_nav": 127.3548,
       "band_rupees": 5137.0,
       "coverage_pct": 86.6,
       "cash_pct": 13.41,
       "tail_pct": 0.0,
-      "tail_move_pct": -1.09,
+      "tail_move_pct": -0.71,
       "holdings_as_of": "2026-10-12",
       "holdings_count": 119,
       "priced_count": 119,
@@ -573,10 +573,10 @@
       "name": "Brent crude",
       "ticker": "BZ=F",
       "unit": "$",
-      "level": 111.19,
-      "change": 0.52,
-      "move_pct": 0.47,
-      "as_of": "2026-10-22T21:01:24+05:30"
+      "level": 111.33,
+      "change": 0.66,
+      "move_pct": 0.6,
+      "as_of": "2026-10-22T21:11:45+05:30"
     }
   ],
   "breadth": {
@@ -587,9 +587,9 @@
   "health": {
     "status": "ok",
     "issues": [],
-    "checked_at": "2026-10-22T21:11:43.488866+05:30",
+    "checked_at": "2026-10-22T21:21:52.588525+05:30",
     "repaired": 0,
-    "gap": 0,
+    "gap": 1,
     "ignored": 0
   },
   "accuracy": {
@@ -618,6 +618,6 @@
       }
     }
   },
-  "tickers_resolved": 264,
+  "tickers_resolved": 263,
   "tickers_total": 264
 }

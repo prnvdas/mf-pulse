@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-22T13:06:35.626114+05:30",
+  "generated_at": "2026-10-22T13:21:21.502993+05:30",
   "market": [
     {
       "title": "UltraTech Cement shares down 11% in a year: InCred Equities says recovery ahead | Check target, upside, rationale",
@@ -187,31 +187,35 @@
     "date": "2026-10-22",
     "direction": "down",
     "title": "Why the market fell today",
-    "summary": "The Nifty fell \u22120.54%, dragged by IT (\u22121.3%), Pharma (\u22120.1%). Notable global and macro moves: Nikkei 225 \u22122.6%; Hang Seng \u22123.0%; Brent crude +2.4%.",
+    "summary": "The Nifty fell \u22120.72%, dragged by IT (\u22121.4%), Banks (\u22120.3%). Notable global and macro moves: Nikkei 225 \u22122.6%; Hang Seng \u22123.1%; Brent crude +2.8%.",
     "points": [
       {
         "kind": "fact",
-        "text": "The market fell: Sensex \u22120.6%, Nifty 50 \u22120.5%, Nifty Smallcap 250 \u22120.8%, Nifty LargeMidcap 250 \u22120.6%."
+        "text": "The market fell: Sensex \u22120.4%, Nifty 50 \u22120.7%, Nifty Smallcap 250 \u22121.1%, Nifty LargeMidcap 250 \u22120.8%."
       },
       {
         "kind": "fact",
-        "text": "More stocks fell than rose in your funds (182 down, 79 up)."
+        "text": "Small companies moved more than big ones (\u22121.1% vs \u22120.7%). Small and mid-sized stocks swing harder, both up and down."
       },
       {
         "kind": "fact",
-        "text": "Biggest drag on your money: HDFC Bank Ltd (\u22122.0%), which cost you about \u20b97,377 because you hold roughly \u20b93.7L of it."
+        "text": "More stocks fell than rose in your funds (185 down, 75 up)."
       },
       {
         "kind": "fact",
-        "text": "Helping most: PB Fintech Ltd (+1.6%), adding about \u20b92,689 to your money."
+        "text": "Biggest drag on your money: HDFC Bank Ltd (\u22122.1%), which cost you about \u20b97,666 because you hold roughly \u20b93.7L of it."
       },
       {
         "kind": "fact",
-        "text": "Your three worst stocks (HDFC Bank Ltd, Swiggy Ltd., CCL Products (India) Ltd) together cost about \u20b914,662."
+        "text": "Helping most: PB Fintech Ltd (+1.7%), adding about \u20b92,722 to your money."
       },
       {
         "kind": "fact",
-        "text": "Estimated effect on your funds: Axis Small Cap \u22120.52%, Mirae Asset Large & Midcap \u22120.52%, JioBlackRock Flexi Cap \u22120.62%. In total your portfolio moved about \u2212\u20b953,417 (\u22120.52%)."
+        "text": "Your three worst stocks (HDFC Bank Ltd, Swiggy Ltd., CCL Products (India) Ltd) together cost about \u20b915,438."
+      },
+      {
+        "kind": "fact",
+        "text": "Estimated effect on your funds: Axis Small Cap \u22120.70%, Mirae Asset Large & Midcap \u22120.65%, JioBlackRock Flexi Cap \u22120.80%. In total your portfolio moved about \u2212\u20b969,303 (\u22120.68%)."
       }
     ],
     "reads": [
@@ -228,23 +232,23 @@
     ],
     "sectors": [
       {
-        "name": "Banks",
-        "pct": -0.11,
-        "last": 54916.69921875,
+        "name": "Pharma",
+        "pct": -0.22,
+        "last": 25509.349609375,
         "up": null,
         "down": null
       },
       {
-        "name": "Pharma",
-        "pct": -0.11,
-        "last": 25536.900390625,
+        "name": "Banks",
+        "pct": -0.27,
+        "last": 54829.94921875,
         "up": null,
         "down": null
       },
       {
         "name": "IT",
-        "pct": -1.34,
-        "last": 31987.94921875,
+        "pct": -1.44,
+        "last": 31956.25,
         "up": null,
         "down": null
       }
@@ -273,29 +277,29 @@
       },
       {
         "name": "Hang Seng",
-        "level": 22947.64,
-        "pct": -2.98,
+        "level": 22915.43,
+        "pct": -3.11,
         "unit": "",
         "notable": true,
-        "z": -2.6,
+        "z": -2.7,
         "date": "2026-10-22"
       },
       {
         "name": "Brent crude",
-        "level": 111.46,
-        "pct": 2.43,
+        "level": 111.88,
+        "pct": 2.81,
         "unit": "$",
         "notable": true,
-        "z": 1.3,
+        "z": 1.5,
         "date": "2026-10-22"
       },
       {
         "name": "USD/INR",
-        "level": 94.77,
-        "pct": 0.06,
+        "level": 94.83,
+        "pct": 0.12,
         "unit": "\u20b9",
         "notable": false,
-        "z": 0.2,
+        "z": 0.3,
         "date": "2026-10-22"
       },
       {
@@ -309,19 +313,19 @@
       },
       {
         "name": "India VIX",
-        "level": 15.82,
-        "pct": 0.91,
+        "level": 15.9,
+        "pct": 1.43,
         "unit": "",
         "notable": false,
-        "z": 0.1,
+        "z": 0.2,
         "date": "2026-10-22"
       }
     ],
     "portfolio": [
       {
         "name": "HDFC Bank Ltd",
-        "move_pct": -1.99,
-        "impact": -7377,
+        "move_pct": -2.07,
+        "impact": -7666,
         "exposure": 371199,
         "funds": [
           "Axis Small Cap",
@@ -345,8 +349,8 @@
       },
       {
         "name": "Swiggy Ltd.",
-        "move_pct": -5.23,
-        "impact": -3975,
+        "move_pct": -5.37,
+        "impact": -4076,
         "exposure": 75975,
         "funds": [
           "Mirae Asset Large & Midcap"
@@ -362,14 +366,14 @@
             "title": "Swiggy slips 26% in 1 month, hits record low; stock down 46% from IPO price",
             "source": "Business Standard",
             "link": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxNVmpsMWp0eG9vdl9DZjNiVHBrV2lxY050d2RTOFBjOFRCM2UwZXo1bWllZVlZamlWTUNiZU5EZjgzU2VwampSb0Z1NkNSZXNmRUlpZTVGdVdUc2Z5cEplNkowa0FfWWVvZXpPNVBEMGM0dWdwZ014R2h3ZHNfcUl3QU5NTU1RdHljUUVpQmtidVZrX1YwaEZuRWV6a3ZRdXJRUEpIUEFtMS1qamtHZXF6T25tc0xkWnFuZnlvcmdUTlRWOFNPMnRzdUVUZjlJdlFrMnBqa9IB2gFBVV95cUxOc0dETFdyRnFTbHFCTTVtWVdsUHYxLTUyWDBOaVAwaXFSNlNFNjZEUWlCLWhhM3NLUzlnN2NfcGJFS0RUYmRMckI3NDAxajNWRTNHUjRBVDBTVUNYMzJUMWU1YzRQV1A4QWNONVNIdnZ4R25YZ1N1TGhNYUZILWtBNmtVWVl4R2s3c0hOaElFbTRLcjBNOGY5ZjREY2p3VWJfZ1dIY3piaWR5dDNJWXRXNnJKMW9wZ0g3NFlhUU0xLUVHZ0lZZmlBZ2hsVHRsX3laVFZaVkNyWjdjUQ?oc=5",
-            "published": "2026-10-22T06:59:35+00:00"
+            "published": "2026-10-22T06:59:48+00:00"
           }
         ]
       },
       {
         "name": "CCL Products (India) Ltd",
-        "move_pct": -2.88,
-        "impact": -3310,
+        "move_pct": -3.21,
+        "impact": -3696,
         "exposure": 114969,
         "funds": [
           "Axis Small Cap",
@@ -386,8 +390,8 @@
       },
       {
         "name": "PB Fintech Ltd",
-        "move_pct": 1.65,
-        "impact": 2689,
+        "move_pct": 1.67,
+        "impact": 2722,
         "exposure": 163292,
         "funds": [
           "Axis Small Cap",
@@ -397,8 +401,8 @@
       },
       {
         "name": "Syrma SGS Technology Ltd",
-        "move_pct": 2.84,
-        "impact": 2144,
+        "move_pct": 2.53,
+        "impact": 1903,
         "exposure": 75373,
         "funds": [
           "Axis Small Cap",
@@ -409,7 +413,7 @@
       {
         "name": "ICICI Bank Ltd",
         "move_pct": 0.9,
-        "impact": 1818,
+        "impact": 1832,
         "exposure": 203004,
         "funds": [
           "Mirae Asset Large & Midcap",
@@ -480,6 +484,6 @@
       "nse_archive_sectors": false,
       "yahoo_sectors_fallback": true
     },
-    "rich_at": "2026-10-22T07:36:07.708924+00:00"
+    "rich_at": "2026-10-22T07:50:58.200348+00:00"
   }
 }

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-22T03:54:04.982674+05:30",
+  "generated_at": "2026-10-22T23:31:06.604255+05:30",
   "as_of": "2026-10-21",
-  "value": 10255318,
+  "value": 10188769,
   "risk_free_pct": 6.5,
   "fd_rate_pct": 7.000000000000001,
   "basis": "today's mix applied to each fund's real NAV history (3,403 sessions, since 2013-01-03)",
@@ -11,9 +11,9 @@
     "cagr_5y": 12.4,
     "cagr_all": 20.6,
     "nifty_cagr": {
-      "1y": -9.1,
-      "3y": 5.2,
-      "5y": 5.7
+      "1y": -10.1,
+      "3y": 4.9,
+      "5y": 5.3
     },
     "rolling": [
       {
@@ -63,14 +63,14 @@
     "sortino": 0.49,
     "calmar": 0.33,
     "beta": 1.02,
-    "downside_beta": 1.12,
+    "downside_beta": 1.13,
     "correlation": 0.86,
     "var95_pct": 1.54,
     "var99_pct": 2.57,
     "es95_pct": 2.27,
-    "var95_rupees": 158362,
-    "var99_rupees": 263578,
-    "es95_rupees": 233242,
+    "var95_rupees": 157333,
+    "var99_rupees": 261866,
+    "es95_rupees": 231728,
     "worst_day_pct": -12.8,
     "worst_week_pct": -12.7,
     "worst_month_pct": -26.7
@@ -78,67 +78,67 @@
   "stress": [
     {
       "nifty_pct": -10,
-      "portfolio_pct": -11.2,
-      "rupees": -1152527,
+      "portfolio_pct": -11.3,
+      "rupees": -1152331,
       "funds": [
         {
           "id": "axis-small-cap",
-          "pct": -10.7,
-          "rupees": -550068
+          "pct": -10.8,
+          "rupees": -552345
         },
         {
           "id": "mirae-large-midcap",
           "pct": -11.8,
-          "rupees": -579988
+          "rupees": -577661
         },
         {
           "id": "jioblackrock-flexicap",
           "pct": -11.0,
-          "rupees": -21070
+          "rupees": -20984
         }
       ]
     },
     {
       "nifty_pct": -20,
-      "portfolio_pct": -22.5,
-      "rupees": -2305053,
+      "portfolio_pct": -22.6,
+      "rupees": -2304663,
       "funds": [
         {
           "id": "axis-small-cap",
-          "pct": -21.4,
-          "rupees": -1100135
+          "pct": -21.6,
+          "rupees": -1104689
         },
         {
           "id": "mirae-large-midcap",
-          "pct": -23.5,
-          "rupees": -1159976
+          "pct": -23.6,
+          "rupees": -1155321
         },
         {
           "id": "jioblackrock-flexicap",
-          "pct": -22.0,
-          "rupees": -42139
+          "pct": -22.1,
+          "rupees": -41968
         }
       ]
     },
     {
       "nifty_pct": -30,
-      "portfolio_pct": -33.7,
-      "rupees": -3457580,
+      "portfolio_pct": -33.9,
+      "rupees": -3456994,
       "funds": [
         {
           "id": "axis-small-cap",
-          "pct": -32.1,
-          "rupees": -1650203
+          "pct": -32.5,
+          "rupees": -1657034
         },
         {
           "id": "mirae-large-midcap",
-          "pct": -35.3,
-          "rupees": -1739964
+          "pct": -35.4,
+          "rupees": -1732982
         },
         {
           "id": "jioblackrock-flexicap",
-          "pct": -33.0,
-          "rupees": -63209
+          "pct": -33.1,
+          "rupees": -62951
         }
       ]
     }
@@ -151,7 +151,7 @@
       "depth_pct": -35.4,
       "days_to_trough": 32,
       "days_to_recover": 214,
-      "rupees_today": -3630383
+      "rupees_today": -3606824
     },
     {
       "peak": "2024-09-26",
@@ -160,7 +160,7 @@
       "depth_pct": -19.1,
       "days_to_trough": 155,
       "days_to_recover": 241,
-      "rupees_today": -1958766
+      "rupees_today": -1946055
     },
     {
       "peak": "2013-01-15",
@@ -169,7 +169,7 @@
       "depth_pct": -18.6,
       "days_to_trough": 225,
       "days_to_recover": 83,
-      "rupees_today": -1907489
+      "rupees_today": -1895111
     },
     {
       "peak": "2022-01-17",
@@ -178,7 +178,7 @@
       "depth_pct": -17.4,
       "days_to_trough": 154,
       "days_to_recover": 164,
-      "rupees_today": -1784425
+      "rupees_today": -1772846
     },
     {
       "peak": "2018-01-09",
@@ -187,7 +187,7 @@
       "depth_pct": -16.4,
       "days_to_trough": 273,
       "days_to_recover": 231,
-      "rupees_today": -1681872
+      "rupees_today": -1670958
     }
   ],
   "funds": [
@@ -195,11 +195,11 @@
       "id": "axis-small-cap",
       "name": "Axis Small Cap Fund Direct Growth",
       "weight_pct": 50.1,
-      "value": 5136749,
+      "value": 5103079,
       "vol_pct": 15.0,
       "max_drawdown_pct": -34.6,
       "beta": 0.96,
-      "downside_beta": 1.07,
+      "downside_beta": 1.08,
       "risk_share_pct": 51.0,
       "history_years": 12.6
     },
@@ -207,7 +207,7 @@
       "id": "mirae-large-midcap",
       "name": "Mirae Asset Large & Midcap Fund Direct Growth",
       "weight_pct": 48.0,
-      "value": 4927020,
+      "value": 4895460,
       "vol_pct": 14.6,
       "max_drawdown_pct": -36.9,
       "beta": 1.08,
@@ -219,7 +219,7 @@
       "id": "jioblackrock-flexicap",
       "name": "JioBlackRock Flexi Cap Fund Direct Growth",
       "weight_pct": 1.9,
-      "value": 191548,
+      "value": 190230,
       "vol_pct": 14.5,
       "max_drawdown_pct": -14.3,
       "beta": 1.01,
@@ -232,7 +232,7 @@
     "top": [
       {
         "name": "HDFC Bank Ltd",
-        "value": 371199,
+        "value": 368806,
         "pct": 3.6,
         "funds": [
           "Axis Small Cap",
@@ -242,7 +242,7 @@
       },
       {
         "name": "Laurus Labs Ltd",
-        "value": 216431,
+        "value": 215040,
         "pct": 2.1,
         "funds": [
           "Axis Small Cap",
@@ -251,7 +251,7 @@
       },
       {
         "name": "ICICI Bank Ltd",
-        "value": 203004,
+        "value": 201698,
         "pct": 2.0,
         "funds": [
           "JioBlackRock Flexi Cap",
@@ -260,7 +260,7 @@
       },
       {
         "name": "Reliance Industries Ltd",
-        "value": 182346,
+        "value": 181170,
         "pct": 1.8,
         "funds": [
           "Axis Small Cap",
@@ -270,7 +270,7 @@
       },
       {
         "name": "Axis Bank Ltd",
-        "value": 170237,
+        "value": 169146,
         "pct": 1.7,
         "funds": [
           "JioBlackRock Flexi Cap",
@@ -279,7 +279,7 @@
       },
       {
         "name": "PB Fintech Ltd",
-        "value": 163292,
+        "value": 162242,
         "pct": 1.6,
         "funds": [
           "Axis Small Cap",
@@ -288,7 +288,7 @@
       },
       {
         "name": "State Bank of India",
-        "value": 158262,
+        "value": 157245,
         "pct": 1.5,
         "funds": [
           "JioBlackRock Flexi Cap",
@@ -297,7 +297,7 @@
       },
       {
         "name": "Narayana Hrudayalaya Ltd",
-        "value": 135659,
+        "value": 134783,
         "pct": 1.3,
         "funds": [
           "Axis Small Cap",
@@ -306,7 +306,7 @@
       },
       {
         "name": "Krishna Institute Of Medical Sciences Ltd",
-        "value": 126621,
+        "value": 125791,
         "pct": 1.2,
         "funds": [
           "Axis Small Cap"
@@ -314,7 +314,7 @@
       },
       {
         "name": "Gland Pharma Ltd",
-        "value": 123166,
+        "value": 122368,
         "pct": 1.2,
         "funds": [
           "Axis Small Cap",

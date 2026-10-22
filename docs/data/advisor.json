@@ -2,19 +2,19 @@
   "quick": [
     "Keep your \u20b91.10 lakh monthly SIP running.",
     "Spare cash? No rush: invest it gradually.",
-    "Put any extra into Mirae Asset Large & Midcap rather than Axis Small Cap.",
+    "Put any extra into JioBlackRock Flexi Cap rather than Axis Small Cap.",
     "Don't sell on today's fall or tomorrow's call."
   ],
   "chips": [
     {
       "label": "Market mood",
-      "value": "35 \u00b7 fear",
+      "value": "36 \u00b7 fear",
       "effect": "+"
     },
     {
       "label": "Small caps",
-      "value": "above average",
-      "effect": "-"
+      "value": "fair",
+      "effect": "="
     },
     {
       "label": "Large + midcaps",
@@ -28,56 +28,56 @@
     },
     {
       "label": "Trend",
-      "value": "3.3% below average",
+      "value": "3.0% below average",
       "effect": "-"
     }
   ],
-  "generated_at": "2026-10-22T14:24:06.699602+05:30",
+  "generated_at": "2026-10-22T20:10:49.883894+05:30",
   "mood_as_of": "2026-10-22",
   "stance": "Hold and keep your SIPs running",
   "stance_key": "hold",
   "headline": "Nothing to do today. Keep your SIPs running and leave your holdings alone.",
   "score": {
     "mood": 0.5,
-    "valuation": 0.6,
+    "valuation": 0.7,
     "trend": -0.5,
-    "total": 0.6
+    "total": 0.7
   },
   "reasons": [
     {
       "key": "mood",
       "title": "Market mood",
-      "value": "35 \u00b7 Fear",
+      "value": "36 \u00b7 Fear",
       "effect": "+",
-      "text": "The Market Mood Index (Tickertape Market Mood Index) reads 35 of 100: fear. It was 14 a month ago and 55 a year ago. Investors often get most nervous near market lows and most confident near highs, so fear is usually the better time to invest and greed the time to be careful. That is a tendency, not a promise."
+      "text": "The Market Mood Index (Tickertape Market Mood Index) reads 36 of 100: fear. It was 14 a month ago and 55 a year ago. Investors often get most nervous near market lows and most confident near highs, so fear is usually the better time to invest and greed the time to be careful. That is a tendency, not a promise."
     },
     {
       "key": "val_axis-small-cap",
       "title": "Small caps \u00b7 your Axis Small Cap",
-      "value": "P/E 32.5 \u00b7 above average",
-      "effect": "-",
-      "text": "Its benchmark trades at a P/E of 32.5, against a typical 32.2 over the last ten years (a premium of 1%). Only 51% of the last ten years were cheaper, and 83% of the last five. Verdict: above average."
+      "value": "P/E 32.1 \u00b7 fair",
+      "effect": "=",
+      "text": "Its benchmark trades at a P/E of 32.1, against a typical 32.2 over the last ten years (a premium of 0%). Only 49% of the last ten years were cheaper, and 80% of the last five. Verdict: fair."
     },
     {
       "key": "val_mirae-large-midcap",
       "title": "Large + midcaps \u00b7 your Mirae Asset Large & Midcap",
-      "value": "P/E 22.3 \u00b7 cheap",
+      "value": "P/E 22.1 \u00b7 cheap",
       "effect": "+",
-      "text": "Its benchmark trades at a P/E of 22.3, against a typical 27.6 over the last ten years (a discount of 19%). Only 4% of the last ten years were cheaper, and 5% of the last five. Verdict: cheap."
+      "text": "Its benchmark trades at a P/E of 22.1, against a typical 27.6 over the last ten years (a discount of 20%). Only 3% of the last ten years were cheaper, and 3% of the last five. Verdict: cheap."
     },
     {
       "key": "val_jioblackrock-flexicap",
       "title": "Whole market \u00b7 your JioBlackRock Flexi Cap",
-      "value": "P/E 21.3 \u00b7 cheap",
+      "value": "P/E 21.1 \u00b7 cheap",
       "effect": "+",
-      "text": "Its benchmark trades at a P/E of 21.3, against a typical 26.1 over the last ten years (a discount of 19%). Only 4% of the last ten years were cheaper, and 8% of the last five. Verdict: cheap."
+      "text": "Its benchmark trades at a P/E of 21.1, against a typical 26.1 over the last ten years (a discount of 19%). Only 2% of the last ten years were cheaper, and 3% of the last five. Verdict: cheap."
     },
     {
       "key": "trend",
       "title": "Trend",
-      "value": "Nifty -3.3% vs its long average",
+      "value": "Nifty -3.0% vs its long average",
       "effect": "-",
-      "text": "The Nifty (22,624) is 3.3% below its longer-term average (23,391) and 1.2% below its shorter-term one. Prices are still falling, so cheap can get cheaper: this is why new money should go in over weeks, not on one day."
+      "text": "The Nifty (22,688) is 3.0% below its longer-term average (23,393) and 0.9% below its shorter-term one. Prices are still falling, so cheap can get cheaper: this is why new money should go in over weeks, not on one day."
     },
     {
       "key": "you",
@@ -89,7 +89,7 @@
     {
       "key": "tomorrow",
       "title": "Tomorrow",
-      "value": "GREEN \u00b7 58% (moderate)",
+      "value": "GREEN \u00b7 60% (weak)",
       "effect": "=",
       "text": "The short-term call for the next session is a coin-flip with a small tilt. It is useful context for a day trader and irrelevant for a long-term investor: don't buy or sell on it."
     }
@@ -97,71 +97,71 @@
   "do_today": [
     "Keep your \u20b91.10 lakh monthly SIP running. When prices are low it buys more units for the same money, which is exactly what a SIP is for.",
     "If you have spare cash, there is no urgency; investing it gradually is fine.",
-    "Of the parts of the market your funds track, large + midcaps looks cheapest (cheap) and small caps the dearest (above average). If you add extra money, tilting it towards Mirae Asset Large & Midcap rather than Axis Small Cap follows that. Your regular SIPs can stay as they are.",
+    "Of the parts of the market your funds track, whole market looks cheapest (cheap) and small caps the dearest (fair). If you add extra money, tilting it towards JioBlackRock Flexi Cap rather than Axis Small Cap follows that. Your regular SIPs can stay as they are.",
     "Do not sell because of today's fall or tomorrow's red or green call."
   ],
   "where_to_add": [
     {
       "label": "Large caps (Nifty 50)",
       "fund": [],
-      "pe": 19.3,
+      "pe": 19.1,
       "verdict": "Cheap",
       "score_pct": 0
     },
     {
       "label": "Large caps, next 50",
       "fund": [],
-      "pe": 17.6,
+      "pe": 17.5,
       "verdict": "Cheap",
       "score_pct": 1
-    },
-    {
-      "label": "Large + midcaps (Nifty LargeMidcap 250)",
-      "fund": [
-        "Mirae Asset Large & Midcap"
-      ],
-      "pe": 22.3,
-      "verdict": "Cheap",
-      "score_pct": 4
     },
     {
       "label": "Whole market (Nifty 500)",
       "fund": [
         "JioBlackRock Flexi Cap"
       ],
-      "pe": 21.3,
+      "pe": 21.1,
       "verdict": "Cheap",
-      "score_pct": 6
+      "score_pct": 2
+    },
+    {
+      "label": "Large + midcaps (Nifty LargeMidcap 250)",
+      "fund": [
+        "Mirae Asset Large & Midcap"
+      ],
+      "pe": 22.1,
+      "verdict": "Cheap",
+      "score_pct": 3
     },
     {
       "label": "Midcaps (Nifty Midcap 150)",
       "fund": [],
-      "pe": 27.3,
+      "pe": 27.0,
       "verdict": "Below average",
-      "score_pct": 31
+      "score_pct": 28
     },
     {
       "label": "Midcaps (Nifty Midcap 100)",
       "fund": [],
-      "pe": 26.9,
+      "pe": 26.6,
       "verdict": "Fair",
-      "score_pct": 39
+      "score_pct": 38
     },
     {
       "label": "Small caps (Nifty Smallcap 250)",
       "fund": [
         "Axis Small Cap"
       ],
-      "pe": 32.5,
-      "verdict": "Above average",
-      "score_pct": 67
+      "pe": 32.1,
+      "verdict": "Fair",
+      "score_pct": 64
     },
     {
       "label": "Small caps (Nifty Smallcap 100)",
       "fund": [],
-      "pe": 35.3,
-      "verdict": "Expensive",
-      "score_pct": 85
+      "pe": 34.6,
+      "verdict": "Above average",
+      "score_pct": 82
     }
   ],
   "if_you_sell": [
@@ -173,7 +173,7 @@
   "watch": [
     "If the Market Mood rises above 70 (extreme greed) and small caps are expensive against their own history, stop lump sums and think about booking some profit.",
     "If it stays below 30, nothing changes: keep investing in stages. Recoveries from fear usually take months, not days.",
-    "If the Nifty closes back above its longer-term average (23,391) the trend has turned: invest any remaining instalments."
+    "If the Nifty closes back above its longer-term average (23,393) the trend has turned: invest any remaining instalments."
   ],
   "evidence": "How much to trust this: on the Nifty 50 since 2012, months when it looked cheap against its own history were followed by a median 12.4% a year over three years, against 15.7% after dear months. So cheap or dear has told us little about average returns. It did tell us about the bad cases: the worst one-year result after cheap months was -8%, after dear months -26%. Treat the signals above as a reason for patience and for spreading out new money, not as a forecast.",
   "disclaimer": "Educational analysis of public market data, not personalised or SEBI-registered investment advice. It cannot know your goals, time horizon or income. Markets can stay cheap or expensive for long periods."

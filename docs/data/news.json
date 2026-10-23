@@ -1,6 +1,12 @@
 {
-  "generated_at": "2026-10-23T23:31:47.736865+05:30",
+  "generated_at": "2026-10-24T00:13:28.970767+05:30",
   "market": [
+    {
+      "title": "Mother of all IPOs! Jio Platforms shatters many existing records - Full list here",
+      "link": "https://www.livemint.com/market/stock-market-news/mother-of-all-ipos-jio-platforms-shatters-many-existing-records-full-list-here-11792775064634.html",
+      "source": "Mint",
+      "published": "2026-10-23T18:18:05+00:00"
+    },
     {
       "title": "IPO Subscription status comparison: Reliance Jio IPO vs Hyundai IPO vs NSE IPO - Who won the race?",
       "link": "https://www.livemint.com/market/stock-market-news/ipo-subscription-status-comparison-reliance-jio-ipo-vs-hyundai-ipo-vs-nse-ipo-who-won-the-race-11792769886858.html",
@@ -60,6 +66,12 @@
       "link": "https://economictimes.indiatimes.com/markets/stocks/news/rbi-governor-reiterates-listing-requirement-for-top-nbfcs-as-focus-intensifies-on-tata-sons/articleshow/135149631.cms",
       "source": "Economic Times",
       "published": "2026-10-23T15:25:41+00:00"
+    },
+    {
+      "title": "Sensex, Nifty Fall for Fourth Consecutive Session as Geopolitical Tensions Rattle Indian Markets",
+      "link": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxPQnIwOFFjZ0FXd3hPQzNZZjRGalJkb1BNUmF6QkszZG9KeC1pN2N6VTBmeW0wOWtPYW94STFRZEtGbk4xbHpwNjYtNnREaGtlcjg3blBQQmNPcGdQX1ZmMWRuR0VGZ0puRVNfanc0R3J4UFA3aFlxcUFOc3ZjRnNuaW9fZWU0MnY3NmdYdWdxcjF5eVpZN2pROUdKRHFCaGRkbkswVVU4SFFRN2sxaEF0NVNzeHZuQmpXZGxDUjFUMkl6UQ?oc=5",
+      "source": "INDIA New England News",
+      "published": "2026-10-23T15:07:22+00:00"
     },
     {
       "title": "Jio IPO breaks 12 records: Rs 4.5 lakh crore bids, highest applications and more",
@@ -168,18 +180,6 @@
       "link": "https://economictimes.indiatimes.com/markets/ipos/fpos/jio-ipo-becomes-first-public-issue-globally-to-cross-1-crore-applications-record-puts-spotlight-on-depth-of-indias-retail-investor-base/articleshow/135144742.cms",
       "source": "Economic Times",
       "published": "2026-10-23T11:56:48+00:00"
-    },
-    {
-      "title": "Small-cap stock under  \u20b950 with 1:5 stock split, 1:1 bonus share history: Rights issue announced for  \u20b9160 crore value",
-      "link": "https://www.livemint.com/market/stock-market-news/smallcap-stock-under-rs-50-with-1-5-stock-split-1-1-bonus-share-history-rights-issue-announced-for-rs-160-crore-value-11792753365094.html",
-      "source": "Mint",
-      "published": "2026-10-23T11:44:04+00:00"
-    },
-    {
-      "title": "Sensex Fall Today: Sensex Drops 1,279 Points, Nifty Near 22,400",
-      "link": "https://news.google.com/rss/articles/CBMifEFVX3lxTE5Gd3lWUVc4RURIc3hYYkFVeVNDa3BOcHMydVBxX3Z1TUJEUmRrYk9zMDEzX1Y2RDJHN2NCQ0JPSGd2MmVBWDRSRzR1ZU5BRzN5UVA3R204elgtTGRNLTlTWlhXQ2dSLVNVMmFXR2NKQ2hzYXh3akVmSWZuRDA?oc=5",
-      "source": "Business Outreach Magazine",
-      "published": "2026-10-23T11:34:58+00:00"
     }
   ],
   "why": {
@@ -372,7 +372,8 @@
       "source": "Moneycontrol",
       "fii": 888.0,
       "dii": 3235.0,
-      "fii_index_futures": -36.0
+      "fii_index_futures": -36.0,
+      "from_cache": true
     },
     "macro": [
       {
@@ -386,11 +387,11 @@
       },
       {
         "name": "Brent crude",
-        "level": 111.39,
-        "pct": -1.57,
+        "level": 111.58,
+        "pct": -1.4,
         "unit": "$",
         "notable": false,
-        "z": -0.8,
+        "z": -0.7,
         "date": "2026-10-23"
       },
       {
@@ -410,15 +411,6 @@
         "notable": true,
         "z": -3.3,
         "date": "2026-10-22"
-      },
-      {
-        "name": "India VIX",
-        "level": 16.86,
-        "pct": 6.98,
-        "unit": "",
-        "notable": false,
-        "z": 0.9,
-        "date": "2026-10-23"
       }
     ],
     "portfolio": [
@@ -583,9 +575,10 @@
       "nse_session": "blocked or unreachable",
       "nse_sectors": false,
       "nse_flows": false,
-      "moneycontrol_flows": true,
+      "moneycontrol_flows": "error: 403 Client Error: Forbidden for url: https://www.moneycontro",
+      "flows_cache": true,
       "nse_archive_sectors": true
     },
-    "rich_at": "2026-10-23T18:01:23.578270+00:00"
+    "rich_at": "2026-10-23T18:43:06.955907+00:00"
   }
 }

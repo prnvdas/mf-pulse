@@ -1,26 +1,26 @@
 {
-  "generated_at": "2026-10-22T23:05:48.466067+05:30",
+  "generated_at": "2026-10-23T07:15:34.214263+05:30",
   "base_close_date": "2026-10-22",
   "base_close": 22687.65,
   "sigma_pct": 0.98,
   "nifty": {
     "typical": [
-      22493.5,
-      22875.2
+      22428.1,
+      22809.8
     ],
     "wide": [
-      22344.3,
-      23056.8
+      22278.9,
+      22991.4
     ],
     "typical_pct": [
-      -0.86,
-      0.83
+      -1.14,
+      0.54
     ],
     "wide_pct": [
-      -1.51,
-      1.63
+      -1.8,
+      1.34
     ],
-    "centre_pct": 0.0,
+    "centre_pct": -0.29,
     "gift_adjusted": {
       "gap_pct": 0.74,
       "last": 22856.5,
@@ -47,14 +47,19 @@
     }
   },
   "portfolio": {
-    "value": 10255318,
-    "sigma_pct": 0.85,
-    "typical_rupees": 82229,
-    "wide_rupees": 153505
+    "value": 10188769,
+    "sigma_pct": 0.84,
+    "typical_rupees": 80650,
+    "wide_rupees": 150557
   },
   "lean": {
-    "status": "pending",
-    "reason": "The US market hasn't closed since the last Nifty close yet; this updates around 07:15 IST."
+    "status": "ok",
+    "label": "slight tilt down",
+    "p_up": 41.7,
+    "mu_pct": -0.29,
+    "sp_date": "2026-10-22",
+    "sp_move_pct": -1.21,
+    "us_sessions": 1
   },
   "call": {
     "colour": "green",

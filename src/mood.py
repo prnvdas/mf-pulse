@@ -39,7 +39,7 @@ INDICES = {
     "Nifty 500": ("Whole market (Nifty 500)", ["nifty 500", "cnx 500"]),
 }
 ALIAS = {a: c for c, (_, al) in INDICES.items() for a in al}
-SHOW = ["Nifty 50", "Nifty LargeMidcap 250", "Nifty Midcap 150", "Nifty Smallcap 250", "Nifty 500", "Nifty Next 50", "Nifty Midcap 100", "Nifty Smallcap 100"]
+SHOW = ["Nifty 50", "Nifty LargeMidcap 250", "Nifty Midcap 150", "Nifty Smallcap 250", "Nifty 500"]
 HISTORY_FROM = dt.date(2012, 12, 1)
 
 

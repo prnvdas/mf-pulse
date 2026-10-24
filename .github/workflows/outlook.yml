@@ -43,6 +43,11 @@ jobs:
         run: |
           python src/mood.py
           python src/advisor.py
+      # Bull or bear? Re-run in the morning: Yahoo's daily bar for the last session can arrive after the nightly run, and this step then catches up.
+      - name: Market trend check
+        continue-on-error: true
+        timeout-minutes: 4
+        run: python src/trend.py
       - name: Commit
         run: |
           git config user.name  "mf-pulse"

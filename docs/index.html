@@ -489,6 +489,7 @@
   .trmeter{position:relative;height:9px;border-radius:5px;background:linear-gradient(90deg,#da291c 0%,#e8a33b 28%,#d9d36b 50%,#a6c94c 72%,#5f8a15 100%)}
   .trmeter i{position:absolute;top:-4px;width:17px;height:17px;margin-left:-8.5px;border-radius:50%;background:var(--paper);border:3px solid var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.3)}
   .trlab{display:flex;margin-top:9px;font-size:11px;color:var(--grey-light)}.trlab span{flex:1;text-align:center}
+  .trcard p.trnote{font-size:12.5px;color:var(--grey);margin-top:14px}
   .trsp{list-style:none;margin:10px 0 0;display:grid;gap:7px}
   .trsp li{display:grid;grid-template-columns:22px 1fr;font-size:13.5px;line-height:1.45;color:var(--grey)}
   .trsp li b{font-weight:700;color:var(--grey-light)}.trsp li.done{color:var(--ink)}.trsp li.done b{color:var(--green-deep)}.trsp em{font-style:normal;color:var(--grey-light)}
@@ -508,6 +509,19 @@
   @media(max-width:560px){.kgrid.k3{grid-template-columns:1fr}}
   .ddtake{margin:16px 0 0;font-size:14px;line-height:1.6}
   @media(max-width:560px){.ddnow{flex-direction:column;align-items:flex-start;gap:8px}.ddrow{grid-template-columns:1fr}}
+  /* the news section: headlines as soft cards, the source stands out, a move chip on each of your stocks */
+  .wsec{margin-top:34px}
+  .hl a{border-bottom:0;font-weight:600;line-height:1.4}
+  .hl a:hover{color:var(--green-deep)}
+  .hl .m{margin-top:5px}.hl .m b{font-weight:600;color:var(--grey)}
+  .hl.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .hl.cards>li,.why .hl.cards li{display:flex;flex-direction:column;justify-content:space-between;background:var(--wash);border-radius:10px;padding:13px 15px}
+  .pm{border:1px solid var(--rule);border-radius:var(--r);padding:14px 16px;margin-top:10px}
+  .pm .h{align-items:center;margin-bottom:2px}
+  .pm .h .mv{font-size:12px;padding:2px 10px;border-radius:99px;font-weight:700;white-space:nowrap}
+  .pm .h .mv.up{background:var(--soft-green);color:var(--green-deep)}.pm .h .mv.dn{background:var(--soft-red);color:var(--red)}
+  .pm .hl{margin-top:8px}
+  @media(max-width:700px){.hl.cards{grid-template-columns:1fr}}
   /* one radius for every surface; grids built from 1px gaps get a hairline frame */
   .call,.advbox,.note,.hv,.outlook,.hbanner,.ptip,.toast,.newver,.chip2,.chip3,.hchip,.seg,.cal .d,.odrow input,.note input,.wd-in input{border-radius:10px}
   .seg button{border-radius:0}.seg{overflow:hidden}
@@ -1454,7 +1468,7 @@ function renderWhy() {
   const esc = t => String(t == null ? "" : t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
   const sgn = (v, dd = 1) => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(dd) + "%";
   const when = iso => new Date(iso).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }) + " IST";
-  const news = h => '<a href="' + esc(h.link) + '" target="_blank" rel="noopener noreferrer">' + esc(h.title) + '</a><span class="m">' + esc(h.source) + " · " + when(h.published) + "</span>";
+  const news = h => '<a href="' + esc(h.link) + '" target="_blank" rel="noopener noreferrer">' + esc(h.title) + '</a><span class="m"><b>' + esc(h.source) + "</b> · " + when(h.published) + "</span>";
   const sec = (title, body) => body ? '<div class="wsec"><h3>' + title + "</h3>" + body + "</div>" : "";
 
   let html = '<div class="hbanner" style="margin-top:14px"><span>' + esc(w.summary) + "</span></div>";
@@ -1482,15 +1496,15 @@ function renderWhy() {
   // 3. your biggest movers, each with the real headlines found for that company
   const mine = (w.points || []).filter(p => /\byour\b|\byou\b/i.test(p.text)).map(p => "<li>" + esc(p.text) + "</li>").join("");
   const P = w.portfolio || [];
-  const movers = P.map(m => '<div class="pm"><div class="h"><span>' + esc(m.name) + '</span><span class="' + (m.move_pct >= 0 ? "pos" : "neg") + '">' + sgn(m.move_pct) + " · " + (m.impact >= 0 ? "+" : "−") + inr(Math.abs(m.impact)) + "</span></div>" +
+  const movers = P.map(m => '<div class="pm"><div class="h"><span>' + esc(m.name) + '</span><span class="mv ' + (m.move_pct >= 0 ? "up" : "dn") + '">' + sgn(m.move_pct) + " · " + (m.impact >= 0 ? "+" : "−") + inr(Math.abs(m.impact)) + "</span></div>" +
     ((m.headlines || []).length ? '<ul class="hl">' + m.headlines.map(h => "<li>" + news(h) + "</li>").join("") + "</ul>" : '<p class="sub2" style="margin:4px 0 0">No company-specific headline found for this session.</p>') + "</div>").join("");
   html += sec("In your portfolio", (mine ? '<ul class="hl facts">' + mine + "</ul>" : "") + movers);
 
   // 4. what the press reported that session (market-wrap headlines, shown verbatim)
   const H = w.headlines || [];
-  html += sec("What the press reported", H.length ? '<ul class="hl">' + H.map(h => "<li>" + news(h) + "</li>").join("") + "</ul>" : "");
+  html += sec("What the press reported", H.length ? '<ul class="hl cards">' + H.map(h => "<li>" + news(h) + "</li>").join("") + "</ul>" : "");
   const R = (w.reads || []);
-  if (R.length) html += sec("Explainers", '<ul class="hl">' + R.map(h => '<li><a href="' + esc(h.link) + '" target="_blank" rel="noopener noreferrer">' + esc(h.title) + '</a><span class="m">' + esc(h.source) + "</span></li>").join("") + "</ul>");
+  if (R.length) html += sec("Explainers", '<ul class="hl cards">' + R.map(h => '<li><a href="' + esc(h.link) + '" target="_blank" rel="noopener noreferrer">' + esc(h.title) + '</a><span class="m"><b>' + esc(h.source) + "</b></span></li>").join("") + "</ul>");
 
   const ok = w.sources_ok || {}, missing = Object.keys(ok).filter(k => !ok[k] && !/fallback/.test(k));
   html += '<p class="sub2" style="margin:18px 0 0">Numbers come from NSE and Yahoo Finance; headlines are shown exactly as published, with their source and time. ' +
@@ -1670,7 +1684,8 @@ function renderOutlook() {
 
   // The headline: one colour, one probability, and how often calls like it were right in the backtest
   const tierTxt = { "very high": "very high", good: "good", strong: "strong", moderate: "moderate", weak: "weak" };
-  const callBox = Cc && Cc.colour ? '<div class="call c-' + Cc.colour + '"><div class="cw">' + (Cc.colour === "green" ? "GREEN" : "RED") + '</div><div class="ct"><b>' + Math.round(Cc.p_call) +
+  const weakCall = !!(Cc && Cc.tier === "weak");           // calls this weak were right barely more often than a coin flip: don't dress them up as red or green
+  const callBox = Cc && Cc.colour ? '<div class="call ' + (weakCall ? "" : "c-" + Cc.colour) + '"><div class="cw">' + (weakCall ? "TOSS-UP" : Cc.colour === "green" ? "GREEN" : "RED") + '</div><div class="ct"><b>' + (weakCall ? "Close to a coin flip: " : "") + Math.round(Cc.p_call) +
     "% chance the Nifty ends " + (Cc.colour === "green" ? "higher" : "lower") + " than its last close of " + pts(o.base_close) + "</b>" + (Cc.provisional ? '<span class="prov">provisional</span>' : "") +
     '<span class="sub">Because ' + esc(Cc.why) + ". Confidence: <b>" + (tierTxt[Cc.tier] || Cc.tier) + "</b>" +
     (Cc.hit_pct ? " &mdash; in the backtest, calls like this were right " + Math.round(Cc.hit_pct) + "% of the time" : "") + ". " + esc(Cc.note || "") + "</span></div></div>" : "";
@@ -1737,9 +1752,9 @@ function renderHeaderChips() {
   }
   const C = OUTLOOK && OUTLOOK.call;
   if (C && C.colour && num(C.p_call)) {
-    const g = C.colour === "green";
-    chips.push('<a class="hchip hc" href="#bOutlook" title="Chance the Nifty ends the next session higher (green) or lower (red)"><span class="ic ' + (g ? "t-green" : "t-red") + '">' + (g ? ICON.up : ICON.down) + '</span><span class="tx"><small>Next session</small><span class="big ' + (g ? "c-green" : "c-red") + '">' +
-      (g ? "Green" : "Red") + ' <em>' + Math.round(C.p_call) + "% likely</em></span></span></a>");
+    const g = C.colour === "green", wk = C.tier === "weak";
+    chips.push('<a class="hchip hc" href="#bOutlook" title="Chance the Nifty ends the next session higher (green) or lower (red). When the lean is weak it is close to a coin flip."><span class="ic ' + (wk ? "t-grey" : g ? "t-green" : "t-red") + '">' + (wk ? ICON.swap : g ? ICON.up : ICON.down) + '</span><span class="tx"><small>Next session</small><span class="big ' + (wk ? "" : g ? "c-green" : "c-red") + '">' +
+      (wk ? "Toss-up" : g ? "Green" : "Red") + ' <em>' + Math.round(C.p_call) + "% " + (g ? "up" : "down") + (wk ? " lean" : " likely") + "</em></span></span></a>");
   }
   const W = NEWS && NEWS.why, F = W && W.flows;
   if (F && (num(F.fii) || num(F.dii))) {
@@ -3464,7 +3479,7 @@ function renderTrend() {
   const sigs = T.signals.filter(x => isObj(x) && typeof x.label === "string");
   const bulls = sigs.filter(x => x.state === "bull").length, of = sigs.length;
   const H = isObj(T.history) ? T.history : {}, B = isObj(H.bull) ? H.bull : {}, R = isObj(H.bear) ? H.bear : {};
-  const V = isObj(T.view) ? T.view : {}, S = isObj(T.similar) && num(T.similar.p50) ? T.similar : null, P = isObj(T.pace) && num(T.pace.level_12m) ? T.pace : null;
+  const V = isObj(T.view) ? T.view : {}, S = isObj(T.year) && num(T.year.p50) ? T.year : null, E = isObj(T.edge) && isObj(T.edge.up) && isObj(T.edge.down) && num(T.edge.up.median) && num(T.edge.down.median) ? T.edge : null, P = isObj(T.pace) && num(T.pace.level_12m) ? T.pace : null;
   const dd = num(T.drawdown_pct) ? T.drawdown_pct : 0, code = T.regime.code;
   const tone = { strong: "c-green", up: "c-green", mixed: "", down: "c-amber", weak: "c-red", bear: "c-red" }[code] || "";
   const pos = { bear: 0, weak: 0, down: 1, mixed: 2, up: 3, strong: 4 }[code], since = esc(String(H.since || "").slice(0, 4));
@@ -3477,21 +3492,22 @@ function renderTrend() {
   const verdict = '<div class="trcard"><div class="trk">Tentative view</div><div class="trbig ' + tone + '">' + esc(String(V.label || T.regime.label || "")) + "</div>" +
     (pos != null ? '<div class="trmeter"><i style="left:' + (pos * 20 + 10) + '%"></i></div><div class="trlab">' + labels.map(x => "<span>" + x + "</span>").join("") + "</div>" : "") +
     "<p>" + esc(String(V.text || "")) + "</p>" +
+    (E ? '<p class="trnote">Do these signals tell what the next year brings? <b>Not so far.</b> Since ' + esc(String(E.since).slice(0, 4)) + ", the Nifty's typical next 12 months were " + sg(E.up.median) + " after clearly bullish readings and " + sg(E.down.median) + " after clearly weak ones. Read this as a description of the trend, not a forecast.</p>" : "") +
     (Array.isArray(T.signposts) && T.signposts.length ? '<div class="trk" style="margin-top:16px">What would turn it bullish</div><ul class="trsp">' + T.signposts.filter(x => isObj(x) && typeof x.text === "string").map(x =>
       '<li class="' + (x.done ? "done" : "") + '"><b>' + (x.done ? "✓" : "○") + "</b><span>" + esc(x.text) + (num(x.level) ? " <em>(" + pts(x.level) + ")</em>" : "") + "</span></li>").join("") + "</ul>" : "") + "</div>";
-  const fan = '<div class="trcard"><div class="trk">Where could the Nifty be in a year?</div>' + trendChart(T, S, P) +
-    (S ? '<div class="trtiles"><div class="hi"><small>High case</small><b>' + pts(S.level_p90 || T.level * (1 + S.p90 / 100)) + "</b><span>" + sg(S.p90) + "</span></div>" +
-      '<div class="mid"><small>Middle</small><b>' + pts(T.level * (1 + S.p50 / 100)) + "</b><span>" + sg(S.p50) + "</span></div>" +
-      '<div class="lo"><small>Low case</small><b>' + pts(S.level_p10 || T.level * (1 + S.p10 / 100)) + "</b><span>" + sg(S.p10) + "</span></div>" +
+  const fan = '<div class="trcard"><div class="trk">What a year can look like from here</div>' + trendChart(T, S, P) +
+    (S ? '<div class="trtiles"><div class="hi"><small>Good year (1 in 10)</small><b>' + pts(S.level_p90 || T.level * (1 + S.p90 / 100)) + "</b><span>" + sg(S.p90) + "</span></div>" +
+      '<div class="mid"><small>Middle year</small><b>' + pts(T.level * (1 + S.p50 / 100)) + "</b><span>" + sg(S.p50) + "</span></div>" +
+      '<div class="lo"><small>Bad year (1 in 10)</small><b>' + pts(S.level_p10 || T.level * (1 + S.p10 / 100)) + "</b><span>" + sg(S.p10) + "</span></div>" +
       (P ? '<div class="pace"><small>Last 3 years\' pace</small><b>' + pts(P.level_12m) + "</b><span>" + sg(P.annual_pct, 1) + "</span></div>" : "") + "</div>" +
-      '<p class="sub2">From ' + S.episodes + " similar spells since " + since + ": higher a year later " + S.up_pct + "% of the time. High and low case are the 9th and 1st best of 10. A small sample, so a guide, not a promise.</p>"
+      '<p class="sub2">Every 12-month stretch since ' + esc(String(S.since).slice(0, 4)) + " (2008 crash included), applied to today's level: " + S.up_pct + "% ended higher and the worst fell " + sg(S.worst) + ". That period suited Indian shares, so a weaker year is possible. A range from history, not a forecast.</p>"
       : (P ? '<p class="scoreline">If the last ' + P.years + " years' pace simply continued, the Nifty would be near <b>" + pts(P.level_12m) + "</b> in a year (" + sg(P.annual_pct, 1) + ").</p>" : "")) + "</div>";
   $("trendNote").textContent = "Nifty 50 · " + dmon(T.as_of) + " · an extrapolation of the past, not a forecast";
   $("trendBody").innerHTML = kpis + '<div class="trdash">' + verdict + fan + "</div>" +
     '<details><summary>The ' + of + ' signals behind this</summary><div class="chips2">' + sigs.map(x => '<span class="chip3"><i class="dotc ' + ({ bull: "g", bear: "xf" }[x.state] || "") + '"></i>' + esc(x.label) + " <b>" + esc(String(x.value == null ? "" : x.value)) + "</b></span>").join("") + "</div></details>";
 }
 
-// The picture: the last three years of the Nifty, then a cone to twelve months ahead (high / middle / low case) and the pace line's end point
+// The picture: the last three years of the Nifty, then a cone to twelve months ahead (good / middle / bad year from history) and the pace line's end point
 function trendChart(T, S, P) {
   const ser = (Array.isArray(T.series) ? T.series : []).filter(r => Array.isArray(r) && /^\d{4}-\d{2}-\d{2}$/.test(String(r[0])) && num(r[1]) && r[1] > 0);
   if (ser.length < 20) return "";

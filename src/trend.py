@@ -1,9 +1,9 @@
 """Market trend check -> docs/data/trend.json: is the market in a bull or a bear phase, what do those phases usually look like,
 and what would simply carrying the trend forward give. Nifty 50 (and the Nifty 500 for one signal), daily closes since 2007.
 
-Nothing here predicts. It reads the classic technical signals (trend, momentum, distance from the high), then looks at what
-the Nifty did over the next twelve months in the past whenever the same signals were on. Those windows overlap, so a few long
-runs of history count many times: the numbers describe the past, not a forecast. Non-blocking in the nightly workflow.
+Nothing here predicts. It reads the classic technical signals (trend, momentum, distance from the high) as a description of
+today, shows how the signals have fared at telling the year ahead (they have not: see `edge`), and shows what a year has looked
+like in this history (`year`, bad years included). Those windows overlap, so the numbers describe the past, not a forecast. Non-blocking in the nightly workflow.
 """
 from __future__ import annotations
 
@@ -144,27 +144,38 @@ def bucket(sc, of: int = 8):
     return np.where(sc >= of * 0.375, "up", np.where(sc <= -of * 0.375, "down", "mixed"))
 
 
-def depth(dd):
-    """How far below the 52-week high: near it, a correction, or a deep fall. A downtrend after a crash is not a downtrend in a mild dip."""
-    return np.where(dd >= -0.10, "near", np.where(dd > -0.20, "correction", "deep"))
+def year_range(c: pd.Series) -> dict | None:
+    """Every 12-month stretch since the start of the data (it begins just before the 2008 crash, so bad years are in it): how the next year
+    could look from today's level if it behaved like a year from this history. Not conditioned on the signals: they have not predicted the year ahead."""
+    f = (c.shift(-FWD) / c - 1).dropna() * 100
+    if len(f) < 750:
+        return None
+    q = np.percentile(f, [10, 25, 50, 75, 90])
+    last = float(c.iloc[-1])
+    return {"since": c.index[0].date().isoformat(), "days": int(len(f)), "years": round(len(f) / 252, 1), "up_pct": round(float((f > 0).mean() * 100)),
+            "p10": round(float(q[0]), 1), "p50": round(float(q[2]), 1), "p90": round(float(q[4]), 1), "worst": round(float(f.min()), 1), "best": round(float(f.max()), 1),
+            "level_p10": round(last * (1 + q[0] / 100)), "level_p50": round(last * (1 + q[2] / 100)), "level_p90": round(last * (1 + q[4] / 100))}
 
 
-def similar_outcomes(df: pd.DataFrame, now_score: int, now_dd: float, of: int = 8) -> dict | None:
-    """Next-twelve-month returns on every past day with the same signal bucket (up / mixed / down) and the same depth below the high."""
+def bucket(sc, of: int = 8):
+    """Up (clearly more bullish signals than bearish), down, or mixed."""
+    return np.where(sc >= of * 0.375, "up", np.where(sc <= -of * 0.375, "down", "mixed"))
+
+
+def signal_edge(df: pd.DataFrame) -> dict | None:
+    """Did the signals ever tell what the next 12 months would bring? The median next-12-month return after each kind of reading."""
     cols = [k for k in df.columns if k.startswith("s_")]
     sc = df[cols].sum(axis=1, min_count=len(cols))
     ok = sc.notna()
-    fwd = df["c"].shift(-FWD) / df["c"] - 1
-    same = pd.Series((bucket(sc.fillna(0), of) == bucket(np.array([now_score]), of)[0]) & (depth(df["dd"].fillna(0).values) == depth(np.array([now_dd]))[0]), index=df.index) & ok
-    pick = fwd[same].dropna()
-    if len(pick) < 250:
-        return None
-    gaps = pick.index.to_series().diff().dt.days.fillna(999)
-    episodes = int((gaps > 60).sum())                       # separate stretches of history, not days: the honest sample size
-    q = np.percentile(pick, [10, 25, 50, 75, 90]) * 100
-    return {"days": int(len(pick)), "years": round(len(pick) / 252, 1), "episodes": episodes, "bucket": str(bucket(np.array([now_score]), of)[0]), "depth": str(depth(np.array([now_dd]))[0]),
-            "up_pct": round(float((pick > 0).mean() * 100)),
-            "p10": round(float(q[0]), 1), "p25": round(float(q[1]), 1), "p50": round(float(q[2]), 1), "p75": round(float(q[3]), 1), "p90": round(float(q[4]), 1)}
+    fwd = (df["c"].shift(-FWD) / df["c"] - 1) * 100
+    b = pd.Series(bucket(sc.fillna(0)), index=df.index)
+    out = {"since": df.index[ok][0].date().isoformat()}
+    for k in ("up", "mixed", "down"):
+        x = fwd[ok & (b == k)].dropna()
+        if len(x) < 100:
+            return None
+        out[k] = {"days": int(len(x)), "median": round(float(np.median(x)), 1), "up_pct": round(float((x > 0).mean() * 100))}
+    return out
 
 
 def trend_pace(c: pd.Series, years: int = 3) -> dict | None:
@@ -178,19 +189,18 @@ def trend_pace(c: pd.Series, years: int = 3) -> dict | None:
     return {"years": years, "annual_pct": round(annual * 100, 1), "level_12m": round(float(c.iloc[-1]) * (1 + annual))}
 
 
-def tentative_view(code: str, dd: float, hist: dict, sim: dict | None) -> dict:
-    """The one-line answer a beginner needs, in plain words, with the evidence it rests on."""
-    ev = f" In {sim['up_pct']}% of {sim['episodes']} similar past spells the market was higher a year later." if sim else ""
+def tentative_view(code: str, dd: float, hist: dict) -> dict:
+    """What the trend looks like right now, in plain words. A description, not a forecast: the page says so next to the evidence."""
     bear_m = (hist.get("bear") or {}).get("median_months")
     if code == "bear":
-        return {"label": "Bear market", "text": "Prices are 20% or more below their high." + (f" Past bear markets took about {bear_m} months from top to bottom." if bear_m else "") + ev}
+        return {"label": "Bear market", "text": "Prices are 20% or more below their high." + (f" Past bear markets took about {bear_m} months from top to bottom." if bear_m else "")}
     if code == "strong":
         return {"label": "Strong uptrend", "text": "The market is rising and almost every signal agrees: bull-run conditions. Falls of 10% along the way are normal, even in a bull run."}
     if code == "up":
         return {"label": "Healthy uptrend", "text": "More signals point up than down: conditions look like a bull run, though a pullback can come at any time."}
     if code == "mixed":
         return {"label": "Undecided", "text": "The signals disagree, so there is no clear bull or bear market yet. A direction is confirmed when the price moves clearly above or below its 200-day average."}
-    return {"label": "Weak, but not a bear market" if dd > -0.20 else "Weak", "text": "Prices are below their long-term average and more signals point down than up. A bear market needs a fall of 20% from the high; this is smaller than that." + ev}
+    return {"label": "Weak, but not a bear market" if dd > -0.20 else "Weak", "text": "Prices are below their long-term average and more signals point down than up. A bear market needs a fall of 20% from the high; this is smaller than that."}
 
 
 def signposts(last: pd.Series) -> list[dict]:
@@ -242,14 +252,11 @@ def build(nifty: pd.Series, n500: pd.Series | None) -> dict:
         "score": sc, "of": of, "regime": {"code": code, "label": label}, "stretched": stretched,
         "drawdown_pct": pct(last["dd"]), "rsi": round(float(last["rsi"]), 0), "signals": signals,
         "levels": {"ma200": round(float(last["ma200"])), "high52": round(float(last["c"] / (1 + last["dd"]))), "bear_line": round(float(last["c"] / (1 + last["dd"]) * 0.8))},
-        "history": history_summary(nifty), "similar": similar_outcomes(df, score(last, 0), float(last["dd"])), "pace": trend_pace(nifty),
+        "history": history_summary(nifty), "year": year_range(nifty), "edge": signal_edge(df), "pace": trend_pace(nifty),
     }
-    out["view"] = tentative_view(code, float(last["dd"]), out["history"], out["similar"])
+    out["view"] = tentative_view(code, float(last["dd"]), out["history"])
     out["signposts"] = signposts(last)
     out["series"] = weekly(nifty)
-    if out["similar"]:
-        for k in ("p10", "p50", "p90"):
-            out["similar"]["level_" + k] = round(float(last["c"]) * (1 + out["similar"][k] / 100))
     return out
 
 

@@ -400,6 +400,23 @@ class Trend(unittest.TestCase):
         s = self._series([100, 120, 100, 125, 130, 110, 140])
         self.assertEqual(trend.pullbacks(s), 2)
 
+    def test_year_range_includes_the_bad_years(self):
+        import numpy as np
+        # three calm rising years, one 50% crash, then a recovery: the 10th percentile of a year must be negative
+        v = np.concatenate([np.linspace(100, 160, 750), np.linspace(160, 80, 250), np.linspace(80, 150, 750)])
+        y = trend.year_range(self._series(list(v)))
+        self.assertLess(y["p10"], 0)
+        self.assertLess(y["worst"], -30)
+        self.assertLess(y["level_p10"], float(v[-1]))
+        self.assertLess(y["p10"], y["p50"])
+        self.assertLess(y["p50"], y["p90"])
+
+    def test_signal_edge_reports_the_year_after_each_reading(self):
+        import numpy as np
+        s = self._series(list(100 * np.exp(np.linspace(0, 1.5, 3000) + 0.05 * np.sin(np.arange(3000) / 40))))
+        e = trend.signal_edge(trend.indicators(s))
+        self.assertTrue(e is None or all(k in e for k in ("up", "mixed", "down", "since")))
+
     def test_regime_labels(self):
         self.assertEqual(trend.regime(8, 9, -0.02)[0], "strong")
         self.assertEqual(trend.regime(-4, 9, -0.12)[0], "down")

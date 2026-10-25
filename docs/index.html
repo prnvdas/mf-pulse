@@ -522,6 +522,14 @@
   .pm .h .mv.up{background:var(--soft-green);color:var(--green-deep)}.pm .h .mv.dn{background:var(--soft-red);color:var(--red)}
   .pm .hl{margin-top:8px}
   @media(max-width:700px){.hl.cards{grid-template-columns:1fr}}
+  /* the news section: one calm view at a time */
+  .whylead{font-size:15.5px;line-height:1.65;margin:2px 0 16px;max-width:72ch}
+  .whyfacts{list-style:none;display:grid;gap:8px;font-size:14px;line-height:1.55;margin:4px 0 8px}
+  .why .whyfacts li{display:block;font-size:14px;line-height:1.55}
+  .whymore{margin-top:8px}.whymore>summary{margin:10px 0 8px;font-size:12.5px}
+  .wchips{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:13.5px;margin:6px 0 20px}
+  .wc b{font-weight:600}.wc .pv{font-weight:600}.wc .pv.pos{color:var(--green-deep)}.wc .pv.neg{color:var(--red)}
+  .wc.notable{background:var(--wash);border-radius:99px;padding:2px 11px}
   /* one radius for every surface; grids built from 1px gaps get a hairline frame */
   .call,.advbox,.note,.hv,.outlook,.hbanner,.ptip,.toast,.newver,.chip2,.chip3,.hchip,.seg,.cal .d,.odrow input,.note input,.wd-in input{border-radius:10px}
   .seg button{border-radius:0}.seg{overflow:hidden}
@@ -1454,6 +1462,7 @@ function renderHitMiss() {
 // "Why did the market move": points computed by news.py. "From your data" points
 // are facts computed from this project's own numbers; "In the news" points are
 // causes being reported in headlines, matched automatically -- labelled as such.
+const WHY = { tab: "" };
 function renderWhy() {
   const w = NEWS && NEWS.why, wrap = $("whyWrap");
   if (!w || !(w.summary || (w.points || []).length)) { wrap.hidden = true; return; }
@@ -1469,47 +1478,45 @@ function renderWhy() {
   const sgn = (v, dd = 1) => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(dd) + "%";
   const when = iso => new Date(iso).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }) + " IST";
   const news = h => '<a href="' + esc(h.link) + '" target="_blank" rel="noopener noreferrer">' + esc(h.title) + '</a><span class="m"><b>' + esc(h.source) + "</b> · " + when(h.published) + "</span>";
-  const sec = (title, body) => body ? '<div class="wsec"><h3>' + title + "</h3>" + body + "</div>" : "";
+  const more = (label, body) => body ? '<details class="whymore"><summary>' + label + "</summary>" + body + "</details>" : "";
+  const S = (w.sectors || []).filter(x => x && typeof x.name === "string" && num(x.pct)), P = w.portfolio || [], H = w.headlines || [], R = w.reads || [];
+  const mine = (w.points || []).filter(p => /\byour\b|\byou\b/i.test(p.text)).map(p => esc(p.text));
 
-  let html = '<div class="hbanner" style="margin-top:14px"><span>' + esc(w.summary) + "</span></div>";
+  // pane 1: your stocks: the two lines that matter, four stocks with their latest headline, the rest folded
+  const stock = m => { const hs = m.headlines || [];
+    return '<div class="pm"><div class="h"><span>' + esc(m.name) + '</span><span class="mv ' + (m.move_pct >= 0 ? "up" : "dn") + '">' + sgn(m.move_pct) + " · " + (m.impact >= 0 ? "+" : "−") + inr(Math.abs(m.impact)) + "</span></div>" +
+      (hs.length ? '<ul class="hl"><li>' + news(hs[0]) + "</li></ul>" + (hs.length > 1 ? more("+" + (hs.length - 1) + " more headline" + (hs.length > 2 ? "s" : ""), '<ul class="hl">' + hs.slice(1).map(h => "<li>" + news(h) + "</li>").join("") + "</ul>") : "")
+        : '<p class="sub2" style="margin:4px 0 0">No company-specific headline found for this session.</p>') + "</div>"; };
+  const facts = a => a.length ? '<ul class="whyfacts">' + a.map(x => "<li>" + x + "</li>").join("") + "</ul>" : "";
+  const paneStocks = facts(mine.slice(0, 2)) + more("More about your money today", facts(mine.slice(2))) + P.slice(0, 4).map(stock).join("") +
+    (P.length > 4 ? more(P.length - 4 + " more stock" + (P.length > 5 ? "s" : ""), P.slice(4).map(stock).join("")) : "");
 
-  // 1. sectors: every sectoral index's move that session (NSE), bars scaled to the biggest move
-  const S = w.sectors || [];
-  if (S.length) {
-    const mx = Math.max(0.5, ...S.map(x => Math.abs(x.pct)));
-    html += sec("Sectors", '<div class="sbars">' + S.map(x => '<div class="sb ' + (x.pct >= 0 ? "up" : "dn") + '"><span>' + esc(x.name) + '</span><span class="bar"><i style="width:' +
-      Math.max(2, Math.round(Math.abs(x.pct) / mx * 100)) + '%"></i></span><b>' + sgn(x.pct, 2) + "</b></div>").join("") + "</div>" +
-      (w.breadth ? '<p class="sub2" style="margin:8px 0 0">' + w.breadth.up + " of " + (w.breadth.up + w.breadth.down) + " Nifty 50 stocks rose, " + w.breadth.down + " fell.</p>" : ""));
-  }
+  // pane 2: sectors and flows: flows and global cues in one line of figures, the six biggest sector moves, the rest folded
+  const F = w.flows || {}, cr = v => "₹" + Math.abs(v).toLocaleString("en-IN") + " cr", chips = [];
+  if (F.fii != null) chips.push('<span class="wc"><b>FPIs</b> ' + (F.fii >= 0 ? "bought " : "sold ") + cr(F.fii) + "</span>");
+  if (F.dii != null) chips.push('<span class="wc"><b>DIIs</b> ' + (F.dii >= 0 ? "bought " : "sold ") + cr(F.dii) + "</span>");
+  if (F.fii == null && F.dii == null) chips.push('<span class="wc" style="color:var(--grey)">FPI / DII flows: not published yet</span>');
+  (w.macro || []).forEach(m => chips.push('<span class="wc' + (m.notable ? " notable" : "") + '"><b>' + esc(m.name) + "</b> " + esc(m.unit === "$" || m.unit === "₹" ? m.unit : "") + m.level.toLocaleString("en-IN", { maximumFractionDigits: 2 }) + (m.unit === "%" ? "%" : "") +
+    ' <span class="pv ' + (m.pct >= 0 ? "pos" : "neg") + '">' + sgn(m.pct, 2) + "</span></span>"));
+  const sorted = [...S].sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct)), mx = Math.max(0.5, ...S.map(x => Math.abs(x.pct)));
+  const bars = a => '<div class="sbars">' + a.map(x => '<div class="sb ' + (x.pct >= 0 ? "up" : "dn") + '"><span>' + esc(x.name) + '</span><span class="bar"><i style="width:' + Math.max(2, Math.round(Math.abs(x.pct) / mx * 100)) + '%"></i></span><b>' + sgn(x.pct, 2) + "</b></div>").join("") + "</div>";
+  const paneSectors = (chips.length ? '<div class="wchips">' + chips.join("") + "</div>" : "") + (S.length ? bars(sorted.slice(0, 6)) + (S.length > 6 ? more("All " + S.length + " sectors", bars(sorted.slice(6))) : "") : "") +
+    (w.breadth ? '<p class="sub2" style="margin:10px 0 0">' + w.breadth.up + " of " + (w.breadth.up + w.breadth.down) + " Nifty 50 stocks rose, " + w.breadth.down + " fell.</p>" : "");
 
-  // 2. money flows and global cues, with their actual numbers
-  const chips = [];
-  const F = w.flows || {};
-  const cr = v => "₹" + Math.abs(v).toLocaleString("en-IN") + " cr";
-  if (F.fii != null) chips.push('<span class="chip2 notable"><b>FPIs</b> ' + (F.fii >= 0 ? "bought " : "sold ") + cr(F.fii) + "</span>");
-  if (F.dii != null) chips.push('<span class="chip2 notable"><b>DIIs</b> ' + (F.dii >= 0 ? "bought " : "sold ") + cr(F.dii) + "</span>");
-  if (F.fii == null && F.dii == null) chips.push('<span class="chip2" style="color:var(--grey)" title="NSE publishes these after the close; this card refreshes by itself">FPI / DII flows: not published yet</span>');
-  (w.macro || []).forEach(m => chips.push('<span class="chip2' + (m.notable ? " notable" : "") + '" title="' + (m.notable ? "A bigger move than usual for this series" : "An ordinary move") + '"><b>' + esc(m.name) + "</b> " +
-    esc(m.unit === "$" || m.unit === "₹" ? m.unit : "") + m.level.toLocaleString("en-IN", { maximumFractionDigits: 2 }) + (m.unit === "%" ? "%" : "") + ' <span class="' + (m.pct >= 0 ? "pos" : "neg") + '">' + sgn(m.pct, 2) + "</span></span>"));
-  html += sec("Money flows and global cues", chips.length ? '<div class="chips">' + chips.join("") + '</div><p class="sub2" style="margin:8px 0 0">Outlined chips are the ones that moved more than usual. FPI (foreign investor) and DII figures are the provisional net numbers for the day' + (F.source ? " (source: " + esc(F.source) + ")" : "") + ".</p>" : "");
+  // pane 3: headlines: four of them, the rest and the explainers folded
+  const card = h => "<li>" + news(h) + "</li>", read = h => '<li><a href="' + esc(h.link) + '" target="_blank" rel="noopener noreferrer">' + esc(h.title) + '</a><span class="m"><b>' + esc(h.source) + "</b></span></li>";
+  const paneNews = (H.length ? '<ul class="hl cards">' + H.slice(0, 4).map(card).join("") + "</ul>" : "") +
+    ((H.length > 4 || R.length) ? more((H.length - 4 > 0 ? H.length - 4 + " more headline" + (H.length > 5 ? "s" : "") : "") + (H.length > 4 && R.length ? " and " : "") + (R.length ? R.length + " explainer" + (R.length > 1 ? "s" : "") : ""),
+      '<ul class="hl cards">' + H.slice(4).map(card).join("") + R.map(read).join("") + "</ul>") : "");
 
-  // 3. your biggest movers, each with the real headlines found for that company
-  const mine = (w.points || []).filter(p => /\byour\b|\byou\b/i.test(p.text)).map(p => "<li>" + esc(p.text) + "</li>").join("");
-  const P = w.portfolio || [];
-  const movers = P.map(m => '<div class="pm"><div class="h"><span>' + esc(m.name) + '</span><span class="mv ' + (m.move_pct >= 0 ? "up" : "dn") + '">' + sgn(m.move_pct) + " · " + (m.impact >= 0 ? "+" : "−") + inr(Math.abs(m.impact)) + "</span></div>" +
-    ((m.headlines || []).length ? '<ul class="hl">' + m.headlines.map(h => "<li>" + news(h) + "</li>").join("") + "</ul>" : '<p class="sub2" style="margin:4px 0 0">No company-specific headline found for this session.</p>') + "</div>").join("");
-  html += sec("In your portfolio", (mine ? '<ul class="hl facts">' + mine + "</ul>" : "") + movers);
-
-  // 4. what the press reported that session (market-wrap headlines, shown verbatim)
-  const H = w.headlines || [];
-  html += sec("What the press reported", H.length ? '<ul class="hl cards">' + H.map(h => "<li>" + news(h) + "</li>").join("") + "</ul>" : "");
-  const R = (w.reads || []);
-  if (R.length) html += sec("Explainers", '<ul class="hl cards">' + R.map(h => '<li><a href="' + esc(h.link) + '" target="_blank" rel="noopener noreferrer">' + esc(h.title) + '</a><span class="m"><b>' + esc(h.source) + "</b></span></li>").join("") + "</ul>");
-
+  const panes = [["stocks", "Your stocks", P.length || mine.length ? paneStocks : ""], ["sectors", "Sectors & flows", S.length || chips.length ? paneSectors : ""], ["news", "Headlines", H.length || R.length ? paneNews : ""]].filter(x => x[2]);
+  if (!panes.some(x => x[0] === WHY.tab)) WHY.tab = panes.length ? panes[0][0] : "";
   const ok = w.sources_ok || {}, missing = Object.keys(ok).filter(k => !ok[k] && !/fallback/.test(k));
-  html += '<p class="sub2" style="margin:18px 0 0">Numbers come from NSE and Yahoo Finance; headlines are shown exactly as published, with their source and time. ' +
-    "A headline is what was reported, not proof of why prices moved." + (missing.length ? " Not available this time: " + esc(missing.join(", ")) + "." : "") + "</p>";
-  $("whyBody").innerHTML = html;
+  $("whyBody").innerHTML = '<p class="whylead">' + esc(w.summary) + "</p>" +
+    (panes.length > 1 ? '<div class="seg" id="whySeg" role="tablist" aria-label="What to look at">' + panes.map(x => '<button role="tab" aria-selected="' + (x[0] === WHY.tab) + '" data-t="' + x[0] + '">' + x[1] + "</button>").join("") + "</div>" : "") +
+    (panes.find(x => x[0] === WHY.tab) || ["", "", ""])[2] +
+    '<p class="sub2" style="margin:18px 0 0">Headlines are shown as published: a headline is what was reported, not proof of why prices moved.' + (missing.length ? " Not available this time: " + esc(missing.join(", ")) + "." : "") + "</p>";
+  const seg = $("whySeg"); if (seg) seg.querySelectorAll("button").forEach(b => b.onclick = () => { WHY.tab = b.dataset.t; renderWhy(); });
 }
 
 // Scrolling ticker bars (indices, AI headlines). Each is a normal horizontally

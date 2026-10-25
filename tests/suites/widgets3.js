@@ -88,6 +88,14 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
   ok(/bull or bear/i.test(t)&&/tentative view/i.test(t)&&/\d of 9/.test(t)&&/what a year can look like/i.test(t)&&/not so far/i.test(t)&&/typical bull run/i.test(t)&&/typical bear market/i.test(t)&&/not a forecast/i.test(t)&&/what would turn it bullish/i.test(t),'trend dashboard reads',t.slice(0,240));
   ok(await p.$$eval('#trendBody svg path',a=>a.length)>=1&&await p.$$eval('#trendBody .trtiles>div',a=>a.length)>=3,'trend chart and case tiles draw');
   ok(/200-day average/.test(t)&&/\(\d\d,\d{3}\)/.test(t),'trend names the level to watch'); ok(!errs.length&&!/NaN|undefined|\[object/.test(t),'trend clean',errs[0]); await (await p.$('#trendWrap')).screenshot({path:'trend.png'}); await ctx.close();}
+ // the news section: three tabs, one calm view at a time, and nothing breaks on odd data
+ {const {p,ctx,errs}=await page(); const g=()=>p.$eval('#whyBody',e=>({tabs:[...e.querySelectorAll('#whySeg button')].map(b=>b.textContent),stocks:e.querySelectorAll('.pm').length,bars:[...e.querySelectorAll('.sb')].filter(x=>!x.closest('details')).length,cards:[...e.querySelectorAll('.hl.cards>li')].filter(x=>!x.closest('details')).length,text:e.innerText}));
+  let r=await g(); ok(r.tabs.length===3&&r.stocks>=1&&r.bars===0,'news: opens on your stocks',JSON.stringify(r.tabs));
+  await p.click('#whySeg button:nth-child(2)'); r=await g(); ok(r.bars>=1&&r.bars<=6&&r.stocks===0&&/FPI|DII/.test(r.text),'news: sectors and flows tab',String(r.bars));
+  await p.click('#whySeg button:nth-child(3)'); r=await g(); ok(r.cards>=1&&r.cards<=4&&/not proof of why prices moved/i.test(r.text),'news: headlines tab shows at most four up front',String(r.cards));
+  ok(!errs.length&&!/NaN|undefined|\[object/.test(r.text),'news clean',errs[0]); await ctx.close();}
+ for (const [m,fn] of Object.entries({nopoints:j=>{j.why.portfolio=[];j.why.points=[];return j;},nonews:j=>{j.why.headlines=[];j.why.reads=[];return j;},junk:j=>{j.why.sectors=[null,{name:5},{name:'x',pct:'a'}];j.why.portfolio=[{name:'A',move_pct:1,impact:2,headlines:'x'}];j.why.macro=[{name:'M',level:1,pct:1}];return j;}})) {const {p,ctx,errs}=await page({news:fn});
+  ok(!errs.length&&!/NaN|undefined|\[object/.test(await p.evaluate(()=>document.body.innerText)),'news hostile '+m,errs[0]); await ctx.close();}
  // a weak next-session call is shown as a toss-up, a stronger one as red/green
  {const {p,ctx,errs}=await page({outlook:j=>{j.call=Object.assign(j.call||{},{colour:'red',tier:'weak',p_call:55.5,hit_pct:54.6});return j;}});
   ok(/toss-up/i.test(await p.$eval('#bOutlook',e=>e.innerText))&&/coin flip/i.test(await p.$eval('#bOutlook',e=>e.innerText))&&/toss-up/i.test(await p.$eval('#hChips',e=>e.innerText)),'weak call is a toss-up on the card and in the header'); ok(!errs.length,'toss-up errs',errs[0]); await ctx.close();}

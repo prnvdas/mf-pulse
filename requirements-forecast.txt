@@ -1,2 +1,11 @@
 -r requirements.txt
-arch>=7.0
+# the volatility model (arch) and what it pulls in, pinned like the rest
+arch==8.0.0
+formulaic==1.2.2
+interface-meta==2.0.1
+narwhals==2.27.1
+packaging==26.3
+patsy==1.0.3
+scipy==1.18.1
+statsmodels==0.15.0
+wrapt==2.5.1

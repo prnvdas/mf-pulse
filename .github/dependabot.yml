@@ -1,0 +1,20 @@
+# Once a month GitHub proposes updates for the pinned Python packages, the test tooling and the GitHub Actions
+# as pull requests. The tests run on each one (see tests.yml): merge it if they pass, close it if not.
+# Updates are grouped, so it is one pull request per ecosystem, not one per package.
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: "/"
+    schedule: { interval: monthly }
+    groups:
+      python-packages: { patterns: ["*"] }
+  - package-ecosystem: npm
+    directory: "/tests"
+    schedule: { interval: monthly }
+    groups:
+      test-tooling: { patterns: ["*"] }
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule: { interval: monthly }
+    groups:
+      actions: { patterns: ["*"] }

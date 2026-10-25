@@ -30,5 +30,6 @@ Before starting, state how you will know it worked; before finishing, show that 
 ## Project notes
 - Data comes from Yahoo (kept on purpose), AMFI/mfapi, Groww pages, NSE archives, Moneycontrol. Several are unofficial: expect them to break, and make failures visible, not silent.
 - The daily recap email is off (`profile.recap_issue: false`). Folio last-4 labels stay. The GitHub token behind cron-job.org does not expire, so `github_token_expires` stays unset.
+- Python packages are pinned to exact versions in `requirements*.txt` so a surprise release can't break the nightly jobs. Dependabot proposes updates monthly; merge one only if its tests pass. The browser tests run suites side by side and retry a failed suite once (a one-off pass is reported as a warning).
 - A secret scan (gitleaks, `.gitleaks.toml`, `.github/workflows/secrets.yml`) runs on every push and weekly over the whole history. It also catches PAN and mobile numbers. If it fails, revoke or change the secret first: deleting the file does not remove it from history.
 - Honest over flattering: forecasts are labelled as extrapolations, with their sample size, never as predictions.

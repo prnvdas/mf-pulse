@@ -22,6 +22,7 @@ on:
       - "docs/index.html"
       - "src/**"
       - "tests/**"
+      - "requirements*.txt"
   workflow_dispatch:
 
 permissions:

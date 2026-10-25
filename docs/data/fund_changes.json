@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-18T23:04:00.780683+05:30",
+  "generated_at": "2026-10-25T20:11:16.366514+05:30",
   "tracking_since": "2026-10-16",
   "funds": [
     {
@@ -11,7 +11,7 @@
         "Mayank Hyanki",
         "Tejas Sheth"
       ],
-      "aum_cr": 30677.5261,
+      "aum_cr": 30677.53,
       "expense_ratio": 0.69,
       "events": []
     },
@@ -23,9 +23,15 @@
         "Ankit Jain",
         "Neelesh Surana"
       ],
-      "aum_cr": 42834.078,
-      "expense_ratio": 0.85,
-      "events": []
+      "aum_cr": 42834.08,
+      "expense_ratio": 0.87,
+      "events": [
+        {
+          "date": "2026-10-25",
+          "kind": "cost",
+          "text": "Expense ratio rose: 0.85% \u2192 0.87%."
+        }
+      ]
     },
     {
       "id": "jioblackrock-flexicap",
@@ -35,7 +41,7 @@
         "Sahil Chaudhary",
         "Tanvi Kacheria"
       ],
-      "aum_cr": 3175.44469248,
+      "aum_cr": 3175.44,
       "expense_ratio": 1.11,
       "events": []
     }

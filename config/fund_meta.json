@@ -1,6 +1,6 @@
 {
   "axis-small-cap": {
-    "fetched": "2026-10-18",
+    "fetched": "2026-10-25",
     "scheme_code": 125354,
     "name": "Axis Small Cap Fund Direct Growth",
     "expense_ratio": 0.69,
@@ -13,7 +13,7 @@
     ],
     "sub_category": "Small Cap",
     "benchmark_name": "NIFTY Smallcap 250 Total Return Index",
-    "aum_cr": 30677.5261,
+    "aum_cr": 30677.53,
     "launch_date": "29-Nov-2013",
     "closed": false,
     "history": [
@@ -38,16 +38,27 @@
           "Tejas Sheth"
         ],
         "aum_cr": 30677.5261
+      },
+      {
+        "date": "2026-10-25",
+        "expense_ratio": 0.69,
+        "lead": "Ashish Naik",
+        "managers": [
+          "Krishnaa Narayan",
+          "Mayank Hyanki",
+          "Tejas Sheth"
+        ],
+        "aum_cr": 30677.53
       }
     ],
     "events": []
   },
   "mirae-large-midcap": {
-    "fetched": "2026-10-18",
+    "fetched": "2026-10-25",
     "scheme_code": 118834,
     "name": "Mirae Asset Large & Midcap Fund Direct Growth",
-    "expense_ratio": 0.85,
-    "base_expense_ratio": 0.51,
+    "expense_ratio": 0.87,
+    "base_expense_ratio": 0.52,
     "lead_manager": "Neelesh Surana",
     "managers": [
       "Ankit Jain",
@@ -55,7 +66,7 @@
     ],
     "sub_category": "Large & MidCap",
     "benchmark_name": "NIFTY Large Midcap 250 Total Return Index",
-    "aum_cr": 42834.078,
+    "aum_cr": 42834.08,
     "launch_date": "01-Jan-2013",
     "closed": false,
     "history": [
@@ -78,12 +89,28 @@
           "Neelesh Surana"
         ],
         "aum_cr": 42834.078
+      },
+      {
+        "date": "2026-10-25",
+        "expense_ratio": 0.87,
+        "lead": "Neelesh Surana",
+        "managers": [
+          "Ankit Jain",
+          "Neelesh Surana"
+        ],
+        "aum_cr": 42834.08
       }
     ],
-    "events": []
+    "events": [
+      {
+        "date": "2026-10-25",
+        "kind": "cost",
+        "text": "Expense ratio rose: 0.85% → 0.87%."
+      }
+    ]
   },
   "jioblackrock-flexicap": {
-    "fetched": "2026-10-18",
+    "fetched": "2026-10-25",
     "scheme_code": 153859,
     "name": "JioBlackRock Flexi Cap Fund Direct Growth",
     "expense_ratio": 1.11,
@@ -95,7 +122,7 @@
     ],
     "sub_category": "Flexi Cap",
     "benchmark_name": "NIFTY 500 Total Return Index",
-    "aum_cr": 3175.44469248,
+    "aum_cr": 3175.44,
     "launch_date": "13-Oct-2025",
     "closed": false,
     "history": [
@@ -118,6 +145,16 @@
           "Tanvi Kacheria"
         ],
         "aum_cr": 3175.44469248
+      },
+      {
+        "date": "2026-10-25",
+        "expense_ratio": 1.11,
+        "lead": "Tanvi Kacheria",
+        "managers": [
+          "Sahil Chaudhary",
+          "Tanvi Kacheria"
+        ],
+        "aum_cr": 3175.44
       }
     ],
     "events": []

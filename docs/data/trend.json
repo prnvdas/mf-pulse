@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-26T13:13:20.196661+05:30",
+  "generated_at": "2026-10-26T13:38:15.342315+05:30",
   "as_of": "2026-10-26",
   "index": "Nifty 50",
-  "level": 22614.95,
+  "level": 22664.0,
   "score": -6,
   "of": 9,
   "regime": {
@@ -10,14 +10,14 @@
     "label": "Downtrend"
   },
   "stretched": false,
-  "drawdown_pct": -14.1,
-  "rsi": 43.0,
+  "drawdown_pct": -13.9,
+  "rsi": 44.0,
   "signals": [
     {
       "k": "above200",
       "label": "Price above its 200-day average",
       "state": "bear",
-      "value": "-6.2%"
+      "value": "-6.0%"
     },
     {
       "k": "cross",
@@ -35,19 +35,19 @@
       "k": "mom12",
       "label": "Higher than a year ago",
       "state": "bear",
-      "value": "-10.7%"
+      "value": "-10.5%"
     },
     {
       "k": "mom3",
       "label": "Higher than three months ago",
       "state": "bear",
-      "value": "-4.8%"
+      "value": "-4.6%"
     },
     {
       "k": "rsi",
       "label": "Momentum (RSI) above 50",
       "state": "bear",
-      "value": "43"
+      "value": "44"
     },
     {
       "k": "macd",
@@ -59,7 +59,7 @@
       "k": "high",
       "label": "Within 10% of the 52-week high",
       "state": "neutral",
-      "value": "-14.1%"
+      "value": "-13.9%"
     },
     {
       "k": "n500",
@@ -84,7 +84,7 @@
         "start": "2020-03-23",
         "end": "2026-01-02",
         "gain_pct": 246,
-        "now_pct": 197,
+        "now_pct": 198,
         "ongoing": true
       }
     },
@@ -111,9 +111,9 @@
     "p90": 34.1,
     "worst": -57.0,
     "best": 104.4,
-    "level_p10": 20436,
-    "level_p50": 24901,
-    "level_p90": 30336
+    "level_p10": 20480,
+    "level_p50": 24955,
+    "level_p90": 30402
   },
   "edge": {
     "since": "2008-09-22",
@@ -136,7 +136,7 @@
   "pace": {
     "years": 3,
     "annual_pct": 4.1,
-    "level_12m": 23541
+    "level_12m": 23592
   },
   "view": {
     "label": "Weak, but not a bear market",
@@ -795,11 +795,11 @@
     ],
     [
       "2026-10-30",
-      22615
+      22664
     ],
     [
       "2026-10-26",
-      22615
+      22664
     ]
   ]
 }

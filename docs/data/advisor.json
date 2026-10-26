@@ -28,11 +28,11 @@
     },
     {
       "label": "Trend",
-      "value": "2.8% below average",
+      "value": "2.6% below average",
       "effect": "-"
     }
   ],
-  "generated_at": "2026-10-26T14:49:47.321793+05:30",
+  "generated_at": "2026-10-26T20:11:13.353117+05:30",
   "mood_as_of": "2026-10-26",
   "stance": "Hold and keep your SIPs running",
   "stance_key": "hold",
@@ -61,23 +61,23 @@
     {
       "key": "val_mirae-large-midcap",
       "title": "Large + midcaps \u00b7 your Mirae Asset Large & Midcap",
-      "value": "P/E 21.8 \u00b7 cheap",
+      "value": "P/E 22.0 \u00b7 cheap",
       "effect": "+",
-      "text": "Its benchmark trades at a P/E of 21.8, against a typical 27.6 over the last ten years (a discount of 21%). Only 2% of the last ten years were cheaper, and 2% of the last five. Verdict: cheap."
+      "text": "Its benchmark trades at a P/E of 22.0, against a typical 27.6 over the last ten years (a discount of 21%). Only 2% of the last ten years were cheaper, and 2% of the last five. Verdict: cheap."
     },
     {
       "key": "val_jioblackrock-flexicap",
       "title": "Whole market \u00b7 your JioBlackRock Flexi Cap",
-      "value": "P/E 20.8 \u00b7 cheap",
+      "value": "P/E 21.0 \u00b7 cheap",
       "effect": "+",
-      "text": "Its benchmark trades at a P/E of 20.8, against a typical 26.1 over the last ten years (a discount of 20%). Only 1% of the last ten years were cheaper, and 2% of the last five. Verdict: cheap."
+      "text": "Its benchmark trades at a P/E of 21.0, against a typical 26.1 over the last ten years (a discount of 20%). Only 1% of the last ten years were cheaper, and 2% of the last five. Verdict: cheap."
     },
     {
       "key": "trend",
       "title": "Trend",
-      "value": "Nifty -2.8% vs its long average",
+      "value": "Nifty -2.6% vs its long average",
       "effect": "-",
-      "text": "The Nifty (22,701) is 2.8% below its longer-term average (23,349) and 0.7% below its shorter-term one. Prices are still falling, so cheap can get cheaper: this is why new money should go in over weeks, not on one day."
+      "text": "The Nifty (22,753) is 2.6% below its longer-term average (23,351) and 0.5% below its shorter-term one. Prices are still falling, so cheap can get cheaper: this is why new money should go in over weeks, not on one day."
     },
     {
       "key": "you",
@@ -89,7 +89,7 @@
     {
       "key": "tomorrow",
       "title": "Tomorrow",
-      "value": "RED \u00b7 52% (weak)",
+      "value": "GREEN \u00b7 53% (weak)",
       "effect": "=",
       "text": "The short-term call for the next session is a coin-flip with a small tilt. It is useful context for a day trader and irrelevant for a long-term investor: don't buy or sell on it."
     }
@@ -104,7 +104,7 @@
     {
       "label": "Large caps (Nifty 50)",
       "fund": [],
-      "pe": 19.1,
+      "pe": 19.2,
       "verdict": "Cheap",
       "score_pct": 0
     },
@@ -113,7 +113,7 @@
       "fund": [
         "JioBlackRock Flexi Cap"
       ],
-      "pe": 20.8,
+      "pe": 21.0,
       "verdict": "Cheap",
       "score_pct": 1
     },
@@ -122,16 +122,16 @@
       "fund": [
         "Mirae Asset Large & Midcap"
       ],
-      "pe": 21.8,
+      "pe": 22.0,
       "verdict": "Cheap",
       "score_pct": 2
     },
     {
       "label": "Midcaps (Nifty Midcap 150)",
       "fund": [],
-      "pe": 26.4,
+      "pe": 26.7,
       "verdict": "Below average",
-      "score_pct": 22
+      "score_pct": 24
     },
     {
       "label": "Small caps (Nifty Smallcap 250)",
@@ -152,7 +152,7 @@
   "watch": [
     "If the Market Mood rises above 70 (extreme greed) and small caps are expensive against their own history, stop lump sums and think about booking some profit.",
     "If it stays below 30, nothing changes: keep investing in stages. Recoveries from fear usually take months, not days.",
-    "If the Nifty closes back above its longer-term average (23,349) the trend has turned: invest any remaining instalments."
+    "If the Nifty closes back above its longer-term average (23,351) the trend has turned: invest any remaining instalments."
   ],
   "evidence": "How much to trust this: on the Nifty 50 since 2012, months when it looked cheap against its own history were followed by a median 12.4% a year over three years, against 15.7% after dear months. So cheap or dear has told us little about average returns. It did tell us about the bad cases: the worst one-year result after cheap months was -8%, after dear months -26%. Treat the signals above as a reason for patience and for spreading out new money, not as a forecast.",
   "disclaimer": "Educational analysis of public market data, not personalised or SEBI-registered investment advice. It cannot know your goals, time horizon or income. Markets can stay cheap or expensive for long periods."

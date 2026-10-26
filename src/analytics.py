@@ -538,6 +538,9 @@ def main() -> None:
     write_json("analytics.json", {
         "generated_at": ts.isoformat(), "risk_free_pct": rf, "portfolio_xirr_pct": portfolio_xirr,
         "portfolio_returns": portfolio_returns,
+        # dated money in (positive) per fund, so the page can work out XIRR from today's value and keep it moving; only funds whose logged flows match
+        "flows": {o["id"]: [[d.isoformat(), round(a, 2)] for d, a in sorted(txns[o["id"]])] for o in funds_out
+                  if txns.get(o["id"]) and (o.get("xirr") or {}).get("source") == "transactions"},
         "sector_exposure": sector_exposure(cfg, state, holdings, funda),
         "funds": funds_out,
     })

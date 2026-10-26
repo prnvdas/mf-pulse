@@ -1184,6 +1184,12 @@ function render(funds, meta) {
   // Nothing to estimate (holiday, weekend, or the NAVs are already in): show what the portfolio is worth, not a zero
   const flat = !waiting && (meta.phase === "holiday" || closedAllDay() || (!marketOpen() && Math.abs(impact) < 1));
   $("hero").classList.toggle("flat", flat);
+  // what the portfolio is worth right now, for the live XIRR: the estimate counts only while there is one
+  const estimating = !waiting && !flat && Math.abs(impact) > 0.5;
+  LIVEV = { total: estimating ? value + impact : value, fund: Object.fromEntries(funds.map(f => [f.id, estimating ? f.value + f.impact : f.value])),
+    end: estimating ? istDate(istNow()) : ((CFG.funds || []).reduce((m, f) => { const d = navIso(f.last_nav_date); return d > m ? d : m; }, "") || istDate(istNow())) };
+  const lx = liveXirr(), xsig = lx ? lx.total.toFixed(2) + "|" + lx.end : "";
+  if (xsig !== XSIG) { XSIG = xsig; safe(renderReturns, "retWrap"); }
   $("orb").hidden = false;
   if (flat) { $("pnl").textContent = inr(value); $("eyebrow").textContent = "Portfolio value · last close"; heroPill(); } else heroDial();
 
@@ -1862,28 +1868,57 @@ const cl = n => HIDE ? MASK : n >= 1e7 ? "₹" + (n / 1e7).toFixed(2).replace(/\
 const dshort = iso => iso ? new Date(iso + "T00:00:00").toLocaleDateString("en-IN", { month: "short", year: "numeric" }) : "—";
 const tile = (k, v, n, cls) => '<div><div class="k">' + k + '</div><div class="v ' + (cls || "") + '">' + v + '</div><div class="n">' + (n || "") + "</div></div>";
 
+// XIRR kept live: the yearly return counting when each rupee went in, worked out here from the dated money in (analytics.json "flows") and
+// today's value, so it moves with the market instead of waiting for the next Groww statement.
+let LIVEV = null, XSIG = "";
+const navIso = s => { const m = String(s || "").match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/), i = m ? "janfebmaraprmayjunjulaugsepoctnovdec".indexOf(m[2].toLowerCase()) / 3 : -1;   // "23-Oct-2026" -> "2026-10-23"
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(s || "")) ? String(s) : i >= 0 && Number.isInteger(i) ? m[3] + "-" + String(i + 1).padStart(2, "0") + "-" + m[1].padStart(2, "0") : ""; };
+function xirrOf(flows, endIso, endValue) {
+  const t0 = Date.parse(flows[0][0] + "T00:00:00"), day = iso => (Date.parse(iso + "T00:00:00") - t0) / 86400000 / 365, cf = flows.map(f => [day(f[0]), -f[1]]).concat([[day(endIso), endValue]]);
+  if (!(endValue > 0) || !cf.some(c => c[1] < 0)) return null;
+  const npv = r => cf.reduce((t, c) => t + c[1] / Math.pow(1 + r, c[0]), 0);
+  let lo = -0.95, hi = 10; if (npv(lo) * npv(hi) > 0) return null;
+  for (let i = 0; i < 100; i++) { const mid = (lo + hi) / 2; if (npv(lo) * npv(mid) <= 0) hi = mid; else lo = mid; }
+  return (lo + hi) / 2 * 100;
+}
+function liveXirr() {
+  const F = ANALYTICS && isObj(ANALYTICS.flows) ? ANALYTICS.flows : null, L = LIVEV;
+  if (!F || !L) return null;
+  const ids = Object.keys(L.fund);
+  if (!ids.length || !ids.every(id => Array.isArray(F[id]) && F[id].length && F[id].every(r => Array.isArray(r) && /^\d{4}-\d{2}-\d{2}$/.test(String(r[0])) && num(r[1])))) return null;
+  const all = ids.flatMap(id => F[id]).sort((a, b) => a[0] < b[0] ? -1 : 1), per = {};
+  ids.forEach(id => { per[id] = xirrOf(F[id].slice().sort((a, b) => a[0] < b[0] ? -1 : 1), L.end, L.fund[id]); });
+  const total = xirrOf(all, L.end, L.total);
+  if (total == null) return null;
+  const pts = PHIST && Array.isArray(PHIST.points) ? PHIST.points : [], lp = pts[pts.length - 1];
+  const nifty = lp && num(lp.n) && num(lp.v) && lp.d ? { x: xirrOf(all, lp.d, lp.n), mine: xirrOf(all, lp.d, lp.v), d: lp.d } : null;   // both at the last close, so they compare fairly
+  return { total, per, end: L.end, nifty };
+}
+
 function renderReturns() {
-  const A = ANALYTICS, wrap = $("retWrap"), P = A && A.portfolio_returns;
+  const A = ANALYTICS, wrap = $("retWrap"), P = A && A.portfolio_returns, LX = liveXirr();
   const funds = (A && A.funds || []).filter(f => f.xirr && f.xirr.pct != null);
   if (!A || (!P && !funds.length)) { wrap.hidden = true; if ($("trx")) $("trx").textContent = ""; return; }
   wrap.hidden = false;
-  const x = P && P.xirr_pct != null ? P.xirr_pct : A.portfolio_xirr_pct;
+  const x = LX ? LX.total : P && P.xirr_pct != null ? P.xirr_pct : A.portfolio_xirr_pct;
   if ($("trx")) $("trx").textContent = x != null ? "XIRR " + pcs(x, 2) + " a year" : "";
   const asOn = P && P.as_on ? new Date(P.as_on + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "";
-  $("retNote").textContent = asOn ? "as on " + asOn + " · from your Groww statement" : "";
+  $("retNote").textContent = LX ? "live · worked out from your transactions and today's value" : asOn ? "as on " + asOn + " · from your Groww statement" : "";
   let h = '<div class="hv" style="margin-top:6px"><b>XIRR in one line:</b> the yearly return that counts <i>when</i> each rupee went in. A fund you bought last month and one you have held for years can show the same total gain, but very different XIRRs. It is the fair way to compare your returns with an FD or an index.</div>';
   if (P && x != null) {
     const n50 = P.nifty50_same_flows_pct, fd = P.fd_pct;
     h += '<div class="acc four" style="margin-top:14px">' +
-      tile("Portfolio XIRR", pcs(x, 2), "a year, exact (Groww, " + asOn + ")", x >= 0 ? "pos" : "neg") +
+      tile("Portfolio XIRR", pcs(x, 2), LX ? "a year, live" + (P.xirr_pct != null ? ". Groww's figure on " + asOn + ": " + pcs(P.xirr_pct, 2) : "") : "a year, exact (Groww, " + asOn + ")", x >= 0 ? "pos" : "neg") +
       tile("Total return", pcs(P.absolute_pct, 2), inr(P.invested) + " put in → " + inr(P.value) + " now (ignores timing)", P.absolute_pct >= 0 ? "pos" : "neg") +
-      tile("Against the Nifty 50", n50 != null ? pcs(x - n50, 1) + " pts" : "—", n50 != null ? "same money on the same dates in the index would have earned ≈ " + pcs(n50, 1) + " a year (price index, no dividends)" : "needs more history", n50 != null && x - n50 >= 0 ? "pos" : "neg") +
+      (LX && LX.nifty && LX.nifty.x != null && LX.nifty.mine != null
+        ? tile("Against the Nifty 50", pcs(LX.nifty.mine - LX.nifty.x, 1) + " pts", "same money on the same dates in the index would have earned ≈ " + pcs(LX.nifty.x, 1) + " a year at the " + dmon(LX.nifty.d) + " close (price index, no dividends)", LX.nifty.mine - LX.nifty.x >= 0 ? "pos" : "neg")
+        : tile("Against the Nifty 50", n50 != null ? pcs(x - n50, 1) + " pts" : "—", n50 != null ? "same money on the same dates in the index would have earned ≈ " + pcs(n50, 1) + " a year (price index, no dividends)" : "needs more history", n50 != null && x - n50 >= 0 ? "pos" : "neg")) +
       tile("Against a fixed deposit", pcs(x - fd, 1) + " pts", "a " + fd + "% FD would have earned " + fd + "% a year on the same money", x - fd >= 0 ? "pos" : "neg") + "</div>";
   }
   if (funds.length) {
     const rows = [];
     funds.forEach(f => {
-      const xr = f.xirr, d = xr.bench_pct != null ? xr.pct - xr.bench_pct : null, gp = f.mine && f.mine.gain_pct;
+      const xr = LX && LX.per[f.id] != null ? { ...f.xirr, pct: LX.per[f.id] } : f.xirr, d = xr.bench_pct != null ? xr.pct - xr.bench_pct : null, gp = f.mine && f.mine.gain_pct;
       rows.push("<tr><td>" + esc(f.name.replace(" Direct Growth", "").replace(" Fund", "")) + "</td><td>" + (f.mine && f.mine.invested ? inr(f.mine.invested) : "—") + "</td><td>" + (f.mine && f.mine.value ? inr(f.mine.value) : "—") + "</td><td>" + (gp != null ? pcs(gp, 1) : "—") +
         '</td><td class="' + (xr.pct >= 0 ? "pos" : "neg") + '"><b>' + pcs(xr.pct, 1) + "</b>" + (xr.approx ? " ≈" : "") + "</td><td>" + (xr.bench_pct != null ? pcs(xr.bench_pct, 1) + " ≈" : "—") + '</td><td class="' + (d == null ? "" : d >= 0 ? "pos" : "neg") + '">' + (d != null ? pcs(d, 1) + " pts" : "—") + "</td></tr>");
       (f.folios || []).forEach(fo => rows.push('<tr class="subrow"><td>folio ' + esc(fo.label) + "</td><td>" + inr(fo.invested) + "</td><td>" + inr(fo.value) + "</td><td>" + pcs((fo.value / fo.invested - 1) * 100, 1) + "</td><td>" + (fo.xirr_pct != null ? pcs(fo.xirr_pct, 2) : "—") + " (Groww)</td><td></td><td></td></tr>"));

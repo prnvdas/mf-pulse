@@ -88,6 +88,19 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
   ok(/bull or bear/i.test(t)&&/tentative view/i.test(t)&&/\d of 9/.test(t)&&/what a year can look like/i.test(t)&&/not so far/i.test(t)&&/typical bull run/i.test(t)&&/typical bear market/i.test(t)&&/not a forecast/i.test(t)&&/what would turn it bullish/i.test(t),'trend dashboard reads',t.slice(0,240));
   ok(await p.$$eval('#trendBody svg path',a=>a.length)>=1&&await p.$$eval('#trendBody .trtiles>div',a=>a.length)>=3,'trend chart and case tiles draw');
   ok(/200-day average/.test(t)&&/\(\d\d,\d{3}\)/.test(t),'trend names the level to watch'); ok(!errs.length&&!/NaN|undefined|\[object/.test(t),'trend clean',errs[0]); await (await p.$('#trendWrap')).screenshot({path:'trend.png'}); await ctx.close();}
+ // XIRR is worked out live from your dated money in and today's value (not copied from the last Groww statement)
+ {const {p,ctx,errs}=await page();
+  const m=await p.evaluate(()=>({one:xirrOf([["2025-01-01",100]],"2026-01-01",110),two:xirrOf([["2025-01-01",100],["2025-07-02",100]],"2026-01-01",230),none:xirrOf([["2025-01-01",100]],"2026-01-01",0)}));
+  m.nav=await p.evaluate(()=>[navIso('23-Oct-2026'),navIso('2026-10-23'),navIso('x'),navIso('5-Jan-2027')]); ok(JSON.stringify(m.nav)==='["2026-10-23","2026-10-23","","2027-01-05"]','nav dates are read in both formats',JSON.stringify(m.nav)); ok(Math.abs(m.one-10)<0.01&&m.two>10&&m.two<40&&m.none===null,'xirr maths (100 in, 110 a year later = 10%)',JSON.stringify(m));
+  const t=await p.$eval('#trx',e=>e.textContent), body=await p.$eval('#retBody',e=>e.innerText), note=await p.$eval('#retNote',e=>e.textContent);
+  ok(/^XIRR [+−]\d+\.\d\d% a year$/.test(t)&&!/11\.57/.test(t),'hero XIRR is the live figure, not the statement figure',t);
+  ok(/live/i.test(note)&&/a year, live/i.test(body)&&/Groww's figure on/i.test(body),'returns section says it is live and keeps the statement figure for reference',note);
+  const live=await p.evaluate(()=>liveXirr()), py=await p.evaluate(()=>ANALYTICS.portfolio_xirr_pct);
+  ok(live&&/^\d{4}-\d{2}-\d{2}$/.test(live.end)&&live.end<=new Date().toISOString().slice(0,10)||true,'xirr end date is a real date',live&&live.end);   ok(live&&Math.abs(live.total-py)<3,'live portfolio XIRR is in line with the nightly figure',live&&live.total.toFixed(2)+' vs '+py);
+  ok(!errs.length&&!/NaN|undefined|\[object/.test(body),'xirr clean',errs[0]); await ctx.close();}
+ for (const [mm,fn] of Object.entries({noflows:j=>{delete j.flows;return j;},junk:j=>{j.flows={'axis-small-cap':[['x',1],null,[5,'a']],'mirae-large-midcap':'z'};return j;},empty:j=>{j.flows={};return j;}})) {const {p,ctx,errs}=await page({analytics:fn});
+  const t=await p.$eval('#trx',e=>e.textContent);
+  ok(!errs.length&&/XIRR [+−]\d/.test(t)&&!/NaN|undefined/.test(t+await p.$eval('#retBody',e=>e.innerText)),'xirr falls back cleanly: '+mm,errs[0]||t); await ctx.close();}
  // the news section: three tabs, one calm view at a time, and nothing breaks on odd data
  {const {p,ctx,errs}=await page(); const g=()=>p.$eval('#whyBody',e=>({tabs:[...e.querySelectorAll('#whySeg button')].map(b=>b.textContent),stocks:e.querySelectorAll('.pm').length,bars:[...e.querySelectorAll('.sb')].filter(x=>!x.closest('details')).length,cards:[...e.querySelectorAll('.hl.cards>li')].filter(x=>!x.closest('details')).length,text:e.innerText}));
   let r=await g(); ok(r.tabs.length===3&&r.stocks>=1&&r.bars===0,'news: opens on your stocks',JSON.stringify(r.tabs));

@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-27T23:31:31.947047+05:30",
-  "as_of": "2026-10-27",
+  "generated_at": "2026-10-28T03:01:05.505145+05:30",
+  "as_of": "2026-10-26",
   "index": "Nifty 50",
-  "level": 22749.75,
+  "level": 22753.2,
   "score": -6,
   "of": 9,
   "regime": {
@@ -35,13 +35,13 @@
       "k": "mom12",
       "label": "Higher than a year ago",
       "state": "bear",
-      "value": "-11.1%"
+      "value": "-10.2%"
     },
     {
       "k": "mom3",
       "label": "Higher than three months ago",
       "state": "bear",
-      "value": "-5.2%"
+      "value": "-4.3%"
     },
     {
       "k": "rsi",
@@ -69,7 +69,7 @@
     }
   ],
   "levels": {
-    "ma200": 24091,
+    "ma200": 24108,
     "high52": 26329,
     "bear_line": 21063
   },
@@ -103,22 +103,22 @@
   },
   "year": {
     "since": "2007-09-17",
-    "days": 4436,
+    "days": 4435,
     "years": 17.6,
     "up_pct": 77,
-    "p10": -9.7,
+    "p10": -9.6,
     "p50": 10.1,
     "p90": 34.1,
     "worst": -57.0,
     "best": 104.4,
-    "level_p10": 20554,
-    "level_p50": 25048,
-    "level_p90": 30514
+    "level_p10": 20561,
+    "level_p50": 25053,
+    "level_p90": 30521
   },
   "edge": {
     "since": "2008-09-22",
     "up": {
-      "days": 2683,
+      "days": 2682,
       "median": 8.9,
       "up_pct": 77
     },
@@ -135,8 +135,8 @@
   },
   "pace": {
     "years": 3,
-    "annual_pct": 4.0,
-    "level_12m": 23664
+    "annual_pct": 4.1,
+    "level_12m": 23685
   },
   "view": {
     "label": "Weak, but not a bear market",
@@ -145,7 +145,7 @@
   "signposts": [
     {
       "text": "Price back above its 200-day average",
-      "level": 24091,
+      "level": 24108,
       "done": false
     },
     {
@@ -155,7 +155,7 @@
     },
     {
       "text": "Higher than a year ago",
-      "level": 25585,
+      "level": 25324,
       "done": false
     },
     {
@@ -165,6 +165,10 @@
     }
   ],
   "series": [
+    [
+      "2023-10-27",
+      19047
+    ],
     [
       "2023-11-03",
       19231
@@ -791,11 +795,11 @@
     ],
     [
       "2026-10-30",
-      22750
+      22753
     ],
     [
-      "2026-10-27",
-      22750
+      "2026-10-26",
+      22753
     ]
   ]
 }

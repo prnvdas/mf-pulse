@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-27T13:13:21.679159+05:30",
+  "generated_at": "2026-10-27T13:53:17.392522+05:30",
   "as_of": "2026-10-27",
   "index": "Nifty 50",
-  "level": 22713.1,
+  "level": 22706.45,
   "score": -6,
   "of": 9,
   "regime": {
@@ -10,7 +10,7 @@
     "label": "Downtrend"
   },
   "stretched": false,
-  "drawdown_pct": -13.7,
+  "drawdown_pct": -13.8,
   "rsi": 45.0,
   "signals": [
     {
@@ -35,13 +35,13 @@
       "k": "mom12",
       "label": "Higher than a year ago",
       "state": "bear",
-      "value": "-11.2%"
+      "value": "-11.3%"
     },
     {
       "k": "mom3",
       "label": "Higher than three months ago",
       "state": "bear",
-      "value": "-5.3%"
+      "value": "-5.4%"
     },
     {
       "k": "rsi",
@@ -59,7 +59,7 @@
       "k": "high",
       "label": "Within 10% of the 52-week high",
       "state": "neutral",
-      "value": "-13.7%"
+      "value": "-13.8%"
     },
     {
       "k": "n500",
@@ -111,9 +111,9 @@
     "p90": 34.1,
     "worst": -57.0,
     "best": 104.4,
-    "level_p10": 20521,
-    "level_p50": 25008,
-    "level_p90": 30465
+    "level_p10": 20515,
+    "level_p50": 25001,
+    "level_p90": 30456
   },
   "edge": {
     "since": "2008-09-22",
@@ -136,7 +136,7 @@
   "pace": {
     "years": 3,
     "annual_pct": 4.0,
-    "level_12m": 23626
+    "level_12m": 23619
   },
   "view": {
     "label": "Weak, but not a bear market",
@@ -791,11 +791,11 @@
     ],
     [
       "2026-10-30",
-      22713
+      22706
     ],
     [
       "2026-10-27",
-      22713
+      22706
     ]
   ]
 }

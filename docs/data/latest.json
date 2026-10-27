@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-27T21:30:18.822913+05:30",
-  "generated_label": "27 Oct 2026, 21:30 IST",
+  "generated_at": "2026-10-27T21:33:27.432356+05:30",
+  "generated_label": "27 Oct 2026, 21:33 IST",
   "stale": false,
   "phase": "final",
   "market_open": false,
@@ -9,9 +9,9 @@
     "invested": 8400002.53,
     "total_returns": 1692760.99,
     "total_returns_pct": 20.15,
-    "today_impact": 121409.95,
-    "today_pct": 1.203,
-    "band_rupees": 7267.0
+    "today_impact": 120284.06,
+    "today_pct": 1.192,
+    "band_rupees": 7006.0
   },
   "funds": [
     {
@@ -19,18 +19,18 @@
       "name": "Axis Small Cap Fund Direct Growth",
       "current_value": 5029725.39,
       "invested": 4124793.89,
-      "nav_move_pct": 1.82,
-      "rupee_impact": 91561.51,
+      "nav_move_pct": 1.798,
+      "rupee_impact": 90435.62,
       "last_nav": 125.48,
-      "projected_nav": 127.7642,
-      "band_rupees": 5388.0,
-      "coverage_pct": 85.6,
+      "projected_nav": 127.7362,
+      "band_rupees": 5030.0,
+      "coverage_pct": 86.6,
       "cash_pct": 13.41,
-      "tail_pct": 1.0,
+      "tail_pct": 0.0,
       "tail_move_pct": 2.19,
       "holdings_as_of": "2026-10-12",
       "holdings_count": 119,
-      "priced_count": 118,
+      "priced_count": 119,
       "top_contributors": [
         {
           "name": "Avalon Technologies Ltd.",
@@ -501,18 +501,18 @@
       }
     ],
     "breadth": {
-      "up": 194,
+      "up": 195,
       "down": 66,
-      "total": 260
+      "total": 261
     },
-    "portfolio_pct": 1.203,
-    "portfolio_impact": 121410,
+    "portfolio_pct": 1.192,
+    "portfolio_impact": 120284,
     "funds": [
       {
         "id": "axis-small-cap",
         "name": "Axis Small Cap Fund Direct Growth",
-        "nav_move_pct": 1.82,
-        "impact": 91562
+        "nav_move_pct": 1.798,
+        "impact": 90436
       },
       {
         "id": "mirae-large-midcap",
@@ -574,20 +574,20 @@
       "level": 109.49,
       "change": -0.22,
       "move_pct": -0.2,
-      "as_of": "2026-10-27T21:20:33+05:30"
+      "as_of": "2026-10-27T21:23:41+05:30"
     }
   ],
   "breadth": {
-    "up": 194,
+    "up": 195,
     "down": 66,
-    "total": 260
+    "total": 261
   },
   "health": {
     "status": "ok",
     "issues": [],
-    "checked_at": "2026-10-27T21:30:37.131105+05:30",
+    "checked_at": "2026-10-27T21:33:42.786370+05:30",
     "repaired": 0,
-    "gap": 1,
+    "gap": 0,
     "ignored": 0
   },
   "accuracy": {
@@ -616,6 +616,6 @@
       }
     }
   },
-  "tickers_resolved": 263,
+  "tickers_resolved": 264,
   "tickers_total": 264
 }

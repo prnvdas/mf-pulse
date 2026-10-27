@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-27T21:30:38.782616+05:30",
+  "generated_at": "2026-10-27T21:34:05.460870+05:30",
   "market": [
     {
       "title": "OneSource Specialty Pharma shares jump 14% after Q2 results; recover 50% from recent lows",
@@ -187,7 +187,7 @@
     "date": "2026-10-27",
     "direction": "flat",
     "title": "How the market did today",
-    "summary": "The Nifty was flat \u22120.02%, led by Media (+3.7%), Realty (+1.9%). Notable global and macro moves: Brent crude \u22125.6%.",
+    "summary": "The Nifty was flat \u22120.02%, led by Media (+3.7%), Realty (+1.9%). FPIs (foreign investors) bought \u20b94,240 cr while DIIs sold \u20b91,250 cr (net, provisional, per Moneycontrol). Notable global and macro moves: Brent crude \u22125.5%.",
     "points": [
       {
         "kind": "fact",
@@ -199,7 +199,7 @@
       },
       {
         "kind": "fact",
-        "text": "A mixed day: 194 of your funds' stocks rose and 66 fell."
+        "text": "A mixed day: 195 of your funds' stocks rose and 66 fell."
       },
       {
         "kind": "fact",
@@ -211,7 +211,7 @@
       },
       {
         "kind": "fact",
-        "text": "Estimated effect on your funds: Axis Small Cap +1.82%, Mirae Asset Large & Midcap +0.59%, JioBlackRock Flexi Cap +0.66%. In total your portfolio moved about +\u20b91.2L (+1.20%)."
+        "text": "Estimated effect on your funds: Axis Small Cap +1.80%, Mirae Asset Large & Midcap +0.59%, JioBlackRock Flexi Cap +0.66%. In total your portfolio moved about +\u20b91.2L (+1.19%)."
       },
       {
         "kind": "fact",
@@ -357,7 +357,13 @@
       }
     ],
     "breadth": null,
-    "flows": null,
+    "flows": {
+      "date": "2026-10-27",
+      "source": "Moneycontrol",
+      "fii": 4240.0,
+      "dii": -1250.0,
+      "fii_index_futures": -2849.0
+    },
     "macro": [
       {
         "name": "S&P 500 (overnight)",
@@ -369,18 +375,9 @@
         "date": "2026-10-26"
       },
       {
-        "name": "Hang Seng",
-        "level": 23041.32,
-        "pct": -0.73,
-        "unit": "",
-        "notable": false,
-        "z": -0.6,
-        "date": "2026-10-27"
-      },
-      {
         "name": "Brent crude",
-        "level": 109.31,
-        "pct": -5.61,
+        "level": 109.5,
+        "pct": -5.45,
         "unit": "$",
         "notable": true,
         "z": -2.4,
@@ -574,11 +571,18 @@
     ],
     "sources_ok": {
       "Sectors": true,
-      "FII/DII flows": false,
+      "FII/DII flows": true,
       "Yahoo macro": true,
       "Company news": true,
       "Market-wrap news": true
     },
-    "rich_at": "2026-10-27T15:51:21.713918+00:00"
+    "trace": {
+      "nse_session": "blocked or unreachable",
+      "nse_sectors": false,
+      "nse_flows": false,
+      "moneycontrol_flows": true,
+      "nse_archive_sectors": true
+    },
+    "rich_at": "2026-10-27T16:03:43.511239+00:00"
   }
 }

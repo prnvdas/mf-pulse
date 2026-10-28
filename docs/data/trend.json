@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-28T09:15:40.152882+05:30",
+  "generated_at": "2026-10-28T13:50:13.618150+05:30",
   "as_of": "2026-10-28",
   "index": "Nifty 50",
-  "level": 22598.75,
+  "level": 22723.75,
   "score": -6,
   "of": 9,
   "regime": {
@@ -10,14 +10,14 @@
     "label": "Downtrend"
   },
   "stretched": false,
-  "drawdown_pct": -14.2,
-  "rsi": 43.0,
+  "drawdown_pct": -13.7,
+  "rsi": 45.0,
   "signals": [
     {
       "k": "above200",
       "label": "Price above its 200-day average",
       "state": "bear",
-      "value": "-6.1%"
+      "value": "-5.6%"
     },
     {
       "k": "cross",
@@ -35,19 +35,19 @@
       "k": "mom12",
       "label": "Higher than a year ago",
       "state": "bear",
-      "value": "-12.1%"
+      "value": "-11.6%"
     },
     {
       "k": "mom3",
       "label": "Higher than three months ago",
       "state": "bear",
-      "value": "-5.8%"
+      "value": "-5.3%"
     },
     {
       "k": "rsi",
       "label": "Momentum (RSI) above 50",
       "state": "bear",
-      "value": "43"
+      "value": "45"
     },
     {
       "k": "macd",
@@ -59,7 +59,7 @@
       "k": "high",
       "label": "Within 10% of the 52-week high",
       "state": "neutral",
-      "value": "-14.2%"
+      "value": "-13.7%"
     },
     {
       "k": "n500",
@@ -84,7 +84,7 @@
         "start": "2020-03-23",
         "end": "2026-01-02",
         "gain_pct": 246,
-        "now_pct": 197,
+        "now_pct": 199,
         "ongoing": true
       }
     },
@@ -111,9 +111,9 @@
     "p90": 34.1,
     "worst": -57.0,
     "best": 104.4,
-    "level_p10": 20413,
-    "level_p50": 24881,
-    "level_p90": 30310
+    "level_p10": 20526,
+    "level_p50": 25018,
+    "level_p90": 30477
   },
   "edge": {
     "since": "2008-09-22",
@@ -136,7 +136,7 @@
   "pace": {
     "years": 3,
     "annual_pct": 4.0,
-    "level_12m": 23500
+    "level_12m": 23630
   },
   "view": {
     "label": "Weak, but not a bear market",
@@ -791,11 +791,11 @@
     ],
     [
       "2026-10-30",
-      22599
+      22724
     ],
     [
       "2026-10-28",
-      22599
+      22724
     ]
   ]
 }

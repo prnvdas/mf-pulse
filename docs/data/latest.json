@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-28T22:43:05.495655+05:30",
-  "generated_label": "28 Oct 2026, 22:43 IST",
+  "generated_at": "2026-10-28T22:52:05.850573+05:30",
+  "generated_label": "28 Oct 2026, 22:52 IST",
   "stale": false,
   "phase": "final",
   "market_open": false,
@@ -9,7 +9,7 @@
     "invested": 8400002.53,
     "total_returns": 1812255.19,
     "total_returns_pct": 21.57,
-    "today_impact": 25320.11,
+    "today_impact": 25306.48,
     "today_pct": 0.248,
     "band_rupees": 7090.0
   },
@@ -171,18 +171,18 @@
       "name": "JioBlackRock Flexi Cap Fund Direct Growth",
       "current_value": 190169.3,
       "invested": 200340.66,
-      "nav_move_pct": -0.181,
-      "rupee_impact": -344.15,
+      "nav_move_pct": -0.188,
+      "rupee_impact": -357.78,
       "last_nav": 9.377,
-      "projected_nav": 9.36,
-      "band_rupees": 176.0,
-      "coverage_pct": 95.0,
+      "projected_nav": 9.3594,
+      "band_rupees": 178.0,
+      "coverage_pct": 94.8,
       "cash_pct": 6.22,
       "tail_pct": 0.0,
       "tail_move_pct": -0.03,
       "holdings_as_of": "2026-10-12",
       "holdings_count": 127,
-      "priced_count": 127,
+      "priced_count": 126,
       "top_contributors": [
         {
           "name": "Reliance Industries Ltd",
@@ -502,12 +502,12 @@
       }
     ],
     "breadth": {
-      "up": 136,
+      "up": 135,
       "down": 124,
-      "total": 261
+      "total": 260
     },
     "portfolio_pct": 0.248,
-    "portfolio_impact": 25320,
+    "portfolio_impact": 25306,
     "funds": [
       {
         "id": "axis-small-cap",
@@ -524,8 +524,8 @@
       {
         "id": "jioblackrock-flexicap",
         "name": "JioBlackRock Flexi Cap Fund Direct Growth",
-        "nav_move_pct": -0.181,
-        "impact": -344
+        "nav_move_pct": -0.188,
+        "impact": -358
       }
     ]
   },
@@ -572,23 +572,23 @@
       "name": "Brent crude",
       "ticker": "BZ=F",
       "unit": "$",
-      "level": 112.08,
-      "change": 1.24,
-      "move_pct": 1.12,
-      "as_of": "2026-10-28T22:33:25+05:30"
+      "level": 111.83,
+      "change": 0.99,
+      "move_pct": 0.89,
+      "as_of": "2026-10-28T22:42:24+05:30"
     }
   ],
   "breadth": {
-    "up": 136,
+    "up": 135,
     "down": 124,
-    "total": 261
+    "total": 260
   },
   "health": {
     "status": "ok",
     "issues": [],
-    "checked_at": "2026-10-28T22:43:25.944469+05:30",
+    "checked_at": "2026-10-28T22:52:29.343085+05:30",
     "repaired": 0,
-    "gap": 0,
+    "gap": 1,
     "ignored": 0
   },
   "accuracy": {
@@ -617,6 +617,6 @@
       }
     }
   },
-  "tickers_resolved": 264,
+  "tickers_resolved": 263,
   "tickers_total": 264
 }

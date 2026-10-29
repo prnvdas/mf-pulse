@@ -1444,5 +1444,47 @@
     "data_health": "ok",
     "band_rupees": 178.0,
     "actual_pl_rupees": -577.99
+  },
+  {
+    "date": "2026-10-29",
+    "fund_id": "axis-small-cap",
+    "predicted_pct": 0.531,
+    "actual_pct": 0.561,
+    "error_pct": 0.03,
+    "direction_hit": true,
+    "predicted_nav": 129.051,
+    "actual_nav": 129.09,
+    "predicted_pl_rupees": 27297.79,
+    "data_health": "ok",
+    "band_rupees": 5146.0,
+    "actual_pl_rupees": 28860.39
+  },
+  {
+    "date": "2026-10-29",
+    "fund_id": "mirae-large-midcap",
+    "predicted_pct": 0.611,
+    "actual_pct": 0.656,
+    "error_pct": 0.045,
+    "direction_hit": true,
+    "predicted_nav": 166.8626,
+    "actual_nav": 166.938,
+    "predicted_pl_rupees": 29951.44,
+    "data_health": "ok",
+    "band_rupees": 4904.0,
+    "actual_pl_rupees": 32181.29
+  },
+  {
+    "date": "2026-10-29",
+    "fund_id": "jioblackrock-flexicap",
+    "predicted_pct": 0.499,
+    "actual_pct": 0.589,
+    "error_pct": 0.09,
+    "direction_hit": true,
+    "predicted_nav": 9.3951,
+    "actual_nav": 9.4036,
+    "predicted_pl_rupees": 945.22,
+    "data_health": "ok",
+    "band_rupees": 175.0,
+    "actual_pl_rupees": 1117.45
   }
 ]

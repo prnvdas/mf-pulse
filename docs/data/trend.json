@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-30T14:01:43.057867+05:30",
+  "generated_at": "2026-10-30T14:31:20.660876+05:30",
   "as_of": "2026-10-30",
   "index": "Nifty 50",
-  "level": 23003.75,
+  "level": 23062.25,
   "score": -4,
   "of": 9,
   "regime": {
@@ -10,14 +10,14 @@
     "label": "Downtrend"
   },
   "stretched": false,
-  "drawdown_pct": -12.6,
-  "rsi": 52.0,
+  "drawdown_pct": -12.4,
+  "rsi": 54.0,
   "signals": [
     {
       "k": "above200",
       "label": "Price above its 200-day average",
       "state": "bear",
-      "value": "-4.3%"
+      "value": "-4.1%"
     },
     {
       "k": "cross",
@@ -35,19 +35,19 @@
       "k": "mom12",
       "label": "Higher than a year ago",
       "state": "bear",
-      "value": "-11.1%"
+      "value": "-10.8%"
     },
     {
       "k": "mom3",
       "label": "Higher than three months ago",
       "state": "bear",
-      "value": "-5.4%"
+      "value": "-5.2%"
     },
     {
       "k": "rsi",
       "label": "Momentum (RSI) above 50",
       "state": "bull",
-      "value": "52"
+      "value": "54"
     },
     {
       "k": "macd",
@@ -59,7 +59,7 @@
       "k": "high",
       "label": "Within 10% of the 52-week high",
       "state": "neutral",
-      "value": "-12.6%"
+      "value": "-12.4%"
     },
     {
       "k": "n500",
@@ -84,7 +84,7 @@
         "start": "2020-03-23",
         "end": "2026-01-02",
         "gain_pct": 246,
-        "now_pct": 202,
+        "now_pct": 203,
         "ongoing": true
       }
     },
@@ -111,9 +111,9 @@
     "p90": 34.1,
     "worst": -57.0,
     "best": 104.4,
-    "level_p10": 20766,
-    "level_p50": 25321,
-    "level_p90": 30848
+    "level_p10": 20819,
+    "level_p50": 25385,
+    "level_p90": 30927
   },
   "edge": {
     "since": "2008-09-22",
@@ -136,7 +136,7 @@
   "pace": {
     "years": 3,
     "annual_pct": 3.9,
-    "level_12m": 23898
+    "level_12m": 23959
   },
   "view": {
     "label": "Weak, but not a bear market",
@@ -791,7 +791,7 @@
     ],
     [
       "2026-10-30",
-      23004
+      23062
     ]
   ]
 }

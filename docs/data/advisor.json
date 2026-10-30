@@ -8,7 +8,7 @@
   "chips": [
     {
       "label": "Market mood",
-      "value": "50 \u00b7 fear",
+      "value": "50 \u00b7 greed",
       "effect": "="
     },
     {
@@ -28,11 +28,11 @@
     },
     {
       "label": "Trend",
-      "value": "1.2% below average",
+      "value": "1.0% below average",
       "effect": "="
     }
   ],
-  "generated_at": "2026-10-30T14:01:41.999324+05:30",
+  "generated_at": "2026-10-30T14:31:19.862311+05:30",
   "mood_as_of": "2026-10-30",
   "stance": "Hold and keep your SIPs running",
   "stance_key": "hold",
@@ -47,9 +47,9 @@
     {
       "key": "mood",
       "title": "Market mood",
-      "value": "50 \u00b7 Fear",
+      "value": "50 \u00b7 Greed",
       "effect": "=",
-      "text": "The Market Mood Index (Tickertape Market Mood Index) reads 50 of 100: fear. It was 15 a month ago and 79 a year ago. Investors often get most nervous near market lows and most confident near highs, so fear is usually the better time to invest and greed the time to be careful. That is a tendency, not a promise."
+      "text": "The Market Mood Index (Tickertape Market Mood Index) reads 50 of 100: greed. It was 15 a month ago and 79 a year ago. Investors often get most nervous near market lows and most confident near highs, so fear is usually the better time to invest and greed the time to be careful. That is a tendency, not a promise."
     },
     {
       "key": "val_axis-small-cap",
@@ -75,9 +75,9 @@
     {
       "key": "trend",
       "title": "Trend",
-      "value": "Nifty -1.2% vs its long average",
+      "value": "Nifty -1.0% vs its long average",
       "effect": "=",
-      "text": "The Nifty (23,016) is 1.2% below its longer-term average (23,294) and 0.7% above its shorter-term one."
+      "text": "The Nifty (23,055) is 1.0% below its longer-term average (23,295) and 0.8% above its shorter-term one."
     },
     {
       "key": "you",
@@ -152,7 +152,7 @@
   "watch": [
     "If the Market Mood rises above 70 (extreme greed) and small caps are expensive against their own history, stop lump sums and think about booking some profit.",
     "If it stays below 30, nothing changes: keep investing in stages. Recoveries from fear usually take months, not days.",
-    "If the Nifty closes back above its longer-term average (23,294) the trend has turned: invest any remaining instalments."
+    "If the Nifty closes back above its longer-term average (23,295) the trend has turned: invest any remaining instalments."
   ],
   "evidence": "How much to trust this: on the Nifty 50 since 2012, months when it looked cheap against its own history were followed by a median 12.4% a year over three years, against 15.7% after dear months. So cheap or dear has told us little about average returns. It did tell us about the bad cases: the worst one-year result after cheap months was -8%, after dear months -26%. Treat the signals above as a reason for patience and for spreading out new money, not as a forecast.",
   "disclaimer": "Educational analysis of public market data, not personalised or SEBI-registered investment advice. It cannot know your goals, time horizon or income. Markets can stay cheap or expensive for long periods."

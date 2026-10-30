@@ -1,6 +1,12 @@
 {
-  "generated_at": "2026-10-30T22:40:29.656657+05:30",
+  "generated_at": "2026-10-30T23:31:36.638870+05:30",
   "market": [
+    {
+      "title": "Intel stock plunges 30% as weak PC demand and AI costs trigger global chip selloff",
+      "link": "https://economictimes.indiatimes.com/markets/us-stocks/wall-street-guide/intel-plunges-25-as-weak-pc-demand-and-ai-costs-trigger-global-chip-selloff/articleshow/135371230.cms",
+      "source": "Economic Times",
+      "published": "2026-10-30T17:07:17+00:00"
+    },
     {
       "title": "Reddit shares crash 29% after weak Q4 outlook, Google search traffic concerns; set for worst-ever 1-day fall",
       "link": "https://www.livemint.com/market/stock-market-news/reddit-shares-crash-29-after-weak-q4-outlook-google-search-traffic-concerns-set-for-worst-ever-1-day-fall-11793378522940.html",
@@ -174,12 +180,6 @@
       "link": "https://economictimes.indiatimes.com/markets/stocks/news/market-wrap-shriram-finance-nestle-india-trent-interglobe-top-gainers-and-losers-on-nifty-and-sensex-on-friday/articleshow/135357312.cms",
       "source": "Economic Times",
       "published": "2026-10-30T10:56:50+00:00"
-    },
-    {
-      "title": "Sensex, Nifty Rise; IT & Pharma Lift Markets as Midcaps Slide",
-      "link": "https://news.google.com/rss/articles/CBMisgFBVV95cUxOajFHdFZlZGo5cUk0dWJ3V1E4c2dCUFlBVFVMZV8wYklSQzVtUEJKRDZVSFhIdHRIUDUyZGlHc1ZWVC12bGwzMTFtSEpqdWdpYmowZmRqQ2ttVWVuaDRVOTh4b05lUVBQR2JYeUNjWDRjcjRMWExJSEFhV2lKRFRoUUVmaWFtSDBYdjBldjI2NWdYUlBHZXpUX1FRVXpwaXZucGpuQWlRLWxrdkJoWmRRblNR?oc=5",
-      "source": "HDFC Sky",
-      "published": "2026-10-30T10:53:33+00:00"
     }
   ],
   "why": {
@@ -362,7 +362,8 @@
       "source": "Moneycontrol",
       "fii": 3599.0,
       "dii": -818.0,
-      "fii_index_futures": -448.0
+      "fii_index_futures": -448.0,
+      "from_cache": true
     },
     "macro": [
       {
@@ -376,11 +377,11 @@
       },
       {
         "name": "Brent crude",
-        "level": 113.64,
-        "pct": -1.08,
+        "level": 113.82,
+        "pct": -0.92,
         "unit": "$",
         "notable": false,
-        "z": -0.6,
+        "z": -0.5,
         "date": "2026-10-30"
       },
       {
@@ -494,16 +495,16 @@
         ],
         "headlines": [
           {
-            "title": "HDFC Bank stock gains 2.83% since latest report as CEO begins term - ad-hoc-news.de",
-            "source": "Google News",
-            "link": "https://news.google.com/rss/articles/CBMixwFBVV95cUxPSDJTaGRWcGVFek5MSFZ4UFlsUGpDUGtCcy1OaXliQ04tS3paMDR6UzRUSERUT0RPNlJLRDZfVEU0Ykl5YXpmdkdmRTFUdVI2LWpYZWJjeUwtZGFRNTE5SG1OdktoU1o0LUVPTERlRzlGVmwxWFlEcGh3R3FzR1BVM0p4b1NNSW42MHVOSUhSOGdUYUVSQ0dBWmk4V0hwVi10SHM5QmNEdTJjRHNvSUJqZ2pNNHZTaGRIQ3JYMktSQXBSeEtGRUtj?oc=5",
-            "published": "2026-10-30T14:55:43+00:00"
-          },
-          {
             "title": "SENSEX rises over 300 points, NIFTY50 reclaims 23,000 led by Infosys, HDFC Bank",
             "source": "Upstox",
             "link": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxPTk9VQTZLWUZyMGV6cUljWFdOWVA2dDdQS2REblhPM2YwcmV6cmp1Sk1ZODhGVzBJUlhrX1h2TFZ6U0VVc0FsWlQyV1h2RWFkOWNnTU5hd21ubmlmMHdrak9vNFJhaXBQUzV4SjhwMDJOWEtrTXBzenZ2RGt6OWVMbzlEd0ZFbFFVZmVqX1NLWlVUTFF2QmJkbllOdkc2NDZzbWphdW5ULW5wck52Yk9aX0syWjBvdjVPb1ZoQmJiWGwtSnhBa2E4a1VjN09PY3lpdnFn?oc=5",
             "published": "2026-10-30T10:22:49+00:00"
+          },
+          {
+            "title": "Ashoka WhiteOak Capital Pte Ltd Buys 49,520 Shares of HDFC Bank Limited $HDB",
+            "source": "MarketBeat",
+            "link": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxPV1VUSThtaGwwaDZ2TmNXOUZHdXlYOU91TnU1Q1NqUWh3ekktVUhlOUlSOGRnRE05QXBjNnl3X0ZMbHBERDBJZWdZUE8yUjdBc09ZMXB2YjlzR0dsUjdXZW5xWXFwMlFwNFJ1Nkg2cVhzTGU1eWVyUEhISDMteEJCMTVKanEzZE91TV85dG81bkRwUGhLQmJZMlYzTGVHOEJVZl9RN0d1ajZjUzdSZ2syNWtLcVZBbnAwU29KeWtUUlRqbHp1Wmx3RnktaERFX1Yt?oc=5",
+            "published": "2026-10-30T07:07:33+00:00"
           }
         ]
       },
@@ -589,6 +590,14 @@
       "Company news": true,
       "Market-wrap news": true
     },
-    "rich_at": "2026-10-30T16:40:38.768689+00:00"
+    "trace": {
+      "nse_session": "blocked or unreachable",
+      "nse_sectors": false,
+      "nse_flows": false,
+      "moneycontrol_flows": false,
+      "flows_cache": true,
+      "nse_archive_sectors": true
+    },
+    "rich_at": "2026-10-30T18:01:15.043552+00:00"
   }
 }

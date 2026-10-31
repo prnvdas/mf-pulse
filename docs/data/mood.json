@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-31T20:11:07.302834+05:30",
+  "generated_at": "2026-11-01T00:15:14.936235+05:30",
   "mood": {
     "source": "Tickertape Market Mood Index",
     "value": 50.4,
@@ -24,17 +24,17 @@
       "pe": 19.3,
       "pb": 2.83,
       "div_yield": 1.42,
-      "median_pe": 23.2,
+      "median_pe": 23.1,
       "premium_pct": -17.0,
-      "pct_5y": 0,
-      "pct_10y": 0,
-      "pct_all": 2,
+      "pct_5y": 2,
+      "pct_10y": 1,
+      "pct_all": 3,
       "since": "2012-12",
-      "samples": 133,
+      "samples": 134,
       "pb_pct": 4,
       "dy_pct": 89,
       "verdict": "Cheap",
-      "score_pct": 0,
+      "score_pct": 1,
       "mine": []
     },
     {
@@ -45,15 +45,15 @@
       "div_yield": 1.24,
       "median_pe": 27.6,
       "premium_pct": -21.0,
-      "pct_5y": 2,
-      "pct_10y": 2,
-      "pct_all": 2,
+      "pct_5y": 3,
+      "pct_10y": 3,
+      "pct_all": 3,
       "since": "2017-11",
-      "samples": 107,
-      "pb_pct": 21,
+      "samples": 108,
+      "pb_pct": 22,
       "dy_pct": 76,
       "verdict": "Cheap",
-      "score_pct": 2,
+      "score_pct": 3,
       "mine": [
         "Mirae Asset Large & Midcap Fund Direct Growth"
       ]
@@ -64,17 +64,17 @@
       "pe": 26.3,
       "pb": 3.69,
       "div_yield": 1.03,
-      "median_pe": 33.4,
+      "median_pe": 33.2,
       "premium_pct": -21.0,
-      "pct_5y": 25,
+      "pct_5y": 27,
       "pct_10y": 16,
       "pct_all": 15,
       "since": "2016-04",
-      "samples": 122,
-      "pb_pct": 62,
+      "samples": 123,
+      "pb_pct": 63,
       "dy_pct": 69,
       "verdict": "Below average",
-      "score_pct": 21,
+      "score_pct": 22,
       "mine": []
     },
     {
@@ -87,13 +87,13 @@
       "premium_pct": -3.0,
       "pct_5y": 75,
       "pct_10y": 46,
-      "pct_all": 45,
+      "pct_all": 46,
       "since": "2016-04",
-      "samples": 115,
-      "pb_pct": 58,
+      "samples": 116,
+      "pb_pct": 59,
       "dy_pct": 34,
       "verdict": "Fair",
-      "score_pct": 60,
+      "score_pct": 61,
       "mine": [
         "Axis Small Cap Fund Direct Growth"
       ]
@@ -104,17 +104,17 @@
       "pe": 21.0,
       "pb": 3.07,
       "div_yield": 1.28,
-      "median_pe": 26.1,
+      "median_pe": 25.9,
       "premium_pct": -19.0,
-      "pct_5y": 2,
-      "pct_10y": 1,
-      "pct_all": 11,
+      "pct_5y": 3,
+      "pct_10y": 2,
+      "pct_all": 12,
       "since": "2013-02",
-      "samples": 164,
-      "pb_pct": 29,
-      "dy_pct": 63,
+      "samples": 165,
+      "pb_pct": 30,
+      "dy_pct": 64,
       "verdict": "Cheap",
-      "score_pct": 1,
+      "score_pct": 2,
       "mine": [
         "JioBlackRock Flexi Cap Fund Direct Growth"
       ]
@@ -124,13 +124,13 @@
   "valuation_backtest": {
     "index": "Nifty 50",
     "from": "2012-12",
-    "to": "2026-09",
+    "to": "2026-10",
     "buckets": [
       {
         "bucket": "Cheapest third",
-        "months": 50,
+        "months": 51,
         "median_1y": 10.5,
-        "median_3y": 12.4,
+        "median_3y": 12.1,
         "worst_1y": -8.1,
         "best_1y": 70.9,
         "worst_3y": 4.8,
@@ -139,12 +139,12 @@
       {
         "bucket": "Middle third",
         "months": 19,
-        "median_1y": 4.5,
+        "median_1y": 3.7,
         "median_3y": 14.7,
-        "worst_1y": -6.5,
+        "worst_1y": -10.4,
         "best_1y": 52.6,
         "worst_3y": 7.3,
-        "positive_1y_pct": 69
+        "positive_1y_pct": 65
       },
       {
         "bucket": "Dearest third",

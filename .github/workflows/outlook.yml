@@ -36,6 +36,11 @@ jobs:
         continue-on-error: true
         timeout-minutes: 3
         run: python src/gift.py
+      # Work the outlook out again on the fresh GIFT snapshot, so the call and the quote shown next to it agree (gift.yml does the same).
+      - name: Outlook (fresh GIFT snapshot)
+        continue-on-error: true
+        timeout-minutes: 6
+        run: python src/outlook.py
       # Market mood, valuation and the "buy or sell today?" read (public data; each step non-blocking).
       - name: Market mood, valuation and advice
         continue-on-error: true

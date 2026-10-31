@@ -1629,6 +1629,9 @@ function giftInfo() {
   return { gap, word, last: g.last, t, own: g.change_pct };
 }
 
+// The range narrowed with GIFT Nifty is shown only after it has held its stated 70% in live use (at least 20 sessions, 60% or better).
+// So far it has held 7 of 14, while the plain range held 10 of 14, so the plain range is the one shown until the narrowed one earns its place.
+function giftRangeProven(rec) { const g = rec && rec.gift; return !!(g && num(g.sessions) && g.sessions >= 20 && num(g.range_70_pct) && g.range_70_pct >= 60); }
 function renderOutlook() {
   const box = $("bOutlook"), o = OUTLOOK;
   if (!o || !o.nifty) { box.hidden = true; return; }
@@ -1647,7 +1650,7 @@ function renderOutlook() {
 
   // GIFT Nifty: the client-side reading (G) and, when it is the same snapshot, the server's adjusted range (ga)
   const G = giftInfo();
-  const ga = G && N.gift_adjusted && N.gift_adjusted.quote_time === (GIFT && GIFT.quote_time) ? N.gift_adjusted : null;
+  const ga = giftRangeProven(rec) && G && N.gift_adjusted && N.gift_adjusted.quote_time === (GIFT && GIFT.quote_time) ? N.gift_adjusted : null;
   const rangeTxt = (lv, pc) => pts(lv[0]) + " and " + pts(lv[1]) + " (" + sg(pc[0]) + " to " + sg(pc[1]) + ")";
 
   // what the backtest says about the probability the model gave today
@@ -1701,7 +1704,8 @@ function renderOutlook() {
   const callBox = Cc && Cc.colour ? '<div class="call ' + (weakCall ? "" : "c-" + Cc.colour) + '"><div class="cw">' + (weakCall ? "TOSS-UP" : Cc.colour === "green" ? "GREEN" : "RED") + '</div><div class="ct"><b>' + (weakCall ? "Close to a coin flip: " : "") + Math.round(Cc.p_call) +
     "% chance the Nifty ends " + (Cc.colour === "green" ? "higher" : "lower") + " than its last close of " + pts(o.base_close) + "</b>" + (Cc.provisional ? '<span class="prov">provisional</span>' : "") +
     '<span class="sub">Because ' + esc(Cc.why) + ". Confidence: <b>" + (tierTxt[Cc.tier] || Cc.tier) + "</b>" +
-    (Cc.hit_pct ? " &mdash; in the backtest, calls like this were right " + Math.round(Cc.hit_pct) + "% of the time" : "") + ". " + esc(Cc.note || "") + "</span></div></div>" : "";
+    (Cc.hit_pct ? " &mdash; in the backtest, calls like this were right " + Math.round(Cc.hit_pct) + "% of the time" : "") +
+    (num(ca.hit_pct) && ca.sessions >= 5 ? "; live so far, across all calls: right " + Math.round(ca.hit_pct) + "% of " + ca.sessions + " sessions" : "") + ". " + esc(Cc.note || "") + "</span></div></div>" : "";
   const tbl = (head, rows) => "<table><thead><tr>" + head.map(h => "<th>" + h + "</th>").join("") + "</tr></thead><tbody>" +
     rows.map(r => "<tr>" + r.map(c => "<td>" + c + "</td>").join("") + "</tr>").join("") + "</tbody></table>";
   const detail = bt.range

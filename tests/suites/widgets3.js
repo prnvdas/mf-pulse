@@ -109,6 +109,11 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
   ok(!errs.length&&!/NaN|undefined|\[object/.test(r.text),'news clean',errs[0]); await ctx.close();}
  for (const [m,fn] of Object.entries({nopoints:j=>{j.why.portfolio=[];j.why.points=[];return j;},nonews:j=>{j.why.headlines=[];j.why.reads=[];return j;},junk:j=>{j.why.sectors=[null,{name:5},{name:'x',pct:'a'}];j.why.portfolio=[{name:'A',move_pct:1,impact:2,headlines:'x'}];j.why.macro=[{name:'M',level:1,pct:1}];return j;}})) {const {p,ctx,errs}=await page({news:fn});
   ok(!errs.length&&!/NaN|undefined|\[object/.test(await p.evaluate(()=>document.body.innerText)),'news hostile '+m,errs[0]); await ctx.close();}
+ // the GIFT-narrowed range is used only once it has proven itself live; the live record sits next to the backtest claim
+ {const {p,ctx,errs}=await page({outlook:j=>{j.record=Object.assign(j.record||{},{calls_all:{sessions:14,hit_pct:64}});j.call=Object.assign(j.call||{},{colour:'green',tier:'good',p_call:67,hit_pct:73});return j;}});
+  const r=await p.evaluate(()=>({a:giftRangeProven({gift:{sessions:14,range_70_pct:50}}),b:giftRangeProven({gift:{sessions:25,range_70_pct:68}}),c:giftRangeProven({gift:{sessions:25,range_70_pct:50}}),d:giftRangeProven({gift:{sessions:19,range_70_pct:90}}),e:giftRangeProven(null),f:giftRangeProven({})}));
+  ok(r.a===false&&r.b===true&&r.c===false&&r.d===false&&r.e===false&&r.f===false,'GIFT-narrowed range needs 20+ live sessions and 60%+ to be used',JSON.stringify(r));
+  const t=await p.$eval('#bOutlook',e=>e.innerText); ok(/backtest, calls like this were right 73%/.test(t)&&/live so far, across all calls: right 64% of 14 sessions/.test(t),'the live record is shown next to the backtest claim',t.slice(0,300)); ok(!errs.length,'live-record errs',errs[0]); await ctx.close();}
  // a weak next-session call is shown as a toss-up, a stronger one as red/green
  {const {p,ctx,errs}=await page({outlook:j=>{j.call=Object.assign(j.call||{},{colour:'red',tier:'weak',p_call:55.5,hit_pct:54.6});return j;}});
   ok(/toss-up/i.test(await p.$eval('#bOutlook',e=>e.innerText))&&/coin flip/i.test(await p.$eval('#bOutlook',e=>e.innerText))&&/toss-up/i.test(await p.$eval('#hChips',e=>e.innerText)),'weak call is a toss-up on the card and in the header'); ok(!errs.length,'toss-up errs',errs[0]); await ctx.close();}

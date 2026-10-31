@@ -109,6 +109,11 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
   ok(!errs.length&&!/NaN|undefined|\[object/.test(r.text),'news clean',errs[0]); await ctx.close();}
  for (const [m,fn] of Object.entries({nopoints:j=>{j.why.portfolio=[];j.why.points=[];return j;},nonews:j=>{j.why.headlines=[];j.why.reads=[];return j;},junk:j=>{j.why.sectors=[null,{name:5},{name:'x',pct:'a'}];j.why.portfolio=[{name:'A',move_pct:1,impact:2,headlines:'x'}];j.why.macro=[{name:'M',level:1,pct:1}];return j;}})) {const {p,ctx,errs}=await page({news:fn});
   ok(!errs.length&&!/NaN|undefined|\[object/.test(await p.evaluate(()=>document.body.innerText)),'news hostile '+m,errs[0]); await ctx.close();}
+ // a graded day with a wrong-way fund must not make the phone page wider than the screen (this failed on GitHub with real data)
+ {const {p,ctx,errs}=await page({history:j=>{const d=j.map(x=>x.date).sort().pop();j.forEach(x=>{if(x.date===d)x.direction_hit=false;});return j;}});
+  await p.setViewportSize({width:360,height:800}); await p.waitForTimeout(300);
+  const w=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,iw:innerWidth,wrong:document.getElementById('scoreBody').innerText.includes('wrong way'),tbl:Math.round(document.querySelector('#scoreBody table').getBoundingClientRect().right)}));
+  ok(w.wrong&&w.sw<=w.iw+2,'wrong-way rows fit a 360px phone',JSON.stringify(w)); ok(!errs.length,'wrong-way errs',errs[0]); await ctx.close();}
  // the GIFT-narrowed range is used only once it has proven itself live; the live record sits next to the backtest claim
  {const {p,ctx,errs}=await page({outlook:j=>{j.record=Object.assign(j.record||{},{calls_all:{sessions:14,hit_pct:64}});j.call=Object.assign(j.call||{},{colour:'green',tier:'good',p_call:67,hit_pct:73});return j;}});
   const r=await p.evaluate(()=>({a:giftRangeProven({gift:{sessions:14,range_70_pct:50}}),b:giftRangeProven({gift:{sessions:25,range_70_pct:68}}),c:giftRangeProven({gift:{sessions:25,range_70_pct:50}}),d:giftRangeProven({gift:{sessions:19,range_70_pct:90}}),e:giftRangeProven(null),f:giftRangeProven({})}));

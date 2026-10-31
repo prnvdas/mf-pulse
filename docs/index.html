@@ -393,6 +393,7 @@
   .scoreline{font-size:15px;line-height:1.6;margin:16px 0 4px}
   .scoreline b{font-weight:600}
   td.miss{white-space:nowrap;padding-left:10px}
+  @media(max-width:560px){#scoreBody td.miss{white-space:normal;padding-left:6px}}   /* "✗ wrong way" may wrap instead of widening the page */
   .ok{color:var(--green-deep);font-weight:600}.bad{color:var(--red);font-weight:600}
   .calnav{display:flex;align-items:center;gap:10px;margin:0 0 14px}
   .calnav b{min-width:120px;text-align:center;font-size:14px;font-weight:600}

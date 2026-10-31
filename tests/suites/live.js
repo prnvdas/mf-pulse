@@ -15,7 +15,11 @@ const ok = (c, name, d) => { n++; if (!c) { fail++; console.log('FAIL', name, d 
       for (const f of files) { try { const t = await (await fetch('data/' + f + '.json', { cache: 'no-store' })).text(); docs[f] = JSON.parse(t); } catch (e) { bad.push(f + ': ' + e.message.slice(0, 60)); } }
       const vis = id => { const e = document.getElementById(id); return !!e && !e.hidden; };
       const ph = docs.portfolio_history, fh = docs.fund_health, an = docs.analytics, cfg = docs.config;
-      return { bad, txt: document.body.innerText, over: document.documentElement.scrollWidth > innerWidth + 2,
+      // when the page is too wide, say which elements stick out (the ones that end beyond the screen and are not inside a scrolling box)
+      const offenders = document.documentElement.scrollWidth > innerWidth + 2 ? [...document.querySelectorAll('body *')].filter(e => { const r = e.getBoundingClientRect(); if (!(r.right > innerWidth + 2) || r.width === 0) return false;
+        for (let a = e.parentElement; a && a !== document.body; a = a.parentElement) { const o = getComputedStyle(a).overflowX; if (o === 'auto' || o === 'scroll' || o === 'hidden') return false; } return true; })
+        .slice(0, 6).map(e => e.tagName.toLowerCase() + (e.id ? '#' + e.id : '') + (e.className && typeof e.className === 'string' ? '.' + e.className.split(' ')[0] : '') + ' ' + Math.round(e.getBoundingClientRect().right) + 'px ' + (e.textContent || '').trim().slice(0, 40)) : [];
+      return { bad, offenders, txt: document.body.innerText, over: document.documentElement.scrollWidth > innerWidth + 2,
         money: !!(ph && ph.points && ph.points.length > 1) === vis('moneyWrap'), health: !!(fh && fh.funds && fh.funds.length) === vis('healthWrap'),
         sector: !!(an && an.sector_exposure) === vis('sectorWrap'), sip: !!(cfg && cfg.sips && cfg.sips.length) === vis('sipWrap'), title: document.title, nav: vis('snav') };
     });
@@ -28,7 +32,7 @@ const ok = (c, name, d) => { n++; if (!c) { fail++; console.log('FAIL', name, d 
     ok(r.sip, `${tag}: SIP tracker shown exactly when SIPs are configured`);
     ok(r.nav && /MF Pulse/.test(r.title), `${tag}: menu and title`);
     ok(r.txt.length > 1500, `${tag}: page has substance`);
-    if (tag === 'mobile') ok(!r.over, 'no horizontal overflow on mobile');
+    if (tag === 'mobile') ok(!r.over, 'no horizontal overflow on mobile', r.offenders.join(' || '));
     await ctx.close();
   }
   console.log(`${n - fail}/${n} passed`); await b.close(); process.exit(fail ? 1 : 0);

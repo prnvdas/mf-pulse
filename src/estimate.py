@@ -460,6 +460,57 @@ def estimate_fund(fund: dict, cfg: dict, moves: dict[str, float | None]) -> dict
     }
 
 
+def build_attribution(funds: list[dict], results: list[dict], moves: dict[str, float | None], funda: dict, day: str, phase: str,
+                      holdings_of=load_holdings, market: list[dict] | None = None) -> dict:
+    """Where each fund's move came from, as plain arithmetic on the same numbers the estimate uses (so the pieces add up to it):
+    every holding's weight x its move, grouped by sector; the part of the fund not priced stock by stock (moves with the benchmark);
+    cash and costs. And the market-versus-fund split: how much of the move is what the fund's own benchmark did, and how much is the fund
+    doing better or worse than that benchmark. Nothing here is a guess about causes."""
+    from analytics import SECTOR_NAMES
+    out_funds, sectors_all, market_rs, selection_rs = [], {}, 0.0, 0.0
+    for f, r in zip(funds, results):
+        value, impact, nav = float(r["current_value"]), float(r["rupee_impact"]), float(r["nav_move_pct"])
+        by_sector, stocks = {}, []
+        for h in holdings_of(f["id"]).get("holdings") or []:
+            m = moves.get(h["ticker"])
+            if m is None:
+                continue
+            c = float(h["weight_pct"]) * m / 100.0                                        # points of this fund's NAV
+            sec = (funda.get(h["ticker"]) or {}).get("sector")
+            sec = SECTOR_NAMES.get(sec, sec) if sec else "Unclassified"
+            by_sector[sec] = by_sector.get(sec, 0.0) + c
+            stocks.append((value * c / 100.0, h["name"], m))
+        tail = float(r.get("tail_pct") or 0) * float(r.get("tail_move_pct") or 0) / 100.0   # not priced stock by stock: moves with the benchmark
+        cost = -float(f.get("ter_annual_pct", 0.0)) / 365.0
+        bench = moves.get(f.get("benchmark_ticker"))
+        mk = value * bench / 100.0 if bench is not None else None
+        stocks.sort()
+        for sec, c in by_sector.items():
+            sectors_all[sec] = sectors_all.get(sec, 0.0) + value * c / 100.0
+        if mk is not None:
+            market_rs += mk
+            selection_rs += impact - mk
+        secs = sorted(({"sector": k, "impact": round(value * c / 100.0), "pp": round(c, 3)} for k, c in by_sector.items()), key=lambda x: -abs(x["impact"]))
+        out_funds.append({
+            "id": f["id"], "name": f["name"], "value": round(value), "impact": round(impact), "nav_move_pct": nav,
+            "benchmark": {"ticker": f.get("benchmark_ticker"), "name": next((m.get("name") for m in market or [] if m.get("ticker") == f.get("benchmark_ticker")), None),
+                          "move_pct": round(bench, 2) if bench is not None else None},
+            "vs_benchmark_pp": round(nav - bench, 2) if bench is not None else None,
+            "market_rs": round(mk) if mk is not None else None, "selection_rs": round(impact - mk) if mk is not None else None,
+            "sectors": secs[:6], "other_sectors_rs": round(sum(x["impact"] for x in secs[6:])),
+            "unpriced_rs": round(value * tail / 100.0), "cost_rs": round(value * cost / 100.0), "cash_pct": r.get("cash_pct"),
+            "helped": [{"name": n, "move_pct": round(m, 2), "impact": round(i)} for i, n, m in stocks[::-1][:2] if i > 0],
+            "hurt": [{"name": n, "move_pct": round(m, 2), "impact": round(i)} for i, n, m in stocks[:2] if i < 0],
+        })
+    total = sum(float(r["rupee_impact"]) for r in results)
+    secs = sorted(({"sector": k, "impact": round(v)} for k, v in sectors_all.items()), key=lambda x: -abs(x["impact"]))
+    return {"date": day, "phase": phase, "generated_at": now_ist().isoformat(), "portfolio": {
+        "value": round(sum(float(r["current_value"]) for r in results)), "impact": round(total),
+        "market_rs": round(market_rs) if out_funds and all(x["market_rs"] is not None for x in out_funds) else None,
+        "selection_rs": round(selection_rs) if out_funds and all(x["market_rs"] is not None for x in out_funds) else None,
+        "sectors": secs}, "funds": out_funds}
+
+
 def nav_published(funds: list[dict], today: dt.date) -> bool:
     """True when every fund's NAV for `today` is already in state.json (reconcile ran tonight). Estimating after that would
     stack the session's move on top of a NAV that already contains it (a run GitHub delayed past the 23:30 grading did exactly
@@ -639,6 +690,14 @@ def main() -> None:
     }
 
     write_json("latest.json", payload)
+    if not is_holiday:
+        # the breakdown of the day's move: one record per session, the last batch of the day wins
+        try:
+            att = build_attribution(funds, results, moves, read_json("fundamentals.json", {}), ts.date().isoformat(), phase, market=market)
+            days = [d for d in (read_json("attribution.json", {}) or {}).get("days", []) if d.get("date") != att["date"]]
+            write_json("attribution.json", {"days": (days + [att])[-10:]})
+        except Exception as exc:  # noqa: BLE001 -- the explanation must never stop the estimate
+            print(f"[warn] attribution skipped: {exc}", file=sys.stderr)
 
     # One record per trading day, written only from the post-close run so the
     # history holds each session's final picture, not an intraday snapshot.

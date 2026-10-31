@@ -8,6 +8,7 @@ import pathlib
 import sys
 import tempfile
 import unittest
+import unittest.mock
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "src"))
 
@@ -226,6 +227,52 @@ class SettledSessions(unittest.TestCase):
         self.assertEqual((f["nav_move_pct"], f["rupee_impact"], f["projected_nav"]), (0.0, 0.0, 10.0))
         self.assertEqual(latest["totals"]["today_impact"], 0.0)
         self.assertFalse(reconcile.settle_latest(latest, state))      # idempotent
+
+
+class Attribution(unittest.TestCase):
+    HOLD = {"f1": {"holdings": [{"name": "A Ltd", "ticker": "A.NS", "weight_pct": 30.0}, {"name": "B Ltd", "ticker": "B.NS", "weight_pct": 20.0},
+                                {"name": "C Ltd", "ticker": "C.NS", "weight_pct": 10.0}], "cash_pct": 5.0}}
+    FUNDA = {"A.NS": {"sector": "Financial Services"}, "B.NS": {"sector": "Healthcare"}}
+
+    def _run(self, moves):
+        fund = {"id": "f1", "name": "Test Fund", "units": 10000.0, "last_nav": 100.0, "ter_annual_pct": 0.73, "benchmark_ticker": "^BM", "seed_invested": 900000.0}
+        cfg = {"estimator": {"tail_model": "benchmark"}}
+        with unittest.mock.patch.object(estimate, "load_holdings", lambda fid: self.HOLD[fid]):
+            r = estimate.estimate_fund(fund, cfg, moves)
+        return fund, r, estimate.build_attribution([fund], [r], moves, self.FUNDA, "2026-10-30", "final", holdings_of=lambda fid: self.HOLD[fid])
+
+    def test_the_pieces_add_up_to_the_estimate(self):
+        fund, r, att = self._run({"A.NS": 2.0, "B.NS": -1.0, "C.NS": None, "^BM": 0.5})
+        f = att["funds"][0]
+        parts = sum(x["impact"] for x in f["sectors"]) + f["other_sectors_rs"] + f["unpriced_rs"] + f["cost_rs"]
+        self.assertAlmostEqual(parts, f["impact"], delta=3)                  # within rounding to whole rupees
+        self.assertEqual(f["impact"], round(r["rupee_impact"]))
+        self.assertEqual({x["sector"] for x in f["sectors"]}, {"Financials", "Healthcare"})
+        self.assertEqual(att["portfolio"]["impact"], f["impact"])
+
+    def test_market_versus_fund_split(self):
+        fund, r, att = self._run({"A.NS": 2.0, "B.NS": -1.0, "C.NS": None, "^BM": 0.5})
+        f = att["funds"][0]
+        self.assertEqual(f["market_rs"], round(1_000_000 * 0.5 / 100))        # what the benchmark did to this much money
+        self.assertAlmostEqual(f["market_rs"] + f["selection_rs"], f["impact"], delta=1)
+        self.assertAlmostEqual(f["vs_benchmark_pp"], f["nav_move_pct"] - 0.5, places=2)
+
+    def test_benchmark_name_comes_from_the_market_quotes(self):
+        fund, r, _ = self._run({"A.NS": 2.0, "B.NS": -1.0, "C.NS": None, "^BM": 0.5})
+        att = estimate.build_attribution([fund], [r], {"A.NS": 2.0, "B.NS": -1.0, "^BM": 0.5}, self.FUNDA, "2026-10-30", "final",
+                                         holdings_of=lambda fid: self.HOLD[fid], market=[{"ticker": "^BM", "name": "Test Index", "move_pct": 0.5}])
+        self.assertEqual(att["funds"][0]["benchmark"]["name"], "Test Index")
+
+    def test_helped_and_hurt_are_the_right_stocks(self):
+        fund, r, att = self._run({"A.NS": 2.0, "B.NS": -1.0, "C.NS": None, "^BM": 0.5})
+        f = att["funds"][0]
+        self.assertEqual([x["name"] for x in f["helped"]], ["A Ltd"])
+        self.assertEqual([x["name"] for x in f["hurt"]], ["B Ltd"])
+
+    def test_no_benchmark_quote_means_no_split_not_a_wrong_one(self):
+        fund, r, att = self._run({"A.NS": 2.0, "B.NS": -1.0, "C.NS": None})
+        f = att["funds"][0]
+        self.assertIsNone(f["market_rs"]); self.assertIsNone(f["vs_benchmark_pp"]); self.assertIsNone(att["portfolio"]["market_rs"])
 
 
 class HolidayHealth(unittest.TestCase):

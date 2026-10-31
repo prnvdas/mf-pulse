@@ -524,7 +524,11 @@
   .pm .hl{margin-top:8px}
   @media(max-width:700px){.hl.cards{grid-template-columns:1fr}}
   /* the news section: one calm view at a time */
+  #whySeg{max-width:100%;overflow-x:auto;scrollbar-width:none}#whySeg::-webkit-scrollbar{display:none}#whySeg button{white-space:nowrap}
+  .sbars.one{grid-template-columns:1fr}.sbars.one .sb{grid-template-columns:190px 1fr 86px}
+  @media(max-width:560px){.sbars.one .sb{grid-template-columns:118px 1fr 78px}}
   .whylead{font-size:15.5px;line-height:1.65;margin:2px 0 16px;max-width:72ch}
+  .whyp{font-size:14px;line-height:1.6}
   .whyfacts{list-style:none;display:grid;gap:8px;font-size:14px;line-height:1.55;margin:4px 0 8px}
   .why .whyfacts li{display:block;font-size:14px;line-height:1.55}
   .whymore{margin-top:8px}.whymore>summary{margin:10px 0 8px;font-size:12.5px}
@@ -1469,6 +1473,7 @@ function renderHitMiss() {
 // "Why did the market move": points computed by news.py. "From your data" points
 // are facts computed from this project's own numbers; "In the news" points are
 // causes being reported in headlines, matched automatically -- labelled as such.
+let ATTR = null;
 const WHY = { tab: "" };
 function renderWhy() {
   const w = NEWS && NEWS.why, wrap = $("whyWrap");
@@ -1516,7 +1521,32 @@ function renderWhy() {
     ((H.length > 4 || R.length) ? more((H.length - 4 > 0 ? H.length - 4 + " more headline" + (H.length > 5 ? "s" : "") : "") + (H.length > 4 && R.length ? " and " : "") + (R.length ? R.length + " explainer" + (R.length > 1 ? "s" : "") : ""),
       '<ul class="hl cards">' + H.slice(4).map(card).join("") + R.map(read).join("") + "</ul>") : "");
 
-  const panes = [["stocks", "Your stocks", P.length || mine.length ? paneStocks : ""], ["sectors", "Sectors & flows", S.length || chips.length ? paneSectors : ""], ["news", "Headlines", H.length || R.length ? paneNews : ""]].filter(x => x[2]);
+  // pane 0: why your funds moved: plain arithmetic from the session's prices (market backdrop, your funds against their benchmarks, sectors, stocks)
+  const D = isObj(ATTR) && Array.isArray(ATTR.days) ? ATTR.days.find(d => isObj(d) && d.date === w.date && isObj(d.portfolio) && num(d.portfolio.impact) && Array.isArray(d.funds)) : null;
+  const bar = (label, v, mx) => '<div class="sb ' + (v >= 0 ? "up" : "dn") + '"><span>' + label + '</span><span class="bar"><i style="width:' + Math.max(2, Math.round(Math.abs(v) / mx * 100)) + '%"></i></span><b>' + signed(v) + "</b></div>";
+  const paneFunds = !D ? "" : (() => {
+    const T = D.portfolio, up = T.impact >= 0, hasMk = num(T.market_rs) && num(T.selection_rs);
+    const lead = '<p class="whyp" style="margin:0 0 14px">Your portfolio ' + (up ? "rose " : "fell ") + inr(Math.abs(T.impact)) + (num(T.value) && T.value ? " (" + sgn(T.impact / T.value * 100, 2) + ")" : "") + "." +
+      (hasMk ? " The market behind your funds (what their benchmarks did to this much money) " + (T.market_rs >= 0 ? "added " : "took ") + inr(Math.abs(T.market_rs)) + "; your funds themselves did " + inr(Math.abs(T.selection_rs)) + (T.selection_rs >= 0 ? " better" : " worse") + " than those benchmarks." : "") + "</p>";
+    const mx1 = Math.max(1, ...[T.market_rs, T.selection_rs, T.impact].filter(num).map(Math.abs));
+    const split = hasMk ? '<div class="sbars one">' + bar("The market", T.market_rs, mx1) + bar("Your funds vs the market", T.selection_rs, mx1) + bar("Total", T.impact, mx1) + "</div>" : "";
+    const secs = (Array.isArray(T.sectors) ? T.sectors : []).filter(x => isObj(x) && typeof x.sector === "string" && num(x.impact) && x.impact !== 0), mx2 = Math.max(1, ...secs.map(x => Math.abs(x.impact)));
+    const picked = [...secs.filter(x => x.impact > 0).slice(0, 3), ...secs.filter(x => x.impact < 0).slice(0, 3)].sort((a, b) => b.impact - a.impact);
+    const bySector = picked.length ? '<div class="trk" style="margin:18px 0 8px">By sector, across your funds</div><div class="sbars one">' + picked.map(x => bar(esc(x.sector), x.impact, mx2)).join("") + "</div>" : "";
+    const fcard = f => { if (!isObj(f) || !num(f.nav_move_pct) || !num(f.impact)) return "";
+      const b = isObj(f.benchmark) ? f.benchmark : {}, vs = num(f.vs_benchmark_pp) && num(b.move_pct) ? (f.vs_benchmark_pp >= 0 ? "ahead of" : "behind") : "";
+      const line = vs ? sgn(f.nav_move_pct, 2) + " against " + esc(b.name || "its benchmark") + " at " + sgn(b.move_pct, 2) + ": <b>" + Math.abs(f.vs_benchmark_pp).toFixed(2) + " points " + vs + " it</b>." : sgn(f.nav_move_pct, 2) + " today.";
+      const sec = (Array.isArray(f.sectors) ? f.sectors : []).filter(x => isObj(x) && num(x.impact) && Math.abs(x.impact) >= 500).slice(0, 3).map(x => '<span class="wc"><b>' + esc(x.sector) + '</b> <span class="pv ' + (x.impact >= 0 ? "pos" : "neg") + '">' + signed(x.impact) + "</span></span>").join("");
+      const st = (a, lab) => (Array.isArray(a) && a.length ? "<li>" + lab + " " + a.filter(isObj).map(x => esc(x.name) + " " + sgn(x.move_pct) + " (" + signed(x.impact) + ")").join("; ") + "</li>" : "");
+      const rest = num(f.unpriced_rs) && num(f.cost_rs) ? f.unpriced_rs + f.cost_rs : null;
+      return '<div class="pm"><div class="h"><span>' + esc(shortName(f.name)) + '</span><span class="mv ' + (f.impact >= 0 ? "up" : "dn") + '">' + signed(f.impact) + "</span></div>" +
+        '<p class="whyp" style="margin:6px 0 8px">' + line + "</p>" + (sec ? '<div class="wchips" style="margin:0 0 8px">' + sec + "</div>" : "") +
+        '<ul class="whyfacts">' + st(f.helped, "Helped most:") + st(f.hurt, "Hurt most:") + "</ul>" +
+        (rest != null && Math.abs(rest) >= 500 ? '<p class="sub2" style="margin:6px 0 0">Holdings not priced one by one, and the fund\'s running cost: ' + signed(rest) + ".</p>" : "") + "</div>"; };
+    return lead + split + bySector + '<div class="trk" style="margin:22px 0 4px">Fund by fund</div>' + D.funds.map(fcard).join("");
+  })();
+
+  const panes = [["funds", "Why your funds moved", paneFunds], ["stocks", "Your stocks", P.length || mine.length ? paneStocks : ""], ["sectors", "Sectors & flows", S.length || chips.length ? paneSectors : ""], ["news", "Headlines", H.length || R.length ? paneNews : ""]].filter(x => x[2]);
   if (!panes.some(x => x[0] === WHY.tab)) WHY.tab = panes.length ? panes[0][0] : "";
   const ok = w.sources_ok || {}, missing = Object.keys(ok).filter(k => !ok[k] && !/fallback/.test(k));
   $("whyBody").innerHTML = '<p class="whylead">' + esc(w.summary) + "</p>" +
@@ -3886,7 +3916,7 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   const pCfg = get("data/config.json", j => isObj(j) && Array.isArray(j.funds) && j.funds.length, DEMO), pAcc = get("data/accuracy.json", isObj, { samples: 0 }), pHist = get("data/history.json", Array.isArray, []),
     pAn = fetch("data/analytics.json", { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => null), pHol = get("data/holidays.json", isObj, null), pTax = get("data/tax.json", isObj, null),
     pPhist = get("data/portfolio_history.json", j => isObj(j) && Array.isArray(j.points), null), pFh = get("data/fund_health.json", j => isObj(j) && Array.isArray(j.funds), null), pPicks = get("data/picks.json", isObj, null),
-    pRecap = get("data/recap.json", isObj, null), pChanges = get("data/fund_changes.json", isObj, null), pFundHist = get("data/fund_history.json", isObj, null), pTrend = get("data/trend.json", isObj, null),
+    pRecap = get("data/recap.json", isObj, null), pChanges = get("data/fund_changes.json", isObj, null), pFundHist = get("data/fund_history.json", isObj, null), pAttr = get("data/attribution.json", isObj, null), pTrend = get("data/trend.json", isObj, null),
     pMovers = get("data/movers.json", Array.isArray, []),
     pLatest = fetch("data/latest.json", { cache: "no-store" }).then(r => r.ok ? r.json() : Promise.reject()).catch(() => null);
   CFG = await pCfg;
@@ -3901,7 +3931,7 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   PHIST = await pPhist;
   FHEALTH = await pFh;
   PICKS = await pPicks;
-  RECAP = await pRecap; TREND = await pTrend;
+  RECAP = await pRecap; TREND = await pTrend; ATTR = await pAttr;
   FCHANGES = await pChanges;
   pFundHist.then(h => { FUNDHIST = h; safe(renderFundBench, "fundBenchWrap"); });   // large and below the fold: render it when it arrives
   setupHide();

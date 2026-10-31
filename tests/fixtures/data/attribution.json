@@ -1,0 +1,163 @@
+{
+  "days": [
+    {
+      "date": "2026-10-09",
+      "phase": "final",
+      "generated_at": "2026-10-30T15:55:00+05:30",
+      "portfolio": {
+        "value": 9990000,
+        "impact": -90200,
+        "market_rs": -140200,
+        "selection_rs": 50000,
+        "sectors": [
+          {
+            "sector": "Financials",
+            "impact": -30360
+          },
+          {
+            "sector": "Industrials",
+            "impact": -26000
+          },
+          {
+            "sector": "Healthcare",
+            "impact": 29600
+          },
+          {
+            "sector": "Consumer (discretionary)",
+            "impact": -8400
+          }
+        ]
+      },
+      "funds": [
+        {
+          "id": "axis-small-cap",
+          "name": "Axis Small Cap Fund Direct Growth",
+          "value": 5000000,
+          "impact": -84000,
+          "nav_move_pct": -1.68,
+          "benchmark": {
+            "ticker": "^X",
+            "name": "Nifty Smallcap 250",
+            "move_pct": -1.97
+          },
+          "vs_benchmark_pp": 0.29,
+          "market_rs": -98500,
+          "selection_rs": 14500,
+          "sectors": [
+            {
+              "sector": "Financials",
+              "impact": -30000,
+              "pp": -0.6
+            },
+            {
+              "sector": "Industrials",
+              "impact": -26000,
+              "pp": -0.52
+            },
+            {
+              "sector": "Healthcare",
+              "impact": 14000,
+              "pp": 0.28
+            }
+          ],
+          "other_sectors_rs": 0,
+          "unpriced_rs": -2600,
+          "cost_rs": -700,
+          "cash_pct": 3.0,
+          "helped": [
+            {
+              "name": "Laurus Labs Ltd",
+              "move_pct": 7.2,
+              "impact": 15600
+            }
+          ],
+          "hurt": [
+            {
+              "name": "City Union Bank Ltd",
+              "move_pct": -5.6,
+              "impact": -5600
+            },
+            {
+              "name": "Dalmia Bharat Ltd",
+              "move_pct": -5.8,
+              "impact": -5400
+            }
+          ]
+        },
+        {
+          "id": "mirae-large-midcap",
+          "name": "Mirae Asset Large & Midcap Fund Direct Growth",
+          "value": 4800000,
+          "impact": -5000,
+          "nav_move_pct": -0.1,
+          "benchmark": {
+            "ticker": "^X",
+            "name": "Nifty Midcap 150",
+            "move_pct": -0.86
+          },
+          "vs_benchmark_pp": 0.76,
+          "market_rs": -41300,
+          "selection_rs": 36300,
+          "sectors": [
+            {
+              "sector": "Healthcare",
+              "impact": 15600,
+              "pp": 0.33
+            },
+            {
+              "sector": "Consumer (discretionary)",
+              "impact": -8400,
+              "pp": -0.18
+            }
+          ],
+          "other_sectors_rs": 0,
+          "unpriced_rs": -300,
+          "cost_rs": -400,
+          "cash_pct": 3.0,
+          "helped": [
+            {
+              "name": "HDFC Bank Ltd",
+              "move_pct": 1.4,
+              "impact": 5200
+            }
+          ],
+          "hurt": [
+            {
+              "name": "Hdb Financial Services",
+              "move_pct": -4.9,
+              "impact": -4600
+            }
+          ]
+        },
+        {
+          "id": "jioblackrock-flexicap",
+          "name": "JioBlackRock Flexi Cap Fund Direct Growth",
+          "value": 190000,
+          "impact": -1200,
+          "nav_move_pct": -0.64,
+          "benchmark": {
+            "ticker": "^X",
+            "name": "Nifty 500",
+            "move_pct": -0.21
+          },
+          "vs_benchmark_pp": -0.43,
+          "market_rs": -400,
+          "selection_rs": -800,
+          "sectors": [
+            {
+              "sector": "Financials",
+              "impact": -360,
+              "pp": -0.19
+            }
+          ],
+          "other_sectors_rs": 0,
+          "unpriced_rs": -50,
+          "cost_rs": -4,
+          "cash_pct": 3.0,
+          "helped": [],
+          "hurt": []
+        }
+      ]
+    }
+  ]
+}

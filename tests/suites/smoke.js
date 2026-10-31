@@ -8,7 +8,7 @@ const URL=process.env.BASE||(process.env.BASE||'http://localhost:8000/index.html
   const r=await p.evaluate(()=>({len:document.body.innerText.length,txt:document.body.innerText,over:document.documentElement.scrollWidth>innerWidth+2,rows:document.querySelectorAll('table tbody tr').length}));
   const probs=[]; if(errs.length) probs.push(errs[0]); if(BAD.test(r.txt)) probs.push('bad token: '+(r.txt.match(BAD)||[])[0]); if(r.over&&tag==='mobile') probs.push('overflow'); if(r.len<800) probs.push('nearly empty');
   out(!probs.length,`clock ${label} [${tag}]`,probs.join('; ')); await ctx.close(); }
- const files=['latest','config','history','analytics','news','outlook','movers','accuracy','risk','tax','holidays','mood','advisor','gift','flows','portfolio_history','fund_health','picks','crypto','recap','fund_changes','fund_history','trend'];
+ const files=['latest','config','history','analytics','news','outlook','movers','accuracy','risk','tax','holidays','mood','advisor','gift','flows','portfolio_history','fund_health','picks','crypto','recap','fund_changes','fund_history','trend','attribution'];
  const modes={'404':r=>r.fulfill({status:404,body:''}),'500':r=>r.fulfill({status:500,body:'x'}),'garbage':r=>r.fulfill({status:200,contentType:'application/json',body:'{"a": <html>'}),'empty obj':r=>r.fulfill({status:200,contentType:'application/json',body:'{}'}),'empty list':r=>r.fulfill({status:200,contentType:'application/json',body:'[]'}),'null':r=>r.fulfill({status:200,contentType:'application/json',body:'null'}),'abort':r=>r.abort()};
  for (const f of files) for (const [m,fn] of Object.entries(modes)) {
   const ctx=await b.newContext({viewport:{width:1100,height:800}}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));

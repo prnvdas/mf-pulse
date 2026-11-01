@@ -1,69 +1,50 @@
 {
-  "generated_at": "2026-10-30T23:28:06.211948+05:30",
+  "generated_at": "2026-11-01T18:05:42.802250+05:30",
   "base_close_date": "2026-10-30",
   "base_close": 23053.1,
   "sigma_pct": 0.82,
   "nifty": {
     "typical": [
-      22889.9,
-      23211.3
+      22787.2,
+      23108.6
     ],
     "wide": [
-      22764.4,
-      23364.1
+      22661.7,
+      23261.4
     ],
     "typical_pct": [
-      -0.71,
-      0.69
+      -1.15,
+      0.24
     ],
     "wide_pct": [
-      -1.25,
-      1.35
+      -1.7,
+      0.9
     ],
-    "centre_pct": 0.0,
-    "gift_adjusted": {
-      "gap_pct": 0.74,
-      "last": 23223.5,
-      "quote_time": "30-Oct-2026 22:39:36",
-      "centre_pct": 0.69,
-      "typical": [
-        23077.8,
-        23344.7
-      ],
-      "wide": [
-        22973.5,
-        23471.6
-      ],
-      "typical_pct": [
-        0.11,
-        1.26
-      ],
-      "wide_pct": [
-        -0.35,
-        1.82
-      ],
-      "validated": false,
-      "assumptions": "gap passes through x0.94; intraday vol 0.81x; GIFT-to-open noise 0.15%"
-    }
+    "centre_pct": -0.45
   },
   "portfolio": {
-    "value": 10302894,
-    "sigma_pct": 0.9,
-    "typical_rupees": 79208,
-    "wide_rupees": 147799
+    "value": 10216934,
+    "sigma_pct": 0.89,
+    "typical_rupees": 78138,
+    "wide_rupees": 145801
   },
   "lean": {
-    "status": "pending",
-    "reason": "The US market hasn't closed since the last Nifty close yet; this updates around 07:15 IST."
+    "status": "ok",
+    "label": "leans down",
+    "p_up": 36.5,
+    "mu_pct": -0.45,
+    "sp_date": "2026-10-30",
+    "sp_move_pct": -1.82,
+    "us_sessions": 1
   },
   "call": {
-    "colour": "green",
-    "p_up": 76.9,
-    "p_call": 76.9,
-    "basis": "gift",
-    "tier": "very high",
-    "hit_pct": 84.8,
-    "why": "GIFT Nifty is +0.74% from the Nifty's last close",
+    "colour": "red",
+    "p_up": 36.5,
+    "p_call": 63.5,
+    "basis": "us",
+    "tier": "strong",
+    "hit_pct": 67.9,
+    "why": "the S&P 500 moved -1.82% overnight",
     "provisional": true,
     "note": "Provisional: it firms up once GIFT Nifty's pre-open price is in (about 08:45 IST)."
   },

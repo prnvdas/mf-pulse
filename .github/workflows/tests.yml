@@ -37,8 +37,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -52,8 +52,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: "20"
           cache: npm
@@ -82,7 +82,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       BAD: ${{ github.sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: main
           fetch-depth: 0
@@ -94,12 +94,12 @@ jobs:
           if echo "$subject" | grep -qi '^revert'; then echo "skip=it is already a revert" >> "$GITHUB_OUTPUT"
           elif git log -1 --format=%B "$BAD" | grep -qF '[no-revert]'; then echo "skip=its message says [no-revert]" >> "$GITHUB_OUTPUT"
           else echo "skip=" >> "$GITHUB_OUTPUT"; fi
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         if: steps.decide.outputs.skip == ''
         with:
           python-version: "3.12"
           cache: pip
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         if: steps.decide.outputs.skip == ''
         with:
           node-version: "20"

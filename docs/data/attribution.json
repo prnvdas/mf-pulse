@@ -3,56 +3,56 @@
     {
       "date": "2026-11-02",
       "phase": "live",
-      "generated_at": "2026-11-02T13:05:40.469278+05:30",
+      "generated_at": "2026-11-02T13:20:47.999087+05:30",
       "portfolio": {
         "value": 10216934,
-        "impact": 101570,
-        "market_rs": 117098,
-        "selection_rs": -15528,
+        "impact": 102584,
+        "market_rs": 121651,
+        "selection_rs": -19068,
         "sectors": [
           {
             "sector": "Industrials",
-            "impact": 30006
+            "impact": 29439
           },
           {
             "sector": "Consumer (discretionary)",
-            "impact": 24555
+            "impact": 24417
           },
           {
             "sector": "Energy",
-            "impact": 16356
+            "impact": 16971
           },
           {
             "sector": "Materials",
-            "impact": 13664
+            "impact": 15208
           },
           {
             "sector": "Financials",
-            "impact": -8150
+            "impact": -7944
           },
           {
             "sector": "Technology",
-            "impact": 7798
+            "impact": 7681
           },
           {
             "sector": "Healthcare",
-            "impact": 4727
+            "impact": 5080
           },
           {
             "sector": "Telecom & media",
-            "impact": 4173
+            "impact": 4283
           },
           {
             "sector": "Consumer staples",
-            "impact": 3850
+            "impact": 3062
           },
           {
             "sector": "Utilities",
-            "impact": 2833
+            "impact": 2830
           },
           {
             "sector": "Real Estate",
-            "impact": 1977
+            "impact": 1776
           }
         ]
       },
@@ -61,74 +61,74 @@
           "id": "axis-small-cap",
           "name": "Axis Small Cap Fund Direct Growth",
           "value": 5089450,
-          "impact": 43786,
-          "nav_move_pct": 0.86,
+          "impact": 44894,
+          "nav_move_pct": 0.882,
           "benchmark": {
             "ticker": "NIFTYSMLCAP250.NS",
             "name": "Nifty Smallcap 250",
-            "move_pct": 1.28
+            "move_pct": 1.3
           },
           "vs_benchmark_pp": -0.42,
-          "market_rs": 65210,
-          "selection_rs": -21424,
+          "market_rs": 66394,
+          "selection_rs": -21499,
           "sectors": [
             {
               "sector": "Consumer (discretionary)",
-              "impact": 14956,
+              "impact": 14958,
               "pp": 0.294
             },
             {
               "sector": "Industrials",
-              "impact": 13178,
-              "pp": 0.259
-            },
-            {
-              "sector": "Consumer staples",
-              "impact": 4121,
-              "pp": 0.081
+              "impact": 12815,
+              "pp": 0.252
             },
             {
               "sector": "Healthcare",
-              "impact": 3972,
-              "pp": 0.078
+              "impact": 4492,
+              "pp": 0.088
             },
             {
               "sector": "Energy",
-              "impact": 3360,
-              "pp": 0.066
+              "impact": 3467,
+              "pp": 0.068
             },
             {
-              "sector": "Real Estate",
-              "impact": 1861,
-              "pp": 0.037
+              "sector": "Consumer staples",
+              "impact": 3296,
+              "pp": 0.065
+            },
+            {
+              "sector": "Materials",
+              "impact": 2651,
+              "pp": 0.052
             }
           ],
-          "other_sectors_rs": 2433,
+          "other_sectors_rs": 3313,
           "unpriced_rs": 0,
           "cost_rs": -98,
           "cash_pct": 13.41,
           "helped": [
             {
               "name": "Mrs. Bectors Food Specialities Ltd",
-              "move_pct": 10.14,
-              "impact": 3514
+              "move_pct": 10.41,
+              "impact": 3609
             },
             {
               "name": "Narayana Hrudayalaya Ltd",
-              "move_pct": 6.96,
-              "impact": 3442
+              "move_pct": 6.99,
+              "impact": 3460
             }
           ],
           "hurt": [
             {
               "name": "Syrma SGS Technology Ltd",
-              "move_pct": -5.64,
-              "impact": -4152
+              "move_pct": -6.09,
+              "impact": -4478
             },
             {
-              "name": "Navin Fluorine International Ltd",
-              "move_pct": -3.76,
-              "impact": -2686
+              "name": "Karur Vysya Bank Ltd",
+              "move_pct": -3.64,
+              "impact": -2378
             }
           ]
         },
@@ -136,74 +136,74 @@
           "id": "mirae-large-midcap",
           "name": "Mirae Asset Large & Midcap Fund Direct Growth",
           "value": 4937994,
-          "impact": 55667,
-          "nav_move_pct": 1.127,
+          "impact": 55486,
+          "nav_move_pct": 1.124,
           "benchmark": {
             "ticker": "^NSEMDCP50",
             "name": null,
-            "move_pct": 1.01
+            "move_pct": 1.08
           },
-          "vs_benchmark_pp": 0.12,
-          "market_rs": 49938,
-          "selection_rs": 5729,
+          "vs_benchmark_pp": 0.05,
+          "market_rs": 53257,
+          "selection_rs": 2229,
           "sectors": [
             {
               "sector": "Industrials",
-              "impact": 16674,
-              "pp": 0.338
+              "impact": 16455,
+              "pp": 0.333
             },
             {
               "sector": "Energy",
-              "impact": 12297,
-              "pp": 0.249
+              "impact": 12775,
+              "pp": 0.259
             },
             {
               "sector": "Materials",
-              "impact": 11885,
-              "pp": 0.241
-            },
-            {
-              "sector": "Consumer (discretionary)",
-              "impact": 9208,
-              "pp": 0.186
+              "impact": 12203,
+              "pp": 0.247
             },
             {
               "sector": "Financials",
-              "impact": -9076,
-              "pp": -0.184
+              "impact": -9660,
+              "pp": -0.196
+            },
+            {
+              "sector": "Consumer (discretionary)",
+              "impact": 9082,
+              "pp": 0.184
             },
             {
               "sector": "Technology",
-              "impact": 7735,
+              "impact": 7766,
               "pp": 0.157
             }
           ],
-          "other_sectors_rs": 7062,
+          "other_sectors_rs": 6984,
           "unpriced_rs": 0,
           "cost_rs": -118,
           "cash_pct": 2.82,
           "helped": [
             {
               "name": "Reliance Industries Ltd",
-              "move_pct": 7.43,
-              "impact": 10762
+              "move_pct": 7.63,
+              "impact": 11060
             },
             {
               "name": "Dixon Technologies (India) Ltd",
-              "move_pct": 12.48,
-              "impact": 7754
+              "move_pct": 12.67,
+              "impact": 7872
             }
           ],
           "hurt": [
             {
               "name": "PB Fintech Ltd",
-              "move_pct": -6.2,
-              "impact": -8180
+              "move_pct": -6.41,
+              "impact": -8457
             },
             {
               "name": "Laurus Labs Ltd",
-              "move_pct": -1.64,
-              "impact": -3063
+              "move_pct": -1.67,
+              "impact": -3125
             }
           ]
         },
@@ -211,74 +211,74 @@
           "id": "jioblackrock-flexicap",
           "name": "JioBlackRock Flexi Cap Fund Direct Growth",
           "value": 189490,
-          "impact": 2117,
-          "nav_move_pct": 1.117,
+          "impact": 2203,
+          "nav_move_pct": 1.163,
           "benchmark": {
             "ticker": "^CRSLDX",
             "name": null,
-            "move_pct": 1.03
+            "move_pct": 1.06
           },
-          "vs_benchmark_pp": 0.09,
-          "market_rs": 1950,
-          "selection_rs": 167,
+          "vs_benchmark_pp": 0.11,
+          "market_rs": 2000,
+          "selection_rs": 203,
           "sectors": [
             {
               "sector": "Energy",
-              "impact": 699,
-              "pp": 0.369
+              "impact": 729,
+              "pp": 0.384
             },
             {
               "sector": "Financials",
-              "impact": 405,
-              "pp": 0.214
-            },
-            {
-              "sector": "Consumer (discretionary)",
-              "impact": 391,
+              "impact": 390,
               "pp": 0.206
             },
             {
+              "sector": "Consumer (discretionary)",
+              "impact": 377,
+              "pp": 0.199
+            },
+            {
               "sector": "Materials",
-              "impact": 297,
-              "pp": 0.157
+              "impact": 354,
+              "pp": 0.187
             },
             {
               "sector": "Industrials",
-              "impact": 154,
-              "pp": 0.081
+              "impact": 169,
+              "pp": 0.089
             },
             {
               "sector": "Utilities",
-              "impact": 75,
-              "pp": 0.039
+              "impact": 77,
+              "pp": 0.04
             }
           ],
-          "other_sectors_rs": 102,
+          "other_sectors_rs": 114,
           "unpriced_rs": 0,
           "cost_rs": -6,
           "cash_pct": 6.22,
           "helped": [
             {
               "name": "Reliance Industries Ltd",
-              "move_pct": 7.43,
-              "impact": 429
+              "move_pct": 7.63,
+              "impact": 441
             },
             {
               "name": "Tata Steel Ltd",
-              "move_pct": 4.95,
-              "impact": 214
+              "move_pct": 5.18,
+              "impact": 224
             }
           ],
           "hurt": [
             {
               "name": "ICICI Bank Ltd",
-              "move_pct": -1.3,
-              "impact": -140
+              "move_pct": -1.29,
+              "impact": -139
             },
             {
-              "name": "Navin Fluorine International Ltd",
-              "move_pct": -3.76,
-              "impact": -107
+              "name": "Infosys Ltd",
+              "move_pct": -2.62,
+              "impact": -95
             }
           ]
         }

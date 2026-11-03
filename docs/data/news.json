@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-03T13:36:14.443771+05:30",
+  "generated_at": "2026-11-03T13:51:07.320583+05:30",
   "market": [
     {
       "title": "How ITC shares are performing after Q2 results? Should you buy, sell or hold? Brokerages give targets, key levels",
@@ -187,27 +187,27 @@
     "date": "2026-11-03",
     "direction": "up",
     "title": "Why the market rose today",
-    "summary": "The Nifty rose +1.24%, led by Banks (+1.3%), Pharma (\u22120.1%), with IT (\u22120.1%) the weakest.",
+    "summary": "The Nifty rose +1.23%, led by Banks (+1.2%), Pharma (\u22120.0%), with IT (\u22120.1%) the weakest.",
     "points": [
       {
         "kind": "fact",
-        "text": "The market rose: Sensex +1.3%, Nifty 50 +1.2%, Nifty Smallcap 250 +0.6%, Nifty LargeMidcap 250 +1.0%."
+        "text": "The market rose: Sensex +1.4%, Nifty 50 +1.2%, Nifty Smallcap 250 +0.6%, Nifty LargeMidcap 250 +1.0%."
       },
       {
         "kind": "fact",
-        "text": "More stocks rose than fell in your funds (169 up, 92 down)."
+        "text": "More stocks rose than fell in your funds (165 up, 96 down)."
       },
       {
         "kind": "fact",
-        "text": "Biggest drag on your money: Laurus Labs Ltd (\u22122.0%), which cost you about \u20b94,529 because you hold roughly \u20b92.2L of it."
+        "text": "Biggest drag on your money: Laurus Labs Ltd (\u22122.2%), which cost you about \u20b94,945 because you hold roughly \u20b92.2L of it."
       },
       {
         "kind": "fact",
-        "text": "Helping most: HDFC Bank Ltd (+3.1%), adding about \u20b911,726 to your money."
+        "text": "Helping most: HDFC Bank Ltd (+3.1%), adding about \u20b911,998 to your money."
       },
       {
         "kind": "fact",
-        "text": "Estimated effect on your funds: Axis Small Cap +0.68%, Mirae Asset Large & Midcap +0.97%, JioBlackRock Flexi Cap +1.03%. In total your portfolio moved about +\u20b986,217 (+0.82%)."
+        "text": "Estimated effect on your funds: Axis Small Cap +0.70%, Mirae Asset Large & Midcap +0.91%, JioBlackRock Flexi Cap +0.99%. In total your portfolio moved about +\u20b984,747 (+0.81%)."
       },
       {
         "kind": "fact",
@@ -229,22 +229,22 @@
     "sectors": [
       {
         "name": "Banks",
-        "pct": 1.29,
-        "last": 55711.55078125,
+        "pct": 1.2,
+        "last": 55661.44921875,
         "up": null,
         "down": null
       },
       {
         "name": "Pharma",
-        "pct": -0.06,
-        "last": 27089.150390625,
+        "pct": -0.02,
+        "last": 27099.25,
         "up": null,
         "down": null
       },
       {
         "name": "IT",
-        "pct": -0.08,
-        "last": 32417.400390625,
+        "pct": -0.12,
+        "last": 32401.94921875,
         "up": null,
         "down": null
       }
@@ -264,8 +264,8 @@
       },
       {
         "name": "Hang Seng",
-        "level": 23494.08,
-        "pct": 0.43,
+        "level": 23506.64,
+        "pct": 0.48,
         "unit": "",
         "notable": false,
         "z": 0.4,
@@ -273,8 +273,8 @@
       },
       {
         "name": "Brent crude",
-        "level": 106.39,
-        "pct": 1.55,
+        "level": 106.32,
+        "pct": 1.48,
         "unit": "$",
         "notable": false,
         "z": 0.5,
@@ -282,11 +282,11 @@
       },
       {
         "name": "USD/INR",
-        "level": 94.72,
-        "pct": -0.19,
+        "level": 94.71,
+        "pct": -0.21,
         "unit": "\u20b9",
         "notable": false,
-        "z": -0.5,
+        "z": -0.6,
         "date": "2026-11-03"
       },
       {
@@ -300,8 +300,8 @@
       },
       {
         "name": "India VIX",
-        "level": 16.08,
-        "pct": 3.71,
+        "level": 16.02,
+        "pct": 3.34,
         "unit": "",
         "notable": false,
         "z": 0.7,
@@ -311,8 +311,8 @@
     "portfolio": [
       {
         "name": "HDFC Bank Ltd",
-        "move_pct": 3.08,
-        "impact": 11726,
+        "move_pct": 3.15,
+        "impact": 11998,
         "exposure": 380901,
         "funds": [
           "Axis Small Cap",
@@ -336,8 +336,8 @@
       },
       {
         "name": "Multi Commodity Exchange Of India Ltd",
-        "move_pct": 8.46,
-        "impact": 7730,
+        "move_pct": 7.84,
+        "impact": 7167,
         "exposure": 91388,
         "funds": [
           "Axis Small Cap",
@@ -361,8 +361,8 @@
       },
       {
         "name": "ICICI Bank Ltd",
-        "move_pct": 3.06,
-        "impact": 6389,
+        "move_pct": 3.02,
+        "impact": 6314,
         "exposure": 209055,
         "funds": [
           "Mirae Asset Large & Midcap",
@@ -385,8 +385,8 @@
       },
       {
         "name": "Laurus Labs Ltd",
-        "move_pct": -2.04,
-        "impact": -4529,
+        "move_pct": -2.23,
+        "impact": -4945,
         "exposure": 222014,
         "funds": [
           "Axis Small Cap",
@@ -409,39 +409,41 @@
       },
       {
         "name": "Go Digit General Insurance Ltd.",
-        "move_pct": -5.01,
-        "impact": -2338,
+        "move_pct": -5.12,
+        "impact": -2390,
         "exposure": 46654,
         "funds": [
           "Mirae Asset Large & Midcap"
         ],
-        "headlines": [
-          {
-            "title": "Go Digit General Insurance Limited (GODIGIT.BO) Seasonal returns chart",
-            "source": "Yahoo Finance UK",
-            "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE51aEluUzA0WV9MZE9uNldSbFRKT0kyQldfYUl6RElBWmo0VlhEblI3aDR6YlNqT3lSRzZrZU5MdHYxOEtacXFlMVZtVUtvTEliZEpUTjc0bGJiNTJ3LVdUdDhVcVZYczdRTlE?oc=5",
-            "published": "2026-11-02T15:48:38+00:00"
-          }
-        ]
+        "headlines": []
       },
       {
-        "name": "Avalon Technologies Ltd.",
-        "move_pct": -2.49,
-        "impact": -1954,
-        "exposure": 78493,
+        "name": "Reliance Industries Ltd",
+        "move_pct": -0.86,
+        "impact": -1612,
+        "exposure": 187120,
         "funds": [
-          "Axis Small Cap"
+          "Axis Small Cap",
+          "Mirae Asset Large & Midcap",
+          "JioBlackRock Flexi Cap"
         ],
-        "headlines": []
+        "headlines": [
+          {
+            "title": "Richest person in Asia: Mukesh Ambani vs Zhang Yiming net worth \u2014 Reliance boss overtakes China's ByteDance TikTok head",
+            "source": "Livemint",
+            "link": "https://news.google.com/rss/articles/CBMiiAJBVV95cUxQSlZaNXg5Zl8wRFh4Z3JCdFRGNDlkV3l4T2ktS2lUcEVNREltRU5Mb0NrZDRPQkRza1ZJYldyRVpXLXloLVl0akUwMGx3ZXM1aFBBa0xFNEZFUEF5TVFvVGkwUHRYRnF4WlE2ZEw1OTJVSnhrOUtKeGtvcUhsVzNJRHdyQnRxNzZzY0dIaFdHdFl4TWVra2pnR05sLXRRbjRhV0lqVGNQcDFldEFmOWdtWWdMN0kxaVN6UzNFeEFvRXROS2pPeVJOSm9JclhUVS0tWmlTWWpLX1dwaUdFT1R0bVhBY0ZWckVtZTZlbFQtWjUzVzlBWGV5LWppNEdldTRGaU8wYTNSWGrSAY4CQVVfeXFMTWtXNnZlck1uM1JhaG9NYmdQU0RKdW9CZUEzMG54b3c4SFJXcF9teXA5UU1ucEVwUWYzUHpndWhVUUlmNmtYYkM3SUptSjZVLU1oekhCcllNVFFOVlRXY2FlQ1RiakJxSURTOVpIemoyZFk4ZGpJN3lvdmJiT21nYmJXVGdZZ3FMWXA1Yy1rVi1jcnVuX0JkZ2l2RXVqNDNTRkJiLUhHNDFCUF9PdDZRMXkxSjVyMTE0SUxIWktidzc3RHNVNHp4Rkk4NDRNc2tNbjhjT1N6MXVrWUN6Z2FyWmhaWFFuOXAyTk1rUWVWVDJtN0tCRFJaNHRNbFkxLTJxUmJaTnNyeDBKNk42WkJB?oc=5",
+            "published": "2026-11-03T04:36:57+00:00"
+          },
+          {
+            "title": "Reliance Industries among 8 stocks showing RSI Trending Up",
+            "source": "The Economic Times",
+            "link": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxPSXZ5Y2JCR045QllmSjBvWXRrc05ZVVVJZF9feE51eFN4Ym9zUGZYbU9aWWQycmhxV0hlQ1FTRkhKbEpSRU1odUI2OFkyM1htTTRLSEotcjZwZGF2Z0xWYzIxdkJjcWgtWkxPUkZLSzB3dW1VTkJGZHpGQlJpMTRoMzd0cndTeHNvM0xoNmNVTkozVUE0NE1kR0MydkxIOFJOWkNDZF9CU3VCS0hQVy12UFdpSzQzVVVGaDFlNVVjbkRlaURjMzJLZ1VWbDhkZURrbUVJbjAzYUVVVmtFOHc?oc=5",
+            "published": "2026-11-03T04:25:25+00:00"
+          }
+        ]
       }
     ],
     "headlines": [
-      {
-        "title": "Sensex, Nifty extend winning run to fourth session; key reasons behind market rally",
-        "source": "Business Today",
-        "link": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxNdTk3Y0FNanlLMnZKcm9GMmVZbUZCcXI2SmVQdzlkOTM4WF9IOEhBQm1LcXYza2RMMnRtM295QnZWdjkxY1d2UFJVZDNVdU9wNnl5ZW44SE5Oam5oUU9ZZ3hmMXJ4X1BDbEtmWTl0WUtHWUNFeFBWOTdJRnlYTXBsc3IxU2JjRjJaUUxpTl9oSllNU09qVGlKOEdBQnl5RFhYY1pqOHdJWXdHWFNlbXlVaENSVTBqc1JNdUlPbU9LN1E5MkRhS19hTTNiV3llM0V6Tm03ZUtwWnJOdXJtdDhvVERRTGl3cW410gHoAUFVX3lxTE11OTdjQU1qeUsydkpyb0YyZVltRkJxcjZKZVB3OWQ5MzhYX0g4SEFCbUtxdjNrZEwydG0zb3lCdlZ2OTFjV3ZQUlVkM1V1T3A2eXllbjhITk5qbmhRT1lneGYxcnhfUENsS2ZZOXRZS0dZQ0V4UFY5N0lGeVhNcGxzcjFTYmNGMlpRTGlOX2hKWU1TT2pUaUo4R0FCeXlEWFhjWmo4d0lZd0dYU2VteVVoQ1JVMGpzUk11SU9tT0s3UTkyRGFLX2FNM2JXeWUzRXpObTdlS3Back51cm10OG9URFFMaXdxbjU?oc=5",
-        "published": "2026-11-03T07:02:43+00:00"
-      },
       {
         "title": "Sensex soars 3,300-points in 4 days: Is it time to sell the rally?",
         "source": "Business Standard",
@@ -465,6 +467,12 @@
         "source": "The Economic Times",
         "link": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxNNS1wZDB1bVBEbnpfTDdxSEFlbnFuQS1nR0FzUW9vMWF3b3AyZmpvOGlvU21uRUFoZlliQ0g5MmQ1QnhTUXlXeFNWQVlVM1FSMS1MUE02Umh2Y1FudDRQRGd0TGFqMlRSR0RXY25JTG1UTkV6QktjdXRlbkd1RnNwcU5GVml5ckdpUGttTUxENHJqTk10Tll1R2dJNktwTVFLbDBKTGhCdHNQZnRwLTZBVWNGaDRpV3JNcVk3cFpjTDZrNkthQTdiQ0dIMlN2eXpOTlRjeWN3Z0d5MHdI0gHiAUFVX3lxTFBUeUxhQ2VaaUdCckFBUzgydVktRGx3ZFhmbDJZSHJZUnJxRlFjMUY2c09PWnFQcEFmYUtMOVhpTUhtUDExTjlYN1h5RTR6cDJZSHRiYi1JOVA0d25xVm9wNXliU29fZ0dLYVY1akQwTU9OUzFLc29IWEx1dWxybE50dlZyelVubnIzSjh1Wlh0TnJnUWlvVW5UY2dXX2xoel9vUkZONFFmZjV6VGM4aDZObms2VHRYMzlBSV9YQmpfVGpac2lzNGlCQ3h1VWZUd1o2VFZZZWpDMTF5YjBKbW8tV3c?oc=5",
         "published": "2026-11-03T01:47:06+00:00"
+      },
+      {
+        "title": "Stock Market Today: Gift Nifty, US-Iran Talks To Crude Oil Prices; Five Key Factors For Sensex, Nifty 50 On Nov 3",
+        "source": "NDTV Profit",
+        "link": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxPNlV2ZXdQZnBUQUllU3NacU13XzhIM2JfLTA2WlpOWFJfbWRTemtEd0JWVlROd19zOW1oZlUzZkdFeVpzamlWZjU5YnZkUEZmbmt5Z1hrd3k1RXNlcW11NTBHc1lzc2NZQWtfUnpfTC1sWVR5XzNqNFYzYjJxZ0o0aTBtREg5TFBzUWYtdUlTTXdwdndwYjlwNzN3dDJpNnBNR3hCSFhYZ2tRd1FTRWVtZ09VZldPeWZyTi0wVjhSQVh1NGNlWWFmbWhQczN1Szl4bVFCcFJ2UEdfSFluTk1SeThfdy1aVnBUSjNpcGlfcVVaVG12OU0xcGVkZ3p4Z9IBhgJBVV95cUxOMlB5N2c1RE52bFRJMkplV3paa0lSX2JLcEhsZ2ZkUUF4RTJJVXV2empvR0lld0RNTHZ3cFZaWGdSRFJnZnBsOU9CdTY0T0M4RlN6dktYMzh5bWg0ajdPR3htYzZHU0JEa1ZZRnZrX0FsZGdlTXRUaEZDVHN2RHVMczdjRGtBWUdxOXJ2RzRBNnQwZjY2Mm9Ra0JwcXQzcF9lbUFwZWpva2F0S3FFYnpkMjlTZ2hMVHFXNnpVRUt5NTNWckVUOTdXM0wyckNBNlZRMEhKVWZkMzFZTW42SXk2cG92NUlfRjc5QmstbnZSaWs0QzBzaTRjb3N2T3dydzcxczFTVndB?oc=5",
+        "published": "2026-11-03T01:37:43+00:00"
       }
     ],
     "sources_ok": {
@@ -484,6 +492,6 @@
       "nse_archive_sectors": false,
       "yahoo_sectors_fallback": true
     },
-    "rich_at": "2026-11-03T08:05:51.704534+00:00"
+    "rich_at": "2026-11-03T08:20:45.060435+00:00"
   }
 }

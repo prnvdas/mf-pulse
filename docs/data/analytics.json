@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-03T23:30:59.738011+05:30",
+  "generated_at": "2026-11-04T03:30:48.749466+05:30",
   "risk_free_pct": 6.5,
   "portfolio_xirr_pct": 11.1,
   "portfolio_returns": {
@@ -786,7 +786,7 @@
       },
       {
         "sector": "Consumer (discretionary)",
-        "pct": 11.5
+        "pct": 11.3
       },
       {
         "sector": "Materials",
@@ -819,6 +819,10 @@
       {
         "sector": "Utilities",
         "pct": 1.1
+      },
+      {
+        "sector": "Unclassified",
+        "pct": 0.2
       }
     ],
     "classified_pct": 92
@@ -869,10 +873,10 @@
         "bench_max_drawdown_pct": -18.4
       },
       "valuation": {
-        "fund_pe": 30.9,
+        "fund_pe": 30.7,
         "fund_pe_cover_pct": 100.0,
-        "fund_pb": 3.8,
-        "bench_pe": 24.3
+        "fund_pb": 3.7,
+        "bench_pe": 25.0
       },
       "history_days": 4715,
       "as_of": "2026-11-02",
@@ -897,7 +901,7 @@
         "pct": 11.8,
         "source": "transactions",
         "since": "2021-01-08",
-        "bench_pct": 9.8
+        "bench_pct": 9.6
       },
       "folios": [
         {
@@ -959,10 +963,10 @@
         "bench_max_drawdown_pct": -14.5
       },
       "valuation": {
-        "fund_pe": 27.2,
+        "fund_pe": 27.3,
         "fund_pe_cover_pct": 100.0,
         "fund_pb": 3.0,
-        "bench_pe": 20.8
+        "bench_pe": 21.9
       },
       "history_days": 608,
       "as_of": "2026-11-02",
@@ -987,7 +991,7 @@
         "pct": 10.6,
         "source": "transactions",
         "since": "2019-04-30",
-        "bench_pct": 8.0
+        "bench_pct": 7.3
       },
       "folios": [
         {
@@ -1049,10 +1053,10 @@
         "bench_max_drawdown_pct": -14.8
       },
       "valuation": {
-        "fund_pe": 17.5,
+        "fund_pe": 17.3,
         "fund_pe_cover_pct": 100.0,
         "fund_pb": 2.6,
-        "bench_pe": 20.4
+        "bench_pe": 21.5
       },
       "history_days": 381,
       "as_of": "2026-11-02",
@@ -1077,7 +1081,7 @@
         "pct": -3.9,
         "source": "transactions",
         "since": "2025-10-13",
-        "bench_pct": -2.7
+        "bench_pct": -4.7
       },
       "folios": [
         {

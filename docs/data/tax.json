@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-03T23:31:17.714727+05:30",
+  "generated_at": "2026-11-04T03:31:14.308497+05:30",
   "as_of": "2026-11-03",
   "rates": {
     "stcg_pct": 20,
@@ -12,7 +12,7 @@
   "fy": {
     "start": "2026-04-01",
     "end": "2027-03-31",
-    "days_left": 148,
+    "days_left": 147,
     "realized_ltcg": 0.0,
     "realized_stcg": 0.0,
     "realized_from_history": {
@@ -26,23 +26,23 @@
     "value": 10562168,
     "cost": 8515002,
     "gain": 2047165,
-    "lt_gain": 2063926,
-    "st_gain": -16761,
-    "lt_value": 8539545,
-    "st_value": 2022622
+    "lt_gain": 2063694,
+    "st_gain": -16531,
+    "lt_value": 8589339,
+    "st_value": 1972826
   },
   "sell_all": {
-    "lt_gain_after_setoff": 2047165,
+    "lt_gain_after_setoff": 2047163,
     "st_gain_after_setoff": 0,
     "exempt_used": 125000,
-    "lt_taxable": 1922165,
+    "lt_taxable": 1922163,
     "tax": 249881,
     "tax_if_newer_long": 249881,
     "effective_pct_of_gain": 12.2
   },
   "harvest": {
     "remaining_exempt": 125000,
-    "available_lt_gain": 2063926,
+    "available_lt_gain": 2063694,
     "target_gain": 125000,
     "plan": [
       {
@@ -61,21 +61,10 @@
       "fund": "Axis Small Cap Fund Direct Growth",
       "folio": null,
       "approx": null,
-      "value": 25571.8,
-      "date": "2025-11-03",
-      "turns_long_on": "2026-11-04",
-      "days_left": 1,
-      "gain": 573.8,
-      "tax_saved_by_waiting": 45
-    },
-    {
-      "fund": "Axis Small Cap Fund Direct Growth",
-      "folio": null,
-      "approx": null,
       "value": 26225.68,
       "date": "2025-12-01",
       "turns_long_on": "2026-12-02",
-      "days_left": 29,
+      "days_left": 28,
       "gain": 1227.68,
       "tax_saved_by_waiting": 96
     },
@@ -86,7 +75,7 @@
       "value": 26529.33,
       "date": "2026-01-01",
       "turns_long_on": "2027-01-02",
-      "days_left": 60,
+      "days_left": 59,
       "gain": 1531.33,
       "tax_saved_by_waiting": 119
     },
@@ -97,7 +86,7 @@
       "value": 28030.03,
       "date": "2026-02-02",
       "turns_long_on": "2027-02-03",
-      "days_left": 92,
+      "days_left": 91,
       "gain": 3032.03,
       "tax_saved_by_waiting": 236
     },
@@ -108,7 +97,7 @@
       "value": 25124.35,
       "date": "2026-02-02",
       "turns_long_on": "2027-02-03",
-      "days_left": 92,
+      "days_left": 91,
       "gain": 96.05,
       "tax_saved_by_waiting": 7
     },
@@ -119,7 +108,7 @@
       "value": 27724.55,
       "date": "2026-03-02",
       "turns_long_on": "2027-03-03",
-      "days_left": 120,
+      "days_left": 119,
       "gain": 2726.55,
       "tax_saved_by_waiting": 213
     },
@@ -130,7 +119,7 @@
       "value": 25058.09,
       "date": "2026-03-02",
       "turns_long_on": "2027-03-03",
-      "days_left": 120,
+      "days_left": 119,
       "gain": 29.79,
       "tax_saved_by_waiting": 2
     },
@@ -141,9 +130,20 @@
       "value": 29218.97,
       "date": "2026-04-01",
       "turns_long_on": "2027-04-02",
-      "days_left": 150,
+      "days_left": 149,
       "gain": 4220.97,
       "tax_saved_by_waiting": 329
+    },
+    {
+      "fund": "Mirae Asset Large & Midcap Fund Direct Growth",
+      "folio": null,
+      "approx": null,
+      "value": 27338.44,
+      "date": "2026-04-01",
+      "turns_long_on": "2027-04-02",
+      "days_left": 149,
+      "gain": 2310.15,
+      "tax_saved_by_waiting": 180
     }
   ],
   "funds": [
@@ -156,10 +156,10 @@
       "value": 5230788,
       "cost": 4174794,
       "gain": 1055994,
-      "lt_gain": 1077560,
-      "st_gain": -21566,
-      "lt_value": 4302407,
-      "st_value": 928381,
+      "lt_gain": 1078133,
+      "st_gain": -22140,
+      "lt_value": 4327978,
+      "st_value": 902809,
       "lots": [
         {
           "folio": null,
@@ -186,7 +186,7 @@
           "gain": 1890.68,
           "term": "long",
           "opening": false,
-          "held_days": 2125,
+          "held_days": 2126,
           "long_term_on": null
         },
         {
@@ -200,7 +200,7 @@
           "gain": 1776.98,
           "term": "long",
           "opening": false,
-          "held_days": 2073,
+          "held_days": 2074,
           "long_term_on": null
         },
         {
@@ -214,7 +214,7 @@
           "gain": 1700.37,
           "term": "long",
           "opening": false,
-          "held_days": 2038,
+          "held_days": 2039,
           "long_term_on": null
         },
         {
@@ -228,7 +228,7 @@
           "gain": 1560.18,
           "term": "long",
           "opening": false,
-          "held_days": 2010,
+          "held_days": 2011,
           "long_term_on": null
         },
         {
@@ -242,7 +242,7 @@
           "gain": 2785.27,
           "term": "long",
           "opening": false,
-          "held_days": 1981,
+          "held_days": 1982,
           "long_term_on": null
         },
         {
@@ -256,7 +256,7 @@
           "gain": 2419.52,
           "term": "long",
           "opening": false,
-          "held_days": 1947,
+          "held_days": 1948,
           "long_term_on": null
         },
         {
@@ -270,7 +270,7 @@
           "gain": 3204.44,
           "term": "long",
           "opening": false,
-          "held_days": 1889,
+          "held_days": 1890,
           "long_term_on": null
         },
         {
@@ -284,7 +284,7 @@
           "gain": 2884.28,
           "term": "long",
           "opening": false,
-          "held_days": 1856,
+          "held_days": 1857,
           "long_term_on": null
         },
         {
@@ -298,7 +298,7 @@
           "gain": 2850.54,
           "term": "long",
           "opening": false,
-          "held_days": 1827,
+          "held_days": 1828,
           "long_term_on": null
         },
         {
@@ -312,7 +312,7 @@
           "gain": 2805.86,
           "term": "long",
           "opening": false,
-          "held_days": 1797,
+          "held_days": 1798,
           "long_term_on": null
         },
         {
@@ -326,7 +326,7 @@
           "gain": 8552.12,
           "term": "long",
           "opening": false,
-          "held_days": 1765,
+          "held_days": 1766,
           "long_term_on": null
         },
         {
@@ -340,7 +340,7 @@
           "gain": 8448.83,
           "term": "long",
           "opening": false,
-          "held_days": 1735,
+          "held_days": 1736,
           "long_term_on": null
         },
         {
@@ -354,7 +354,7 @@
           "gain": 9928.07,
           "term": "long",
           "opening": false,
-          "held_days": 1707,
+          "held_days": 1708,
           "long_term_on": null
         },
         {
@@ -368,7 +368,7 @@
           "gain": 8648.49,
           "term": "long",
           "opening": false,
-          "held_days": 1674,
+          "held_days": 1675,
           "long_term_on": null
         },
         {
@@ -382,7 +382,7 @@
           "gain": 9509.92,
           "term": "long",
           "opening": false,
-          "held_days": 1644,
+          "held_days": 1645,
           "long_term_on": null
         },
         {
@@ -396,7 +396,7 @@
           "gain": 9921.93,
           "term": "long",
           "opening": false,
-          "held_days": 1615,
+          "held_days": 1616,
           "long_term_on": null
         },
         {
@@ -410,7 +410,7 @@
           "gain": 15912.67,
           "term": "long",
           "opening": false,
-          "held_days": 1582,
+          "held_days": 1583,
           "long_term_on": null
         },
         {
@@ -424,7 +424,7 @@
           "gain": 13638.48,
           "term": "long",
           "opening": false,
-          "held_days": 1554,
+          "held_days": 1555,
           "long_term_on": null
         },
         {
@@ -438,7 +438,7 @@
           "gain": 16746.39,
           "term": "long",
           "opening": false,
-          "held_days": 1492,
+          "held_days": 1493,
           "long_term_on": null
         },
         {
@@ -452,7 +452,7 @@
           "gain": 40489.1,
           "term": "long",
           "opening": false,
-          "held_days": 1462,
+          "held_days": 1463,
           "long_term_on": null
         },
         {
@@ -466,7 +466,7 @@
           "gain": 37999.9,
           "term": "long",
           "opening": false,
-          "held_days": 1432,
+          "held_days": 1433,
           "long_term_on": null
         },
         {
@@ -480,7 +480,7 @@
           "gain": 55734.13,
           "term": "long",
           "opening": false,
-          "held_days": 1400,
+          "held_days": 1401,
           "long_term_on": null
         },
         {
@@ -494,7 +494,7 @@
           "gain": 57704.21,
           "term": "long",
           "opening": false,
-          "held_days": 1371,
+          "held_days": 1372,
           "long_term_on": null
         },
         {
@@ -508,7 +508,7 @@
           "gain": 58338.27,
           "term": "long",
           "opening": false,
-          "held_days": 1343,
+          "held_days": 1344,
           "long_term_on": null
         },
         {
@@ -522,7 +522,7 @@
           "gain": 68059.03,
           "term": "long",
           "opening": false,
-          "held_days": 1310,
+          "held_days": 1311,
           "long_term_on": null
         },
         {
@@ -536,7 +536,7 @@
           "gain": 83237.01,
           "term": "long",
           "opening": false,
-          "held_days": 1303,
+          "held_days": 1304,
           "long_term_on": null
         },
         {
@@ -550,7 +550,7 @@
           "gain": 41088.6,
           "term": "long",
           "opening": false,
-          "held_days": 1302,
+          "held_days": 1303,
           "long_term_on": null
         },
         {
@@ -564,7 +564,7 @@
           "gain": 62214.22,
           "term": "long",
           "opening": false,
-          "held_days": 1281,
+          "held_days": 1282,
           "long_term_on": null
         },
         {
@@ -578,7 +578,7 @@
           "gain": 70803.55,
           "term": "long",
           "opening": false,
-          "held_days": 1218,
+          "held_days": 1219,
           "long_term_on": null
         },
         {
@@ -592,7 +592,7 @@
           "gain": 31918.75,
           "term": "long",
           "opening": false,
-          "held_days": 1190,
+          "held_days": 1191,
           "long_term_on": null
         },
         {
@@ -606,7 +606,7 @@
           "gain": 28136.81,
           "term": "long",
           "opening": false,
-          "held_days": 1156,
+          "held_days": 1157,
           "long_term_on": null
         },
         {
@@ -620,7 +620,7 @@
           "gain": 47937.16,
           "term": "long",
           "opening": false,
-          "held_days": 1135,
+          "held_days": 1136,
           "long_term_on": null
         },
         {
@@ -634,7 +634,7 @@
           "gain": 23664.79,
           "term": "long",
           "opening": false,
-          "held_days": 1131,
+          "held_days": 1132,
           "long_term_on": null
         },
         {
@@ -648,7 +648,7 @@
           "gain": 9322.28,
           "term": "long",
           "opening": false,
-          "held_days": 1127,
+          "held_days": 1128,
           "long_term_on": null
         },
         {
@@ -662,7 +662,7 @@
           "gain": 27966.84,
           "term": "long",
           "opening": false,
-          "held_days": 1127,
+          "held_days": 1128,
           "long_term_on": null
         },
         {
@@ -676,7 +676,7 @@
           "gain": 17905.61,
           "term": "long",
           "opening": false,
-          "held_days": 1065,
+          "held_days": 1066,
           "long_term_on": null
         },
         {
@@ -690,7 +690,7 @@
           "gain": 18219.03,
           "term": "long",
           "opening": false,
-          "held_days": 1037,
+          "held_days": 1038,
           "long_term_on": null
         },
         {
@@ -704,7 +704,7 @@
           "gain": 16532.93,
           "term": "long",
           "opening": false,
-          "held_days": 1005,
+          "held_days": 1006,
           "long_term_on": null
         },
         {
@@ -718,7 +718,7 @@
           "gain": 16775.4,
           "term": "long",
           "opening": false,
-          "held_days": 977,
+          "held_days": 978,
           "long_term_on": null
         },
         {
@@ -732,7 +732,7 @@
           "gain": 17042.37,
           "term": "long",
           "opening": false,
-          "held_days": 945,
+          "held_days": 946,
           "long_term_on": null
         },
         {
@@ -746,7 +746,7 @@
           "gain": 14769.29,
           "term": "long",
           "opening": false,
-          "held_days": 915,
+          "held_days": 916,
           "long_term_on": null
         },
         {
@@ -760,7 +760,7 @@
           "gain": 17438.57,
           "term": "long",
           "opening": false,
-          "held_days": 882,
+          "held_days": 883,
           "long_term_on": null
         },
         {
@@ -774,7 +774,7 @@
           "gain": 7337.45,
           "term": "long",
           "opening": false,
-          "held_days": 855,
+          "held_days": 856,
           "long_term_on": null
         },
         {
@@ -788,7 +788,7 @@
           "gain": 3043.56,
           "term": "long",
           "opening": false,
-          "held_days": 824,
+          "held_days": 825,
           "long_term_on": null
         },
         {
@@ -802,7 +802,7 @@
           "gain": 2466.93,
           "term": "long",
           "opening": false,
-          "held_days": 792,
+          "held_days": 793,
           "long_term_on": null
         },
         {
@@ -816,7 +816,7 @@
           "gain": 760.89,
           "term": "long",
           "opening": false,
-          "held_days": 763,
+          "held_days": 764,
           "long_term_on": null
         },
         {
@@ -830,7 +830,7 @@
           "gain": 1985.99,
           "term": "long",
           "opening": false,
-          "held_days": 701,
+          "held_days": 702,
           "long_term_on": null
         },
         {
@@ -844,7 +844,7 @@
           "gain": 688.23,
           "term": "long",
           "opening": false,
-          "held_days": 700,
+          "held_days": 701,
           "long_term_on": null
         },
         {
@@ -858,7 +858,7 @@
           "gain": 2504.92,
           "term": "long",
           "opening": false,
-          "held_days": 671,
+          "held_days": 672,
           "long_term_on": null
         },
         {
@@ -872,7 +872,7 @@
           "gain": 2737.37,
           "term": "long",
           "opening": false,
-          "held_days": 638,
+          "held_days": 639,
           "long_term_on": null
         },
         {
@@ -886,7 +886,7 @@
           "gain": 7527.74,
           "term": "long",
           "opening": false,
-          "held_days": 638,
+          "held_days": 639,
           "long_term_on": null
         },
         {
@@ -900,7 +900,7 @@
           "gain": 14496.67,
           "term": "long",
           "opening": false,
-          "held_days": 610,
+          "held_days": 611,
           "long_term_on": null
         },
         {
@@ -914,7 +914,7 @@
           "gain": 10063.07,
           "term": "long",
           "opening": false,
-          "held_days": 581,
+          "held_days": 582,
           "long_term_on": null
         },
         {
@@ -928,7 +928,7 @@
           "gain": 4772.78,
           "term": "long",
           "opening": false,
-          "held_days": 550,
+          "held_days": 551,
           "long_term_on": null
         },
         {
@@ -942,7 +942,7 @@
           "gain": 2205.19,
           "term": "long",
           "opening": false,
-          "held_days": 519,
+          "held_days": 520,
           "long_term_on": null
         },
         {
@@ -956,7 +956,7 @@
           "gain": 12246.71,
           "term": "long",
           "opening": false,
-          "held_days": 473,
+          "held_days": 474,
           "long_term_on": null
         },
         {
@@ -970,7 +970,7 @@
           "gain": 2311.47,
           "term": "long",
           "opening": false,
-          "held_days": 470,
+          "held_days": 471,
           "long_term_on": null
         },
         {
@@ -984,7 +984,7 @@
           "gain": 9245.9,
           "term": "long",
           "opening": false,
-          "held_days": 470,
+          "held_days": 471,
           "long_term_on": null
         },
         {
@@ -998,7 +998,7 @@
           "gain": 1446.64,
           "term": "long",
           "opening": false,
-          "held_days": 459,
+          "held_days": 460,
           "long_term_on": null
         },
         {
@@ -1012,7 +1012,7 @@
           "gain": 1642.9,
           "term": "long",
           "opening": false,
-          "held_days": 428,
+          "held_days": 429,
           "long_term_on": null
         },
         {
@@ -1026,7 +1026,7 @@
           "gain": 1572.78,
           "term": "long",
           "opening": false,
-          "held_days": 398,
+          "held_days": 399,
           "long_term_on": null
         },
         {
@@ -1038,10 +1038,10 @@
           "cost": 24998.0,
           "value": 25571.8,
           "gain": 573.8,
-          "term": "short",
+          "term": "long",
           "opening": false,
-          "held_days": 365,
-          "long_term_on": "2026-11-04"
+          "held_days": 366,
+          "long_term_on": null
         },
         {
           "folio": null,
@@ -1054,7 +1054,7 @@
           "gain": 1227.68,
           "term": "short",
           "opening": false,
-          "held_days": 337,
+          "held_days": 338,
           "long_term_on": "2026-12-02"
         },
         {
@@ -1068,7 +1068,7 @@
           "gain": 1531.33,
           "term": "short",
           "opening": false,
-          "held_days": 306,
+          "held_days": 307,
           "long_term_on": "2027-01-02"
         },
         {
@@ -1082,7 +1082,7 @@
           "gain": 3032.03,
           "term": "short",
           "opening": false,
-          "held_days": 274,
+          "held_days": 275,
           "long_term_on": "2027-02-03"
         },
         {
@@ -1096,7 +1096,7 @@
           "gain": 2726.55,
           "term": "short",
           "opening": false,
-          "held_days": 246,
+          "held_days": 247,
           "long_term_on": "2027-03-03"
         },
         {
@@ -1110,7 +1110,7 @@
           "gain": 4220.97,
           "term": "short",
           "opening": false,
-          "held_days": 216,
+          "held_days": 217,
           "long_term_on": "2027-04-02"
         },
         {
@@ -1124,7 +1124,7 @@
           "gain": 1035.37,
           "term": "short",
           "opening": false,
-          "held_days": 183,
+          "held_days": 184,
           "long_term_on": "2027-05-05"
         },
         {
@@ -1138,7 +1138,7 @@
           "gain": 1208.53,
           "term": "short",
           "opening": false,
-          "held_days": 155,
+          "held_days": 156,
           "long_term_on": "2027-06-02"
         },
         {
@@ -1152,7 +1152,7 @@
           "gain": -698.06,
           "term": "short",
           "opening": false,
-          "held_days": 125,
+          "held_days": 126,
           "long_term_on": "2027-07-02"
         },
         {
@@ -1166,7 +1166,7 @@
           "gain": -1965.99,
           "term": "short",
           "opening": false,
-          "held_days": 92,
+          "held_days": 93,
           "long_term_on": "2027-08-04"
         },
         {
@@ -1180,7 +1180,7 @@
           "gain": -3088.74,
           "term": "short",
           "opening": false,
-          "held_days": 63,
+          "held_days": 64,
           "long_term_on": "2027-09-02"
         },
         {
@@ -1194,7 +1194,7 @@
           "gain": -30478.75,
           "term": "short",
           "opening": false,
-          "held_days": 46,
+          "held_days": 47,
           "long_term_on": "2027-09-19"
         },
         {
@@ -1208,7 +1208,7 @@
           "gain": -1237.47,
           "term": "short",
           "opening": false,
-          "held_days": 33,
+          "held_days": 34,
           "long_term_on": "2027-10-02"
         },
         {
@@ -1222,7 +1222,7 @@
           "gain": 346.71,
           "term": "short",
           "opening": false,
-          "held_days": 1,
+          "held_days": 2,
           "long_term_on": "2027-11-03"
         }
       ]
@@ -1238,10 +1238,10 @@
       "value": 5126072,
       "cost": 4129867,
       "gain": 996204,
-      "lt_gain": 989135,
-      "st_gain": 7070,
-      "lt_value": 4167904,
-      "st_value": 958168,
+      "lt_gain": 988330,
+      "st_gain": 7874,
+      "lt_value": 4192127,
+      "st_value": 933944,
       "lots": [
         {
           "folio": null,
@@ -1254,7 +1254,7 @@
           "gain": 10243.27,
           "term": "long",
           "opening": false,
-          "held_days": 2744,
+          "held_days": 2745,
           "long_term_on": null
         },
         {
@@ -1268,7 +1268,7 @@
           "gain": 41028.34,
           "term": "long",
           "opening": false,
-          "held_days": 2744,
+          "held_days": 2745,
           "long_term_on": null
         },
         {
@@ -1282,7 +1282,7 @@
           "gain": 10615.14,
           "term": "long",
           "opening": false,
-          "held_days": 2737,
+          "held_days": 2738,
           "long_term_on": null
         },
         {
@@ -1296,7 +1296,7 @@
           "gain": 9892.56,
           "term": "long",
           "opening": false,
-          "held_days": 2682,
+          "held_days": 2683,
           "long_term_on": null
         },
         {
@@ -1310,7 +1310,7 @@
           "gain": 10922.18,
           "term": "long",
           "opening": false,
-          "held_days": 2651,
+          "held_days": 2652,
           "long_term_on": null
         },
         {
@@ -1324,7 +1324,7 @@
           "gain": 10987.42,
           "term": "long",
           "opening": false,
-          "held_days": 2618,
+          "held_days": 2619,
           "long_term_on": null
         },
         {
@@ -1338,7 +1338,7 @@
           "gain": 10359.47,
           "term": "long",
           "opening": false,
-          "held_days": 2590,
+          "held_days": 2591,
           "long_term_on": null
         },
         {
@@ -1352,7 +1352,7 @@
           "gain": 9391.64,
           "term": "long",
           "opening": false,
-          "held_days": 2559,
+          "held_days": 2560,
           "long_term_on": null
         },
         {
@@ -1366,7 +1366,7 @@
           "gain": 9153.37,
           "term": "long",
           "opening": false,
-          "held_days": 2528,
+          "held_days": 2529,
           "long_term_on": null
         },
         {
@@ -1380,7 +1380,7 @@
           "gain": 8931.89,
           "term": "long",
           "opening": false,
-          "held_days": 2498,
+          "held_days": 2499,
           "long_term_on": null
         },
         {
@@ -1394,7 +1394,7 @@
           "gain": 9114.03,
           "term": "long",
           "opening": false,
-          "held_days": 2465,
+          "held_days": 2466,
           "long_term_on": null
         },
         {
@@ -1408,7 +1408,7 @@
           "gain": 9490.53,
           "term": "long",
           "opening": false,
-          "held_days": 2437,
+          "held_days": 2438,
           "long_term_on": null
         },
         {
@@ -1422,7 +1422,7 @@
           "gain": 14563.59,
           "term": "long",
           "opening": false,
-          "held_days": 2407,
+          "held_days": 2408,
           "long_term_on": null
         },
         {
@@ -1436,7 +1436,7 @@
           "gain": 12325.62,
           "term": "long",
           "opening": false,
-          "held_days": 2374,
+          "held_days": 2375,
           "long_term_on": null
         },
         {
@@ -1450,7 +1450,7 @@
           "gain": 46354.7,
           "term": "long",
           "opening": false,
-          "held_days": 2346,
+          "held_days": 2347,
           "long_term_on": null
         },
         {
@@ -1464,7 +1464,7 @@
           "gain": 41554.76,
           "term": "long",
           "opening": false,
-          "held_days": 2316,
+          "held_days": 2317,
           "long_term_on": null
         },
         {
@@ -1478,7 +1478,7 @@
           "gain": 38771.85,
           "term": "long",
           "opening": false,
-          "held_days": 2283,
+          "held_days": 2284,
           "long_term_on": null
         },
         {
@@ -1492,7 +1492,7 @@
           "gain": 34780.53,
           "term": "long",
           "opening": false,
-          "held_days": 2254,
+          "held_days": 2255,
           "long_term_on": null
         },
         {
@@ -1506,7 +1506,7 @@
           "gain": 34633.2,
           "term": "long",
           "opening": false,
-          "held_days": 2224,
+          "held_days": 2225,
           "long_term_on": null
         },
         {
@@ -1520,7 +1520,7 @@
           "gain": 33209.71,
           "term": "long",
           "opening": false,
-          "held_days": 2192,
+          "held_days": 2193,
           "long_term_on": null
         },
         {
@@ -1534,7 +1534,7 @@
           "gain": 27612.46,
           "term": "long",
           "opening": false,
-          "held_days": 2163,
+          "held_days": 2164,
           "long_term_on": null
         },
         {
@@ -1548,7 +1548,7 @@
           "gain": 24877.74,
           "term": "long",
           "opening": false,
-          "held_days": 2132,
+          "held_days": 2133,
           "long_term_on": null
         },
         {
@@ -1562,7 +1562,7 @@
           "gain": 21347.83,
           "term": "long",
           "opening": false,
-          "held_days": 2097,
+          "held_days": 2098,
           "long_term_on": null
         },
         {
@@ -1576,7 +1576,7 @@
           "gain": 20113.06,
           "term": "long",
           "opening": false,
-          "held_days": 2072,
+          "held_days": 2073,
           "long_term_on": null
         },
         {
@@ -1590,7 +1590,7 @@
           "gain": 20696.71,
           "term": "long",
           "opening": false,
-          "held_days": 2038,
+          "held_days": 2039,
           "long_term_on": null
         },
         {
@@ -1604,7 +1604,7 @@
           "gain": 19988.73,
           "term": "long",
           "opening": false,
-          "held_days": 2009,
+          "held_days": 2010,
           "long_term_on": null
         },
         {
@@ -1618,7 +1618,7 @@
           "gain": 17338.17,
           "term": "long",
           "opening": false,
-          "held_days": 1980,
+          "held_days": 1981,
           "long_term_on": null
         },
         {
@@ -1632,7 +1632,7 @@
           "gain": 15981.58,
           "term": "long",
           "opening": false,
-          "held_days": 1950,
+          "held_days": 1951,
           "long_term_on": null
         },
         {
@@ -1646,7 +1646,7 @@
           "gain": 14269.94,
           "term": "long",
           "opening": false,
-          "held_days": 1918,
+          "held_days": 1919,
           "long_term_on": null
         },
         {
@@ -1660,7 +1660,7 @@
           "gain": 12835.44,
           "term": "long",
           "opening": false,
-          "held_days": 1888,
+          "held_days": 1889,
           "long_term_on": null
         },
         {
@@ -1674,7 +1674,7 @@
           "gain": 12068.48,
           "term": "long",
           "opening": false,
-          "held_days": 1856,
+          "held_days": 1857,
           "long_term_on": null
         },
         {
@@ -1688,7 +1688,7 @@
           "gain": 11408.8,
           "term": "long",
           "opening": false,
-          "held_days": 1827,
+          "held_days": 1828,
           "long_term_on": null
         },
         {
@@ -1702,7 +1702,7 @@
           "gain": 12404.37,
           "term": "long",
           "opening": false,
-          "held_days": 1797,
+          "held_days": 1798,
           "long_term_on": null
         },
         {
@@ -1716,7 +1716,7 @@
           "gain": 11465.26,
           "term": "long",
           "opening": false,
-          "held_days": 1764,
+          "held_days": 1765,
           "long_term_on": null
         },
         {
@@ -1730,7 +1730,7 @@
           "gain": 11606.43,
           "term": "long",
           "opening": false,
-          "held_days": 1735,
+          "held_days": 1736,
           "long_term_on": null
         },
         {
@@ -1744,7 +1744,7 @@
           "gain": 14610.08,
           "term": "long",
           "opening": false,
-          "held_days": 1706,
+          "held_days": 1707,
           "long_term_on": null
         },
         {
@@ -1758,7 +1758,7 @@
           "gain": 12266.02,
           "term": "long",
           "opening": false,
-          "held_days": 1674,
+          "held_days": 1675,
           "long_term_on": null
         },
         {
@@ -1772,7 +1772,7 @@
           "gain": 14400.15,
           "term": "long",
           "opening": false,
-          "held_days": 1644,
+          "held_days": 1645,
           "long_term_on": null
         },
         {
@@ -1786,7 +1786,7 @@
           "gain": 14582.87,
           "term": "long",
           "opening": false,
-          "held_days": 1615,
+          "held_days": 1616,
           "long_term_on": null
         },
         {
@@ -1800,7 +1800,7 @@
           "gain": 15848.13,
           "term": "long",
           "opening": false,
-          "held_days": 1583,
+          "held_days": 1584,
           "long_term_on": null
         },
         {
@@ -1814,7 +1814,7 @@
           "gain": 12794.95,
           "term": "long",
           "opening": false,
-          "held_days": 1554,
+          "held_days": 1555,
           "long_term_on": null
         },
         {
@@ -1828,7 +1828,7 @@
           "gain": 12549.78,
           "term": "long",
           "opening": false,
-          "held_days": 1523,
+          "held_days": 1524,
           "long_term_on": null
         },
         {
@@ -1842,7 +1842,7 @@
           "gain": 13176.12,
           "term": "long",
           "opening": false,
-          "held_days": 1491,
+          "held_days": 1492,
           "long_term_on": null
         },
         {
@@ -1856,7 +1856,7 @@
           "gain": 12373.19,
           "term": "long",
           "opening": false,
-          "held_days": 1462,
+          "held_days": 1463,
           "long_term_on": null
         },
         {
@@ -1870,7 +1870,7 @@
           "gain": 11202.27,
           "term": "long",
           "opening": false,
-          "held_days": 1432,
+          "held_days": 1433,
           "long_term_on": null
         },
         {
@@ -1884,7 +1884,7 @@
           "gain": 11997.3,
           "term": "long",
           "opening": false,
-          "held_days": 1400,
+          "held_days": 1401,
           "long_term_on": null
         },
         {
@@ -1898,7 +1898,7 @@
           "gain": 13135.75,
           "term": "long",
           "opening": false,
-          "held_days": 1370,
+          "held_days": 1371,
           "long_term_on": null
         },
         {
@@ -1912,7 +1912,7 @@
           "gain": 13441.92,
           "term": "long",
           "opening": false,
-          "held_days": 1342,
+          "held_days": 1343,
           "long_term_on": null
         },
         {
@@ -1926,7 +1926,7 @@
           "gain": 13408.38,
           "term": "long",
           "opening": false,
-          "held_days": 1308,
+          "held_days": 1309,
           "long_term_on": null
         },
         {
@@ -1940,7 +1940,7 @@
           "gain": 12277.25,
           "term": "long",
           "opening": false,
-          "held_days": 1280,
+          "held_days": 1281,
           "long_term_on": null
         },
         {
@@ -1954,7 +1954,7 @@
           "gain": 11232.66,
           "term": "long",
           "opening": false,
-          "held_days": 1250,
+          "held_days": 1251,
           "long_term_on": null
         },
         {
@@ -1968,7 +1968,7 @@
           "gain": 9694.43,
           "term": "long",
           "opening": false,
-          "held_days": 1218,
+          "held_days": 1219,
           "long_term_on": null
         },
         {
@@ -1982,7 +1982,7 @@
           "gain": 8738.66,
           "term": "long",
           "opening": false,
-          "held_days": 1189,
+          "held_days": 1190,
           "long_term_on": null
         },
         {
@@ -1996,7 +1996,7 @@
           "gain": 7598.5,
           "term": "long",
           "opening": false,
-          "held_days": 1156,
+          "held_days": 1157,
           "long_term_on": null
         },
         {
@@ -2010,7 +2010,7 @@
           "gain": 7752.12,
           "term": "long",
           "opening": false,
-          "held_days": 1126,
+          "held_days": 1127,
           "long_term_on": null
         },
         {
@@ -2024,7 +2024,7 @@
           "gain": 9202.28,
           "term": "long",
           "opening": false,
-          "held_days": 1117,
+          "held_days": 1118,
           "long_term_on": null
         },
         {
@@ -2038,7 +2038,7 @@
           "gain": 10372.39,
           "term": "long",
           "opening": false,
-          "held_days": 1107,
+          "held_days": 1108,
           "long_term_on": null
         },
         {
@@ -2052,7 +2052,7 @@
           "gain": 7365.26,
           "term": "long",
           "opening": false,
-          "held_days": 1065,
+          "held_days": 1066,
           "long_term_on": null
         },
         {
@@ -2066,7 +2066,7 @@
           "gain": 5820.26,
           "term": "long",
           "opening": false,
-          "held_days": 1037,
+          "held_days": 1038,
           "long_term_on": null
         },
         {
@@ -2080,7 +2080,7 @@
           "gain": 5245.32,
           "term": "long",
           "opening": false,
-          "held_days": 1006,
+          "held_days": 1007,
           "long_term_on": null
         },
         {
@@ -2094,7 +2094,7 @@
           "gain": 4523.11,
           "term": "long",
           "opening": false,
-          "held_days": 977,
+          "held_days": 978,
           "long_term_on": null
         },
         {
@@ -2108,7 +2108,7 @@
           "gain": 4387.09,
           "term": "long",
           "opening": false,
-          "held_days": 945,
+          "held_days": 946,
           "long_term_on": null
         },
         {
@@ -2122,7 +2122,7 @@
           "gain": 3654.7,
           "term": "long",
           "opening": false,
-          "held_days": 915,
+          "held_days": 916,
           "long_term_on": null
         },
         {
@@ -2136,7 +2136,7 @@
           "gain": 4611.42,
           "term": "long",
           "opening": false,
-          "held_days": 882,
+          "held_days": 883,
           "long_term_on": null
         },
         {
@@ -2150,7 +2150,7 @@
           "gain": 1289.56,
           "term": "long",
           "opening": false,
-          "held_days": 855,
+          "held_days": 856,
           "long_term_on": null
         },
         {
@@ -2164,7 +2164,7 @@
           "gain": 229.77,
           "term": "long",
           "opening": false,
-          "held_days": 824,
+          "held_days": 825,
           "long_term_on": null
         },
         {
@@ -2178,7 +2178,7 @@
           "gain": -99.08,
           "term": "long",
           "opening": false,
-          "held_days": 791,
+          "held_days": 792,
           "long_term_on": null
         },
         {
@@ -2192,7 +2192,7 @@
           "gain": -392.24,
           "term": "long",
           "opening": false,
-          "held_days": 763,
+          "held_days": 764,
           "long_term_on": null
         },
         {
@@ -2206,7 +2206,7 @@
           "gain": 1326.87,
           "term": "long",
           "opening": false,
-          "held_days": 728,
+          "held_days": 729,
           "long_term_on": null
         },
         {
@@ -2220,7 +2220,7 @@
           "gain": 988.4,
           "term": "long",
           "opening": false,
-          "held_days": 701,
+          "held_days": 702,
           "long_term_on": null
         },
         {
@@ -2234,7 +2234,7 @@
           "gain": 1412.86,
           "term": "long",
           "opening": false,
-          "held_days": 671,
+          "held_days": 672,
           "long_term_on": null
         },
         {
@@ -2248,7 +2248,7 @@
           "gain": 3185.51,
           "term": "long",
           "opening": false,
-          "held_days": 638,
+          "held_days": 639,
           "long_term_on": null
         },
         {
@@ -2262,7 +2262,7 @@
           "gain": 5319.33,
           "term": "long",
           "opening": false,
-          "held_days": 610,
+          "held_days": 611,
           "long_term_on": null
         },
         {
@@ -2276,7 +2276,7 @@
           "gain": 3447.41,
           "term": "long",
           "opening": false,
-          "held_days": 581,
+          "held_days": 582,
           "long_term_on": null
         },
         {
@@ -2290,7 +2290,7 @@
           "gain": 2370.14,
           "term": "long",
           "opening": false,
-          "held_days": 550,
+          "held_days": 551,
           "long_term_on": null
         },
         {
@@ -2304,7 +2304,7 @@
           "gain": 1142.81,
           "term": "long",
           "opening": false,
-          "held_days": 519,
+          "held_days": 520,
           "long_term_on": null
         },
         {
@@ -2318,7 +2318,7 @@
           "gain": 1022.92,
           "term": "long",
           "opening": false,
-          "held_days": 475,
+          "held_days": 476,
           "long_term_on": null
         },
         {
@@ -2332,7 +2332,7 @@
           "gain": 4025.82,
           "term": "long",
           "opening": false,
-          "held_days": 473,
+          "held_days": 474,
           "long_term_on": null
         },
         {
@@ -2346,7 +2346,7 @@
           "gain": 3269.84,
           "term": "long",
           "opening": false,
-          "held_days": 470,
+          "held_days": 471,
           "long_term_on": null
         },
         {
@@ -2360,7 +2360,7 @@
           "gain": 961.79,
           "term": "long",
           "opening": false,
-          "held_days": 459,
+          "held_days": 460,
           "long_term_on": null
         },
         {
@@ -2374,7 +2374,7 @@
           "gain": 700.83,
           "term": "long",
           "opening": false,
-          "held_days": 427,
+          "held_days": 428,
           "long_term_on": null
         },
         {
@@ -2388,7 +2388,7 @@
           "gain": 330.89,
           "term": "long",
           "opening": false,
-          "held_days": 398,
+          "held_days": 399,
           "long_term_on": null
         },
         {
@@ -2400,10 +2400,10 @@
           "cost": 25028.3,
           "value": 24223.77,
           "gain": -804.52,
-          "term": "short",
+          "term": "long",
           "opening": false,
-          "held_days": 365,
-          "long_term_on": "2026-11-04"
+          "held_days": 366,
+          "long_term_on": null
         },
         {
           "folio": null,
@@ -2416,7 +2416,7 @@
           "gain": -911.85,
           "term": "short",
           "opening": false,
-          "held_days": 337,
+          "held_days": 338,
           "long_term_on": "2026-12-02"
         },
         {
@@ -2430,7 +2430,7 @@
           "gain": -986.5,
           "term": "short",
           "opening": false,
-          "held_days": 306,
+          "held_days": 307,
           "long_term_on": "2027-01-02"
         },
         {
@@ -2444,7 +2444,7 @@
           "gain": 96.05,
           "term": "short",
           "opening": false,
-          "held_days": 274,
+          "held_days": 275,
           "long_term_on": "2027-02-03"
         },
         {
@@ -2458,7 +2458,7 @@
           "gain": 29.79,
           "term": "short",
           "opening": false,
-          "held_days": 246,
+          "held_days": 247,
           "long_term_on": "2027-03-03"
         },
         {
@@ -2472,7 +2472,7 @@
           "gain": 2310.15,
           "term": "short",
           "opening": false,
-          "held_days": 216,
+          "held_days": 217,
           "long_term_on": "2027-04-02"
         },
         {
@@ -2486,7 +2486,7 @@
           "gain": 69.77,
           "term": "short",
           "opening": false,
-          "held_days": 183,
+          "held_days": 184,
           "long_term_on": "2027-05-05"
         },
         {
@@ -2500,7 +2500,7 @@
           "gain": 309.2,
           "term": "short",
           "opening": false,
-          "held_days": 155,
+          "held_days": 156,
           "long_term_on": "2027-06-02"
         },
         {
@@ -2514,7 +2514,7 @@
           "gain": -1384.78,
           "term": "short",
           "opening": false,
-          "held_days": 125,
+          "held_days": 126,
           "long_term_on": "2027-07-02"
         },
         {
@@ -2528,7 +2528,7 @@
           "gain": -2831.98,
           "term": "short",
           "opening": false,
-          "held_days": 92,
+          "held_days": 93,
           "long_term_on": "2027-08-04"
         },
         {
@@ -2542,7 +2542,7 @@
           "gain": -2367.63,
           "term": "short",
           "opening": false,
-          "held_days": 63,
+          "held_days": 64,
           "long_term_on": "2027-09-02"
         },
         {
@@ -2556,7 +2556,7 @@
           "gain": 1176.7,
           "term": "short",
           "opening": false,
-          "held_days": 33,
+          "held_days": 34,
           "long_term_on": "2027-10-02"
         },
         {
@@ -2570,7 +2570,7 @@
           "gain": 11767.1,
           "term": "short",
           "opening": false,
-          "held_days": 33,
+          "held_days": 34,
           "long_term_on": "2027-10-02"
         },
         {
@@ -2584,7 +2584,7 @@
           "gain": 598.12,
           "term": "short",
           "opening": false,
-          "held_days": 1,
+          "held_days": 2,
           "long_term_on": "2027-11-03"
         }
       ]
@@ -2628,7 +2628,7 @@
           "gain": -3089.52,
           "term": "long",
           "opening": false,
-          "held_days": 386,
+          "held_days": 387,
           "long_term_on": null
         },
         {
@@ -2642,7 +2642,7 @@
           "gain": -254.04,
           "term": "long",
           "opening": false,
-          "held_days": 379,
+          "held_days": 380,
           "long_term_on": null
         },
         {
@@ -2656,7 +2656,7 @@
           "gain": -309.54,
           "term": "short",
           "opening": false,
-          "held_days": 337,
+          "held_days": 338,
           "long_term_on": "2026-12-02"
         },
         {
@@ -2670,7 +2670,7 @@
           "gain": -646.49,
           "term": "short",
           "opening": false,
-          "held_days": 306,
+          "held_days": 307,
           "long_term_on": "2027-01-02"
         },
         {
@@ -2684,7 +2684,7 @@
           "gain": -287.86,
           "term": "short",
           "opening": false,
-          "held_days": 274,
+          "held_days": 275,
           "long_term_on": "2027-02-03"
         },
         {
@@ -2698,7 +2698,7 @@
           "gain": -307.42,
           "term": "short",
           "opening": false,
-          "held_days": 246,
+          "held_days": 247,
           "long_term_on": "2027-03-03"
         },
         {
@@ -2712,7 +2712,7 @@
           "gain": 611.52,
           "term": "short",
           "opening": false,
-          "held_days": 216,
+          "held_days": 217,
           "long_term_on": "2027-04-02"
         },
         {
@@ -2726,7 +2726,7 @@
           "gain": -129.51,
           "term": "short",
           "opening": false,
-          "held_days": 183,
+          "held_days": 184,
           "long_term_on": "2027-05-05"
         },
         {
@@ -2740,7 +2740,7 @@
           "gain": 54.0,
           "term": "short",
           "opening": false,
-          "held_days": 155,
+          "held_days": 156,
           "long_term_on": "2027-06-02"
         },
         {
@@ -2754,7 +2754,7 @@
           "gain": -272.65,
           "term": "short",
           "opening": false,
-          "held_days": 125,
+          "held_days": 126,
           "long_term_on": "2027-07-02"
         },
         {
@@ -2768,7 +2768,7 @@
           "gain": -543.85,
           "term": "short",
           "opening": false,
-          "held_days": 92,
+          "held_days": 93,
           "long_term_on": "2027-08-04"
         },
         {
@@ -2782,7 +2782,7 @@
           "gain": -450.22,
           "term": "short",
           "opening": false,
-          "held_days": 63,
+          "held_days": 64,
           "long_term_on": "2027-09-02"
         },
         {
@@ -2796,7 +2796,7 @@
           "gain": -363.12,
           "term": "short",
           "opening": false,
-          "held_days": 57,
+          "held_days": 58,
           "long_term_on": "2027-09-08"
         },
         {
@@ -2810,7 +2810,7 @@
           "gain": 103.71,
           "term": "short",
           "opening": false,
-          "held_days": 33,
+          "held_days": 34,
           "long_term_on": "2027-10-02"
         },
         {
@@ -2824,7 +2824,7 @@
           "gain": 162.15,
           "term": "short",
           "opening": false,
-          "held_days": 22,
+          "held_days": 23,
           "long_term_on": "2027-10-13"
         },
         {
@@ -2838,7 +2838,7 @@
           "gain": 114.76,
           "term": "short",
           "opening": false,
-          "held_days": 1,
+          "held_days": 2,
           "long_term_on": "2027-11-03"
         }
       ]

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-03T05:33:52.168975+05:30",
+  "generated_at": "2026-11-03T07:07:21.841965+05:30",
   "as_of": "2026-11-02",
   "rates": {
     "stcg_pct": 20,
@@ -28,8 +28,8 @@
     "gain": 1948290,
     "lt_gain": 1984302,
     "st_gain": -36010,
-    "lt_value": 8469920,
-    "st_value": 1993373
+    "lt_value": 8459920,
+    "st_value": 2003373
   },
   "sell_all": {
     "lt_gain_after_setoff": 1948292,
@@ -2600,17 +2600,17 @@
       "gain": -7363,
       "lt_gain": -3554,
       "st_gain": -3808,
-      "lt_value": 78449,
-      "st_value": 124530,
+      "lt_value": 68449,
+      "st_value": 134530,
       "lots": [
         {
           "folio": null,
           "kind": null,
           "xirr_pct": null,
           "date": null,
-          "units": 1111.4484,
-          "cost": 10007.66,
-          "value": 10575.99,
+          "units": 60.5315,
+          "cost": 7.66,
+          "value": 575.99,
           "gain": 568.33,
           "term": "long",
           "opening": true,
@@ -2826,6 +2826,20 @@
           "opening": false,
           "held_days": 22,
           "long_term_on": "2027-10-13"
+        },
+        {
+          "folio": null,
+          "kind": null,
+          "xirr_pct": null,
+          "date": "2026-11-02",
+          "units": 1050.9169,
+          "cost": 10000.0,
+          "value": 10000.0,
+          "gain": 0.0,
+          "term": "short",
+          "opening": false,
+          "held_days": 1,
+          "long_term_on": "2027-11-03"
         }
       ]
     }

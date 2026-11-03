@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-11-03T03:31:00.723514+05:30",
-  "as_of": "2026-10-30",
+  "generated_at": "2026-11-03T05:33:48.004429+05:30",
+  "as_of": "2026-11-02",
   "value": 10463293,
   "risk_free_pct": 6.5,
   "fd_rate_pct": 7.000000000000001,
-  "basis": "today's mix applied to each fund's real NAV history (3,410 sessions, since 2013-01-03)",
+  "basis": "today's mix applied to each fund's real NAV history (3,411 sessions, since 2013-01-03)",
   "reward": {
-    "cagr_1y": -2.6,
-    "cagr_3y": 11.3,
-    "cagr_5y": 12.2,
-    "cagr_all": 20.5,
+    "cagr_1y": -1.2,
+    "cagr_3y": 11.6,
+    "cagr_5y": 12.4,
+    "cagr_all": 20.7,
     "nifty_cagr": {
       "1y": -10.9,
       "3y": 5.7,
@@ -18,7 +18,7 @@
     "rolling": [
       {
         "years": 1,
-        "windows": 3158,
+        "windows": 3159,
         "worst": -20.2,
         "p5": -2.9,
         "p25": 6.2,
@@ -30,7 +30,7 @@
       },
       {
         "years": 3,
-        "windows": 2654,
+        "windows": 2655,
         "worst": 0.1,
         "p5": 9.5,
         "p25": 16.4,
@@ -42,9 +42,9 @@
       },
       {
         "years": 5,
-        "windows": 2150,
+        "windows": 2151,
         "worst": 5.9,
-        "p5": 12.7,
+        "p5": 12.6,
         "p25": 17.5,
         "median": 22.2,
         "p75": 26.0,
@@ -58,11 +58,11 @@
     "vol_1y_pct": 14.6,
     "vol_3y_pct": 14.5,
     "max_drawdown_pct": -35.4,
-    "current_drawdown_pct": -8.0,
-    "sharpe": 0.33,
-    "sortino": 0.44,
-    "calmar": 0.32,
-    "beta": 1.03,
+    "current_drawdown_pct": -6.8,
+    "sharpe": 0.35,
+    "sortino": 0.47,
+    "calmar": 0.33,
+    "beta": 1.02,
     "downside_beta": 1.15,
     "correlation": 0.86,
     "var95_pct": 1.58,
@@ -200,7 +200,7 @@
       "max_drawdown_pct": -34.6,
       "beta": 0.97,
       "downside_beta": 1.11,
-      "risk_share_pct": 51.0,
+      "risk_share_pct": 50.0,
       "history_years": 12.6
     },
     {
@@ -210,7 +210,7 @@
       "value": 5065548,
       "vol_pct": 14.7,
       "max_drawdown_pct": -36.9,
-      "beta": 1.09,
+      "beta": 1.08,
       "downside_beta": 1.2,
       "risk_share_pct": 48.0,
       "history_years": 13.5

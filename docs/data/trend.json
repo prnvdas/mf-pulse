@@ -1,23 +1,23 @@
 {
-  "generated_at": "2026-11-03T23:31:25.346173+05:30",
-  "as_of": "2026-11-03",
+  "generated_at": "2026-11-04T00:56:09.360437+05:30",
+  "as_of": "2026-11-02",
   "index": "Nifty 50",
-  "level": 23810.85,
-  "score": -3,
+  "level": 23440.8,
+  "score": -4,
   "of": 9,
   "regime": {
-    "code": "mixed",
-    "label": "Mixed"
+    "code": "down",
+    "label": "Downtrend"
   },
   "stretched": false,
-  "drawdown_pct": -9.6,
-  "rsi": 67.0,
+  "drawdown_pct": -11.0,
+  "rsi": 61.0,
   "signals": [
     {
       "k": "above200",
       "label": "Price above its 200-day average",
       "state": "bear",
-      "value": "-0.9%"
+      "value": "-2.4%"
     },
     {
       "k": "cross",
@@ -35,7 +35,7 @@
       "k": "mom12",
       "label": "Higher than a year ago",
       "state": "bear",
-      "value": "-7.7%"
+      "value": "-9.5%"
     },
     {
       "k": "mom3",
@@ -47,7 +47,7 @@
       "k": "rsi",
       "label": "Momentum (RSI) above 50",
       "state": "bull",
-      "value": "67"
+      "value": "61"
     },
     {
       "k": "macd",
@@ -58,8 +58,8 @@
     {
       "k": "high",
       "label": "Within 10% of the 52-week high",
-      "state": "bull",
-      "value": "-9.6%"
+      "state": "neutral",
+      "value": "-11.0%"
     },
     {
       "k": "n500",
@@ -69,7 +69,7 @@
     }
   ],
   "levels": {
-    "ma200": 24017,
+    "ma200": 24028,
     "high52": 26329,
     "bear_line": 21063
   },
@@ -84,7 +84,7 @@
         "start": "2020-03-23",
         "end": "2026-01-02",
         "gain_pct": 246,
-        "now_pct": 213,
+        "now_pct": 208,
         "ongoing": true
       }
     },
@@ -103,7 +103,7 @@
   },
   "year": {
     "since": "2007-09-17",
-    "days": 4441,
+    "days": 4440,
     "years": 17.6,
     "up_pct": 77,
     "p10": -9.7,
@@ -111,14 +111,14 @@
     "p90": 34.1,
     "worst": -57.0,
     "best": 104.4,
-    "level_p10": 21496,
-    "level_p50": 26208,
-    "level_p90": 31926
+    "level_p10": 21162,
+    "level_p50": 25801,
+    "level_p90": 31432
   },
   "edge": {
     "since": "2008-09-22",
     "up": {
-      "days": 2688,
+      "days": 2687,
       "median": 8.9,
       "up_pct": 77
     },
@@ -136,16 +136,16 @@
   "pace": {
     "years": 3,
     "annual_pct": 3.7,
-    "level_12m": 24683
+    "level_12m": 24314
   },
   "view": {
-    "label": "Undecided",
-    "text": "The signals disagree, so there is no clear bull or bear market yet. A direction is confirmed when the price moves clearly above or below its 200-day average."
+    "label": "Weak, but not a bear market",
+    "text": "Prices are below their long-term average and more signals point down than up. A bear market needs a fall of 20% from the high; this is smaller than that."
   },
   "signposts": [
     {
       "text": "Price back above its 200-day average",
-      "level": 24017,
+      "level": 24028,
       "done": false
     },
     {
@@ -155,16 +155,20 @@
     },
     {
       "text": "Higher than a year ago",
-      "level": 25795,
+      "level": 25891,
       "done": false
     },
     {
       "text": "Back within 10% of the 52-week high",
       "level": 23696,
-      "done": true
+      "done": false
     }
   ],
   "series": [
+    [
+      "2023-11-03",
+      19231
+    ],
     [
       "2023-11-10",
       19425
@@ -791,11 +795,11 @@
     ],
     [
       "2026-11-06",
-      23811
+      23441
     ],
     [
-      "2026-11-03",
-      23811
+      "2026-11-02",
+      23441
     ]
   ]
 }

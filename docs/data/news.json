@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-03T13:51:07.320583+05:30",
+  "generated_at": "2026-11-03T14:06:13.345397+05:30",
   "market": [
     {
       "title": "How ITC shares are performing after Q2 results? Should you buy, sell or hold? Brokerages give targets, key levels",
@@ -187,27 +187,27 @@
     "date": "2026-11-03",
     "direction": "up",
     "title": "Why the market rose today",
-    "summary": "The Nifty rose +1.23%, led by Banks (+1.2%), Pharma (\u22120.0%), with IT (\u22120.1%) the weakest.",
+    "summary": "The Nifty rose +1.12%, led by Banks (+1.1%), Pharma (\u22120.1%), with IT (\u22120.3%) the weakest.",
     "points": [
       {
         "kind": "fact",
-        "text": "The market rose: Sensex +1.4%, Nifty 50 +1.2%, Nifty Smallcap 250 +0.6%, Nifty LargeMidcap 250 +1.0%."
+        "text": "The market rose: Sensex +1.4%, Nifty 50 +1.1%, Nifty Smallcap 250 +0.7%, Nifty LargeMidcap 250 +0.9%."
       },
       {
         "kind": "fact",
-        "text": "More stocks rose than fell in your funds (165 up, 96 down)."
+        "text": "More stocks rose than fell in your funds (166 up, 91 down)."
       },
       {
         "kind": "fact",
-        "text": "Biggest drag on your money: Laurus Labs Ltd (\u22122.2%), which cost you about \u20b94,945 because you hold roughly \u20b92.2L of it."
+        "text": "Biggest drag on your money: Laurus Labs Ltd (\u22122.3%), which cost you about \u20b95,049 because you hold roughly \u20b92.2L of it."
       },
       {
         "kind": "fact",
-        "text": "Helping most: HDFC Bank Ltd (+3.1%), adding about \u20b911,998 to your money."
+        "text": "Helping most: HDFC Bank Ltd (+3.2%), adding about \u20b912,216 to your money."
       },
       {
         "kind": "fact",
-        "text": "Estimated effect on your funds: Axis Small Cap +0.70%, Mirae Asset Large & Midcap +0.91%, JioBlackRock Flexi Cap +0.99%. In total your portfolio moved about +\u20b984,747 (+0.81%)."
+        "text": "Estimated effect on your funds: Axis Small Cap +0.75%, Mirae Asset Large & Midcap +0.86%, JioBlackRock Flexi Cap +1.00%. In total your portfolio moved about +\u20b984,796 (+0.81%)."
       },
       {
         "kind": "fact",
@@ -229,22 +229,22 @@
     "sectors": [
       {
         "name": "Banks",
-        "pct": 1.2,
-        "last": 55661.44921875,
+        "pct": 1.13,
+        "last": 55621.05078125,
         "up": null,
         "down": null
       },
       {
         "name": "Pharma",
-        "pct": -0.02,
-        "last": 27099.25,
+        "pct": -0.13,
+        "last": 27068.849609375,
         "up": null,
         "down": null
       },
       {
         "name": "IT",
-        "pct": -0.12,
-        "last": 32401.94921875,
+        "pct": -0.3,
+        "last": 32344.599609375,
         "up": null,
         "down": null
       }
@@ -264,26 +264,26 @@
       },
       {
         "name": "Hang Seng",
-        "level": 23506.64,
-        "pct": 0.48,
+        "level": 23525.97,
+        "pct": 0.57,
         "unit": "",
-        "notable": false,
-        "z": 0.4,
-        "date": "2026-11-03"
-      },
-      {
-        "name": "Brent crude",
-        "level": 106.32,
-        "pct": 1.48,
-        "unit": "$",
         "notable": false,
         "z": 0.5,
         "date": "2026-11-03"
       },
       {
+        "name": "Brent crude",
+        "level": 106.67,
+        "pct": 1.81,
+        "unit": "$",
+        "notable": false,
+        "z": 0.6,
+        "date": "2026-11-03"
+      },
+      {
         "name": "USD/INR",
-        "level": 94.71,
-        "pct": -0.21,
+        "level": 94.69,
+        "pct": -0.22,
         "unit": "\u20b9",
         "notable": false,
         "z": -0.6,
@@ -300,19 +300,19 @@
       },
       {
         "name": "India VIX",
-        "level": 16.02,
-        "pct": 3.34,
+        "level": 16.01,
+        "pct": 3.31,
         "unit": "",
         "notable": false,
-        "z": 0.7,
+        "z": 0.6,
         "date": "2026-11-03"
       }
     ],
     "portfolio": [
       {
         "name": "HDFC Bank Ltd",
-        "move_pct": 3.15,
-        "impact": 11998,
+        "move_pct": 3.21,
+        "impact": 12216,
         "exposure": 380901,
         "funds": [
           "Axis Small Cap",
@@ -336,8 +336,8 @@
       },
       {
         "name": "Multi Commodity Exchange Of India Ltd",
-        "move_pct": 7.84,
-        "impact": 7167,
+        "move_pct": 7.91,
+        "impact": 7229,
         "exposure": 91388,
         "funds": [
           "Axis Small Cap",
@@ -361,8 +361,8 @@
       },
       {
         "name": "ICICI Bank Ltd",
-        "move_pct": 3.02,
-        "impact": 6314,
+        "move_pct": 2.87,
+        "impact": 5997,
         "exposure": 209055,
         "funds": [
           "Mirae Asset Large & Midcap",
@@ -385,8 +385,8 @@
       },
       {
         "name": "Laurus Labs Ltd",
-        "move_pct": -2.23,
-        "impact": -4945,
+        "move_pct": -2.27,
+        "impact": -5049,
         "exposure": 222014,
         "funds": [
           "Axis Small Cap",
@@ -409,38 +409,31 @@
       },
       {
         "name": "Go Digit General Insurance Ltd.",
-        "move_pct": -5.12,
-        "impact": -2390,
+        "move_pct": -5.35,
+        "impact": -2495,
         "exposure": 46654,
         "funds": [
           "Mirae Asset Large & Midcap"
         ],
-        "headlines": []
-      },
-      {
-        "name": "Reliance Industries Ltd",
-        "move_pct": -0.86,
-        "impact": -1612,
-        "exposure": 187120,
-        "funds": [
-          "Axis Small Cap",
-          "Mirae Asset Large & Midcap",
-          "JioBlackRock Flexi Cap"
-        ],
         "headlines": [
           {
-            "title": "Richest person in Asia: Mukesh Ambani vs Zhang Yiming net worth \u2014 Reliance boss overtakes China's ByteDance TikTok head",
-            "source": "Livemint",
-            "link": "https://news.google.com/rss/articles/CBMiiAJBVV95cUxQSlZaNXg5Zl8wRFh4Z3JCdFRGNDlkV3l4T2ktS2lUcEVNREltRU5Mb0NrZDRPQkRza1ZJYldyRVpXLXloLVl0akUwMGx3ZXM1aFBBa0xFNEZFUEF5TVFvVGkwUHRYRnF4WlE2ZEw1OTJVSnhrOUtKeGtvcUhsVzNJRHdyQnRxNzZzY0dIaFdHdFl4TWVra2pnR05sLXRRbjRhV0lqVGNQcDFldEFmOWdtWWdMN0kxaVN6UzNFeEFvRXROS2pPeVJOSm9JclhUVS0tWmlTWWpLX1dwaUdFT1R0bVhBY0ZWckVtZTZlbFQtWjUzVzlBWGV5LWppNEdldTRGaU8wYTNSWGrSAY4CQVVfeXFMTWtXNnZlck1uM1JhaG9NYmdQU0RKdW9CZUEzMG54b3c4SFJXcF9teXA5UU1ucEVwUWYzUHpndWhVUUlmNmtYYkM3SUptSjZVLU1oekhCcllNVFFOVlRXY2FlQ1RiakJxSURTOVpIemoyZFk4ZGpJN3lvdmJiT21nYmJXVGdZZ3FMWXA1Yy1rVi1jcnVuX0JkZ2l2RXVqNDNTRkJiLUhHNDFCUF9PdDZRMXkxSjVyMTE0SUxIWktidzc3RHNVNHp4Rkk4NDRNc2tNbjhjT1N6MXVrWUN6Z2FyWmhaWFFuOXAyTk1rUWVWVDJtN0tCRFJaNHRNbFkxLTJxUmJaTnNyeDBKNk42WkJB?oc=5",
-            "published": "2026-11-03T04:36:57+00:00"
-          },
-          {
-            "title": "Reliance Industries among 8 stocks showing RSI Trending Up",
-            "source": "The Economic Times",
-            "link": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxPSXZ5Y2JCR045QllmSjBvWXRrc05ZVVVJZF9feE51eFN4Ym9zUGZYbU9aWWQycmhxV0hlQ1FTRkhKbEpSRU1odUI2OFkyM1htTTRLSEotcjZwZGF2Z0xWYzIxdkJjcWgtWkxPUkZLSzB3dW1VTkJGZHpGQlJpMTRoMzd0cndTeHNvM0xoNmNVTkozVUE0NE1kR0MydkxIOFJOWkNDZF9CU3VCS0hQVy12UFdpSzQzVVVGaDFlNVVjbkRlaURjMzJLZ1VWbDhkZURrbUVJbjAzYUVVVmtFOHc?oc=5",
-            "published": "2026-11-03T04:25:25+00:00"
+            "title": "Go Digit General Insurance Limited (GODIGIT.BO) Seasonal returns chart",
+            "source": "Yahoo Finance UK",
+            "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE51aEluUzA0WV9MZE9uNldSbFRKT0kyQldfYUl6RElBWmo0VlhEblI3aDR6YlNqT3lSRzZrZU5MdHYxOEtacXFlMVZtVUtvTEliZEpUTjc0bGJiNTJ3LVdUdDhVcVZYczdRTlE?oc=5",
+            "published": "2026-11-02T15:48:38+00:00"
           }
         ]
+      },
+      {
+        "name": "PB Fintech Ltd",
+        "move_pct": -1.24,
+        "impact": -2067,
+        "exposure": 167351,
+        "funds": [
+          "Axis Small Cap",
+          "Mirae Asset Large & Midcap"
+        ],
+        "headlines": []
       }
     ],
     "headlines": [
@@ -492,6 +485,6 @@
       "nse_archive_sectors": false,
       "yahoo_sectors_fallback": true
     },
-    "rich_at": "2026-11-03T08:20:45.060435+00:00"
+    "rich_at": "2026-11-03T08:35:50.757211+00:00"
   }
 }

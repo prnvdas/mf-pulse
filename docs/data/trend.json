@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-11-03T14:57:26.341959+05:30",
+  "generated_at": "2026-11-03T15:34:57.145811+05:30",
   "as_of": "2026-11-03",
   "index": "Nifty 50",
-  "level": 23697.55,
+  "level": 23810.85,
   "score": -3,
   "of": 9,
   "regime": {
@@ -10,14 +10,14 @@
     "label": "Mixed"
   },
   "stretched": false,
-  "drawdown_pct": -10.0,
-  "rsi": 65.0,
+  "drawdown_pct": -9.6,
+  "rsi": 67.0,
   "signals": [
     {
       "k": "above200",
       "label": "Price above its 200-day average",
       "state": "bear",
-      "value": "-1.3%"
+      "value": "-0.9%"
     },
     {
       "k": "cross",
@@ -35,19 +35,19 @@
       "k": "mom12",
       "label": "Higher than a year ago",
       "state": "bear",
-      "value": "-8.1%"
+      "value": "-7.7%"
     },
     {
       "k": "mom3",
       "label": "Higher than three months ago",
       "state": "bear",
-      "value": "-4.3%"
+      "value": "-3.9%"
     },
     {
       "k": "rsi",
       "label": "Momentum (RSI) above 50",
       "state": "bull",
-      "value": "65"
+      "value": "67"
     },
     {
       "k": "macd",
@@ -59,7 +59,7 @@
       "k": "high",
       "label": "Within 10% of the 52-week high",
       "state": "bull",
-      "value": "-10.0%"
+      "value": "-9.6%"
     },
     {
       "k": "n500",
@@ -84,7 +84,7 @@
         "start": "2020-03-23",
         "end": "2026-01-02",
         "gain_pct": 246,
-        "now_pct": 211,
+        "now_pct": 213,
         "ongoing": true
       }
     },
@@ -111,9 +111,9 @@
     "p90": 34.1,
     "worst": -57.0,
     "best": 104.4,
-    "level_p10": 21394,
-    "level_p50": 26083,
-    "level_p90": 31774
+    "level_p10": 21496,
+    "level_p50": 26208,
+    "level_p90": 31926
   },
   "edge": {
     "since": "2008-09-22",
@@ -136,7 +136,7 @@
   "pace": {
     "years": 3,
     "annual_pct": 3.7,
-    "level_12m": 24565
+    "level_12m": 24683
   },
   "view": {
     "label": "Undecided",
@@ -791,11 +791,11 @@
     ],
     [
       "2026-11-06",
-      23698
+      23811
     ],
     [
       "2026-11-03",
-      23698
+      23811
     ]
   ]
 }

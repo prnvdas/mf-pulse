@@ -3982,6 +3982,8 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
 
   if (SOURCE === "batch" || SOURCE === "relay" || (SOURCE === "sheet" ? SHEET : PROXY)) run(); else showSetup(SOURCE_HELP);
 })();
+// Keeps the site usable when the connection to GitHub is slow or down (see sw.js). Left off in automated tests unless asked for with ?sw=1.
+if ("serviceWorker" in navigator && (!navigator.webdriver || /[?&]sw=1/.test(location.search))) navigator.serviceWorker.register("sw.js").catch(() => {});
 </script>
 </body>
 </html>

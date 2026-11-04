@@ -11,6 +11,7 @@ on:
     branches: [main]
     paths:
       - "docs/index.html"
+      - "docs/sw.js"
       - "docs/*.svg"
       - "docs/*.webmanifest"
       - "src/**"

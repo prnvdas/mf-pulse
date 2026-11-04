@@ -196,6 +196,12 @@ def main() -> None:
             e["sip_applied_month"] = prev
             print(f"[info] {fid}: statement is dated before the SIP day ({sip_day[fid]}); this month's SIP will be added by reconcile")
     write_json("state.json", state)
+    # The top of the page reads latest.json: bring its value and invested up to the statement now, not at the next estimate or nightly run.
+    from reconcile import settle_latest
+    latest = read_json("latest.json", None)
+    if settle_latest(latest, state):
+        write_json("latest.json", latest)
+        print("[ok] latest.json brought up to the statement's value and invested amount")
     out = {"as_on": st["as_on"], "imported_at": now_ist().isoformat(), "source": "Groww holdings statement",
            "portfolio": {"invested": sm.get("invested"), "value": sm.get("value"), "xirr_pct": sm.get("xirr_pct")},
            "funds": [{"fund_id": p["fund_id"], "name": p["name"], "units": round(p["units"], 3), "invested": round(p["invested"], 2),

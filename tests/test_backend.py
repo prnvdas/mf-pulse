@@ -228,6 +228,16 @@ class SettledSessions(unittest.TestCase):
         self.assertEqual(latest["totals"]["today_impact"], 0.0)
         self.assertFalse(reconcile.settle_latest(latest, state))      # idempotent
 
+    def test_a_statement_that_changes_units_and_invested_reaches_the_top_of_the_page(self):
+        latest = {"funds": [{"id": "f", "name": "F", "current_value": 1000.0, "invested": 800.0, "last_nav": 10.0, "nav_move_pct": 0.0, "rupee_impact": 0.0}],
+                  "totals": {"current_value": 1000.0, "invested": 800.0}}
+        state = {"f": {"units": 105.0, "last_nav": 10.0, "seed_invested": 880.0, "last_nav_date": "03-Nov-2026"}}   # the statement: 5 more units, 80 more invested
+        self.assertTrue(reconcile.settle_latest(latest, state))
+        self.assertEqual(latest["funds"][0]["current_value"], 1050.0)
+        self.assertEqual(latest["totals"]["current_value"], 1050.0)
+        self.assertEqual(latest["totals"]["invested"], 880.0)
+        self.assertEqual(latest["totals"]["total_returns"], 170.0)
+
 
 class Attribution(unittest.TestCase):
     HOLD = {"f1": {"holdings": [{"name": "A Ltd", "ticker": "A.NS", "weight_pct": 30.0}, {"name": "B Ltd", "ticker": "B.NS", "weight_pct": 20.0},

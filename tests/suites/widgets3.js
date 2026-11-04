@@ -105,6 +105,14 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
   const fresh=await p3.evaluate(()=>({cv:document.getElementById('cv').innerText,tax:!document.getElementById('taxWrap').hidden,money:!document.getElementById('moneyWrap').hidden,body:document.body.innerText.length}));
   ok(/₹/.test(fresh.cv)&&!fresh.tax&&!fresh.money&&fresh.body>1500,'first visit with two stalled files: the rest of the page still loads, those two sections wait',JSON.stringify(fresh));
   ok(!errs.length,'stalled-file errors',errs[0]); await ctx.close(); await ctx2.close();}
+ // the top of the page needs only config.json and latest.json: it is drawn at once even if every other file is slow (phone on a weak connection)
+ {const ctx=await b.newContext({viewport:{width:390,height:800}});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+  await p.clock.install({time:new Date('2026-10-12T08:30:00Z')});
+  await p.route(/\/data\/(?!config|latest)[a-z_]+\.json/,()=>{});                      // every other data file never answers
+  await p.goto(process.env.BASE||'http://localhost:8000/index.html',{waitUntil:'domcontentloaded'});
+  for(let i=0;i<8;i++){await p.waitForTimeout(150);await p.clock.fastForward(250);}       // about two seconds in: far below the 10 s limit
+  const r=await p.evaluate(()=>({cv:document.getElementById('cv').innerText,iv:document.getElementById('iv').innerText,funds:document.querySelectorAll('#funds tr').length}));
+  ok(/₹/.test(r.cv)&&/₹/.test(r.iv)&&r.funds>=3,'two seconds in, with every other file stalled: current value, invested and the fund rows are already shown',JSON.stringify(r)); ok(!errs.length,'early-draw errs',errs[0]); await ctx.close();}
  // XIRR is worked out live from your dated money in and today's value (not copied from the last Groww statement)
  {const {p,ctx,errs}=await page();
   const m=await p.evaluate(()=>({one:xirrOf([["2025-01-01",100]],"2026-01-01",110),two:xirrOf([["2025-01-01",100],["2025-07-02",100]],"2026-01-01",230),none:xirrOf([["2025-01-01",100]],"2026-01-01",0)}));

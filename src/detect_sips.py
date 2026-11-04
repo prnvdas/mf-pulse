@@ -51,7 +51,15 @@ def detect(rows: list[tuple[dt.date, str, float]]) -> tuple[list[dict], list[str
                 best = (key, amt, ds)
         if best:
             _, amt, ds = best
-            out.append({"fund_id": f, "amount": amt, "day_of_month": int(statistics.median(sorted(d.day for d in ds)))})
+            day = int(statistics.median(sorted(d.day for d in ds)))
+            # A step-up: this month's SIP day has passed with a different amount and the old amount was not bought this month. One purchase
+            # near the usual day, between half and double the old amount, is taken as the new SIP; a lump sum on another day, or one bought
+            # alongside the old SIP, is not (and if the old SIP then shows up later in the month, the next run goes back to it).
+            if cur not in {d.replace(day=1) for d in ds}:
+                new = [a for d, a in xs if d.replace(day=1) == cur and abs(d.day - day) <= 4 and 0.5 <= a / amt <= 2 and int(round(a / 100.0)) * 100 != amt]
+                if len(new) == 1:
+                    amt = int(round(new[0] / 100.0)) * 100
+            out.append({"fund_id": f, "amount": amt, "day_of_month": day})
     return out, sorted(by)
 
 

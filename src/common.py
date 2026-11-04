@@ -57,11 +57,20 @@ def load_portfolio(include_closed: bool = False) -> dict:
     if isinstance(det.get("sips"), list) and det.get("funds_checked"):
         checked = set(det["funds_checked"])
         cfg["sips"] = [s for s in cfg.get("sips", []) if s["fund_id"] not in checked] + det["sips"]
+    # A SIP you know ends on a date (the order history can't say so): `sip_ends: {fund-id: "YYYY-MM"}` in portfolio.yaml keeps counting it
+    # through that month and then stops, so no SIP purchase is logged or projected afterwards.
+    cfg["sips"] = live_sips(cfg.get("sips", []), cfg.get("sip_ends"))
     closed = {c.get("id") for c in _json("funds_closed.json", {}).get("closed", []) if isinstance(c, dict)}
     if closed and not include_closed:
         cfg["funds"] = [f for f in cfg["funds"] if f["id"] not in closed]
         cfg["sips"] = [s for s in cfg.get("sips", []) if s["fund_id"] not in closed]
     return cfg
+
+
+def live_sips(sips: list[dict], ends: dict | None) -> list[dict]:
+    """The SIPs still running this month: one with an end month (YYYY-MM) is kept through that month and dropped after it."""
+    this_month = now_ist().strftime("%Y-%m")
+    return [s for s in sips if str((ends or {}).get(s["fund_id"]) or "9999-12") >= this_month]
 
 
 def load_holdings(fund_id: str) -> dict:

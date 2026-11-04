@@ -96,8 +96,12 @@ sips:
     amount: 50000
     day_of_month: 3
   - fund_id: jioblackrock-flexicap
-    amount: 10000
+    amount: 11000
     day_of_month: 3
+
+# A SIP that is known to end: counted through that month (YYYY-MM), then no longer counted, logged or projected.
+sip_ends:
+  jioblackrock-flexicap: "2027-10"
 
 estimator:
   # How the untracked tail of each fund is modelled.

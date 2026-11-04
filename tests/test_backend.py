@@ -275,6 +275,50 @@ class Attribution(unittest.TestCase):
         self.assertIsNone(f["market_rs"]); self.assertIsNone(f["vs_benchmark_pp"]); self.assertIsNone(att["portfolio"]["market_rs"])
 
 
+class SipStepUp(unittest.TestCase):
+    def _rows(self, extra):
+        base = [(D(2026, m, 1), "f", 9999.0) for m in range(5, 11)]            # May to October: the old SIP of about 10,000
+        return base + extra
+
+    def test_a_new_amount_on_the_sip_day_is_a_step_up(self):
+        sips, _ = detect_sips.detect(self._rows([(D(2026, 11, 2), "f", 10999.0)]))
+        self.assertEqual(sips[0]["amount"], 11000)
+
+    def test_a_lump_sum_on_another_day_is_not(self):
+        sips, _ = detect_sips.detect(self._rows([(D(2026, 11, 14), "f", 20000.0)]))
+        self.assertEqual(sips[0]["amount"], 10000)
+
+    def test_a_purchase_alongside_the_old_sip_is_not(self):
+        sips, _ = detect_sips.detect(self._rows([(D(2026, 11, 1), "f", 9999.0), (D(2026, 11, 2), "f", 20000.0)]))
+        self.assertEqual(sips[0]["amount"], 10000)
+
+    def test_a_far_off_amount_on_the_sip_day_is_not(self):
+        sips, _ = detect_sips.detect(self._rows([(D(2026, 11, 2), "f", 60000.0)]))      # more than double: a lump sum, not a step-up
+        self.assertEqual(sips[0]["amount"], 10000)
+
+    def test_two_months_at_the_new_amount_settle_it(self):
+        sips, _ = detect_sips.detect(self._rows([(D(2026, 11, 2), "f", 10999.0), (D(2026, 12, 1), "f", 10999.0)]))
+        self.assertEqual(sips[0]["amount"], 11000)
+
+
+class SipEnds(unittest.TestCase):
+    SIPS = [{"fund_id": "a", "amount": 1, "day_of_month": 1}, {"fund_id": "b", "amount": 1, "day_of_month": 1}]
+
+    def _at(self, y, m, d):
+        return unittest.mock.patch.object(common, "now_ist", lambda: dt.datetime(y, m, d, tzinfo=common.IST))
+
+    def test_a_sip_is_counted_through_its_last_month_then_stops(self):
+        with self._at(2026, 10, 31):
+            self.assertEqual([s["fund_id"] for s in common.live_sips(self.SIPS, {"a": "2026-10"})], ["a", "b"])
+        with self._at(2026, 11, 1):
+            self.assertEqual([s["fund_id"] for s in common.live_sips(self.SIPS, {"a": "2026-10"})], ["b"])
+
+    def test_no_end_dates_changes_nothing(self):
+        with self._at(2030, 1, 1):
+            self.assertEqual(common.live_sips(self.SIPS, None), self.SIPS)
+            self.assertEqual(common.live_sips(self.SIPS, {}), self.SIPS)
+
+
 class HolidayHealth(unittest.TestCase):
     def test_no_prices_on_a_holiday_is_not_a_fault(self):
         self.assertEqual(estimate.holiday_health()["status"], "ok")

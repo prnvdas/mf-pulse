@@ -571,36 +571,36 @@
     {
       "date": "2026-11-04",
       "phase": "final",
-      "generated_at": "2026-11-04T16:55:42.373356+05:30",
+      "generated_at": "2026-11-04T23:34:32.672028+05:30",
       "portfolio": {
-        "value": 10563172,
-        "impact": 127023,
-        "market_rs": 178508,
-        "selection_rs": -51485,
+        "value": 10566333,
+        "impact": 127063,
+        "market_rs": 178543,
+        "selection_rs": -51480,
         "sectors": [
           {
             "sector": "Industrials",
-            "impact": 24682
+            "impact": 24688
           },
           {
             "sector": "Materials",
-            "impact": 24018
+            "impact": 24025
           },
           {
             "sector": "Financials",
-            "impact": 21951
+            "impact": 21963
           },
           {
             "sector": "Healthcare",
-            "impact": 18377
+            "impact": 18380
           },
           {
             "sector": "Consumer (discretionary)",
-            "impact": 16691
+            "impact": 16698
           },
           {
             "sector": "Consumer staples",
-            "impact": 8678
+            "impact": 8680
           },
           {
             "sector": "Real Estate",
@@ -612,11 +612,11 @@
           },
           {
             "sector": "Energy",
-            "impact": 1246
+            "impact": 1248
           },
           {
             "sector": "Utilities",
-            "impact": 1031
+            "impact": 1032
           },
           {
             "sector": "Unclassified",
@@ -782,8 +782,8 @@
         {
           "id": "jioblackrock-flexicap",
           "name": "JioBlackRock Flexi Cap Fund Direct Growth",
-          "value": 206318,
-          "impact": 2623,
+          "value": 209480,
+          "impact": 2663,
           "nav_move_pct": 1.271,
           "benchmark": {
             "ticker": "^CRSLDX",
@@ -791,41 +791,41 @@
             "move_pct": 1.1
           },
           "vs_benchmark_pp": 0.17,
-          "market_rs": 2280,
-          "selection_rs": 343,
+          "market_rs": 2315,
+          "selection_rs": 348,
           "sectors": [
             {
               "sector": "Financials",
-              "impact": 749,
+              "impact": 761,
               "pp": 0.363
             },
             {
               "sector": "Materials",
-              "impact": 512,
+              "impact": 520,
               "pp": 0.248
             },
             {
               "sector": "Consumer (discretionary)",
-              "impact": 451,
+              "impact": 458,
               "pp": 0.219
             },
             {
               "sector": "Industrials",
-              "impact": 441,
+              "impact": 448,
               "pp": 0.214
             },
             {
               "sector": "Healthcare",
-              "impact": 160,
+              "impact": 162,
               "pp": 0.077
             },
             {
               "sector": "Consumer staples",
-              "impact": 142,
+              "impact": 144,
               "pp": 0.069
             }
           ],
-          "other_sectors_rs": 174,
+          "other_sectors_rs": 176,
           "unpriced_rs": 0,
           "cost_rs": -6,
           "cash_pct": 6.22,
@@ -833,24 +833,24 @@
             {
               "name": "HDFC Bank Ltd",
               "move_pct": 1.54,
-              "impact": 188
+              "impact": 191
             },
             {
               "name": "Bharat Heavy Electricals Ltd",
               "move_pct": 5.96,
-              "impact": 127
+              "impact": 129
             }
           ],
           "hurt": [
             {
               "name": "Tata Consultancy Services Ltd",
               "move_pct": -2.52,
-              "impact": -76
+              "impact": -77
             },
             {
               "name": "Infosys Ltd",
               "move_pct": -1.73,
-              "impact": -68
+              "impact": -69
             }
           ]
         }

@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-04T15:55:28.097544+05:30",
-  "generated_label": "04 Nov 2026, 15:55 IST",
+  "generated_at": "2026-11-04T16:55:26.459468+05:30",
+  "generated_label": "04 Nov 2026, 16:55 IST",
   "stale": false,
   "phase": "final",
   "market_open": false,
@@ -9,9 +9,9 @@
     "invested": 8510996.23,
     "total_returns": 2052175.37,
     "total_returns_pct": 24.11,
-    "today_impact": 126679.92,
-    "today_pct": 1.199,
-    "band_rupees": 7563.0
+    "today_impact": 127022.9,
+    "today_pct": 1.203,
+    "band_rupees": 7327.0
   },
   "funds": [
     {
@@ -95,18 +95,18 @@
       "name": "Mirae Asset Large & Midcap Fund Direct Growth",
       "current_value": 5126068.92,
       "invested": 4124865.44,
-      "nav_move_pct": 0.981,
-      "rupee_impact": 50301.78,
+      "nav_move_pct": 0.987,
+      "rupee_impact": 50578.04,
       "last_nav": 171.594,
-      "projected_nav": 173.2778,
-      "band_rupees": 5458.0,
-      "coverage_pct": 95.2,
+      "projected_nav": 173.2871,
+      "band_rupees": 5127.0,
+      "coverage_pct": 96.2,
       "cash_pct": 3.77,
-      "tail_pct": 1.0,
+      "tail_pct": 0.0,
       "tail_move_pct": 1.42,
       "holdings_as_of": "2026-11-04",
       "holdings_count": 78,
-      "priced_count": 77,
+      "priced_count": 78,
       "top_contributors": [
         {
           "name": "HDFC Bank Ltd",
@@ -171,18 +171,18 @@
       "name": "JioBlackRock Flexi Cap Fund Direct Growth",
       "current_value": 206317.75,
       "invested": 211339.44,
-      "nav_move_pct": 1.239,
-      "rupee_impact": 2556.03,
+      "nav_move_pct": 1.271,
+      "rupee_impact": 2622.75,
       "last_nav": 9.6247,
-      "projected_nav": 9.7439,
-      "band_rupees": 221.0,
-      "coverage_pct": 92.7,
+      "projected_nav": 9.7471,
+      "band_rupees": 191.0,
+      "coverage_pct": 95.0,
       "cash_pct": 6.22,
-      "tail_pct": 1.1,
+      "tail_pct": 0.0,
       "tail_move_pct": 1.1,
       "holdings_as_of": "2026-11-04",
       "holdings_count": 127,
-      "priced_count": 126,
+      "priced_count": 127,
       "top_contributors": [
         {
           "name": "HDFC Bank Ltd",
@@ -500,12 +500,12 @@
       }
     ],
     "breadth": {
-      "up": 203,
+      "up": 204,
       "down": 56,
-      "total": 259
+      "total": 260
     },
-    "portfolio_pct": 1.199,
-    "portfolio_impact": 126680,
+    "portfolio_pct": 1.203,
+    "portfolio_impact": 127023,
     "funds": [
       {
         "id": "axis-small-cap",
@@ -516,14 +516,14 @@
       {
         "id": "mirae-large-midcap",
         "name": "Mirae Asset Large & Midcap Fund Direct Growth",
-        "nav_move_pct": 0.981,
-        "impact": 50302
+        "nav_move_pct": 0.987,
+        "impact": 50578
       },
       {
         "id": "jioblackrock-flexicap",
         "name": "JioBlackRock Flexi Cap Fund Direct Growth",
-        "nav_move_pct": 1.239,
-        "impact": 2556
+        "nav_move_pct": 1.271,
+        "impact": 2623
       }
     ]
   },
@@ -570,23 +570,23 @@
       "name": "Brent crude",
       "ticker": "BZ=F",
       "unit": "$",
-      "level": 102.17,
-      "change": -1.35,
-      "move_pct": -1.3,
-      "as_of": "2026-11-04T15:43:43+05:30"
+      "level": 102.4,
+      "change": -1.12,
+      "move_pct": -1.08,
+      "as_of": "2026-11-04T16:45:29+05:30"
     }
   ],
   "breadth": {
-    "up": 203,
+    "up": 204,
     "down": 56,
-    "total": 259
+    "total": 260
   },
   "health": {
     "status": "ok",
     "issues": [],
-    "checked_at": "2026-11-04T15:55:43.839284+05:30",
+    "checked_at": "2026-11-04T16:55:41.934812+05:30",
     "repaired": 0,
-    "gap": 1,
+    "gap": 0,
     "ignored": 0
   },
   "accuracy": {
@@ -615,6 +615,6 @@
       }
     }
   },
-  "tickers_resolved": 262,
+  "tickers_resolved": 263,
   "tickers_total": 263
 }

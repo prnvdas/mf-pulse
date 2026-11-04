@@ -571,12 +571,12 @@
     {
       "date": "2026-11-04",
       "phase": "final",
-      "generated_at": "2026-11-04T15:55:44.375966+05:30",
+      "generated_at": "2026-11-04T16:55:42.373356+05:30",
       "portfolio": {
         "value": 10563172,
-        "impact": 126680,
+        "impact": 127023,
         "market_rs": 178508,
-        "selection_rs": -51828,
+        "selection_rs": -51485,
         "sectors": [
           {
             "sector": "Industrials",
@@ -584,7 +584,7 @@
           },
           {
             "sector": "Materials",
-            "impact": 22892
+            "impact": 24018
           },
           {
             "sector": "Financials",
@@ -708,8 +708,8 @@
           "id": "mirae-large-midcap",
           "name": "Mirae Asset Large & Midcap Fund Direct Growth",
           "value": 5126069,
-          "impact": 50302,
-          "nav_move_pct": 0.981,
+          "impact": 50578,
+          "nav_move_pct": 0.987,
           "benchmark": {
             "ticker": "^NSEMDCP50",
             "name": null,
@@ -717,17 +717,17 @@
           },
           "vs_benchmark_pp": -0.44,
           "market_rs": 73003,
-          "selection_rs": -22701,
+          "selection_rs": -22425,
           "sectors": [
+            {
+              "sector": "Materials",
+              "impact": 12238,
+              "pp": 0.239
+            },
             {
               "sector": "Financials",
               "impact": 11388,
               "pp": 0.222
-            },
-            {
-              "sector": "Materials",
-              "impact": 11204,
-              "pp": 0.219
             },
             {
               "sector": "Industrials",
@@ -751,7 +751,7 @@
             }
           ],
           "other_sectors_rs": 3186,
-          "unpriced_rs": 728,
+          "unpriced_rs": 0,
           "cost_rs": -121,
           "cash_pct": 3.77,
           "helped": [
@@ -783,21 +783,26 @@
           "id": "jioblackrock-flexicap",
           "name": "JioBlackRock Flexi Cap Fund Direct Growth",
           "value": 206318,
-          "impact": 2556,
-          "nav_move_pct": 1.239,
+          "impact": 2623,
+          "nav_move_pct": 1.271,
           "benchmark": {
             "ticker": "^CRSLDX",
             "name": null,
             "move_pct": 1.1
           },
-          "vs_benchmark_pp": 0.13,
+          "vs_benchmark_pp": 0.17,
           "market_rs": 2280,
-          "selection_rs": 276,
+          "selection_rs": 343,
           "sectors": [
             {
               "sector": "Financials",
               "impact": 749,
               "pp": 0.363
+            },
+            {
+              "sector": "Materials",
+              "impact": 512,
+              "pp": 0.248
             },
             {
               "sector": "Consumer (discretionary)",
@@ -808,11 +813,6 @@
               "sector": "Industrials",
               "impact": 441,
               "pp": 0.214
-            },
-            {
-              "sector": "Materials",
-              "impact": 421,
-              "pp": 0.204
             },
             {
               "sector": "Healthcare",
@@ -826,7 +826,7 @@
             }
           ],
           "other_sectors_rs": 174,
-          "unpriced_rs": 25,
+          "unpriced_rs": 0,
           "cost_rs": -6,
           "cash_pct": 6.22,
           "helped": [

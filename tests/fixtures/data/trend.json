@@ -811,5 +811,67 @@
       "median": 7.5,
       "up_pct": 85
     }
-  }
+  },
+  "earnings_funds": [
+    {
+      "fund": "Axis Small Cap Fund Direct Growth",
+      "index": "Nifty Smallcap 250",
+      "as_of": "2026-10-23",
+      "since": "2017-04",
+      "months": 106,
+      "growth_pct": -4.8,
+      "median_pct": 12.7,
+      "slower_than_pct": 20,
+      "low": {
+        "months": 30,
+        "median": 11.3,
+        "up_pct": 70
+      },
+      "high": {
+        "months": 35,
+        "median": -0.1,
+        "up_pct": 50
+      }
+    },
+    {
+      "fund": "Mirae Asset Large & Midcap Fund Direct Growth",
+      "index": "Nifty LargeMidcap 250",
+      "as_of": "2026-10-23",
+      "since": "2018-11",
+      "months": 96,
+      "growth_pct": 15.0,
+      "median_pct": 14.8,
+      "slower_than_pct": 20,
+      "low": {
+        "months": 30,
+        "median": 19.8,
+        "up_pct": 70
+      },
+      "high": {
+        "months": 35,
+        "median": 7.7,
+        "up_pct": 50
+      }
+    },
+    {
+      "fund": "JioBlackRock Flexi Cap Fund Direct Growth",
+      "index": "Nifty 500",
+      "as_of": "2026-10-23",
+      "since": "2014-02",
+      "months": 153,
+      "growth_pct": 8.2,
+      "median_pct": 7.6,
+      "slower_than_pct": 20,
+      "low": {
+        "months": 30,
+        "median": 16.7,
+        "up_pct": 70
+      },
+      "high": {
+        "months": 35,
+        "median": 5.3,
+        "up_pct": 50
+      }
+    }
+  ]
 }

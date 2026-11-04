@@ -490,6 +490,7 @@
   .trmeter i{position:absolute;top:-4px;width:17px;height:17px;margin-left:-8.5px;border-radius:50%;background:var(--paper);border:3px solid var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.3)}
   .trlab{display:flex;margin-top:9px;font-size:11px;color:var(--grey-light)}.trlab span{flex:1;text-align:center}
   .trcard p.trnote{font-size:12.5px;color:var(--grey);margin-top:14px}
+  .trcard td+td,.trcard th+th{padding-left:14px}
   .trsp{list-style:none;margin:10px 0 0;display:grid;gap:7px}
   .trsp li{display:grid;grid-template-columns:22px 1fr;font-size:13.5px;line-height:1.45;color:var(--grey)}
   .trsp li b{font-weight:700;color:var(--grey-light)}.trsp li.done{color:var(--ink)}.trsp li.done b{color:var(--green-deep)}.trsp em{font-style:normal;color:var(--grey-light)}
@@ -3578,14 +3579,23 @@ function renderTrend() {
       (P ? '<div class="pace"><small>Last 3 years\' pace</small><b>' + pts(P.level_12m) + "</b><span>" + sg(P.annual_pct, 1) + "</span></div>" : "") + "</div>" +
       '<p class="sub2">Every 12-month stretch since ' + esc(String(S.since).slice(0, 4)) + " (2008 crash included), applied to today's level: " + S.up_pct + "% ended higher and the worst fell " + sg(S.worst) + ". That period suited Indian shares, so a weaker year is possible. A range from history, not a forecast.</p>"
       : (P ? '<p class="scoreline">If the last ' + P.years + " years' pace simply continued, the Nifty would be near <b>" + pts(P.level_12m) + "</b> in a year (" + sg(P.annual_pct, 1) + ").</p>" : "")) + "</div>";
-  const Q = isObj(T.earnings) && ["growth_pct", "median_pct", "slower_than_pct", "months"].every(k => num(T.earnings[k])) && [T.earnings.low, T.earnings.high].every(x => isObj(x) && num(x.median) && num(x.months)) && /^\d{4}-\d{2}$/.test(String(T.earnings.since)) ? T.earnings : null;
+  const okE = e => isObj(e) && ["growth_pct", "median_pct", "slower_than_pct", "months"].every(k => num(e[k])) && [e.low, e.high].every(x => isObj(x) && num(x.median) && num(x.months)) && /^\d{4}-\d{2}$/.test(String(e.since));
+  const Q = okE(T.earnings) ? T.earnings : null, QF = (Array.isArray(T.earnings_funds) ? T.earnings_funds : []).filter(e => okE(e) && typeof e.fund === "string" && typeof e.index === "string");
   let earn = "";
   if (Q) {
-    const slow = Q.growth_pct < Q.median_pct, gap = Q.high.median - Q.low.median, yr = esc(Q.since.slice(0, 4));
+    const slow = Q.growth_pct < Q.median_pct, gap = e => e.high.median - e.low.median, yr = esc(Q.since.slice(0, 4));
+    const ans = e => gap(e) >= 3 ? "A little." : gap(e) <= -3 ? "Not really." : "Not clearly.";
+    const evid = (name, e) => "<b>" + esc(name) + "</b>: " + sg(e.low.median, 1) + " vs " + sg(e.high.median, 1) + ' <span class="sub2">(' + e.low.months + " and " + e.high.months + " months, since " + esc(e.since.slice(0, 4)) + ")</span>";
+    const ms = [Q.months].concat(QF.map(e => e.months)), lo = Math.round(Math.min(...ms) / 12), hi = Math.round(Math.max(...ms) / 12);
+    const same = QF.length > 1 && QF.every(e => ans(e) === ans(QF[0]));
     earn = '<div class="trcard" style="margin-top:16px"><div class="trk">Are company profits growing?</div><div class="trbig ' + (slow ? "c-amber" : "c-green") + '">' + sg(Q.growth_pct, 1) + "</div>" +
       "<p>Profits of the Nifty 50 companies over the last 12 months, " + (slow ? "slower than usual: " + (100 - Q.slower_than_pct) + "% of the months since " + yr + " were faster." : "faster than usual: " + Q.slower_than_pct + "% of the months since " + yr + " were slower.") +
-      " Does it point to a bull run? <b>" + (gap >= 3 ? "A little." : gap <= -3 ? "Not really." : "Not clearly.") + "</b></p>" +
-      '<details><summary>What the past shows</summary><p class="trnote">Since ' + yr + ", the Nifty's typical next 12 months were " + sg(Q.low.median) + " after the slowest-growth third of months and " + sg(Q.high.median) + " after the fastest third (" + Q.low.months + " and " + Q.high.months + " months; the stretches overlap, so this is about " + Math.round(Q.months / 12) + " separate years of evidence). " +
+      (QF.length ? "" : " Does it point to a bull run? <b>" + ans(Q) + "</b>") + "</p>" +
+      (QF.length ? '<table style="margin-top:12px"><thead><tr><th>Your fund follows</th><th>Profits, 12 months</th><th>Usual</th></tr></thead><tbody>' +
+        QF.map(e => "<tr><td>" + esc(shortName(e.fund)) + '<br><span class="sub2">' + esc(e.index) + '</span></td><td class="' + (e.growth_pct < e.median_pct ? "c-amber" : "c-green") + '"><b>' + sg(e.growth_pct, 1) + "</b></td><td>" + sg(e.median_pct, 1) + "</td></tr>").join("") + "</tbody></table>" +
+        "<p>Do these profits point to a bull run? " + (same ? "For all " + QF.length + " of these indices the answer was the same: <b>" + ans(QF[0]).toLowerCase() + "</b>" : "The past is mixed across them: <b>no single answer</b>") + "</p>" : "") +
+      '<details><summary>What the past shows</summary><p class="trnote">The index\'s typical next 12 months after the slowest-growth third of months, versus after the fastest third:<br>' +
+      [evid("Nifty 50", Q)].concat(QF.map(e => evid(e.index, e))).join("<br>") + "<br>The stretches overlap, so each is only about " + (lo === hi ? lo : lo + " to " + hi) + " separate years of evidence. " +
       "Profits are the last 12 months' reported profits, worked out from NSE's index P/E, and change as results come in. Read this as how companies are doing, not a forecast.</p></details></div>";
   }
   $("trendNote").textContent = "Nifty 50 · " + dmon(T.as_of) + " · an extrapolation of the past, not a forecast";

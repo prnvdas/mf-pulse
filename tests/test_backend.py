@@ -531,6 +531,14 @@ class Trend(unittest.TestCase):
         e = trend.earnings(self._valuation(lambda i: 0.002 + 0.0004 * i if i < 60 else 0.0))
         self.assertTrue(e is None or (e["low"]["months"] >= 20 and e["high"]["months"] >= 20))
 
+    def test_fund_earnings_follow_each_funds_benchmark(self):
+        v = self._valuation(lambda i: 0.01)
+        v["series"]["Nifty 500"] = v["series"]["Nifty 50"]
+        funds = [{"name": "A Fund", "analytics_benchmark": {"name": "Nifty 500"}}, {"name": "B Fund", "analytics_benchmark": {"name": "No Such Index"}}, {"name": "C Fund"}]
+        got = trend.fund_earnings(v, funds)
+        self.assertEqual([(g["fund"], g["index"]) for g in got], [("A Fund", "Nifty 500")])
+        self.assertIn("growth_pct", got[0])
+
     def test_earnings_says_nothing_without_enough_history(self):
         self.assertIsNone(trend.earnings({}))
         self.assertIsNone(trend.earnings({"series": {"Nifty 50": {"2020-01-31": [20, 3, 1, 10000]}}}))

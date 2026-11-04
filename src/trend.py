@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 
 from analytics import fetch_prices
-from common import now_ist, read_json, write_json
+from common import load_portfolio, now_ist, read_json, write_json
 
 FWD = 252                      # trading days in the "next twelve months"
 
@@ -178,10 +178,10 @@ def signal_edge(df: pd.DataFrame) -> dict | None:
     return out
 
 
-def earnings(hist: dict) -> dict | None:
-    """How fast the Nifty 50's profits grew over the last 12 months, and whether that ever told what the next 12 months of the index would bring.
+def earnings(hist: dict, index: str = "Nifty 50") -> dict | None:
+    """How fast an index's profits grew over the last 12 months, and whether that ever told what the next 12 months of the index would bring.
     Profit per index unit is the index level divided by NSE's P/E (valuation_history.json, one reading a month): the last 12 months' reported profits."""
-    rows = ((hist or {}).get("series") or {}).get("Nifty 50") or {}
+    rows = ((hist or {}).get("series") or {}).get(index) or {}
     eps, px = {}, {}
     for d, r in rows.items():
         if isinstance(r, list) and len(r) >= 4 and all(isinstance(x, (int, float)) for x in (r[0], r[3])) and r[0] > 0 and r[3] > 0:
@@ -200,6 +200,17 @@ def earnings(hist: dict) -> dict | None:
         if len(x) < 20:
             return None
         out[k] = {"months": int(len(x)), "median": round(float(np.median(x)), 1), "up_pct": round(float((x > 0).mean() * 100))}
+    return out
+
+
+def fund_earnings(hist: dict, funds: list) -> list[dict]:
+    """The same profit check for the index each fund is measured against (analytics_benchmark.name in portfolio.yaml); funds whose index has too little history are left out."""
+    out = []
+    for f in funds:
+        index = (f.get("analytics_benchmark") or {}).get("name")
+        e = earnings(hist, index) if index else None
+        if e:
+            out.append({"fund": f["name"], "index": index, **e})
     return out
 
 
@@ -247,7 +258,7 @@ def weekly(c: pd.Series, years: int = 3) -> list[list]:
     return [[d.date().isoformat(), round(float(v))] for d, v in w.items()]
 
 
-def build(nifty: pd.Series, n500: pd.Series | None, valuation: dict | None = None) -> dict:
+def build(nifty: pd.Series, n500: pd.Series | None, valuation: dict | None = None, funds: list | None = None) -> dict:
     df = indicators(nifty)
     last = df.iloc[-1]
     extra, of = 0, 8
@@ -277,7 +288,7 @@ def build(nifty: pd.Series, n500: pd.Series | None, valuation: dict | None = Non
         "score": sc, "of": of, "regime": {"code": code, "label": label}, "stretched": stretched,
         "drawdown_pct": pct(last["dd"]), "rsi": round(float(last["rsi"]), 0), "signals": signals,
         "levels": {"ma200": round(float(last["ma200"])), "high52": round(float(last["c"] / (1 + last["dd"]))), "bear_line": round(float(last["c"] / (1 + last["dd"]) * 0.8))},
-        "history": history_summary(nifty), "year": year_range(nifty), "edge": signal_edge(df), "pace": trend_pace(nifty), "earnings": earnings(valuation or {}),
+        "history": history_summary(nifty), "year": year_range(nifty), "edge": signal_edge(df), "pace": trend_pace(nifty), "earnings": earnings(valuation or {}), "earnings_funds": fund_earnings(valuation or {}, funds or []),
     }
     out["view"] = tentative_view(code, float(last["dd"]), out["history"])
     out["signposts"] = signposts(last)
@@ -290,7 +301,7 @@ def main() -> None:
     nifty = prices.get("^NSEI")
     if nifty is None or len(nifty) < 1000:
         sys.exit("[error] not enough Nifty history; trend.json left as it was")
-    doc = build(nifty, prices.get("^CRSLDX"), read_json("valuation_history.json", {}))
+    doc = build(nifty, prices.get("^CRSLDX"), read_json("valuation_history.json", {}), load_portfolio()["funds"])
     write_json("trend.json", doc)
     print(f"[ok] {doc['regime']['label']} ({doc['score']}/{doc['of']}), as of {doc['as_of']}")
 

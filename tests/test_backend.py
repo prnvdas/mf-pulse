@@ -512,6 +512,32 @@ class Trend(unittest.TestCase):
         self.assertLess(y["p10"], y["p50"])
         self.assertLess(y["p50"], y["p90"])
 
+    def _valuation(self, growth_of):
+        # one reading a month for 8 years; the profit of month i is 100 * growth_of(i), the P/E is fixed at 20, so the index is 20 * profit
+        rows, eps = {}, 100.0
+        for i in range(96):
+            eps *= 1 + growth_of(i)
+            rows[f"{2018 + i // 12}-{i % 12 + 1:02d}-28"] = [20.0, 3.0, 1.2, 20.0 * eps]
+        return {"series": {"Nifty 50": rows}}
+
+    def test_earnings_growth_is_the_year_on_year_change_in_index_profit(self):
+        e = trend.earnings(self._valuation(lambda i: 0.01))
+        self.assertAlmostEqual(e["growth_pct"], (1.01 ** 12 - 1) * 100, delta=0.1)
+        self.assertEqual(e["months"], 84)
+        self.assertEqual(e["since"], "2019-01")
+
+    def test_earnings_edge_compares_the_slowest_and_fastest_thirds(self):
+        # profits first accelerate, then stall: the fast third and the slow third must both have a forward return
+        e = trend.earnings(self._valuation(lambda i: 0.002 + 0.0004 * i if i < 60 else 0.0))
+        self.assertTrue(e is None or (e["low"]["months"] >= 20 and e["high"]["months"] >= 20))
+
+    def test_earnings_says_nothing_without_enough_history(self):
+        self.assertIsNone(trend.earnings({}))
+        self.assertIsNone(trend.earnings({"series": {"Nifty 50": {"2020-01-31": [20, 3, 1, 10000]}}}))
+        v = self._valuation(lambda i: 0.01)
+        v["series"]["Nifty 50"] = {d: r for d, r in list(v["series"]["Nifty 50"].items())[:40]}
+        self.assertIsNone(trend.earnings(v))
+
     def test_signal_edge_reports_the_year_after_each_reading(self):
         import numpy as np
         s = self._series(list(100 * np.exp(np.linspace(0, 1.5, 3000) + 0.05 * np.sin(np.arange(3000) / 40))))

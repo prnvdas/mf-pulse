@@ -3578,8 +3578,18 @@ function renderTrend() {
       (P ? '<div class="pace"><small>Last 3 years\' pace</small><b>' + pts(P.level_12m) + "</b><span>" + sg(P.annual_pct, 1) + "</span></div>" : "") + "</div>" +
       '<p class="sub2">Every 12-month stretch since ' + esc(String(S.since).slice(0, 4)) + " (2008 crash included), applied to today's level: " + S.up_pct + "% ended higher and the worst fell " + sg(S.worst) + ". That period suited Indian shares, so a weaker year is possible. A range from history, not a forecast.</p>"
       : (P ? '<p class="scoreline">If the last ' + P.years + " years' pace simply continued, the Nifty would be near <b>" + pts(P.level_12m) + "</b> in a year (" + sg(P.annual_pct, 1) + ").</p>" : "")) + "</div>";
+  const Q = isObj(T.earnings) && ["growth_pct", "median_pct", "slower_than_pct", "months"].every(k => num(T.earnings[k])) && [T.earnings.low, T.earnings.high].every(x => isObj(x) && num(x.median) && num(x.months)) && /^\d{4}-\d{2}$/.test(String(T.earnings.since)) ? T.earnings : null;
+  let earn = "";
+  if (Q) {
+    const slow = Q.growth_pct < Q.median_pct, gap = Q.high.median - Q.low.median, yr = esc(Q.since.slice(0, 4));
+    earn = '<div class="trcard" style="margin-top:16px"><div class="trk">Are company profits growing?</div><div class="trbig ' + (slow ? "c-amber" : "c-green") + '">' + sg(Q.growth_pct, 1) + "</div>" +
+      "<p>Profits of the Nifty 50 companies over the last 12 months, " + (slow ? "slower than usual: " + (100 - Q.slower_than_pct) + "% of the months since " + yr + " were faster." : "faster than usual: " + Q.slower_than_pct + "% of the months since " + yr + " were slower.") +
+      " Does it point to a bull run? <b>" + (gap >= 3 ? "A little." : gap <= -3 ? "Not really." : "Not clearly.") + "</b></p>" +
+      '<details><summary>What the past shows</summary><p class="trnote">Since ' + yr + ", the Nifty's typical next 12 months were " + sg(Q.low.median) + " after the slowest-growth third of months and " + sg(Q.high.median) + " after the fastest third (" + Q.low.months + " and " + Q.high.months + " months; the stretches overlap, so this is about " + Math.round(Q.months / 12) + " separate years of evidence). " +
+      "Profits are the last 12 months' reported profits, worked out from NSE's index P/E, and change as results come in. Read this as how companies are doing, not a forecast.</p></details></div>";
+  }
   $("trendNote").textContent = "Nifty 50 · " + dmon(T.as_of) + " · an extrapolation of the past, not a forecast";
-  $("trendBody").innerHTML = kpis + '<div class="trdash">' + verdict + fan + "</div>" +
+  $("trendBody").innerHTML = kpis + '<div class="trdash">' + verdict + fan + "</div>" + earn +
     '<details><summary>The ' + of + ' signals behind this</summary><div class="chips2">' + sigs.map(x => '<span class="chip3"><i class="dotc ' + ({ bull: "g", bear: "xf" }[x.state] || "") + '"></i>' + esc(x.label) + " <b>" + esc(String(x.value == null ? "" : x.value)) + "</b></span>").join("") + "</div></details>";
 }
 

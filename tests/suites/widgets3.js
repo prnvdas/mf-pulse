@@ -88,6 +88,23 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
   ok(/bull or bear/i.test(t)&&/tentative view/i.test(t)&&/\d of 9/.test(t)&&/what a year can look like/i.test(t)&&/not so far/i.test(t)&&/typical bull run/i.test(t)&&/typical bear market/i.test(t)&&/not a forecast/i.test(t)&&/what would turn it bullish/i.test(t),'trend dashboard reads',t.slice(0,240));
   ok(await p.$$eval('#trendBody svg path',a=>a.length)>=1&&await p.$$eval('#trendBody .trtiles>div',a=>a.length)>=3,'trend chart and case tiles draw');
   ok(/200-day average/.test(t)&&/\(\d\d,\d{3}\)/.test(t),'trend names the level to watch'); ok(!errs.length&&!/NaN|undefined|\[object/.test(t),'trend clean',errs[0]); await (await p.$('#trendWrap')).screenshot({path:'trend.png'}); await ctx.close();}
+ // a data file that never arrives (a stalled phone connection) must not hold the page up; the copy from the last visit is used instead
+ {const ctx=await b.newContext({viewport:{width:390,height:800}});const errs=[];
+  const open=async(hang)=>{const p=await ctx.newPage();p.on('pageerror',e=>errs.push(e.message));await p.clock.install({time:new Date('2026-10-12T08:30:00Z')});
+   if(hang) await p.route(/\/data\/(tax|portfolio_history)\.json/,()=>{});            // never answers
+   await p.goto(process.env.BASE||'http://localhost:8000/index.html',{waitUntil:'domcontentloaded'});
+   for(let i=0;i<14;i++){await p.waitForTimeout(150);await p.clock.fastForward(1000);} await p.waitForTimeout(400);return p;};
+  const p1=await open(false); const normal=await p1.evaluate(()=>({cv:document.getElementById('cv').innerText,tax:!document.getElementById('taxWrap').hidden,money:!document.getElementById('moneyWrap').hidden}));
+  const p2=await open(true);  const stalled=await p2.evaluate(()=>({cv:document.getElementById('cv').innerText,tax:!document.getElementById('taxWrap').hidden,money:!document.getElementById('moneyWrap').hidden}));
+  ok(/₹/.test(normal.cv)&&normal.tax&&normal.money,'baseline: page, tax and money sections load',JSON.stringify(normal));
+  ok(/₹/.test(stalled.cv)&&stalled.tax&&stalled.money,'two stalled files: the page still loads (the last visit\'s copies fill in)',JSON.stringify(stalled));
+  await p1.close(); await p2.close();
+  const ctx2=await b.newContext({viewport:{width:390,height:800}}); const p3=await ctx2.newPage(); p3.on('pageerror',e=>errs.push(e.message)); await p3.clock.install({time:new Date('2026-10-12T08:30:00Z')});
+  await p3.route(/\/data\/(tax|portfolio_history)\.json/,()=>{});
+  await p3.goto(process.env.BASE||'http://localhost:8000/index.html',{waitUntil:'domcontentloaded'}); for(let i=0;i<14;i++){await p3.waitForTimeout(150);await p3.clock.fastForward(1000);} await p3.waitForTimeout(400);
+  const fresh=await p3.evaluate(()=>({cv:document.getElementById('cv').innerText,tax:!document.getElementById('taxWrap').hidden,money:!document.getElementById('moneyWrap').hidden,body:document.body.innerText.length}));
+  ok(/₹/.test(fresh.cv)&&!fresh.tax&&!fresh.money&&fresh.body>1500,'first visit with two stalled files: the rest of the page still loads, those two sections wait',JSON.stringify(fresh));
+  ok(!errs.length,'stalled-file errors',errs[0]); await ctx.close(); await ctx2.close();}
  // XIRR is worked out live from your dated money in and today's value (not copied from the last Groww statement)
  {const {p,ctx,errs}=await page();
   const m=await p.evaluate(()=>({one:xirrOf([["2025-01-01",100]],"2026-01-01",110),two:xirrOf([["2025-01-01",100],["2025-07-02",100]],"2026-01-01",230),none:xirrOf([["2025-01-01",100]],"2026-01-01",0)}));

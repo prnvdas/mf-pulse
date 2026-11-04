@@ -3903,9 +3903,16 @@ function setupHide() {
 
 // Fetch JSON and accept it only if it has the expected shape (a file that is valid JSON but
 // the wrong kind -- null, {} where a list belongs -- must fall back, not crash the page).
-function loadJson(url, valid, fallback) {
-  return fetch(url, { cache: "no-store" }).then(r => r.ok ? r.json() : Promise.reject())
-    .then(j => valid(j) ? j : Promise.reject()).catch(() => fallback);
+// Every data file is asked for with a time limit, so one slow or stalled request cannot hold the whole page up (on a phone the page used to sit
+// blank). A file that does not arrive falls back to the copy this browser saw last time, then to nothing; a file that has not changed is
+// re-checked with the server (a tiny reply) instead of downloaded again.
+const kept = url => { try { return JSON.parse(localStorage.getItem("mfp_j:" + url.split("?")[0])); } catch (e) { return null; } };
+const keep = (url, j) => { try { const t = JSON.stringify(j); if (t.length < 250000) localStorage.setItem("mfp_j:" + url.split("?")[0], t); } catch (e) { /* storage full or blocked: carry on without */ } };
+function loadJson(url, valid, fallback, ms = 10000) {
+  const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), ms);
+  return fetch(url, { cache: "no-cache", signal: ctl.signal }).then(r => r.ok ? r.json() : Promise.reject())
+    .then(j => valid(j) ? (keep(url, j), j) : Promise.reject())
+    .catch(() => { const k = kept(url); return k && valid(k) ? k : fallback; }).finally(() => clearTimeout(timer));
 }
 const isObj = j => j && typeof j === "object" && !Array.isArray(j);
 
@@ -3914,11 +3921,11 @@ const isObj = j => j && typeof j === "object" && !Array.isArray(j);
   // header could appear), which is what makes a page feel slow on a real connection. Each is still awaited where it is used.
   const get = (u, v, f) => loadJson(u, v, f);
   const pCfg = get("data/config.json", j => isObj(j) && Array.isArray(j.funds) && j.funds.length, DEMO), pAcc = get("data/accuracy.json", isObj, { samples: 0 }), pHist = get("data/history.json", Array.isArray, []),
-    pAn = fetch("data/analytics.json", { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => null), pHol = get("data/holidays.json", isObj, null), pTax = get("data/tax.json", isObj, null),
+    pAn = get("data/analytics.json", isObj, null), pHol = get("data/holidays.json", isObj, null), pTax = get("data/tax.json", isObj, null),
     pPhist = get("data/portfolio_history.json", j => isObj(j) && Array.isArray(j.points), null), pFh = get("data/fund_health.json", j => isObj(j) && Array.isArray(j.funds), null), pPicks = get("data/picks.json", isObj, null),
     pRecap = get("data/recap.json", isObj, null), pChanges = get("data/fund_changes.json", isObj, null), pFundHist = get("data/fund_history.json", isObj, null), pAttr = get("data/attribution.json", isObj, null), pTrend = get("data/trend.json", isObj, null),
     pMovers = get("data/movers.json", Array.isArray, []),
-    pLatest = fetch("data/latest.json", { cache: "no-store" }).then(r => r.ok ? r.json() : Promise.reject()).catch(() => null);
+    pLatest = get("data/latest.json", j => isObj(j) && Array.isArray(j.funds), null);
   CFG = await pCfg;
   ACC = await pAcc;
   HIST = await pHist;

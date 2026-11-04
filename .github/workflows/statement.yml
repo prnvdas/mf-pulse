@@ -61,6 +61,13 @@ jobs:
           openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -in "${{ steps.find.outputs.file }}" -out "$RUNNER_TEMP/statement.xlsx" -pass env:STATEMENT_KEY
           python src/import_statement.py "$RUNNER_TEMP/statement.xlsx"
           rm -f "$RUNNER_TEMP/statement.xlsx"
+      # Once a statement for this month is in, the reminder has done its job: close it, so no stale "upload your statement" issue stays open.
+      - name: Close the reminder
+        if: steps.find.outputs.state == 'current'
+        continue-on-error: true
+        run: |
+          gh issue list -R "$GITHUB_REPOSITORY" --state open --search 'in:title "Upload your Groww statement"' --json number -q '.[].number' \
+            | xargs -r -I{} gh issue close {} -R "$GITHUB_REPOSITORY" --comment "Statement imported."
       # A fund new to the dashboard was added by the import: learn its holdings and metadata right away.
       - name: Learn about new funds
         if: steps.find.outputs.state == 'current'

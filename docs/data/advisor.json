@@ -1,6 +1,6 @@
 {
   "quick": [
-    "Keep your \u20b91.10 lakh monthly SIP running.",
+    "Keep your \u20b91.11 lakh monthly SIP running.",
     "Spare cash? No rush: invest it gradually.",
     "Put any extra into Mirae Asset Large & Midcap rather than Axis Small Cap.",
     "Don't sell on today's fall or tomorrow's call."
@@ -8,7 +8,7 @@
   "chips": [
     {
       "label": "Market mood",
-      "value": "59 \u00b7 greed",
+      "value": "62 \u00b7 greed",
       "effect": "-"
     },
     {
@@ -28,28 +28,28 @@
     },
     {
       "label": "Trend",
-      "value": "2.1% above average",
-      "effect": "+"
+      "value": "1.8% above average",
+      "effect": "="
     }
   ],
-  "generated_at": "2026-11-04T07:15:53.822788+05:30",
-  "mood_as_of": "2026-11-03",
+  "generated_at": "2026-11-04T09:15:44.503821+05:30",
+  "mood_as_of": "2026-11-04",
   "stance": "Hold and keep your SIPs running",
   "stance_key": "hold",
   "headline": "Nothing to do today. Keep your SIPs running and leave your holdings alone.",
   "score": {
     "mood": -0.5,
     "valuation": 0.7,
-    "trend": 0.3,
-    "total": 0.5
+    "trend": 0.0,
+    "total": 0.2
   },
   "reasons": [
     {
       "key": "mood",
       "title": "Market mood",
-      "value": "59 \u00b7 Greed",
+      "value": "62 \u00b7 Greed",
       "effect": "-",
-      "text": "The Market Mood Index (Tickertape Market Mood Index) reads 59 of 100: greed. It was 19 a month ago and 76 a year ago. Investors often get most nervous near market lows and most confident near highs, so fear is usually the better time to invest and greed the time to be careful. That is a tendency, not a promise."
+      "text": "The Market Mood Index (Tickertape Market Mood Index) reads 62 of 100: greed. It was 13 a month ago and 71 a year ago. Investors often get most nervous near market lows and most confident near highs, so fear is usually the better time to invest and greed the time to be careful. That is a tendency, not a promise."
     },
     {
       "key": "val_axis-small-cap",
@@ -75,9 +75,9 @@
     {
       "key": "trend",
       "title": "Trend",
-      "value": "Nifty +2.1% vs its long average",
-      "effect": "+",
-      "text": "The Nifty (23,811) is 2.1% above its longer-term average (23,315) and 3.6% above its shorter-term one."
+      "value": "Nifty +1.8% vs its long average",
+      "effect": "=",
+      "text": "The Nifty (23,742) is 1.8% above its longer-term average (23,328) and 3.0% above its shorter-term one."
     },
     {
       "key": "flows",
@@ -96,13 +96,13 @@
     {
       "key": "tomorrow",
       "title": "Tomorrow",
-      "value": "GREEN \u00b7 88% (very high)",
+      "value": "GREEN \u00b7 56% (moderate)",
       "effect": "=",
       "text": "The short-term call for the next session is a coin-flip with a small tilt. It is useful context for a day trader and irrelevant for a long-term investor: don't buy or sell on it."
     }
   ],
   "do_today": [
-    "Keep your \u20b91.10 lakh monthly SIP running. When prices are low it buys more units for the same money, which is exactly what a SIP is for.",
+    "Keep your \u20b91.11 lakh monthly SIP running. When prices are low it buys more units for the same money, which is exactly what a SIP is for.",
     "If you have spare cash, there is no urgency; investing it gradually is fine.",
     "Of the parts of the market your funds track, large + midcaps looks cheapest (cheap) and small caps the dearest (fair). If you add extra money, tilting it towards Mirae Asset Large & Midcap rather than Axis Small Cap follows that. Your regular SIPs can stay as they are.",
     "Do not sell because of today's fall or tomorrow's red or green call."
@@ -159,7 +159,7 @@
   "watch": [
     "If the Market Mood rises above 70 (extreme greed) and small caps are expensive against their own history, stop lump sums and think about booking some profit.",
     "If it stays below 30, nothing changes: keep investing in stages. Recoveries from fear usually take months, not days.",
-    "If the Nifty closes back above its longer-term average (23,315) the trend has turned: invest any remaining instalments."
+    "If the Nifty closes back above its longer-term average (23,328) the trend has turned: invest any remaining instalments."
   ],
   "evidence": "How much to trust this: on the Nifty 50 since 2012, months when it looked cheap against its own history were followed by a median 12.1% a year over three years, against 15.7% after dear months. So cheap or dear has told us little about average returns. It did tell us about the bad cases: the worst one-year result after cheap months was -8%, after dear months -26%. Treat the signals above as a reason for patience and for spreading out new money, not as a forecast.",
   "disclaimer": "Educational analysis of public market data, not personalised or SEBI-registered investment advice. It cannot know your goals, time horizon or income. Markets can stay cheap or expensive for long periods."

@@ -1626,5 +1626,33 @@
     "data_health": "ok",
     "band_rupees": 191.0,
     "actual_pl_rupees": 3161.85
+  },
+  {
+    "date": "2026-11-04",
+    "fund_id": "axis-small-cap",
+    "predicted_pct": 1.411,
+    "actual_pct": 1.447,
+    "error_pct": 0.036,
+    "direction_hit": true,
+    "predicted_nav": 131.064,
+    "actual_nav": 131.11,
+    "predicted_pl_rupees": 73822.11,
+    "data_health": "ok",
+    "band_rupees": 5231.0,
+    "actual_pl_rupees": 75685.3
+  },
+  {
+    "date": "2026-11-04",
+    "fund_id": "mirae-large-midcap",
+    "predicted_pct": 0.987,
+    "actual_pct": 0.978,
+    "error_pct": 0.009,
+    "direction_hit": true,
+    "predicted_nav": 173.2871,
+    "actual_nav": 173.273,
+    "predicted_pl_rupees": 50578.04,
+    "data_health": "ok",
+    "band_rupees": 5127.0,
+    "actual_pl_rupees": 50157.17
   }
 ]

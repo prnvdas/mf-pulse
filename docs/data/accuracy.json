@@ -1,18 +1,18 @@
 {
   "samples": 30,
-  "mae_pct": 0.068,
+  "mae_pct": 0.065,
   "direction_accuracy_pct": 96.7,
   "worst_error_pct": 0.262,
   "per_fund": {
     "axis-small-cap": {
       "samples": 30,
-      "mae_pct": 0.042,
+      "mae_pct": 0.041,
       "direction_accuracy_pct": 100.0,
       "worst_error_pct": 0.13
     },
     "mirae-large-midcap": {
       "samples": 30,
-      "mae_pct": 0.051,
+      "mae_pct": 0.047,
       "direction_accuracy_pct": 96.7,
       "worst_error_pct": 0.256
     },

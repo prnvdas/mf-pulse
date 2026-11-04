@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-04T23:43:53.625854+05:30",
+  "generated_at": "2026-11-05T00:04:45.859315+05:30",
   "market": [
     {
       "title": "Will tighter AI regulation slow Big Tech spending? What the US midterm results mean for tech stocks - Explained",
@@ -187,7 +187,7 @@
     "date": "2026-11-04",
     "direction": "up",
     "title": "Why the market rose today",
-    "summary": "The Nifty rose +0.63%, led by Media (+5.2%), Realty (+2.9%), with IT (\u22121.5%) the weakest. FPIs (foreign investors) bought \u20b97,284 cr while DIIs sold \u20b93,712 cr (net, provisional, per Moneycontrol). Notable global and macro moves: Brent crude \u22129.2%.",
+    "summary": "The Nifty rose +0.63%, led by Media (+5.2%), Realty (+2.9%), with IT (\u22121.5%) the weakest. FPIs (foreign investors) bought \u20b97,284 cr while DIIs sold \u20b93,712 cr (net, provisional, per Moneycontrol). Notable global and macro moves: Brent crude \u22127.8%.",
     "points": [
       {
         "kind": "fact",
@@ -362,7 +362,8 @@
       "source": "Moneycontrol",
       "fii": 7284.0,
       "dii": -3712.0,
-      "fii_index_futures": 2619.0
+      "fii_index_futures": 2619.0,
+      "from_cache": true
     },
     "macro": [
       {
@@ -376,11 +377,11 @@
       },
       {
         "name": "Brent crude",
-        "level": 94.07,
-        "pct": -9.2,
+        "level": 95.53,
+        "pct": -7.79,
         "unit": "$",
         "notable": true,
-        "z": -2.5,
+        "z": -2.2,
         "date": "2026-11-04"
       },
       {
@@ -400,23 +401,14 @@
         "notable": false,
         "z": 1.1,
         "date": "2026-11-03"
-      },
-      {
-        "name": "India VIX",
-        "level": 15.19,
-        "pct": -3.39,
-        "unit": "",
-        "notable": false,
-        "z": -0.7,
-        "date": "2026-11-04"
       }
     ],
     "portfolio": [
       {
         "name": "HDFC Bank Ltd",
         "move_pct": 1.54,
-        "impact": 6273,
-        "exposure": 406348,
+        "impact": 6276,
+        "exposure": 406534,
         "funds": [
           "Axis Small Cap",
           "Mirae Asset Large & Midcap",
@@ -475,7 +467,7 @@
         "name": "Multi Commodity Exchange Of India Ltd",
         "move_pct": -5.02,
         "impact": -4396,
-        "exposure": 87617,
+        "exposure": 87624,
         "funds": [
           "Axis Small Cap",
           "Mirae Asset Large & Midcap",
@@ -576,6 +568,14 @@
       "Company news": true,
       "Market-wrap news": true
     },
-    "rich_at": "2026-11-04T17:57:42.291524+00:00"
+    "trace": {
+      "nse_session": "blocked or unreachable",
+      "nse_sectors": false,
+      "nse_flows": false,
+      "moneycontrol_flows": "error: 403 Client Error: Forbidden for url: https://www.moneycontro",
+      "flows_cache": true,
+      "nse_archive_sectors": true
+    },
+    "rich_at": "2026-11-04T18:34:23.035458+00:00"
   }
 }

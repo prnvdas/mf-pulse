@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-11-04T05:30:02.905635+05:30",
+  "generated_at": "2026-11-04T07:29:51.462565+05:30",
   "risk_free_pct": 6.5,
   "portfolio_xirr_pct": 11.1,
   "portfolio_returns": {
-    "as_on": "2026-10-10",
-    "invested": 8386652.53,
-    "value": 10430514.32,
-    "absolute_pct": 24.37,
-    "xirr_pct": 11.57,
+    "as_on": "2026-11-04",
+    "invested": 8510996.23,
+    "value": 10563171.6,
+    "absolute_pct": 24.11,
+    "xirr_pct": 11.27,
     "xirr_source": "Groww statement (exact)",
-    "rebuilt_xirr_pct": 11.35,
-    "nifty50_same_flows_pct": 0.1,
+    "rebuilt_xirr_pct": 10.96,
+    "nifty50_same_flows_pct": 1.9,
     "fd_pct": 7.0,
-    "since": "2022-12-10"
+    "since": "2022-12-08"
   },
   "flows": {
     "axis-small-cap": [
@@ -314,7 +314,7 @@
       ],
       [
         "2026-11-02",
-        50000.0
+        49997.0
       ]
     ],
     "mirae-large-midcap": [
@@ -324,7 +324,7 @@
       ],
       [
         "2019-04-30",
-        20026.98
+        20027.44
       ],
       [
         "2019-05-07",
@@ -700,7 +700,7 @@
       ],
       [
         "2026-11-02",
-        50000.0
+        49997.0
       ]
     ],
     "jioblackrock-flexicap": [
@@ -762,11 +762,11 @@
       ],
       [
         "2026-10-12",
-        13350.0
+        13349.0
       ],
       [
         "2026-11-02",
-        10000.0
+        10999.0
       ]
     ]
   },
@@ -774,39 +774,39 @@
     "rows": [
       {
         "sector": "Financials",
-        "pct": 22.2
+        "pct": 21.7
       },
       {
         "sector": "Healthcare",
-        "pct": 14.1
+        "pct": 14.3
       },
       {
         "sector": "Industrials",
-        "pct": 13.4
+        "pct": 13.3
       },
       {
         "sector": "Consumer (discretionary)",
-        "pct": 11.3
+        "pct": 11.2
       },
       {
         "sector": "Materials",
-        "pct": 10.5
-      },
-      {
-        "sector": "Technology",
-        "pct": 8.1
+        "pct": 10.6
       },
       {
         "sector": "Cash and other",
-        "pct": 8.1
+        "pct": 8.6
+      },
+      {
+        "sector": "Technology",
+        "pct": 7.6
       },
       {
         "sector": "Consumer staples",
-        "pct": 3.5
+        "pct": 3.8
       },
       {
         "sector": "Energy",
-        "pct": 2.8
+        "pct": 2.7
       },
       {
         "sector": "Real Estate",
@@ -814,18 +814,18 @@
       },
       {
         "sector": "Telecom & media",
-        "pct": 2.0
+        "pct": 2.3
       },
       {
         "sector": "Utilities",
-        "pct": 1.1
+        "pct": 1.2
       },
       {
         "sector": "Unclassified",
         "pct": 0.2
       }
     ],
-    "classified_pct": 92
+    "classified_pct": 91
   },
   "funds": [
     {
@@ -836,8 +836,8 @@
         "note": "index level (price return); P/E comes from the HDFC Nifty Smallcap 250 ETF, which holds the same basket"
       },
       "mine": {
-        "invested": 4174793.89,
-        "value": 5230787,
+        "invested": 4174791.35,
+        "value": 5230785,
         "gain_pct": 25.29
       },
       "returns": {
@@ -907,14 +907,14 @@
         {
           "label": "\u20268052",
           "invested": 2299885.26,
-          "value": 3435417.0,
-          "xirr_pct": 15.04
+          "value": 3356973.33,
+          "xirr_pct": 13.78
         },
         {
           "label": "\u20265582",
-          "invested": 1824908.63,
-          "value": 1866077.1,
-          "xirr_pct": 3.04
+          "invested": 1874906.09,
+          "value": 1873811.6,
+          "xirr_pct": -0.07
         }
       ]
     },
@@ -926,8 +926,8 @@
         "note": "approx. 70/30 blend of the Nifty 100 and Nifty Midcap 150 ETFs (the index is Nifty 100 + Midcap 150, roughly 70% large-cap by weight); price return"
       },
       "mine": {
-        "invested": 4124867.98,
-        "value": 5126071,
+        "invested": 4124865.44,
+        "value": 5126069,
         "gain_pct": 24.27
       },
       "returns": {
@@ -963,9 +963,9 @@
         "bench_max_drawdown_pct": -14.5
       },
       "valuation": {
-        "fund_pe": 27.3,
+        "fund_pe": 27.0,
         "fund_pe_cover_pct": 100.0,
-        "fund_pb": 3.0,
+        "fund_pb": 3.1,
         "bench_pe": 21.9
       },
       "history_days": 608,
@@ -997,14 +997,14 @@
         {
           "label": "\u20261565",
           "invested": 1579926.65,
-          "value": 2499415.37,
-          "xirr_pct": 12.71
+          "value": 2563060.97,
+          "xirr_pct": 13.18
         },
         {
           "label": "\u20266633",
-          "invested": 2494941.33,
-          "value": 2450025.2,
-          "xirr_pct": -2.08
+          "invested": 2544938.79,
+          "value": 2563007.95,
+          "xirr_pct": 0.77
         }
       ]
     },
@@ -1016,9 +1016,9 @@
         "note": "index level (price return); benchmark P/E is approximated from a 75/15/10 large/mid/small ETF mix"
       },
       "mine": {
-        "invested": 210340.66,
-        "value": 205308,
-        "gain_pct": -2.39
+        "invested": 211339.44,
+        "value": 206318,
+        "gain_pct": -2.38
       },
       "returns": {
         "1M": {
@@ -1072,9 +1072,9 @@
         "share_positive": 77
       },
       "recovery": {
-        "nav_last": 9.5155,
+        "nav_last": 9.6247,
         "nav_peak_6m": 10.2047,
-        "gap_pct": 7.2,
+        "gap_pct": 6.0,
         "peak_date": "2026-08-07"
       },
       "xirr": {
@@ -1086,9 +1086,9 @@
       "folios": [
         {
           "label": "\u20269183",
-          "invested": 186990.66,
-          "value": 179579.65,
-          "xirr_pct": -6.34
+          "invested": 211339.44,
+          "value": 206317.75,
+          "xirr_pct": -3.85
         }
       ]
     }

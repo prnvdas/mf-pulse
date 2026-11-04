@@ -32,16 +32,16 @@
       "effect": "+"
     }
   ],
-  "generated_at": "2026-11-04T17:00:08.019396+05:30",
+  "generated_at": "2026-11-04T20:11:13.759901+05:30",
   "mood_as_of": "2026-11-04",
   "stance": "Hold and keep your SIPs running",
   "stance_key": "hold",
   "headline": "Nothing to do today. Keep your SIPs running and leave your holdings alone.",
   "score": {
     "mood": -0.5,
-    "valuation": 0.7,
+    "valuation": 0.6,
     "trend": 0.3,
-    "total": 0.5
+    "total": 0.4
   },
   "reasons": [
     {
@@ -54,23 +54,23 @@
     {
       "key": "val_axis-small-cap",
       "title": "Small caps \u00b7 your Axis Small Cap",
-      "value": "P/E 31.4 \u00b7 fair",
+      "value": "P/E 32.1 \u00b7 fair",
       "effect": "=",
-      "text": "Its benchmark trades at a P/E of 31.4, against a typical 32.2 over the last ten years (a discount of 2%). Only 46% of the last ten years were cheaper, and 75% of the last five. Verdict: fair."
+      "text": "Its benchmark trades at a P/E of 32.1, against a typical 32.2 over the last ten years (a premium of 0%). Only 49% of the last ten years were cheaper, and 80% of the last five. Verdict: fair."
     },
     {
       "key": "val_mirae-large-midcap",
       "title": "Large + midcaps \u00b7 your Mirae Asset Large & Midcap",
-      "value": "P/E 22.3 \u00b7 cheap",
+      "value": "P/E 22.5 \u00b7 cheap",
       "effect": "+",
-      "text": "Its benchmark trades at a P/E of 22.3, against a typical 27.6 over the last ten years (a discount of 19%). Only 4% of the last ten years were cheaper, and 5% of the last five. Verdict: cheap."
+      "text": "Its benchmark trades at a P/E of 22.5, against a typical 27.6 over the last ten years (a discount of 18%). Only 6% of the last ten years were cheaper, and 8% of the last five. Verdict: cheap."
     },
     {
       "key": "val_jioblackrock-flexicap",
       "title": "Whole market \u00b7 your JioBlackRock Flexi Cap",
-      "value": "P/E 21.3 \u00b7 cheap",
+      "value": "P/E 21.5 \u00b7 cheap",
       "effect": "+",
-      "text": "Its benchmark trades at a P/E of 21.3, against a typical 25.9 over the last ten years (a discount of 18%). Only 5% of the last ten years were cheaper, and 10% of the last five. Verdict: cheap."
+      "text": "Its benchmark trades at a P/E of 21.5, against a typical 25.9 over the last ten years (a discount of 17%). Only 6% of the last ten years were cheaper, and 12% of the last five. Verdict: cheap."
     },
     {
       "key": "trend",
@@ -102,18 +102,18 @@
   ],
   "where_to_add": [
     {
+      "label": "Large caps (Nifty 50)",
+      "fund": [],
+      "pe": 19.8,
+      "verdict": "Cheap",
+      "score_pct": 7
+    },
+    {
       "label": "Large + midcaps (Nifty LargeMidcap 250)",
       "fund": [
         "Mirae Asset Large & Midcap"
       ],
-      "pe": 22.3,
-      "verdict": "Cheap",
-      "score_pct": 4
-    },
-    {
-      "label": "Large caps (Nifty 50)",
-      "fund": [],
-      "pe": 19.7,
+      "pe": 22.5,
       "verdict": "Cheap",
       "score_pct": 7
     },
@@ -122,25 +122,25 @@
       "fund": [
         "JioBlackRock Flexi Cap"
       ],
-      "pe": 21.3,
+      "pe": 21.5,
       "verdict": "Cheap",
-      "score_pct": 8
+      "score_pct": 9
     },
     {
       "label": "Midcaps (Nifty Midcap 150)",
       "fund": [],
-      "pe": 26.9,
+      "pe": 27.3,
       "verdict": "Below average",
-      "score_pct": 28
+      "score_pct": 32
     },
     {
       "label": "Small caps (Nifty Smallcap 250)",
       "fund": [
         "Axis Small Cap"
       ],
-      "pe": 31.4,
+      "pe": 32.1,
       "verdict": "Fair",
-      "score_pct": 61
+      "score_pct": 65
     }
   ],
   "if_you_sell": [

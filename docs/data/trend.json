@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-11-05T09:15:54.960763+05:30",
+  "generated_at": "2026-11-05T14:52:53.682187+05:30",
   "as_of": "2026-11-05",
   "index": "Nifty 50",
-  "level": 24334.7,
+  "level": 24563.9,
   "score": 1,
   "of": 9,
   "regime": {
@@ -10,14 +10,14 @@
     "label": "Mixed"
   },
   "stretched": true,
-  "drawdown_pct": -7.6,
-  "rsi": 73.0,
+  "drawdown_pct": -6.7,
+  "rsi": 75.0,
   "signals": [
     {
       "k": "above200",
       "label": "Price above its 200-day average",
       "state": "bull",
-      "value": "+1.4%"
+      "value": "+2.3%"
     },
     {
       "k": "cross",
@@ -35,19 +35,19 @@
       "k": "mom12",
       "label": "Higher than a year ago",
       "state": "bear",
-      "value": "-6.2%"
+      "value": "-5.3%"
     },
     {
       "k": "mom3",
       "label": "Higher than three months ago",
       "state": "bear",
-      "value": "-1.2%"
+      "value": "-0.2%"
     },
     {
       "k": "rsi",
       "label": "Momentum (RSI) above 50",
       "state": "bull",
-      "value": "73"
+      "value": "75"
     },
     {
       "k": "macd",
@@ -59,7 +59,7 @@
       "k": "high",
       "label": "Within 10% of the 52-week high",
       "state": "bull",
-      "value": "-7.6%"
+      "value": "-6.7%"
     },
     {
       "k": "n500",
@@ -69,7 +69,7 @@
     }
   ],
   "levels": {
-    "ma200": 24001,
+    "ma200": 24003,
     "high52": 26329,
     "bear_line": 21063
   },
@@ -84,7 +84,7 @@
         "start": "2020-03-23",
         "end": "2026-01-02",
         "gain_pct": 246,
-        "now_pct": 220,
+        "now_pct": 223,
         "ongoing": true
       }
     },
@@ -111,9 +111,9 @@
     "p90": 34.1,
     "worst": -57.0,
     "best": 104.4,
-    "level_p10": 21971,
-    "level_p50": 26784,
-    "level_p90": 32628
+    "level_p10": 22178,
+    "level_p50": 27037,
+    "level_p90": 32935
   },
   "edge": {
     "since": "2008-09-22",
@@ -136,7 +136,7 @@
   "pace": {
     "years": 3,
     "annual_pct": 3.6,
-    "level_12m": 25221
+    "level_12m": 25459
   },
   "earnings": {
     "as_of": "2026-10-30",
@@ -225,7 +225,7 @@
   "signposts": [
     {
       "text": "Price back above its 200-day average",
-      "level": 24001,
+      "level": 24003,
       "done": true
     },
     {
@@ -871,11 +871,11 @@
     ],
     [
       "2026-11-06",
-      24335
+      24564
     ],
     [
       "2026-11-05",
-      24335
+      24564
     ]
   ]
 }

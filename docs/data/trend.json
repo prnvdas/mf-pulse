@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-11-05T14:52:53.682187+05:30",
+  "generated_at": "2026-11-05T15:21:30.331186+05:30",
   "as_of": "2026-11-05",
   "index": "Nifty 50",
-  "level": 24563.9,
+  "level": 24542.2,
   "score": 1,
   "of": 9,
   "regime": {
@@ -10,14 +10,14 @@
     "label": "Mixed"
   },
   "stretched": true,
-  "drawdown_pct": -6.7,
+  "drawdown_pct": -6.8,
   "rsi": 75.0,
   "signals": [
     {
       "k": "above200",
       "label": "Price above its 200-day average",
       "state": "bull",
-      "value": "+2.3%"
+      "value": "+2.2%"
     },
     {
       "k": "cross",
@@ -35,13 +35,13 @@
       "k": "mom12",
       "label": "Higher than a year ago",
       "state": "bear",
-      "value": "-5.3%"
+      "value": "-5.4%"
     },
     {
       "k": "mom3",
       "label": "Higher than three months ago",
       "state": "bear",
-      "value": "-0.2%"
+      "value": "-0.3%"
     },
     {
       "k": "rsi",
@@ -59,7 +59,7 @@
       "k": "high",
       "label": "Within 10% of the 52-week high",
       "state": "bull",
-      "value": "-6.7%"
+      "value": "-6.8%"
     },
     {
       "k": "n500",
@@ -69,7 +69,7 @@
     }
   ],
   "levels": {
-    "ma200": 24003,
+    "ma200": 24002,
     "high52": 26329,
     "bear_line": 21063
   },
@@ -84,7 +84,7 @@
         "start": "2020-03-23",
         "end": "2026-01-02",
         "gain_pct": 246,
-        "now_pct": 223,
+        "now_pct": 222,
         "ongoing": true
       }
     },
@@ -111,9 +111,9 @@
     "p90": 34.1,
     "worst": -57.0,
     "best": 104.4,
-    "level_p10": 22178,
-    "level_p50": 27037,
-    "level_p90": 32935
+    "level_p10": 22159,
+    "level_p50": 27013,
+    "level_p90": 32906
   },
   "edge": {
     "since": "2008-09-22",
@@ -136,7 +136,7 @@
   "pace": {
     "years": 3,
     "annual_pct": 3.6,
-    "level_12m": 25459
+    "level_12m": 25436
   },
   "earnings": {
     "as_of": "2026-10-30",
@@ -225,7 +225,7 @@
   "signposts": [
     {
       "text": "Price back above its 200-day average",
-      "level": 24003,
+      "level": 24002,
       "done": true
     },
     {
@@ -871,11 +871,11 @@
     ],
     [
       "2026-11-06",
-      24564
+      24542
     ],
     [
       "2026-11-05",
-      24564
+      24542
     ]
   ]
 }

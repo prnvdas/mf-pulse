@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T23:31:14.570207+05:30",
+  "generated_at": "2026-11-06T00:10:46.571971+05:30",
   "market": [
     {
       "title": "US stock market crash: Chip stocks extend sell-off, AMD, Arm, Qualcomm and Sandisk plunge up to 17%; Nasdaq down 6%",
@@ -358,7 +358,8 @@
       "source": "Moneycontrol",
       "fii": 14975.0,
       "dii": -10445.0,
-      "fii_index_futures": 7884.0
+      "fii_index_futures": 7884.0,
+      "from_cache": true
     },
     "macro": [
       {
@@ -372,11 +373,11 @@
       },
       {
         "name": "Brent crude",
-        "level": 97.42,
-        "pct": 2.96,
+        "level": 97.97,
+        "pct": 3.54,
         "unit": "$",
         "notable": false,
-        "z": 0.8,
+        "z": 0.9,
         "date": "2026-11-05"
       },
       {
@@ -396,15 +397,6 @@
         "notable": false,
         "z": -1.0,
         "date": "2026-11-04"
-      },
-      {
-        "name": "India VIX",
-        "level": 15.58,
-        "pct": 2.57,
-        "unit": "",
-        "notable": false,
-        "z": 0.5,
-        "date": "2026-11-05"
       }
     ],
     "portfolio": [
@@ -537,16 +529,16 @@
         ],
         "headlines": [
           {
-            "title": "PI to Cummins: Nifty hits 24,400, but 5 stocks plunged up to 18%\u2014What went wrong?",
-            "source": "The Financial Express",
-            "link": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxNaXlLOVRLbjg2UVFxQjZxNGJULTMtb09IRk1FVEhVcTBNQmZESTJRWTd5NXRiaVg4ZENta2JTVTBudG5lMENaMjBmQ0J6S3ZlLTZNWlU1RWotanlZX2NMd2dGMXQyUzhLeFZjMnpKcy1RTjZJbm9nVkQ0X3BLcV85eVJ5cjMyYXBROWNBOGIxbHZkWV9Db1pIZUsxamF1cmpwZkxWa2xpYW93TE5hR3dDaFgxdGhqcWZaM1hzcDd2VTEyQdIByAFBVV95cUxOSWRFeUJOamJHWUtfM0FHT0pCTGVNSHF1bi1QNzY5QkVnQ0xvSDJJQ1hwNmNDZ2tqQlE4UmFTUjR4ZWdMR2JoVXNVTmFBVGFmY1pqaEV4ZnRrVHFZWnF2QnpyaHZWZUk0RzdRSUI2VzYzR1pHVFVjaVkwdHNJekd2THVBeThaVVdEQ3lYdThfdUhSeWhpUy1mZ3FRakdESnU5QjRpVUM3dlJ4Y2xXbkctZkVWODVMY2tKbFU1RDVYOXlVWWZ5RWt3Ug?oc=5",
-            "published": "2026-11-05T07:44:08+00:00"
-          },
-          {
             "title": "Cummins India Q2 results: Net profit falls 27% to \u20b9467 cr, sales rise 4%",
             "source": "Business Standard",
             "link": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxOSGY4ZVVGS0xGR0p4N0ZnWHJid0ZJTjE0TWtXaUg1ZjVZMXFoaGd0TG1wR1YwZ0RMV0s2TTRsVTR3ckRVcUxsR190d1FWbVJNVGZUWE5SMzZ3TXE0TzJod1FCN3JuWGJQeFgxemdzU0luNHpZeUtWRG5lZ0wwalNrX1NaNDZpekdoM1VuYlpwY0FGWFRyYkN1MmRQQWNRam5GcFZEaU4yTmtBYkhlVzlQRmVoeXhxdXZSRGI5WUdHMGp5MjFQUDNJNnlKRHdOZjVGbm1URG5pYnJtdlJJVll0WHotUdIB6AFBVV95cUxNbnpLT0pmTWRNaG9rQXN1NVQyaHlaNm1kZEx5bEk3cC11MlJvYloyVDBocnRhZDhpem5OWTBNZGtxUlVrdFpTQ0JNajUzVnJ4NUk3VWhGM29hMGJNdzZRWFItR3V1YmZlTTRmOG1GWTZEd3UxdlJzMUc3eW1UMWVVeFl3QV9yeFVGSUxudUZXS2h1cDBDQ1ZZS0pqY0M0NkJGXzZvMms4RWRmVWZMUGFjUjlNMVBiZW1EMmhmR2g0MVFtU2d4WW5OdnNzQUxJWERZUHB5Z2NmNHZzenoybzBONWd4RUJEN3dI?oc=5",
             "published": "2026-11-05T07:12:03+00:00"
+          },
+          {
+            "title": "Cummins India shares crash 15% after Q2 net profit falls 19% YoY, margins take 680 bps hit",
+            "source": "The Economic Times",
+            "link": "https://news.google.com/rss/articles/CBMi8wFBVV95cUxOOHlZNHFwMC1OclQ4Qy1RT3ZKbkFRVjRPS2tLcklDYklpQ0xfMUpvanZGT0NsVDEycFVPYkxjWGFvc3hVUHpUeUQtSDgyUjE5d2ZPQ190Z3licUl5TWRKRG9MeFgwX2hJVjBpbHlrOE9BSlRSS2puNS1QZHE0M2ZiMGtPMHpCVlBIM1VuTzZKVmlHV3lvX3JOb2d5a243OWEtN2NZdzEwMHdLUS1PbkRKc1F1Zl9sbWlhV3FhOV9nbHN5SXlpYzlsNUlLa21McXJWUFNNU1ZTWGNuN3Y5ZGN2N2hXMEUtc1FXQ1BuNlJCa2ZadGfSAfgBQVVfeXFMTy1wTTA0UWZHa1NPV2VXdWt1LWt2YXB0bmEzTWRVcEw3QVFhN3hDV3pkdW5KQUZmempaTWlWWkY4UlpBa2pRbnhqLTQ4cTBMX1BsTEstQkxqUkd6T3ZRU3ZhTmlGQV9wb0RIYmIyVm9zUzRZX1BTUXF3emZOejV0eTVCQnRxamJmQzBPcDR1eXRkMC1TWGV4QXZhUnEtX3hsSUd5aTVJYlpjLWtEWUFyRGtJdUU3cHptZk0ySGRYZlp6MVhNd1JwTW5iZUtOQXNab0syZmpVeFJ6bnFUWklQT2lNMlotMXJGVVRxYm1MUHZMZ2FUYWlGbVE?oc=5",
+            "published": "2026-11-05T05:44:43+00:00"
           }
         ]
       }
@@ -590,6 +582,14 @@
       "Company news": true,
       "Market-wrap news": true
     },
-    "rich_at": "2026-11-05T17:58:21.087128+00:00"
+    "trace": {
+      "nse_session": "blocked or unreachable",
+      "nse_sectors": false,
+      "nse_flows": false,
+      "moneycontrol_flows": "error: 403 Client Error: Forbidden for url: https://www.moneycontro",
+      "flows_cache": true,
+      "nse_archive_sectors": true
+    },
+    "rich_at": "2026-11-05T18:40:24.851922+00:00"
   }
 }

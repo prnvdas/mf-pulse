@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-06T11:05:29.517377+05:30",
-  "generated_label": "06 Nov 2026, 11:05 IST",
+  "generated_at": "2026-11-06T11:20:23.502440+05:30",
+  "generated_label": "06 Nov 2026, 11:20 IST",
   "stale": false,
   "phase": "live",
   "market_open": true,
@@ -9,8 +9,8 @@
     "invested": 8510996.23,
     "total_returns": 2318853.66,
     "total_returns_pct": 27.25,
-    "today_impact": -96915.24,
-    "today_pct": -0.895,
+    "today_impact": -100872.3,
+    "today_pct": -0.931,
     "band_rupees": 7511.0
   },
   "funds": [
@@ -19,15 +19,15 @@
       "name": "Axis Small Cap Fund Direct Growth",
       "current_value": 5353824.13,
       "invested": 4174791.35,
-      "nav_move_pct": -1.287,
-      "rupee_impact": -68917.43,
+      "nav_move_pct": -1.294,
+      "rupee_impact": -69263.98,
       "last_nav": 132.28,
-      "projected_nav": 130.5772,
+      "projected_nav": 130.5687,
       "band_rupees": 5354.0,
       "coverage_pct": 86.6,
       "cash_pct": 13.41,
       "tail_pct": 0.0,
-      "tail_move_pct": -1.7,
+      "tail_move_pct": -1.72,
       "holdings_as_of": "2026-11-04",
       "holdings_count": 119,
       "priced_count": 119,
@@ -36,43 +36,36 @@
           "name": "Sai Life Sciences Ltd.",
           "ticker": "SAILIFE.NS",
           "weight_pct": 1.84,
-          "move_pct": 11.82,
-          "contribution_pct": 0.2175
+          "move_pct": 10.94,
+          "contribution_pct": 0.2014
         },
         {
           "name": "Avalon Technologies Ltd.",
           "ticker": "AVALON.NS",
           "weight_pct": 1.51,
-          "move_pct": -9.29,
-          "contribution_pct": -0.1404
+          "move_pct": -9.34,
+          "contribution_pct": -0.1412
         },
         {
           "name": "Welspun Corp Ltd",
           "ticker": "WELCORP.NS",
           "weight_pct": 1.51,
-          "move_pct": -7.99,
-          "contribution_pct": -0.1208
+          "move_pct": -6.78,
+          "contribution_pct": -0.1025
         },
         {
           "name": "Syrma SGS Technology Ltd",
           "ticker": "SYRMA.NS",
           "weight_pct": 1.45,
-          "move_pct": -7.0,
-          "contribution_pct": -0.1012
+          "move_pct": -6.25,
+          "contribution_pct": -0.0904
         },
         {
           "name": "RateGain Travel Technologies Ltd",
           "ticker": "RATEGAIN.NS",
           "weight_pct": 0.77,
-          "move_pct": -10.69,
-          "contribution_pct": -0.082
-        },
-        {
-          "name": "Kirloskar Oil Engines Ltd",
-          "ticker": "KIRLOSENG.NS",
-          "weight_pct": 1.29,
-          "move_pct": -5.78,
-          "contribution_pct": -0.0747
+          "move_pct": -11.57,
+          "contribution_pct": -0.0887
         },
         {
           "name": "Happy Forgings Ltd.",
@@ -82,11 +75,18 @@
           "contribution_pct": -0.0691
         },
         {
-          "name": "Cholamandalam Financial Holdings Ltd",
-          "ticker": "CHOLAHLDNG.NS",
-          "weight_pct": 1.25,
-          "move_pct": 4.96,
-          "contribution_pct": 0.0621
+          "name": "Kirloskar Oil Engines Ltd",
+          "ticker": "KIRLOSENG.NS",
+          "weight_pct": 1.29,
+          "move_pct": -5.09,
+          "contribution_pct": -0.0659
+        },
+        {
+          "name": "Apar Industries Ltd",
+          "ticker": "APARINDS.NS",
+          "weight_pct": 0.58,
+          "move_pct": -10.37,
+          "contribution_pct": -0.0599
         }
       ]
     },
@@ -95,15 +95,15 @@
       "name": "Mirae Asset Large & Midcap Fund Direct Growth",
       "current_value": 5263187.09,
       "invested": 4124865.44,
-      "nav_move_pct": -0.508,
-      "rupee_impact": -26711.06,
+      "nav_move_pct": -0.575,
+      "rupee_impact": -30267.13,
       "last_nav": 176.184,
-      "projected_nav": 175.2899,
+      "projected_nav": 175.1708,
       "band_rupees": 5264.0,
       "coverage_pct": 96.2,
       "cash_pct": 3.77,
       "tail_pct": 0.0,
-      "tail_move_pct": -1.05,
+      "tail_move_pct": -1.15,
       "holdings_as_of": "2026-11-04",
       "holdings_count": 78,
       "priced_count": 78,
@@ -112,15 +112,22 @@
           "name": "HDFC Bank Ltd",
           "ticker": "HDFCBANK.NS",
           "weight_pct": 6.4,
-          "move_pct": 1.38,
-          "contribution_pct": 0.088
+          "move_pct": 1.45,
+          "contribution_pct": 0.0927
         },
         {
           "name": "ICICI Bank Ltd",
           "ticker": "ICICIBANK.NS",
           "weight_pct": 3.93,
-          "move_pct": 1.35,
-          "contribution_pct": 0.0529
+          "move_pct": 1.63,
+          "contribution_pct": 0.0639
+        },
+        {
+          "name": "Prestige Estates Projects Ltd",
+          "ticker": "PRESTIGE.NS",
+          "weight_pct": 1.48,
+          "move_pct": -3.93,
+          "contribution_pct": -0.058
         },
         {
           "name": "Billionbrains Garage Ventures Ltd.",
@@ -133,36 +140,29 @@
           "name": "Go Digit General Insurance Ltd.",
           "ticker": "GODIGIT.NS",
           "weight_pct": 0.99,
-          "move_pct": -5.24,
-          "contribution_pct": -0.0521
+          "move_pct": -5.11,
+          "contribution_pct": -0.0508
         },
         {
-          "name": "Prestige Estates Projects Ltd",
-          "ticker": "PRESTIGE.NS",
-          "weight_pct": 1.48,
-          "move_pct": -3.33,
-          "contribution_pct": -0.0492
-        },
-        {
-          "name": "Delhivery Ltd",
-          "ticker": "DELHIVERY.NS",
-          "weight_pct": 1.99,
-          "move_pct": -2.14,
-          "contribution_pct": -0.0425
+          "name": "Laurus Labs Ltd",
+          "ticker": "LAURUSLABS.NS",
+          "weight_pct": 4.1,
+          "move_pct": -1.06,
+          "contribution_pct": -0.0433
         },
         {
           "name": "Indusind Bank Ltd",
           "ticker": "INDUSINDBK.NS",
           "weight_pct": 1.52,
-          "move_pct": -2.68,
-          "contribution_pct": -0.0408
+          "move_pct": -2.79,
+          "contribution_pct": -0.0424
         },
         {
-          "name": "Steel Authority Of India Ltd",
-          "ticker": "SAIL.NS",
-          "weight_pct": 2.25,
-          "move_pct": -1.74,
-          "contribution_pct": -0.0392
+          "name": "Delhivery Ltd",
+          "ticker": "DELHIVERY.NS",
+          "weight_pct": 1.99,
+          "move_pct": -2.09,
+          "contribution_pct": -0.0415
         }
       ]
     },
@@ -171,15 +171,15 @@
       "name": "JioBlackRock Flexi Cap Fund Direct Growth",
       "current_value": 212838.67,
       "invested": 211339.44,
-      "nav_move_pct": -0.605,
-      "rupee_impact": -1286.75,
+      "nav_move_pct": -0.63,
+      "rupee_impact": -1341.19,
       "last_nav": 9.9289,
-      "projected_nav": 9.8689,
+      "projected_nav": 9.8663,
       "band_rupees": 197.0,
       "coverage_pct": 95.0,
       "cash_pct": 6.22,
       "tail_pct": 0.0,
-      "tail_move_pct": -0.43,
+      "tail_move_pct": -0.5,
       "holdings_as_of": "2026-11-04",
       "holdings_count": 127,
       "priced_count": 127,
@@ -188,57 +188,57 @@
           "name": "Mahindra & Mahindra Ltd",
           "ticker": "M&M.NS",
           "weight_pct": 2.88,
-          "move_pct": 3.55,
-          "contribution_pct": 0.1021
-        },
-        {
-          "name": "Welspun India Ltd",
-          "ticker": "WELCORP.NS",
-          "weight_pct": 1.24,
-          "move_pct": -7.99,
-          "contribution_pct": -0.0989
-        },
-        {
-          "name": "HDFC Bank Ltd",
-          "ticker": "HDFCBANK.NS",
-          "weight_pct": 5.9,
-          "move_pct": 1.38,
-          "contribution_pct": 0.0811
+          "move_pct": 3.49,
+          "contribution_pct": 0.1005
         },
         {
           "name": "ICICI Bank Ltd",
           "ticker": "ICICIBANK.NS",
           "weight_pct": 5.69,
-          "move_pct": 1.35,
-          "contribution_pct": 0.0766
+          "move_pct": 1.63,
+          "contribution_pct": 0.0926
+        },
+        {
+          "name": "HDFC Bank Ltd",
+          "ticker": "HDFCBANK.NS",
+          "weight_pct": 5.9,
+          "move_pct": 1.45,
+          "contribution_pct": 0.0853
+        },
+        {
+          "name": "Welspun India Ltd",
+          "ticker": "WELCORP.NS",
+          "weight_pct": 1.24,
+          "move_pct": -6.78,
+          "contribution_pct": -0.0839
         },
         {
           "name": "Life Insurance Corporation of India",
           "ticker": "LICI.NS",
           "weight_pct": 1.76,
-          "move_pct": -3.79,
-          "contribution_pct": -0.0666
-        },
-        {
-          "name": "Welspun Corp Ltd",
-          "ticker": "WELCORP.NS",
-          "weight_pct": 0.69,
-          "move_pct": -7.99,
-          "contribution_pct": -0.0555
-        },
-        {
-          "name": "Apar Industries Ltd",
-          "ticker": "APARINDS.NS",
-          "weight_pct": 0.52,
-          "move_pct": -10.51,
-          "contribution_pct": -0.0541
+          "move_pct": -3.76,
+          "contribution_pct": -0.0662
         },
         {
           "name": "Bharti Airtel Ltd",
           "ticker": "BHARTIARTL.NS",
           "weight_pct": 4.31,
-          "move_pct": 1.24,
-          "contribution_pct": 0.0535
+          "move_pct": 1.3,
+          "contribution_pct": 0.056
+        },
+        {
+          "name": "Apar Industries Ltd",
+          "ticker": "APARINDS.NS",
+          "weight_pct": 0.52,
+          "move_pct": -10.37,
+          "contribution_pct": -0.0534
+        },
+        {
+          "name": "Welspun Corp Ltd",
+          "ticker": "WELCORP.NS",
+          "weight_pct": 0.69,
+          "move_pct": -6.78,
+          "contribution_pct": -0.0471
         }
       ]
     }
@@ -249,9 +249,9 @@
       {
         "name": "Sai Life Sciences Ltd.",
         "ticker": "SAILIFE.NS",
-        "move_pct": 11.82,
+        "move_pct": 10.94,
         "exposure": 98510,
-        "impact": 11646,
+        "impact": 10781,
         "funds": [
           "Axis Small Cap"
         ]
@@ -259,9 +259,9 @@
       {
         "name": "HDFC Bank Ltd",
         "ticker": "HDFCBANK.NS",
-        "move_pct": 1.38,
+        "move_pct": 1.45,
         "exposure": 417063,
-        "impact": 5735,
+        "impact": 6036,
         "funds": [
           "Axis Small Cap",
           "Mirae Asset Large & Midcap",
@@ -269,32 +269,32 @@
         ]
       },
       {
-        "name": "Cholamandalam Financial Holdings Ltd",
-        "ticker": "CHOLAHLDNG.NS",
-        "move_pct": 4.96,
-        "exposure": 66976,
-        "impact": 3323,
-        "funds": [
-          "Axis Small Cap"
-        ]
-      },
-      {
         "name": "ICICI Bank Ltd",
         "ticker": "ICICIBANK.NS",
-        "move_pct": 1.35,
+        "move_pct": 1.63,
         "exposure": 218901,
-        "impact": 2948,
+        "impact": 3561,
         "funds": [
           "Mirae Asset Large & Midcap",
           "JioBlackRock Flexi Cap"
         ]
       },
       {
+        "name": "Cholamandalam Financial Holdings Ltd",
+        "ticker": "CHOLAHLDNG.NS",
+        "move_pct": 4.44,
+        "exposure": 66976,
+        "impact": 2973,
+        "funds": [
+          "Axis Small Cap"
+        ]
+      },
+      {
         "name": "Mahindra & Mahindra Ltd",
         "ticker": "M&M.NS",
-        "move_pct": 3.55,
+        "move_pct": 3.49,
         "exposure": 59332,
-        "impact": 2106,
+        "impact": 2074,
         "funds": [
           "Mirae Asset Large & Midcap",
           "JioBlackRock Flexi Cap"
@@ -303,9 +303,9 @@
       {
         "name": "Bharti Airtel Ltd",
         "ticker": "BHARTIARTL.NS",
-        "move_pct": 1.24,
+        "move_pct": 1.3,
         "exposure": 156810,
-        "impact": 1944,
+        "impact": 2036,
         "funds": [
           "Mirae Asset Large & Midcap",
           "JioBlackRock Flexi Cap"
@@ -314,9 +314,9 @@
       {
         "name": "Multi Commodity Exchange Of India Ltd",
         "ticker": "MCX.NS",
-        "move_pct": 1.91,
+        "move_pct": 2.06,
         "exposure": 89767,
-        "impact": 1712,
+        "impact": 1845,
         "funds": [
           "Axis Small Cap",
           "Mirae Asset Large & Midcap",
@@ -326,33 +326,33 @@
       {
         "name": "Crompton Greaves Consumer Electricals Ltd",
         "ticker": "CROMPTON.NS",
-        "move_pct": 1.82,
+        "move_pct": 1.54,
         "exposure": 87255,
-        "impact": 1589,
+        "impact": 1348,
         "funds": [
           "Axis Small Cap",
           "Mirae Asset Large & Midcap"
         ]
       },
       {
-        "name": "Torrent Pharmaceuticals Ltd",
-        "ticker": "TORNTPHARM.NS",
-        "move_pct": 1.11,
-        "exposure": 124048,
-        "impact": 1383,
-        "funds": [
-          "Axis Small Cap"
-        ]
-      },
-      {
         "name": "Alembic Pharmaceuticals Ltd",
         "ticker": "APLLTD.NS",
-        "move_pct": 5.86,
+        "move_pct": 6.29,
         "exposure": 21036,
-        "impact": 1234,
+        "impact": 1323,
         "funds": [
           "Axis Small Cap",
           "JioBlackRock Flexi Cap"
+        ]
+      },
+      {
+        "name": "Vijaya Diagnostic Centre Ltd",
+        "ticker": "VIJAYA.NS",
+        "move_pct": 2.4,
+        "exposure": 51718,
+        "impact": 1241,
+        "funds": [
+          "Axis Small Cap"
         ]
       }
     ],
@@ -360,9 +360,9 @@
       {
         "name": "Avalon Technologies Ltd.",
         "ticker": "AVALON.NS",
-        "move_pct": -9.29,
+        "move_pct": -9.34,
         "exposure": 80896,
-        "impact": -7519,
+        "impact": -7557,
         "funds": [
           "Axis Small Cap"
         ]
@@ -370,9 +370,9 @@
       {
         "name": "Welspun Corp Ltd",
         "ticker": "WELCORP.NS",
-        "move_pct": -7.99,
+        "move_pct": -6.78,
         "exposure": 85064,
-        "impact": -6796,
+        "impact": -5766,
         "funds": [
           "Axis Small Cap",
           "JioBlackRock Flexi Cap",
@@ -382,9 +382,9 @@
       {
         "name": "Syrma SGS Technology Ltd",
         "ticker": "SYRMA.NS",
-        "move_pct": -7.0,
+        "move_pct": -6.25,
         "exposure": 78634,
-        "impact": -5502,
+        "impact": -4915,
         "funds": [
           "Axis Small Cap",
           "JioBlackRock Flexi Cap"
@@ -393,22 +393,12 @@
       {
         "name": "RateGain Travel Technologies Ltd",
         "ticker": "RATEGAIN.NS",
-        "move_pct": -10.69,
+        "move_pct": -11.57,
         "exposure": 41504,
-        "impact": -4436,
+        "impact": -4801,
         "funds": [
           "Axis Small Cap",
           "JioBlackRock Flexi Cap"
-        ]
-      },
-      {
-        "name": "Kirloskar Oil Engines Ltd",
-        "ticker": "KIRLOSENG.NS",
-        "move_pct": -5.78,
-        "exposure": 69225,
-        "impact": -3999,
-        "funds": [
-          "Axis Small Cap"
         ]
       },
       {
@@ -423,32 +413,42 @@
         ]
       },
       {
+        "name": "Kirloskar Oil Engines Ltd",
+        "ticker": "KIRLOSENG.NS",
+        "move_pct": -5.09,
+        "exposure": 69225,
+        "impact": -3526,
+        "funds": [
+          "Axis Small Cap"
+        ]
+      },
+      {
         "name": "Apar Industries Ltd",
         "ticker": "APARINDS.NS",
-        "move_pct": -10.51,
+        "move_pct": -10.37,
         "exposure": 32041,
-        "impact": -3368,
+        "impact": -3323,
         "funds": [
           "Axis Small Cap",
           "JioBlackRock Flexi Cap"
         ]
       },
       {
-        "name": "Data Patterns (India) Ltd",
-        "ticker": "DATAPATTNS.NS",
-        "move_pct": -7.02,
-        "exposure": 41599,
-        "impact": -2921,
+        "name": "Prestige Estates Projects Ltd",
+        "ticker": "PRESTIGE.NS",
+        "move_pct": -3.93,
+        "exposure": 77790,
+        "impact": -3054,
         "funds": [
-          "Axis Small Cap"
+          "Mirae Asset Large & Midcap"
         ]
       },
       {
         "name": "Gokaldas Exports Ltd",
         "ticker": "GOKEX.NS",
-        "move_pct": -11.56,
+        "move_pct": -11.51,
         "exposure": 24628,
-        "impact": -2847,
+        "impact": -2835,
         "funds": [
           "Axis Small Cap"
         ]
@@ -458,7 +458,7 @@
         "ticker": "GROWW.NS",
         "move_pct": -5.27,
         "exposure": 53397,
-        "impact": -2812,
+        "impact": -2814,
         "funds": [
           "Mirae Asset Large & Midcap",
           "JioBlackRock Flexi Cap"
@@ -469,65 +469,65 @@
       {
         "name": "Sensex",
         "ticker": "^BSESN",
-        "level": 79761.67,
-        "change": 451.66,
-        "move_pct": 0.57,
-        "as_of": "2026-11-06T10:50:47+05:30",
+        "level": 79752.26,
+        "change": 442.25,
+        "move_pct": 0.56,
+        "as_of": "2026-11-06T11:05:50+05:30",
         "prev_close": 79310.01
       },
       {
         "name": "Nifty 50",
         "ticker": "^NSEI",
-        "level": 24615.75,
-        "change": 79.15,
-        "move_pct": 0.32,
-        "as_of": "2026-11-06T11:05:47+05:30",
+        "level": 24601.65,
+        "change": 65.05,
+        "move_pct": 0.27,
+        "as_of": "2026-11-06T11:20:51+05:30",
         "prev_close": 24536.6
       },
       {
         "name": "Nifty Smallcap 250",
         "ticker": "NIFTYSMLCAP250.NS",
-        "level": 17237.85,
-        "change": -297.85,
-        "move_pct": -1.7,
-        "as_of": "2026-11-06T11:05:47+05:30",
+        "level": 17233.1,
+        "change": -302.6,
+        "move_pct": -1.73,
+        "as_of": "2026-11-06T11:20:51+05:30",
         "prev_close": 17535.7
       },
       {
         "name": "Nifty LargeMidcap 250",
         "ticker": "NIFTY_LARGEMID250.NS",
-        "level": 16392.6,
-        "change": -102.6,
-        "move_pct": -0.62,
-        "as_of": "2026-11-06T11:05:48+05:30",
+        "level": 16379.4,
+        "change": -115.8,
+        "move_pct": -0.7,
+        "as_of": "2026-11-06T11:20:52+05:30",
         "prev_close": 16495.2
       }
     ],
     "breadth": {
-      "up": 58,
-      "down": 202,
+      "up": 54,
+      "down": 206,
       "total": 260
     },
-    "portfolio_pct": -0.895,
-    "portfolio_impact": -96915,
+    "portfolio_pct": -0.931,
+    "portfolio_impact": -100872,
     "funds": [
       {
         "id": "axis-small-cap",
         "name": "Axis Small Cap Fund Direct Growth",
-        "nav_move_pct": -1.287,
-        "impact": -68917
+        "nav_move_pct": -1.294,
+        "impact": -69264
       },
       {
         "id": "mirae-large-midcap",
         "name": "Mirae Asset Large & Midcap Fund Direct Growth",
-        "nav_move_pct": -0.508,
-        "impact": -26711
+        "nav_move_pct": -0.575,
+        "impact": -30267
       },
       {
         "id": "jioblackrock-flexicap",
         "name": "JioBlackRock Flexi Cap Fund Direct Growth",
-        "nav_move_pct": -0.605,
-        "impact": -1287
+        "nav_move_pct": -0.63,
+        "impact": -1341
       }
     ]
   },
@@ -535,37 +535,37 @@
     {
       "name": "Sensex",
       "ticker": "^BSESN",
-      "level": 79761.67,
-      "change": 451.66,
-      "move_pct": 0.57,
-      "as_of": "2026-11-06T10:50:47+05:30",
+      "level": 79752.26,
+      "change": 442.25,
+      "move_pct": 0.56,
+      "as_of": "2026-11-06T11:05:50+05:30",
       "prev_close": 79310.01
     },
     {
       "name": "Nifty 50",
       "ticker": "^NSEI",
-      "level": 24615.75,
-      "change": 79.15,
-      "move_pct": 0.32,
-      "as_of": "2026-11-06T11:05:47+05:30",
+      "level": 24601.65,
+      "change": 65.05,
+      "move_pct": 0.27,
+      "as_of": "2026-11-06T11:20:51+05:30",
       "prev_close": 24536.6
     },
     {
       "name": "Nifty Smallcap 250",
       "ticker": "NIFTYSMLCAP250.NS",
-      "level": 17237.85,
-      "change": -297.85,
-      "move_pct": -1.7,
-      "as_of": "2026-11-06T11:05:47+05:30",
+      "level": 17233.1,
+      "change": -302.6,
+      "move_pct": -1.73,
+      "as_of": "2026-11-06T11:20:51+05:30",
       "prev_close": 17535.7
     },
     {
       "name": "Nifty LargeMidcap 250",
       "ticker": "NIFTY_LARGEMID250.NS",
-      "level": 16392.6,
-      "change": -102.6,
-      "move_pct": -0.62,
-      "as_of": "2026-11-06T11:05:48+05:30",
+      "level": 16379.4,
+      "change": -115.8,
+      "move_pct": -0.7,
+      "as_of": "2026-11-06T11:20:52+05:30",
       "prev_close": 16495.2
     }
   ],
@@ -574,15 +574,15 @@
       "name": "Brent crude",
       "ticker": "BZ=F",
       "unit": "$",
-      "level": 99.46,
-      "change": -0.13,
-      "move_pct": -0.13,
-      "as_of": "2026-11-06T10:55:34+05:30"
+      "level": 99.62,
+      "change": -0.12,
+      "move_pct": -0.12,
+      "as_of": "2026-11-06T11:10:46+05:30"
     }
   ],
   "breadth": {
-    "up": 58,
-    "down": 202,
+    "up": 54,
+    "down": 206,
     "total": 260
   },
   "health": {
@@ -593,7 +593,7 @@
         "text": "Yahoo's daily history had a hole for 96 of 263 stocks; their previous close was rebuilt from intraday prices (96 repaired)."
       }
     ],
-    "checked_at": "2026-11-06T11:05:48.846797+05:30",
+    "checked_at": "2026-11-06T11:20:53.286981+05:30",
     "repaired": 96,
     "gap": 96,
     "ignored": 0

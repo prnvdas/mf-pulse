@@ -1,23 +1,23 @@
 {
-  "generated_at": "2026-11-06T23:31:31.853432+05:30",
-  "as_of": "2026-11-06",
+  "generated_at": "2026-11-07T00:46:33.230038+05:30",
+  "as_of": "2026-11-05",
   "index": "Nifty 50",
-  "level": 25030.35,
-  "score": 3,
+  "level": 24536.6,
+  "score": 1,
   "of": 9,
   "regime": {
     "code": "mixed",
     "label": "Mixed"
   },
   "stretched": true,
-  "drawdown_pct": -4.9,
-  "rsi": 79.0,
+  "drawdown_pct": -6.8,
+  "rsi": 75.0,
   "signals": [
     {
       "k": "above200",
       "label": "Price above its 200-day average",
       "state": "bull",
-      "value": "+4.3%"
+      "value": "+2.2%"
     },
     {
       "k": "cross",
@@ -35,19 +35,19 @@
       "k": "mom12",
       "label": "Higher than a year ago",
       "state": "bear",
-      "value": "-3.9%"
+      "value": "-5.4%"
     },
     {
       "k": "mom3",
       "label": "Higher than three months ago",
-      "state": "bull",
-      "value": "+1.6%"
+      "state": "bear",
+      "value": "-0.4%"
     },
     {
       "k": "rsi",
       "label": "Momentum (RSI) above 50",
       "state": "bull",
-      "value": "79"
+      "value": "75"
     },
     {
       "k": "macd",
@@ -59,7 +59,7 @@
       "k": "high",
       "label": "Within 10% of the 52-week high",
       "state": "bull",
-      "value": "-4.9%"
+      "value": "-6.8%"
     },
     {
       "k": "n500",
@@ -69,7 +69,7 @@
     }
   ],
   "levels": {
-    "ma200": 23999,
+    "ma200": 24002,
     "high52": 26329,
     "bear_line": 21063
   },
@@ -84,7 +84,7 @@
         "start": "2020-03-23",
         "end": "2026-01-02",
         "gain_pct": 246,
-        "now_pct": 229,
+        "now_pct": 222,
         "ongoing": true
       }
     },
@@ -103,7 +103,7 @@
   },
   "year": {
     "since": "2007-09-17",
-    "days": 4444,
+    "days": 4443,
     "years": 17.6,
     "up_pct": 77,
     "p10": -9.7,
@@ -111,14 +111,14 @@
     "p90": 34.1,
     "worst": -57.0,
     "best": 104.4,
-    "level_p10": 22601,
-    "level_p50": 27550,
-    "level_p90": 33560
+    "level_p10": 22154,
+    "level_p50": 27006,
+    "level_p90": 32898
   },
   "edge": {
     "since": "2008-09-22",
     "up": {
-      "days": 2691,
+      "days": 2690,
       "median": 8.8,
       "up_pct": 77
     },
@@ -136,7 +136,7 @@
   "pace": {
     "years": 3,
     "annual_pct": 3.6,
-    "level_12m": 25931
+    "level_12m": 25430
   },
   "earnings": {
     "as_of": "2026-10-30",
@@ -225,7 +225,7 @@
   "signposts": [
     {
       "text": "Price back above its 200-day average",
-      "level": 23999,
+      "level": 24002,
       "done": true
     },
     {
@@ -235,7 +235,7 @@
     },
     {
       "text": "Higher than a year ago",
-      "level": 26054,
+      "level": 25936,
       "done": false
     },
     {
@@ -871,7 +871,11 @@
     ],
     [
       "2026-11-06",
-      25030
+      24537
+    ],
+    [
+      "2026-11-05",
+      24537
     ]
   ]
 }

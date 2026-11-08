@@ -129,6 +129,10 @@ def fetch_indices() -> list[dict]:
                     continue
                 fi = yf.Ticker(ticker).fast_info            # no calendar at all: last resort
                 last, prev = float(fi["lastPrice"]), float(fi["previousClose"])
+            if last == prev:
+                # a live index sitting exactly on yesterday's close is a frozen quote (Yahoo's Sensex all through the Muhurat session), not a 0.00% day
+                print(f"[warn] index {name}: level equals the previous close exactly; left out of the ticker", file=sys.stderr)
+                continue
             if last and prev:
                 out.append({"name": name, "ticker": ticker, "level": round(last, 2), "change": round(last - prev, 2),
                             "move_pct": round((last / prev - 1) * 100, 2), "as_of": as_of, "prev_close": round(prev, 2)})
@@ -631,6 +635,7 @@ def main() -> None:
         if prev_latest:
             prev_latest["health"] = health
             prev_latest["stale"] = True
+            prev_latest["market"] = market          # the index chips do not depend on share prices: keep them live while the estimate is held
             write_json("latest.json", prev_latest)
             print("[error] price data looks broken: estimate NOT updated; the previous one stays, with a warning", file=sys.stderr)
             return

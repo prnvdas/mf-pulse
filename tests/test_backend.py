@@ -347,6 +347,21 @@ class DataHealth(unittest.TestCase):
         h = estimate.data_health({"tickers": 100, "gap": 0, "repaired": 0, "unverified": 0, "outliers": [], "verifiable": True}, 100, 100, self.FUND, self.NIFTY)
         self.assertEqual((h["status"], h["issues"]), ("ok", []))
 
+    def test_an_index_frozen_on_yesterdays_close_is_left_out_of_the_ticker(self):
+        import datetime as dt
+        from unittest import mock
+        quote = lambda level: {"level": level, "t": estimate.now_ist()}
+        def run(level):
+            with mock.patch.object(estimate, "INDICES", [("Sensex", "^BSESN")]), \
+                 mock.patch.object(estimate, "index_dates", lambda: [dt.date(2026, 11, 6), dt.date(2026, 11, 8)]), \
+                 mock.patch.object(estimate.yf, "download", side_effect=Exception("offline")), \
+                 mock.patch.object(estimate, "previous_closes", lambda *a, **k: {"^BSESN": 81028.0}), \
+                 mock.patch.object(estimate, "nse_index_closes", lambda d: {}), \
+                 mock.patch.object(estimate, "chart_quote", lambda t: quote(level)):
+                return estimate.fetch_indices()
+        self.assertEqual(run(81028.0), [])                        # Yahoo's Sensex all through the Muhurat session: not a 0.00% day
+        self.assertEqual([x["move_pct"] for x in run(81274.41)], [0.3])
+
     def test_shares_all_frozen_while_the_index_moves_holds_the_estimate(self):
         # the Diwali Muhurat session: indices live, every share still at Friday's close (a move of exactly 0.0)
         base = {"tickers": 264, "gap": 0, "repaired": 0, "unverified": 0, "outliers": [], "verifiable": True}

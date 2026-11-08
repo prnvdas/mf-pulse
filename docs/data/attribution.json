@@ -1431,6 +1431,228 @@
           ]
         }
       ]
+    },
+    {
+      "date": "2026-11-08",
+      "phase": "live",
+      "generated_at": "2026-11-08T14:36:04.290430+05:30",
+      "portfolio": {
+        "value": 10855566,
+        "impact": -233,
+        "market_rs": 69950,
+        "selection_rs": -70183,
+        "sectors": [
+          {
+            "sector": "Healthcare",
+            "impact": 0
+          },
+          {
+            "sector": "Consumer staples",
+            "impact": 0
+          },
+          {
+            "sector": "Financials",
+            "impact": 0
+          },
+          {
+            "sector": "Consumer (discretionary)",
+            "impact": 0
+          },
+          {
+            "sector": "Real Estate",
+            "impact": 0
+          },
+          {
+            "sector": "Materials",
+            "impact": 0
+          },
+          {
+            "sector": "Technology",
+            "impact": 0
+          },
+          {
+            "sector": "Industrials",
+            "impact": 0
+          },
+          {
+            "sector": "Energy",
+            "impact": 0
+          },
+          {
+            "sector": "Unclassified",
+            "impact": 0
+          },
+          {
+            "sector": "Utilities",
+            "impact": 0
+          },
+          {
+            "sector": "Telecom & media",
+            "impact": 0
+          }
+        ]
+      },
+      "funds": [
+        {
+          "id": "axis-small-cap",
+          "name": "Axis Small Cap Fund Direct Growth",
+          "value": 5331564,
+          "impact": -102,
+          "nav_move_pct": -0.002,
+          "benchmark": {
+            "ticker": "NIFTYSMLCAP250.NS",
+            "name": "Nifty Smallcap 250",
+            "move_pct": 1.09
+          },
+          "vs_benchmark_pp": -1.09,
+          "market_rs": 58126,
+          "selection_rs": -58228,
+          "sectors": [
+            {
+              "sector": "Healthcare",
+              "impact": 0,
+              "pp": 0.0
+            },
+            {
+              "sector": "Consumer staples",
+              "impact": 0,
+              "pp": 0.0
+            },
+            {
+              "sector": "Financials",
+              "impact": 0,
+              "pp": 0.0
+            },
+            {
+              "sector": "Consumer (discretionary)",
+              "impact": 0,
+              "pp": 0.0
+            },
+            {
+              "sector": "Real Estate",
+              "impact": 0,
+              "pp": 0.0
+            },
+            {
+              "sector": "Materials",
+              "impact": 0,
+              "pp": 0.0
+            }
+          ],
+          "other_sectors_rs": 0,
+          "unpriced_rs": 0,
+          "cost_rs": -102,
+          "cash_pct": 13.41,
+          "helped": [],
+          "hurt": []
+        },
+        {
+          "id": "mirae-large-midcap",
+          "name": "Mirae Asset Large & Midcap Fund Direct Growth",
+          "value": 5309730,
+          "impact": -125,
+          "nav_move_pct": -0.002,
+          "benchmark": {
+            "ticker": "^NSEMDCP50",
+            "name": null,
+            "move_pct": 0.21
+          },
+          "vs_benchmark_pp": -0.21,
+          "market_rs": 11051,
+          "selection_rs": -11176,
+          "sectors": [
+            {
+              "sector": "Financials",
+              "impact": 0,
+              "pp": 0.0
+            },
+            {
+              "sector": "Healthcare",
+              "impact": 0,
+              "pp": 0.0
+            },
+            {
+              "sector": "Energy",
+              "impact": 0,
+              "pp": 0.0
+            },
+            {
+              "sector": "Telecom & media",
+              "impact": 0,
+              "pp": 0.0
+            },
+            {
+              "sector": "Materials",
+              "impact": 0,
+              "pp": 0.0
+            },
+            {
+              "sector": "Consumer (discretionary)",
+              "impact": 0,
+              "pp": 0.0
+            }
+          ],
+          "other_sectors_rs": 0,
+          "unpriced_rs": 0,
+          "cost_rs": -125,
+          "cash_pct": 3.77,
+          "helped": [],
+          "hurt": []
+        },
+        {
+          "id": "jioblackrock-flexicap",
+          "name": "JioBlackRock Flexi Cap Fund Direct Growth",
+          "value": 214273,
+          "impact": -7,
+          "nav_move_pct": -0.003,
+          "benchmark": {
+            "ticker": "^CRSLDX",
+            "name": null,
+            "move_pct": 0.36
+          },
+          "vs_benchmark_pp": -0.36,
+          "market_rs": 773,
+          "selection_rs": -779,
+          "sectors": [
+            {
+              "sector": "Financials",
+              "impact": 0,
+              "pp": 0.0
+            },
+            {
+              "sector": "Telecom & media",
+              "impact": 0,
+              "pp": 0.0
+            },
+            {
+              "sector": "Energy",
+              "impact": 0,
+              "pp": 0.0
+            },
+            {
+              "sector": "Consumer (discretionary)",
+              "impact": 0,
+              "pp": 0.0
+            },
+            {
+              "sector": "Materials",
+              "impact": 0,
+              "pp": 0.0
+            },
+            {
+              "sector": "Technology",
+              "impact": 0,
+              "pp": 0.0
+            }
+          ],
+          "other_sectors_rs": 0,
+          "unpriced_rs": 0,
+          "cost_rs": -7,
+          "cash_pct": 6.22,
+          "helped": [],
+          "hurt": []
+        }
+      ]
     }
   ]
 }

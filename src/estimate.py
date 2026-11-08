@@ -304,6 +304,8 @@ def fetch_moves(
                 latest_bar_date = bar_date
         except Exception:  # noqa: BLE001
             continue
+    priced = [m for m in moves.values() if m is not None]
+    MOVE_STATS.update({"priced": len(priced), "flat": sum(1 for m in priced if m == 0.0)})   # exactly 0.0 = Yahoo has no new price, not a flat stock
     return moves, latest_bar_date, week
 
 
@@ -328,6 +330,9 @@ def data_health(stats: dict, resolved: int, total: int, results: list[dict], mar
     if stats.get("gap", 0) > 0.1 * n:
         # a gap that was fully repaired changes nothing about the estimate: noted for the record (footer), not a front-page warning
         add("info" if left <= 0.05 * n else "warn", f"Yahoo's daily history had a hole for {stats['gap']} of {n} stocks; their previous close was rebuilt from intraday prices ({stats.get('repaired', 0)} repaired).")
+    if stats.get("priced", 0) >= 20 and stats.get("flat", 0) >= 0.95 * stats["priced"]:
+        # seen in the Diwali Muhurat session: Yahoo moved the indices live but left every share at Friday's close, so "no change" was published
+        add("bad", f"Yahoo shows no price change for {stats['flat']} of {stats['priced']} stocks, so it is not updating individual shares right now (the indices may still be moving).")
     if stats.get("unverified", 0) > 0.25 * n:
         add("bad", f"{stats['unverified']} of {n} stocks have no previous close that can be verified.")
     elif stats.get("unverified", 0) > 0.05 * n:

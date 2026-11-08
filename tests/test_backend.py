@@ -347,6 +347,16 @@ class DataHealth(unittest.TestCase):
         h = estimate.data_health({"tickers": 100, "gap": 0, "repaired": 0, "unverified": 0, "outliers": [], "verifiable": True}, 100, 100, self.FUND, self.NIFTY)
         self.assertEqual((h["status"], h["issues"]), ("ok", []))
 
+    def test_shares_all_frozen_while_the_index_moves_holds_the_estimate(self):
+        # the Diwali Muhurat session: indices live, every share still at Friday's close (a move of exactly 0.0)
+        base = {"tickers": 264, "gap": 0, "repaired": 0, "unverified": 0, "outliers": [], "verifiable": True}
+        h = estimate.data_health({**base, "priced": 264, "flat": 264}, 264, 264, self.FUND, self.NIFTY)
+        self.assertEqual(h["status"], "bad")
+        self.assertIn("no price change for 264 of 264", h["issues"][0]["text"])
+        # a normal day has a few unchanged stocks, and a tiny sample proves nothing
+        self.assertEqual(estimate.data_health({**base, "priced": 264, "flat": 12}, 264, 264, self.FUND, self.NIFTY)["status"], "ok")
+        self.assertEqual(estimate.data_health({**base, "priced": 10, "flat": 10}, 10, 10, self.FUND, self.NIFTY)["status"], "ok")
+
     def test_a_yahoo_gap_that_was_fully_repaired_is_only_a_note(self):
         h = estimate.data_health({"tickers": 264, "gap": 261, "repaired": 261, "unverified": 0, "outliers": [], "verifiable": True}, 264, 264, self.FUND, self.NIFTY)
         self.assertEqual(h["status"], "ok")                       # nothing for the front page to say

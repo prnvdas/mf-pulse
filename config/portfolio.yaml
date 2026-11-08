@@ -27,8 +27,8 @@ market:
 special_sessions:
   - date: "2026-11-08"
     name: Diwali Muhurat trading
-    start: "17:30"      # provisional window; NSE announces the exact hour (usually ~1h around 18:00-19:15)
-    end: "20:00"
+    start: "14:20"      # pre-open 14:05-14:15; most reports say it ends 15:30, one says 15:40 (NSE circular not seen yet)
+    end: "15:30"
     provisional: true
 
 funds:

@@ -534,30 +534,39 @@
   },
   "market": [
     {
+      "name": "Sensex",
+      "ticker": "^BSESN",
+      "level": 81028.02,
+      "change": -0.0,
+      "move_pct": -0.0,
+      "as_of": "2026-11-08T14:52:59+05:30",
+      "prev_close": 81028.02
+    },
+    {
       "name": "Nifty 50",
       "ticker": "^NSEI",
-      "level": 25065.4,
-      "change": 35.05,
-      "move_pct": 0.14,
-      "as_of": "2026-11-08T15:01:21+05:30",
+      "level": 25054.3,
+      "change": 23.95,
+      "move_pct": 0.1,
+      "as_of": "2026-11-08T15:08:00+05:30",
       "prev_close": 25030.35
     },
     {
       "name": "Nifty Smallcap 250",
       "ticker": "NIFTYSMLCAP250.NS",
-      "level": 17623.15,
-      "change": 237.0,
-      "move_pct": 1.36,
-      "as_of": "2026-11-08T15:01:24+05:30",
+      "level": 17607.1,
+      "change": 220.95,
+      "move_pct": 1.27,
+      "as_of": "2026-11-08T15:08:00+05:30",
       "prev_close": 17386.15
     },
     {
       "name": "Nifty LargeMidcap 250",
       "ticker": "NIFTY_LARGEMID250.NS",
-      "level": 16676.55,
-      "change": 51.05,
-      "move_pct": 0.31,
-      "as_of": "2026-11-08T15:01:24+05:30",
+      "level": 16670.25,
+      "change": 44.75,
+      "move_pct": 0.27,
+      "as_of": "2026-11-08T15:08:00+05:30",
       "prev_close": 16625.5
     }
   ],
@@ -585,7 +594,7 @@
         "text": "Yahoo shows no price change for 260 of 263 stocks, so it is not updating individual shares right now (the indices may still be moving)."
       }
     ],
-    "checked_at": "2026-11-08T15:01:24.643251+05:30",
+    "checked_at": "2026-11-08T15:08:01.852952+05:30",
     "repaired": 0,
     "gap": 0,
     "ignored": 0

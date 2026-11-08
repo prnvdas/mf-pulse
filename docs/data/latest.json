@@ -1,7 +1,7 @@
 {
   "generated_at": "2026-11-08T14:35:49.039479+05:30",
   "generated_label": "08 Nov 2026, 14:35 IST",
-  "stale": false,
+  "stale": true,
   "phase": "live",
   "market_open": true,
   "totals": {
@@ -368,9 +368,14 @@
     "total": 260
   },
   "health": {
-    "status": "ok",
-    "issues": [],
-    "checked_at": "2026-11-08T14:36:03.786990+05:30",
+    "status": "bad",
+    "issues": [
+      {
+        "level": "bad",
+        "text": "Yahoo shows no price change for 260 of 263 stocks, so it is not updating individual shares right now (the indices may still be moving)."
+      }
+    ],
+    "checked_at": "2026-11-08T14:58:00.054619+05:30",
     "repaired": 0,
     "gap": 0,
     "ignored": 0

@@ -27,6 +27,10 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
  // a small phone (340px): nothing may push the whole page wider than the screen (the movers grid and the accuracy table once did)
  {const {p,ctx,errs}=await page(); await p.setViewportSize({width:340,height:800}); await p.waitForTimeout(300);
   const w=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,iw:innerWidth})); ok(w.sw<=w.iw+1,'340px phone: page is not wider than the screen',JSON.stringify(w)); ok(!errs.length,'340px errs',errs[0]); await ctx.close();}
+ // next session card: the verdict is one short pill on any phone (TOSS-UP used to break over two lines), the odds bar keeps its labels
+ {const {p,ctx,errs}=await page({outlook:j=>{j.call=Object.assign(j.call||{},{colour:'red',tier:'weak',p_call:51,p_up:49,hit_pct:55});return j;}}); await p.setViewportSize({width:340,height:800}); await p.waitForTimeout(300);
+  const r=await p.evaluate(()=>{const c=document.querySelector('#bOutlook .call .cw'),b=document.querySelector('#bOutlook .gbar');return {h:c.getBoundingClientRect().height,txt:c.textContent,bar:b&&b.innerText.replace(/\s+/g,' '),doc:document.documentElement.scrollWidth,iw:innerWidth};});
+  ok(r.txt==='TOSS-UP'&&r.h<40,'verdict is a one-line pill at 340px',JSON.stringify(r)); ok(/Up 49% Down 51%/.test(r.bar||'')&&r.doc<=r.iw+1,'odds bar keeps its labels, page fits',JSON.stringify(r)); ok(!errs.length,'outlook card errs',errs[0]); await ctx.close();}
  // top movers: two plain lists (no tables), every figure of the old table is still there, names are never read as HTML
  {const {p,ctx,errs}=await page({latest:j=>{j.movers.gainers[0].name='<img src=x onerror=window.__x=1>Bank';j.movers.gainers[1].impact=null;return j;}});
   const g=await p.$$eval('#mvUp li',a=>a.length), d=await p.$$eval('#mvDown li',a=>a.length), t=await p.$eval('#moversWrap',e=>e.innerText), tb=await p.$$eval('#moversWrap table',a=>a.length);

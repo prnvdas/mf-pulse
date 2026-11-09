@@ -8,7 +8,7 @@
   "chips": [
     {
       "label": "Market mood",
-      "value": "80 \u00b7 extreme greed",
+      "value": "82 \u00b7 extreme greed",
       "effect": "-"
     },
     {
@@ -28,12 +28,12 @@
     },
     {
       "label": "Trend",
-      "value": "6.5% above average",
+      "value": "6.6% above average",
       "effect": "+"
     }
   ],
-  "generated_at": "2026-11-09T07:16:22.610869+05:30",
-  "mood_as_of": "2026-11-08",
+  "generated_at": "2026-11-09T09:15:42.707283+05:30",
+  "mood_as_of": "2026-11-09",
   "stance": "Hold; skip lump sums for now",
   "stance_key": "hold_no_add",
   "headline": "Keep your SIPs running, but don't add lump sums right now.",
@@ -47,9 +47,9 @@
     {
       "key": "mood",
       "title": "Market mood",
-      "value": "80 \u00b7 Extreme greed",
+      "value": "82 \u00b7 Extreme greed",
       "effect": "-",
-      "text": "The Market Mood Index (Tickertape Market Mood Index) reads 80 of 100: extreme greed. It was 18 a month ago and 69 a year ago. Investors often get most nervous near market lows and most confident near highs, so fear is usually the better time to invest and greed the time to be careful. That is a tendency, not a promise."
+      "text": "The Market Mood Index (Tickertape Market Mood Index) reads 82 of 100: extreme greed. It was 17 a month ago and 66 a year ago. Investors often get most nervous near market lows and most confident near highs, so fear is usually the better time to invest and greed the time to be careful. That is a tendency, not a promise."
     },
     {
       "key": "val_axis-small-cap",
@@ -75,9 +75,16 @@
     {
       "key": "trend",
       "title": "Trend",
-      "value": "Nifty +6.5% vs its long average",
+      "value": "Nifty +6.6% vs its long average",
       "effect": "+",
-      "text": "The Nifty (24,986) is 6.5% above its longer-term average (23,466) and 6.3% above its shorter-term one."
+      "text": "The Nifty (25,076) is 6.6% above its longer-term average (23,514) and 6.1% above its shorter-term one."
+    },
+    {
+      "key": "flows",
+      "title": "Who is buying and selling",
+      "value": "foreign investors bought \u20b90 \u00b7 domestic funds sold \u20b9700 crore",
+      "effect": "=",
+      "text": "On the last session foreign investors bought \u20b90 while domestic funds sold \u20b9700 crore. Heavy foreign selling is a big part of why the market is under pressure; domestic buyers have been absorbing it. This explains the mood, it does not tell you what happens next."
     },
     {
       "key": "you",
@@ -89,7 +96,7 @@
     {
       "key": "tomorrow",
       "title": "Tomorrow",
-      "value": "GREEN \u00b7 65% (good)",
+      "value": "GREEN \u00b7 55% (moderate)",
       "effect": "=",
       "text": "The short-term call for the next session is a coin-flip with a small tilt. It is useful context for a day trader and irrelevant for a long-term investor: don't buy or sell on it."
     }
@@ -152,7 +159,7 @@
   "watch": [
     "If the Market Mood rises above 70 (extreme greed) and small caps are expensive against their own history, stop lump sums and think about booking some profit.",
     "If it stays below 30, nothing changes: keep investing in stages. Recoveries from fear usually take months, not days.",
-    "If the Nifty closes back above its longer-term average (23,466) the trend has turned: invest any remaining instalments."
+    "If the Nifty closes back above its longer-term average (23,514) the trend has turned: invest any remaining instalments."
   ],
   "evidence": "How much to trust this: on the Nifty 50 since 2012, months when it looked cheap against its own history were followed by a median 12.1% a year over three years, against 15.7% after dear months. So cheap or dear has told us little about average returns. It did tell us about the bad cases: the worst one-year result after cheap months was -8%, after dear months -26%. Treat the signals above as a reason for patience and for spreading out new money, not as a forecast.",
   "disclaimer": "Educational analysis of public market data, not personalised or SEBI-registered investment advice. It cannot know your goals, time horizon or income. Markets can stay cheap or expensive for long periods."

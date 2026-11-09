@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10T02:38:01.642816+05:30",
+  "generated_at": "2026-11-10T02:53:58.959537+05:30",
   "market": [
     {
       "title": "Sensex Today Ends 107 Points Higher | Nifty Above 25,000 | Data Patterns Up 9%",
@@ -187,7 +187,7 @@
     "date": "2026-11-09",
     "direction": "flat",
     "title": "How the market did today",
-    "summary": "The Nifty was flat +0.06%, led by PSU banks (+3.7%), Pharma (+1.6%). FPIs (foreign investors) bought \u20b97,212 cr while DIIs sold \u20b97,173 cr (net, provisional, per Moneycontrol). Notable global and macro moves: Brent crude \u22126.0%; USD/INR \u22120.6%.",
+    "summary": "The Nifty was flat +0.06%, led by PSU banks (+3.7%), Pharma (+1.6%). FPIs (foreign investors) bought \u20b97,212 cr while DIIs sold \u20b97,173 cr (net, provisional, per Moneycontrol). Notable global and macro moves: Brent crude \u22125.6%; USD/INR \u22120.6%.",
     "points": [
       {
         "kind": "fact",
@@ -377,11 +377,11 @@
       },
       {
         "name": "Brent crude",
-        "level": 92.45,
-        "pct": -5.97,
+        "level": 92.83,
+        "pct": -5.58,
         "unit": "$",
         "notable": true,
-        "z": -1.6,
+        "z": -1.5,
         "date": "2026-11-09"
       },
       {
@@ -567,6 +567,14 @@
       "Company news": true,
       "Market-wrap news": true
     },
-    "rich_at": "2026-11-09T20:40:52.201824+00:00"
+    "trace": {
+      "nse_session": "blocked or unreachable",
+      "nse_sectors": false,
+      "nse_flows": false,
+      "moneycontrol_flows": "error: 403 Client Error: Forbidden for url: https://www.moneycontro",
+      "flows_cache": true,
+      "nse_archive_sectors": true
+    },
+    "rich_at": "2026-11-09T21:23:37.378399+00:00"
   }
 }

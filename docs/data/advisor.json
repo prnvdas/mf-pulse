@@ -13,8 +13,8 @@
     },
     {
       "label": "Small caps",
-      "value": "fair",
-      "effect": "="
+      "value": "above average",
+      "effect": "-"
     },
     {
       "label": "Large + midcaps",
@@ -32,7 +32,7 @@
       "effect": "+"
     }
   ],
-  "generated_at": "2026-11-09T17:32:31.825263+05:30",
+  "generated_at": "2026-11-09T20:11:12.771519+05:30",
   "mood_as_of": "2026-11-09",
   "stance": "Hold and keep your SIPs running",
   "stance_key": "hold",
@@ -54,9 +54,9 @@
     {
       "key": "val_axis-small-cap",
       "title": "Small caps \u00b7 your Axis Small Cap",
-      "value": "P/E 32.0 \u00b7 fair",
-      "effect": "=",
-      "text": "Its benchmark trades at a P/E of 32.0, against a typical 32.2 over the last ten years (a discount of 1%). Only 49% of the last ten years were cheaper, and 80% of the last five. Verdict: fair."
+      "value": "P/E 32.2 \u00b7 above average",
+      "effect": "-",
+      "text": "Its benchmark trades at a P/E of 32.2, against a typical 32.2 over the last ten years (a premium of 0%). Only 51% of the last ten years were cheaper, and 82% of the last five. Verdict: above average."
     },
     {
       "key": "val_mirae-large-midcap",
@@ -97,7 +97,7 @@
   "do_today": [
     "Keep your \u20b91.11 lakh monthly SIP running. When prices are low it buys more units for the same money, which is exactly what a SIP is for.",
     "If you have spare cash, there is no urgency; investing it gradually is fine.",
-    "Of the parts of the market your funds track, large + midcaps looks cheapest (cheap) and small caps the dearest (fair). If you add extra money, tilting it towards Mirae Asset Large & Midcap rather than Axis Small Cap follows that. Your regular SIPs can stay as they are.",
+    "Of the parts of the market your funds track, large + midcaps looks cheapest (cheap) and small caps the dearest (above average). If you add extra money, tilting it towards Mirae Asset Large & Midcap rather than Axis Small Cap follows that. Your regular SIPs can stay as they are.",
     "Do not sell because of today's fall or tomorrow's red or green call."
   ],
   "where_to_add": [
@@ -113,9 +113,9 @@
     {
       "label": "Large caps (Nifty 50)",
       "fund": [],
-      "pe": 20.6,
-      "verdict": "Below average",
-      "score_pct": 17
+      "pe": 20.5,
+      "verdict": "Cheap",
+      "score_pct": 14
     },
     {
       "label": "Whole market (Nifty 500)",
@@ -129,7 +129,7 @@
     {
       "label": "Midcaps (Nifty Midcap 150)",
       "fund": [],
-      "pe": 27.7,
+      "pe": 27.9,
       "verdict": "Fair",
       "score_pct": 35
     },
@@ -138,9 +138,9 @@
       "fund": [
         "Axis Small Cap"
       ],
-      "pe": 32.0,
-      "verdict": "Fair",
-      "score_pct": 65
+      "pe": 32.2,
+      "verdict": "Above average",
+      "score_pct": 66
     }
   ],
   "if_you_sell": [

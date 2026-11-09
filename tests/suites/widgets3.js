@@ -24,6 +24,14 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
  // price-data health notice
  for (const [st,re,label] of [['warn',/data check/i,'warn'],['bad',/estimate on hold/i,'bad']]) {const {p,ctx,errs}=await page({latest:j=>{j.health={status:st,issues:[{level:st,text:'Yahoo had a hole for 261 of 264 stocks.'}],checked_at:'2026-10-12T14:00:00+05:30',repaired:261};return j;}});
   const t=await p.$eval('#dataBar',e=>e.hidden?'':e.innerText); ok(re.test(t)&&/261 of 264/.test(t),'data bar '+label,t); ok(/price data/i.test(await p.$eval('#healthLine',e=>e.innerText)),'footer price-data item '+label); ok(!errs.length,'data bar errs '+label,errs[0]); await ctx.close();}
+ // a small phone (340px): nothing may push the whole page wider than the screen (the movers grid and the accuracy table once did)
+ {const {p,ctx,errs}=await page(); await p.setViewportSize({width:340,height:800}); await p.waitForTimeout(300);
+  const w=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,iw:innerWidth})); ok(w.sw<=w.iw+1,'340px phone: page is not wider than the screen',JSON.stringify(w)); ok(!errs.length,'340px errs',errs[0]); await ctx.close();}
+ // an estimate held back on purpose is not "updates running late": the top line must say what is really going on
+ {const {p,ctx,errs}=await page({latest:j=>{j.generated_at='2026-10-12T10:00:00+05:30';j.health={status:'bad',issues:[{level:'bad',text:'Yahoo shows no price change for 260 of 263 stocks.'}],checked_at:'2026-10-12T13:30:00+05:30',repaired:0,gap:0,ignored:0};return j;}});
+  const t=await p.$eval('#stamp',e=>e.innerText); ok(/estimate on hold/i.test(t)&&!/running late|automatic updates/i.test(t),'held estimate: top line does not blame the scheduler',t); ok(!errs.length,'held stamp errs',errs[0]); await ctx.close();}
+ {const {p,ctx,errs}=await page({latest:j=>{j.generated_at='2026-10-12T10:00:00+05:30';return j;}});
+  const t=await p.$eval('#stamp',e=>e.innerText); ok(/running late/i.test(t)&&!/estimate on hold/i.test(t),'old data without a held estimate still says running late',t); await ctx.close();}
  // a holiday has no prices by definition: a stale "bad" health file must not raise an alarm on the page
  {const {p,ctx,errs}=await page({latest:j=>{j.health={status:'bad',issues:[{level:'bad',text:'Prices came through for only 0 of 264 stocks.'}],checked_at:'2026-10-17T16:55:00+05:30',repaired:0};return j;}},[],'2026-10-17T05:30:00Z');   // a Saturday
   ok(await p.$eval('#dataBar',e=>e.hidden),'closed day: no "estimate on hold" banner'); ok(!/price data/i.test(await p.$eval('#healthLine',e=>e.innerText)),'closed day: no price-data complaint in the footer'); ok(!errs.length,'closed-day health errs',errs[0]); await ctx.close();}

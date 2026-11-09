@@ -296,7 +296,7 @@
   .mvgrid td{padding-top:12px;padding-bottom:12px}
   .mvgrid td:first-child,.mvgrid th:first-child{padding-left:0}
   .mvgrid td:not(:first-child){white-space:nowrap}
-  @media(max-width:900px){.mvgrid{grid-template-columns:1fr}}
+  @media(max-width:900px){.mvgrid{grid-template-columns:minmax(0,1fr)}}
   .scroll table{min-width:560px}
   .sub2{font-size:11px;color:var(--grey-light);font-weight:400}
   .chip{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
@@ -1426,7 +1426,7 @@ function renderHitMiss() {
     stat("Within 0.10pp", close(0.10).toFixed(0) + "%", "of NAV moves called this closely") +
     stat("Within 0.20pp", close(0.20).toFixed(0) + "%", "of NAV moves") + "</div>";
 
-  html += '<table style="margin-top:26px"><thead><tr><th>Fund</th><th>Sessions</th><th>Hit rate</th><th>Avg error</th><th>Bias</th><th>Worst miss</th></tr></thead><tbody>' +
+  html += '<div class="scroll" style="margin-top:26px"><table><thead><tr><th>Fund</th><th>Sessions</th><th>Hit rate</th><th>Avg error</th><th>Bias</th><th>Worst miss</th></tr></thead><tbody>' +
     CFG.funds.map(f => {
       const rs = recent.filter(r => r.fund_id === f.id);
       if (!rs.length) return "";
@@ -1434,7 +1434,7 @@ function renderHitMiss() {
       return "<tr><td>" + short(f.name) + "</td><td>" + rs.length + "</td><td>" + hitRate(rs).toFixed(0) + "%</td><td>" +
         mean(rs.map(r => r.error_pct)).toFixed(2) + "pp</td><td>" + (bias >= 0 ? "+" : "−") + Math.abs(bias).toFixed(2) +
         "pp</td><td>" + Math.max(...rs.map(r => r.error_pct)).toFixed(2) + "pp</td></tr>";
-    }).join("") + "</tbody></table>" +
+    }).join("") + "</tbody></table></div>" +
     '<p class="sub2" style="margin-top:8px">Bias = average of (predicted − actual). A positive number means the estimate ran slightly optimistic. It is shown, not corrected: with this few sessions it is not statistically distinguishable from noise.</p>';
 
   html += '<h2 style="margin-top:34px">Hit &amp; miss by session <span>green = direction right, red = wrong, newest on the right</span></h2><div class="hgrid">' +
@@ -2442,6 +2442,7 @@ function paintStamp() {
   $("stamp").innerHTML = marketStatus() + " · <b>" + clock + "</b>" +
     (age != null ? " · data " + (age < 1 ? "just updated" : age < 90 ? age + " min old" : age < 2880 ? Math.round(age / 60) + " h old" : Math.round(age / 1440) + " days old") : "") +
     (waiting ? " · waiting for today's first update (due about 09:30)"
+      : late && isObj(a.health) && a.health.status === "bad" ? ' · <span class="neg">estimate on hold (price data problem)</span>'   // held on purpose: the scheduler is not late
       : late ? ' · <span class="neg">delayed — updates are running late; ' + fix + "</span>" : "") +
     (marketOpen() && $("auto").getAttribute("aria-pressed") === "true" ? ' · <span class="autoon">● auto-updating</span>' : "");
   const tl = $("tkLab"); if (tl) tl.innerHTML = tickerLabel();

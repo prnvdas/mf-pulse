@@ -27,6 +27,14 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
  // a small phone (340px): nothing may push the whole page wider than the screen (the movers grid and the accuracy table once did)
  {const {p,ctx,errs}=await page(); await p.setViewportSize({width:340,height:800}); await p.waitForTimeout(300);
   const w=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,iw:innerWidth})); ok(w.sw<=w.iw+1,'340px phone: page is not wider than the screen',JSON.stringify(w)); ok(!errs.length,'340px errs',errs[0]); await ctx.close();}
+ // top movers: two plain lists (no tables), every figure of the old table is still there, names are never read as HTML
+ {const {p,ctx,errs}=await page({latest:j=>{j.movers.gainers[0].name='<img src=x onerror=window.__x=1>Bank';j.movers.gainers[1].impact=null;return j;}});
+  const g=await p.$$eval('#mvUp li',a=>a.length), d=await p.$$eval('#mvDown li',a=>a.length), t=await p.$eval('#moversWrap',e=>e.innerText), tb=await p.$$eval('#moversWrap table',a=>a.length);
+  ok(g>=1&&d>=1&&tb===0,'movers are two lists, no table',JSON.stringify({g,d,tb}));
+  ok(/gainers/i.test(t)&&/laggards/i.test(t)&&/[+−]₹[\d,]+/.test(t)&&/[+−]\d+\.\d\d% move · exposure ₹[\d,]+/.test(t)&&/Latest estimate/.test(t)&&/not a prediction/i.test(t),'movers keep move, exposure and impact',t.slice(0,300));
+  ok(!await p.evaluate(()=>window.__x)&&/<img src=x/.test(t),'a stock name is text, not HTML');
+  ok(await p.$$eval('#mvUp .bar i',a=>a.every(x=>/^\d+(\.\d)?%$/.test(x.style.width)&&parseFloat(x.style.width)<=100)),'impact bars stay within 0-100%');
+  ok(!errs.length&&!/NaN|undefined|\[object/.test(t),'movers clean',errs[0]); await ctx.close();}
  // an estimate held back on purpose is not "updates running late": the top line must say what is really going on
  {const {p,ctx,errs}=await page({latest:j=>{j.generated_at='2026-10-12T10:00:00+05:30';j.health={status:'bad',issues:[{level:'bad',text:'Yahoo shows no price change for 260 of 263 stocks.'}],checked_at:'2026-10-12T13:30:00+05:30',repaired:0,gap:0,ignored:0};return j;}});
   const t=await p.$eval('#stamp',e=>e.innerText); ok(/estimate on hold/i.test(t)&&!/running late|automatic updates/i.test(t),'held estimate: top line does not blame the scheduler',t); ok(!errs.length,'held stamp errs',errs[0]); await ctx.close();}

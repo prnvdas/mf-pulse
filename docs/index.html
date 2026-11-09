@@ -290,12 +290,21 @@
   @media(max-width:760px){.acc.four{grid-template-columns:1fr 1fr}}
   .why .ev{display:block;font-size:12px;color:var(--grey);margin-top:3px}
   .why .ev a{color:inherit}
-  .mvgrid{display:grid;grid-template-columns:1fr 1fr;gap:36px}
-  .mvgrid .scroll table{min-width:0}
-  .mvgrid td,.mvgrid th{padding-left:12px}
-  .mvgrid td{padding-top:12px;padding-bottom:12px}
-  .mvgrid td:first-child,.mvgrid th:first-child{padding-left:0}
-  .mvgrid td:not(:first-child){white-space:nowrap}
+  .mvgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:44px}
+  .mvsel{font:inherit;font-size:12.5px;padding:6px 30px 6px 14px;border:1px solid var(--rule);border-radius:99px;background:var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2397999b' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 12px center;color:var(--ink)}
+  .mvhd{display:flex;align-items:center;gap:8px;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);padding-bottom:10px;border-bottom:1px solid var(--rule)}
+  .mvhd i{width:7px;height:7px;border-radius:50%;background:var(--green-deep)}.mvdn .mvhd i{background:var(--red)}
+  .mvl{list-style:none}
+  .mvl li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1px 18px;padding:14px 0 12px;border-bottom:1px solid var(--rule)}
+  .mvl .nm{font-size:14.5px;font-weight:600;line-height:1.35;overflow-wrap:break-word}
+  .mvl .imp{font-size:15px;font-weight:700;text-align:right;white-space:nowrap}
+  .mvl .fd{font-size:11px;color:var(--grey-light)}
+  .mvl .dt{font-size:12px;color:var(--grey);text-align:right;white-space:nowrap}
+  .mvl .dt b{font-weight:600}
+  .mvl .bar{grid-column:1/-1;height:3px;margin-top:9px;border-radius:2px;background:var(--wash);overflow:hidden}
+  .mvl .bar i{display:block;height:100%;border-radius:2px;background:var(--green)}.mvdn .mvl .bar i{background:var(--red)}
+  .mvl .none{display:block;padding:14px 0;font-size:12px;color:var(--grey-light)}
+  @media(max-width:480px){.mvl .fd,.mvl .dt{grid-column:1/-1;text-align:left}}
   @media(max-width:900px){.mvgrid{grid-template-columns:minmax(0,1fr)}}
   .scroll table{min-width:560px}
   .sub2{font-size:11px;color:var(--grey-light);font-weight:400}
@@ -721,10 +730,10 @@
   </section>
   <section id="moversWrap" hidden>
     <h2>Top movers <span id="moversNote">Your holdings that moved the most, by rupee impact on your money</span></h2>
-    <div style="margin:0 0 14px"><select id="moversDay" style="font:inherit;font-size:12.5px;padding:5px 8px"></select></div>
+    <div style="margin:0 0 18px"><select id="moversDay" class="mvsel"></select></div>
     <div class="mvgrid">
-      <div><div class="sub2" style="margin-bottom:6px">GAINERS</div><div class="scroll"><table><thead><tr><th>Stock</th><th>Move</th><th>Your exposure</th><th>Impact</th></tr></thead><tbody id="mvUp"></tbody></table></div></div>
-      <div><div class="sub2" style="margin-bottom:6px">LAGGARDS</div><div class="scroll"><table><thead><tr><th>Stock</th><th>Move</th><th>Your exposure</th><th>Impact</th></tr></thead><tbody id="mvDown"></tbody></table></div></div>
+      <div class="mvup"><div class="mvhd"><i></i>Gainers</div><ul class="mvl" id="mvUp"></ul></div>
+      <div class="mvdn"><div class="mvhd"><i></i>Laggards</div><ul class="mvl" id="mvDown"></ul></div>
     </div>
     <p class="sub2" style="margin-top:12px">What already moved in that session, not a prediction of which stocks will rise. Exposure is your money in the stock across all funds (fund value × its weight in the fund's latest disclosed holdings).</p>
   </section>
@@ -2131,10 +2140,11 @@ function renderMovers(m, label) {
   const wrap = $("moversWrap");
   if (!m || !(m.gainers || []).length && !(m.laggards || []).length) { wrap.hidden = true; return; }
   wrap.hidden = false;
-  const rows = list => list.length ? list.map(x => "<tr><td>" + x.name + '<br><span class="sub2">' +
-    (x.funds || []).map(f => f.split(" ")[0]).join(" · ") + "</span></td><td class=\"" + (x.move_pct >= 0 ? "pos" : "neg") + "\">" + pc(x.move_pct) +
-    "</td><td>" + inr(x.exposure) + "</td><td class=\"" + (x.impact >= 0 ? "pos" : "neg") + "\">" + signed(x.impact) + "</td></tr>").join("")
-    : '<tr><td colspan="4" class="sub2">None</td></tr>';
+  const mx = Math.max(1, ...[...(m.gainers || []), ...(m.laggards || [])].map(x => Math.abs(x.impact)).filter(Number.isFinite));   // one scale for both lists
+  const rows = list => list.length ? list.map(x => '<li><span class="nm">' + esc(x.name) + '</span><span class="imp ' + (x.impact >= 0 ? "pos" : "neg") + '">' + signed(x.impact) + "</span>" +
+    '<span class="fd">' + (x.funds || []).map(f => esc(f.split(" ")[0])).join(" · ") + '</span><span class="dt"><b class="' + (x.move_pct >= 0 ? "pos" : "neg") + '">' + pc(x.move_pct) + "</b> move · exposure " + inr(x.exposure) + "</span>" +
+    '<span class="bar"><i style="width:' + (Number.isFinite(x.impact) ? Math.min(100, Math.abs(x.impact) / mx * 100).toFixed(1) : 0) + '%"></i></span></li>').join("")
+    : '<li><span class="none">None</span></li>';
   $("mvUp").innerHTML = rows(m.gainers || []);
   $("mvDown").innerHTML = rows(m.laggards || []);
   $("moversNote").textContent = label;

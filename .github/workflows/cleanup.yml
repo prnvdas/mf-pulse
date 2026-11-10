@@ -14,6 +14,7 @@ on:
         type: boolean
         default: false
   push:
+    branches: [main]             # not on Dependabot's branches
     paths:
       - ".github/workflows/cleanup.yml"
       - "src/housekeeping.py"

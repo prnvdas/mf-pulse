@@ -15,6 +15,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "src"))
 import common  # noqa: E402
 import detect_sips  # noqa: E402
 import health  # noqa: E402
+import housekeeping  # noqa: E402
 import import_transactions as itx  # noqa: E402
 import estimate  # noqa: E402
 import fund_meta  # noqa: E402
@@ -590,6 +591,40 @@ class Trend(unittest.TestCase):
         json.dumps(doc, allow_nan=False)                                  # no NaN may reach the page
         self.assertIn(doc["regime"]["code"], ("strong", "up"))
         self.assertEqual(doc["of"], 9)
+
+
+class Housekeeping(unittest.TestCase):
+    TODAY = dt.date(2026, 11, 10)
+
+    def reason(self, title, green=True, months=frozenset()):
+        return housekeeping.alert_reason(title, self.TODAY, green, set(months))
+
+    def test_test_failure_alerts_close_only_when_the_tests_are_green(self):
+        t = "Tests are failing after: Next-session card: use the GIFT-narrowed range only aft"
+        self.assertIsNotNone(self.reason(t, green=True))
+        self.assertIsNone(self.reason(t, green=False))
+        self.assertIsNotNone(self.reason("Undid a change that broke the tests: TEST ONLY", green=True))
+
+    def test_holiday_alerts_close_only_after_the_day(self):
+        self.assertIsNotNone(self.reason("Market closed on Tue 20 Oct 2026: Dussehra"))
+        self.assertIsNone(self.reason("Market closed on Tue 10 Nov 2026: Diwali-Balipratipada"))       # today
+        self.assertIsNone(self.reason("Market closed on Fri 20 Nov 2026: something"))                  # still ahead
+
+    def test_statement_reminder_closes_once_that_months_statement_is_in(self):
+        t = "Upload your Groww statement \u2014 November 2026"
+        self.assertIsNotNone(self.reason(t, months={"2026-11"}))
+        self.assertIsNone(self.reason(t, months={"2026-10"}))
+        self.assertEqual(housekeeping.statement_months(["2026-11-04.xlsx.enc", "tx-2026-11-02.xlsx.enc", ".gitkeep"]), {"2026-11"})
+
+    def test_other_issues_are_left_alone(self):
+        self.assertIsNone(self.reason("Something a person wrote", months={"2026-11"}))
+        self.assertIsNone(self.reason("Upload your Groww statement \u2014 Smarch 2026", months={"2026-11"}))
+
+    def test_the_newest_deployments_are_always_kept(self):
+        deps = [{"id": i, "created_at": f"2026-11-{i:02d}T00:00:00Z"} for i in range(1, 11)]
+        old = housekeeping.older_deployments(deps, 3)
+        self.assertEqual(sorted(d["id"] for d in old), list(range(1, 8)))
+        self.assertEqual(housekeeping.older_deployments(deps, 50), [])
 
 
 if __name__ == "__main__":

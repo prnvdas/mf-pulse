@@ -1,20 +1,27 @@
 name: cleanup
 
-# Deletes finished workflow runs (and the "pages build and deployment" runs every push creates) that are older than
-# KEEP_DAYS, so the Actions tab stays readable. It never touches the code, the data or the live site: only the run
-# history and its logs. Weekly, or run it by hand (set dry_run to just list what it would delete).
+# Daily housekeeping for the GitHub side (src/housekeeping.py): deletes finished workflow runs older than 3 days, deletes old
+# Pages deployment records (the newest 30 stay), and closes alert issues whose reason has passed (tests green again, the holiday
+# is over, that month's statement is imported). It never touches the code, the data or the live site. Run it by hand with
+# dry_run set to just list what it would do. Editing this file or the script also runs it once.
 on:
   schedule:
-    - cron: "40 21 * * 0"
+    - cron: "40 21 * * *"        # 03:10 IST
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Only list the runs that would be deleted"
+        description: "Only say what would be deleted or closed"
         type: boolean
         default: false
+  push:
+    paths:
+      - ".github/workflows/cleanup.yml"
+      - "src/housekeeping.py"
 
 permissions:
   actions: write
+  issues: write
+  deployments: write
   contents: read
 
 concurrency:
@@ -23,21 +30,12 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 350         # the first big clean-up waits for GitHub's hourly request limit; daily runs take seconds
     env:
       GH_TOKEN: ${{ github.token }}
-      KEEP_DAYS: "30"
-      DRY: ${{ inputs.dry_run }}
+      DRY: ${{ github.event_name == 'push' || inputs.dry_run }}
     steps:
-      - name: Delete old workflow runs
+      - uses: actions/checkout@v4
+      - name: Tidy up
         run: |
-          cutoff=$(date -u -d "$KEEP_DAYS days ago" +%F)
-          echo "Deleting finished runs created before $cutoff"
-          ids=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?per_page=100&status=completed&created=<$cutoff" \
-                  --paginate --jq '.workflow_runs[].id' | head -2000)
-          n=0
-          for id in $ids; do
-            if [ "$DRY" = "true" ]; then echo "would delete run $id"; else gh api -X DELETE "repos/$GITHUB_REPOSITORY/actions/runs/$id" --silent || true; fi
-            n=$((n+1))
-          done
-          echo "Done: $n run(s) $( [ "$DRY" = "true" ] && echo listed || echo deleted )."
+          if [ "$DRY" = "true" ]; then python3 src/housekeeping.py --dry; else python3 src/housekeeping.py; fi

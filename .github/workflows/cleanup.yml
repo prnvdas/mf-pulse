@@ -35,7 +35,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       DRY: ${{ inputs.dry_run }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Tidy up
         run: |
           if [ "$DRY" = "true" ]; then python3 src/housekeeping.py --dry; else python3 src/housekeeping.py; fi

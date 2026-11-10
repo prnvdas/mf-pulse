@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10T15:35:26.350439+05:30",
+  "generated_at": "2026-11-10T15:50:52.367253+05:30",
   "market": [
     {
       "title": "When is next stock market holiday? Check date for Nov weekday; NSE-BSE closed for Prakash Gurpurab Sri Guru Nanak Dev Ji",
@@ -362,7 +362,8 @@
       "source": "Moneycontrol",
       "fii": 7212.0,
       "dii": -7173.0,
-      "fii_index_futures": 1815.0
+      "fii_index_futures": 1815.0,
+      "from_cache": true
     },
     "macro": [
       {
@@ -418,6 +419,15 @@
         "notable": false,
         "z": 0.4,
         "date": "2026-11-06"
+      },
+      {
+        "name": "India VIX",
+        "level": 17.42,
+        "pct": -0.29,
+        "unit": "",
+        "notable": false,
+        "z": -0.1,
+        "date": "2026-11-09"
       }
     ],
     "portfolio": [
@@ -590,6 +600,14 @@
       "Company news": true,
       "Market-wrap news": true
     },
-    "rich_at": "2026-11-10T09:50:25.768136+00:00"
+    "trace": {
+      "nse_session": "blocked or unreachable",
+      "nse_sectors": false,
+      "nse_flows": false,
+      "moneycontrol_flows": false,
+      "flows_cache": true,
+      "nse_archive_sectors": true
+    },
+    "rich_at": "2026-11-10T10:20:31.395074+00:00"
   }
 }

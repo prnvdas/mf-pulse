@@ -33,7 +33,7 @@ jobs:
     timeout-minutes: 350         # the first big clean-up waits for GitHub's hourly request limit; daily runs take seconds
     env:
       GH_TOKEN: ${{ github.token }}
-      DRY: ${{ github.event_name == 'push' || inputs.dry_run }}
+      DRY: ${{ inputs.dry_run }}
     steps:
       - uses: actions/checkout@v4
       - name: Tidy up

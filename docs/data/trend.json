@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-11-10T03:44:59.528150+05:30",
-  "as_of": "2026-11-06",
+  "generated_at": "2026-11-10T06:23:40.409674+05:30",
+  "as_of": "2026-11-09",
   "index": "Nifty 50",
-  "level": 25030.35,
+  "level": 25044.65,
   "score": 3,
   "of": 9,
   "regime": {
@@ -17,7 +17,7 @@
       "k": "above200",
       "label": "Price above its 200-day average",
       "state": "bull",
-      "value": "+4.3%"
+      "value": "+4.4%"
     },
     {
       "k": "cross",
@@ -29,19 +29,19 @@
       "k": "rising200",
       "label": "200-day average rising",
       "state": "bear",
-      "value": "-1.3% in a month"
+      "value": "-1.2% in a month"
     },
     {
       "k": "mom12",
       "label": "Higher than a year ago",
       "state": "bear",
-      "value": "-3.9%"
+      "value": "-3.2%"
     },
     {
       "k": "mom3",
       "label": "Higher than three months ago",
       "state": "bull",
-      "value": "+1.6%"
+      "value": "+1.9%"
     },
     {
       "k": "rsi",
@@ -69,7 +69,7 @@
     }
   ],
   "levels": {
-    "ma200": 23999,
+    "ma200": 23996,
     "high52": 26329,
     "bear_line": 21063
   },
@@ -103,7 +103,7 @@
   },
   "year": {
     "since": "2007-09-17",
-    "days": 4444,
+    "days": 4445,
     "years": 17.6,
     "up_pct": 77,
     "p10": -9.7,
@@ -111,14 +111,14 @@
     "p90": 34.1,
     "worst": -57.0,
     "best": 104.4,
-    "level_p10": 22601,
-    "level_p50": 27550,
-    "level_p90": 33560
+    "level_p10": 22615,
+    "level_p50": 27565,
+    "level_p90": 33579
   },
   "edge": {
     "since": "2008-09-22",
     "up": {
-      "days": 2691,
+      "days": 2692,
       "median": 8.8,
       "up_pct": 77
     },
@@ -135,8 +135,8 @@
   },
   "pace": {
     "years": 3,
-    "annual_pct": 3.6,
-    "level_12m": 25931
+    "annual_pct": 3.5,
+    "level_12m": 25912
   },
   "earnings": {
     "as_of": "2026-10-30",
@@ -225,7 +225,7 @@
   "signposts": [
     {
       "text": "Price back above its 200-day average",
-      "level": 23999,
+      "level": 23996,
       "done": true
     },
     {
@@ -235,7 +235,7 @@
     },
     {
       "text": "Higher than a year ago",
-      "level": 26054,
+      "level": 25878,
       "done": false
     },
     {
@@ -872,6 +872,14 @@
     [
       "2026-11-06",
       25030
+    ],
+    [
+      "2026-11-13",
+      25045
+    ],
+    [
+      "2026-11-09",
+      25045
     ]
   ]
 }

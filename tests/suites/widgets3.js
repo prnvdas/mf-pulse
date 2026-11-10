@@ -27,6 +27,10 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
  // a small phone (340px): nothing may push the whole page wider than the screen (the movers grid and the accuracy table once did)
  {const {p,ctx,errs}=await page(); await p.setViewportSize({width:340,height:800}); await p.waitForTimeout(300);
   const w=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,iw:innerWidth})); ok(w.sw<=w.iw+1,'340px phone: page is not wider than the screen',JSON.stringify(w)); ok(!errs.length,'340px errs',errs[0]); await ctx.close();}
+ // readable text: the grey, green and amber used for small text keep a 4.5:1 contrast against the page in both themes
+ {const {p,ctx}=await page(); const r=await p.evaluate(()=>{const lum=h=>{h=h.replace('#','');if(h.length===3)h=h.split('').map(x=>x+x).join('');const c=h.match(/../g).map(x=>parseInt(x,16)/255).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4));return .2126*c[0]+.7152*c[1]+.0722*c[2];},cr=(a,b)=>{const [x,y]=[lum(a),lum(b)].sort((m,n)=>n-m);return (x+.05)/(y+.05);},out={};
+    for(const th of ['light','dark']){document.documentElement.setAttribute('data-theme',th);const s=getComputedStyle(document.documentElement),g=n=>s.getPropertyValue(n).trim();out[th]=['--grey','--grey-light','--green-deep','--amber'].map(n=>[n,+cr(g(n),g('--paper')).toFixed(2)]);}return out;});
+  const low=['light','dark'].flatMap(th=>r[th].filter(x=>!(x[1]>=4.5)).map(x=>th+' '+x[0]+' '+x[1])); ok(!low.length,'small-text colours reach 4.5:1 in light and dark',JSON.stringify(low)); await ctx.close();}
  // the hover box on the money chart never covers the worth line (a rising line used to run straight through a centred box) and stays inside the chart
  {const {p,ctx,errs}=await page(); await p.locator('#mhit').scrollIntoViewIfNeeded(); await p.waitForTimeout(200); const box=await p.$eval('#mhit',e=>{const r=e.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height};}); const bad=[];
   for (const f of [.05,.2,.4,.6,.8,.95]) { await p.mouse.move(box.x+box.w*f,box.y+box.h*.5); await p.waitForTimeout(80);

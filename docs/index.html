@@ -15,8 +15,8 @@
   @font-face{font-family:"Open Sans";font-style:normal;font-weight:300 700;font-display:swap;src:url(fonts/os-latin-ext.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}
   @font-face{font-family:"Open Sans";font-style:normal;font-weight:300 700;font-display:swap;src:url(fonts/os-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
   :root{
-    --ink:#000;--on-ink:#fff;--paper:#fff;--navbg:rgba(255,255,255,.96);--amber:#a86d00;--amber-deep:#8a5a00;--green-dark:#3d6a0a;--green:#86bc25;--green-deep:#5f8a15;--red:#da291c;
-    --grey:#63666a;--grey-light:#97999b;--rule:#e8e8e8;--wash:#f7f7f7;--state:var(--green);--state-ink:var(--green-deep);--state-soft:var(--soft-green);
+    --ink:#000;--on-ink:#fff;--paper:#fff;--navbg:rgba(255,255,255,.96);--amber:#946000;--amber-deep:#8a5a00;--green-dark:#3d6a0a;--green:#86bc25;--green-deep:#4f7510;--red:#da291c;
+    --grey:#63666a;--grey-light:#6e7276;--rule:#e8e8e8;--wash:#f7f7f7;--state:var(--green);--state-ink:var(--green-deep);--state-soft:var(--soft-green);
     --soft-green:rgba(134,188,37,.16);--soft-red:rgba(218,41,28,.11);--r:12px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -181,6 +181,7 @@
   .outlook .ok{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);padding-top:3px}
   .outlook table{font-size:12px;margin-top:8px}.outlook td,.outlook th{padding:7px 0}
   .chip.flat{background:var(--grey-light)}
+  svg text[fill="#97999b"]{fill:var(--grey-light)}                       /* chart axis labels follow the (readable) grey token */
   @media(max-width:760px){.outlook .orow{grid-template-columns:1fr;gap:1px}}
   .seg{display:inline-flex;gap:2px;padding:3px;border-radius:99px;background:var(--wash);margin:2px 0 16px}
   .seg button{font:inherit;font-size:12px;background:none;color:var(--grey);border:0;border-radius:99px;padding:7px 16px;cursor:pointer}
@@ -319,7 +320,7 @@
   .sub2{font-size:11px;color:var(--grey-light);font-weight:400}
   .chip{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
     padding:3px 9px;border-radius:99px;color:#fff;vertical-align:middle}
-  .chip.healthy{background:var(--green-deep)}.chip.watch{background:#c98a0a}.chip.caution{background:var(--red)}
+  .chip.healthy{background:var(--green-deep)}.chip.watch{background:#946000}.chip.caution{background:var(--red)}
   .hgrid{display:grid;gap:5px;margin:6px 0}
   .hrow{display:grid;grid-template-columns:minmax(90px,150px) minmax(0,1fr);gap:12px;align-items:center;font-size:12.5px}
   .hrow .cells{display:flex;gap:3px;min-width:0}

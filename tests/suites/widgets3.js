@@ -27,6 +27,10 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
  // a small phone (340px): nothing may push the whole page wider than the screen (the movers grid and the accuracy table once did)
  {const {p,ctx,errs}=await page(); await p.setViewportSize({width:340,height:800}); await p.waitForTimeout(300);
   const w=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,iw:innerWidth})); ok(w.sw<=w.iw+1,'340px phone: page is not wider than the screen',JSON.stringify(w)); ok(!errs.length,'340px errs',errs[0]); await ctx.close();}
+ // segmented switches are one-line pills, even on a small phone (they used to wrap their labels into a tall block)
+ {const {p,ctx,errs}=await page(); await p.setViewportSize({width:340,height:800}); await p.waitForTimeout(300);
+  const r=await p.evaluate(()=>{const b=[...document.querySelectorAll('.seg button')].filter(x=>x.offsetParent);return {n:b.length,tall:b.filter(x=>x.getBoundingClientRect().height>40).length,round:b.filter(x=>parseFloat(getComputedStyle(x).borderTopLeftRadius)<12).length,doc:document.documentElement.scrollWidth,iw:innerWidth};});
+  ok(r.n>0&&r.tall===0&&r.round===0,'switch buttons: one line and fully round at 340px',JSON.stringify(r)); ok(r.doc<=r.iw+1,'switches do not widen the page',JSON.stringify(r)); ok(!errs.length,'switch errs',errs[0]); await ctx.close();}
  // next session card: the verdict is one short pill on any phone (TOSS-UP used to break over two lines), the odds bar keeps its labels
  {const {p,ctx,errs}=await page({outlook:j=>{j.call=Object.assign(j.call||{},{colour:'red',tier:'weak',p_call:51,p_up:49,hit_pct:55});return j;}}); await p.setViewportSize({width:340,height:800}); await p.waitForTimeout(300);
   const r=await p.evaluate(()=>{const c=document.querySelector('#bOutlook .call .cw'),b=document.querySelector('#bOutlook .gbar');return {h:c.getBoundingClientRect().height,txt:c.textContent,bar:b&&b.innerText.replace(/\s+/g,' '),doc:document.documentElement.scrollWidth,iw:innerWidth};});

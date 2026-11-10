@@ -27,6 +27,15 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
  // a small phone (340px): nothing may push the whole page wider than the screen (the movers grid and the accuracy table once did)
  {const {p,ctx,errs}=await page(); await p.setViewportSize({width:340,height:800}); await p.waitForTimeout(300);
   const w=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,iw:innerWidth})); ok(w.sw<=w.iw+1,'340px phone: page is not wider than the screen',JSON.stringify(w)); ok(!errs.length,'340px errs',errs[0]); await ctx.close();}
+ // the hover box on the money chart never covers the worth line (a rising line used to run straight through a centred box) and stays inside the chart
+ {const {p,ctx,errs}=await page(); await p.locator('#mhit').scrollIntoViewIfNeeded(); await p.waitForTimeout(200); const box=await p.$eval('#mhit',e=>{const r=e.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height};}); const bad=[];
+  for (const f of [.05,.2,.4,.6,.8,.95]) { await p.mouse.move(box.x+box.w*f,box.y+box.h*.5); await p.waitForTimeout(80);
+    const h=await p.evaluate(()=>{const svg=document.querySelector('#moneyChart svg'),pr=svg.getBoundingClientRect(),sc=pr.width/svg.viewBox.baseVal.width,t=document.getElementById('mtip'),tp=t.getBoundingClientRect();
+      const worth=[...svg.querySelectorAll('path')].filter(e=>e.getAttribute('stroke-width')==='2.4').pop(),nums=worth.getAttribute('d').match(/-?\d+(\.\d+)?/g).map(Number);let n=0;
+      for(let i=2;i<nums.length;i+=2)for(let k=0;k<=24;k++){const f=k/24,x=pr.left+(nums[i-2]+(nums[i]-nums[i-2])*f)*sc,y=pr.top+(nums[i-1]+(nums[i+1]-nums[i-1])*f)*sc;if(x>=tp.left&&x<=tp.right&&y>=tp.top&&y<=tp.bottom)n++;}
+      return {n,hidden:t.hidden,L:Math.round(tp.left-pr.left),W:Math.round(tp.width),pw:Math.round(pr.width)};});
+    if(h.hidden||h.n>0||h.L<-1||h.L+h.W>h.pw+1) bad.push([f,h]); }
+  ok(!bad.length,'money hover box covers no part of the worth line and stays in the chart',JSON.stringify(bad)); ok(!errs.length,'hover errs',errs[0]); await ctx.close();}
  // segmented switches are one-line pills, even on a small phone (they used to wrap their labels into a tall block)
  {const {p,ctx,errs}=await page(); await p.setViewportSize({width:340,height:800}); await p.waitForTimeout(300);
   const r=await p.evaluate(()=>{const b=[...document.querySelectorAll('.seg button')].filter(x=>x.offsetParent);return {n:b.length,tall:b.filter(x=>x.getBoundingClientRect().height>40).length,round:b.filter(x=>parseFloat(getComputedStyle(x).borderTopLeftRadius)<12).length,doc:document.documentElement.scrollWidth,iw:innerWidth};});

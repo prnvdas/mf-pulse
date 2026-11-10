@@ -1412,8 +1412,7 @@ function drawProjectionChart(all, rates, sel, last) {
     tip.innerHTML = "<b>" + p.year + "</b> <span class=\"m\">· " + (p.k === 0 ? "end of this year" : p.k + " yr" + (p.k > 1 ? "s" : "") + " from now") + "</span><br>" +
       "<b>" + inr(p.v) + "</b> at " + rates[sel] + "%<br><span class=\"m\">invested " + inr(p.inv) + "<br>that year " + signed(p.ret) + "</span>" +
       all.map((s2, i) => i === sel ? "" : '<br><span class="m">' + rates[i] + "%: " + cx(s2.find(q => q.k === p.k).v) + "</span>").join("");
-    const tw = tip.offsetWidth, left = Math.min(Math.max(gx * (r.width / W) - tw / 2, 0), r.width - tw);
-    tip.style.left = left + "px"; tip.style.top = Math.max(0, gy * (r.width / W) - tip.offsetHeight - 14) + "px";
+    placeTip(tip, gx, gy, r.width / W, r.width, H - m.b, [S.map(q => [X(q.x), Y(q.v)])]);
   };
   const hide = () => { tip.hidden = true; ["pguide", "pdot"].forEach(id => $(id).setAttribute("visibility", "hidden")); };
   const hit = $("phit");
@@ -2987,6 +2986,26 @@ function renderMoney() {
   drawMoneyChart(pts);
 }
 
+// Hover info box for the line charts: above the spot you point at and clear of every line (a rising line used to run straight through a
+// centred box). It tries above the point, sliding sideways in small steps until it is clear of every line, then the same along the bottom of the plot. `series` are arrays of
+// [x, y] in the chart's own units, `sc` turns them into pixels and `floor` is the y of the bottom of the plot.
+function placeTip(tip, gx, gy, sc, rw, floor, series) {
+  const tw = tip.offsetWidth, th = tip.offsetHeight, gxp = gx * sc;
+  const hits = (l, t) => series.some(sr => sr.some((q, i) => {            // does any line segment cross the box (with a 4px margin)?
+    if (!i) return false;
+    const a = sr[i - 1], ax = a[0] * sc, ay = a[1] * sc, bx = q[0] * sc, by = q[1] * sc, lo = l - 4, hi = l + tw + 4;
+    if (Math.max(ax, bx) < lo || Math.min(ax, bx) > hi) return false;
+    const at = x => bx === ax ? ay : ay + (by - ay) * (x - ax) / (bx - ax), x1 = Math.max(lo, Math.min(ax, bx)), x2 = Math.min(hi, Math.max(ax, bx));
+    const ys = bx === ax ? [ay, by] : [at(x1), at(x2)];
+    return Math.max(...ys) >= t - 4 && Math.min(...ys) <= t + th + 4;
+  }));
+  const ideal = gxp - tw / 2, lefts = [...new Set([0, ...Array.from({ length: Math.ceil(rw / 36) }, (_, k) => [(k + 1) * 36, -(k + 1) * 36]).flat()].map(d => Math.min(Math.max(ideal + d, 0), rw - tw)))];   // centred first, then outwards in 36px steps
+  const tops = [Math.max(0, gy * sc - th - 14), Math.max(0, floor * sc - th - 6)];
+  let at = [lefts[0], tops[0]];                                              // if nowhere is clear: centred above the point
+  tops.some(t => lefts.some(l => { if (hits(l, t)) return false; at = [l, t]; return true; }));
+  tip.style.left = at[0] + "px"; tip.style.top = at[1] + "px";
+}
+
 function drawMoneyChart(pts) {
   const host = $("moneyChart"), gainMode = MONEY.mode === "gain";
   const W = Math.max(300, host.clientWidth || 800), narrow = W < 520, H = narrow ? 240 : 300;
@@ -3031,8 +3050,7 @@ function drawMoneyChart(pts) {
     tip.innerHTML = "<b>" + (longSpan ? p.d.split("-").reverse().join("-") : dlong(p.d)) + "</b><br>worth <b>" + cl(p.v) + "</b><br><span class=\"m\">put in " + cl(p.i) + "<br>gain " + sgc(p.v - p.i) +
       (prev ? "<br>that day " + sgc((p.v - prev.v) - (p.i - prev.i)) : "") +
       (cmpK ? "<br>" + CMP_NAME[cmpK] + ", same money: " + cl(p[cmpK]) + "<br>you are " + (p.v - p[cmpK] >= 0 ? "ahead by " : "behind by ") + cl(Math.abs(p.v - p[cmpK])) : "") + "</span>";
-    const tw = tip.offsetWidth, left = Math.min(Math.max(gx * (r.width / W) - tw / 2, 0), r.width - tw);
-    tip.style.left = left + "px"; tip.style.top = Math.max(0, gy * (r.width / W) - tip.offsetHeight - 14) + "px";
+    placeTip(tip, gx, gy, r.width / W, r.width, H - m.b, [vp, ip].concat(cp ? [cp] : []));
   };
   const hide = () => { tip.hidden = true; ["mguide", "mdot"].forEach(id => $(id).setAttribute("visibility", "hidden")); };
   const hit = $("mhit");
@@ -3729,12 +3747,12 @@ function drawFundChart(host, dates, v, iv, b, bname) {
     '<path d="' + path(iv) + '" fill="none" stroke="#97999b" stroke-width="1.5" stroke-dasharray="4 4"/><path d="' + path(b) + '" fill="none" stroke="#3d5a80" stroke-width="1.8" stroke-linejoin="round"/>' +
     '<path d="' + path(v) + '" fill="none" stroke="#5f8a15" stroke-width="2.4" stroke-linejoin="round"/>' +
     '<line id="fguide" y1="' + m.t + '" y2="' + (H - m.b) + '" stroke="#97999b" stroke-dasharray="3 3" visibility="hidden"/><rect id="fhit" x="' + m.l + '" y="' + m.t + '" width="' + (W - m.l - m.r) + '" height="' + (H - m.t - m.b) + '" fill="transparent"/></svg><div class="ptip" id="ftip" hidden></div>';
-  const svg = host.querySelector("svg"), tip = $("ftip");
+  const svg = host.querySelector("svg"), tip = $("ftip"), ser = [v, b, iv].map(a => a.map((q, k) => [X(dates[k]), Y(q)]));
   const move = e => { const r = svg.getBoundingClientRect(), px = ((e.touches ? e.touches[0].clientX : e.clientX) - r.left) * (W / r.width); let bi = 0;
     dates.forEach((d, k) => { if (Math.abs(X(d) - px) < Math.abs(X(dates[bi]) - px)) bi = k; });
     const gx = X(dates[bi]); $("fguide").setAttribute("x1", gx); $("fguide").setAttribute("x2", gx); $("fguide").setAttribute("visibility", "visible"); tip.hidden = false;
     tip.innerHTML = "<b>" + dates[bi].split("-").reverse().join("-") + "</b><br>fund " + cl(v[bi]) + '<br><span class="m">put in ' + cl(iv[bi]) + "<br>" + esc(bname || "benchmark") + " " + cl(b[bi]) + "<br>" + (v[bi] >= b[bi] ? "ahead by " : "behind by ") + cl(Math.abs(v[bi] - b[bi])) + "</span>";
-    tip.style.left = Math.min(Math.max(gx * (r.width / W) - tip.offsetWidth / 2, 0), r.width - tip.offsetWidth) + "px"; tip.style.top = "4px"; };
+    placeTip(tip, gx, Y(v[bi]), r.width / W, r.width, H - m.b, ser); };
   const hide = () => { tip.hidden = true; $("fguide").setAttribute("visibility", "hidden"); }, hit = $("fhit");
   hit.addEventListener("mousemove", move); hit.addEventListener("mouseleave", hide); hit.addEventListener("touchstart", move, { passive: true }); hit.addEventListener("touchmove", move, { passive: true }); hit.addEventListener("touchend", hide);
 }

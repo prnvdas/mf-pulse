@@ -376,9 +376,11 @@
   .snav button:hover:not(:disabled){background:none;color:var(--ink)}
   .snav button[aria-current=true]{color:var(--ink);border-bottom-color:var(--green-deep)}
   .hero,section{scroll-margin-top:50px}
-  .totop{position:fixed;right:18px;bottom:18px;z-index:30;width:46px;height:46px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;
-    background:var(--ink);color:var(--on-ink);border:1px solid var(--ink);box-shadow:0 4px 16px rgba(0,0,0,.25);opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .2s,transform .2s}
-  .totop.show{opacity:1;transform:none;pointer-events:auto}
+  .fab{position:fixed;right:18px;bottom:18px;z-index:30;display:flex;flex-direction:column;gap:10px}
+  .totop{width:46px;height:46px;padding:0;border-radius:50%;display:none;align-items:center;justify-content:center;
+    background:var(--ink);color:var(--on-ink);border:1px solid var(--ink);box-shadow:0 4px 16px rgba(0,0,0,.25)}
+  .totop.show{display:flex;animation:fabin .2s}
+  @keyframes fabin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   .totop[hidden]{display:none}
   .totop svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
   .totop:hover:not(:disabled){background:var(--paper);color:var(--ink)}
@@ -568,7 +570,8 @@
 <body>
 <div class="sky" aria-hidden="true"><i></i><i></i><i></i></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<button type="button" id="toTop" class="totop" aria-label="Back to the top" title="Back to the top" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></button>
+<div class="fab"><button type="button" id="toTop" class="totop" aria-label="Back to the top" title="Back to the top" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg></button>
+<button type="button" id="toBottom" class="totop" aria-label="Down to the bottom" title="Down to the bottom" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12l7 7 7-7"/></svg></button></div>
 
 <header>
   <div class="wrap bar">
@@ -3324,14 +3327,17 @@ function renderIdeas() {
   $("ideasRecord").innerHTML = t;
 }
 
-// ---- back to top: appears once you have scrolled a screen or so down
+// ---- back to top appears once you have scrolled a screen or so down; down to the bottom shows while there is still a long way to go
 function setupToTop() {
-  const b = $("toTop"); if (!b) return;
-  b.hidden = false;
+  const b = $("toTop"), d = $("toBottom"); if (!b) return;
+  b.hidden = false; if (d) d.hidden = false;
   let busy = false;
-  const upd = () => { busy = false; b.classList.toggle("show", window.scrollY > Math.max(500, window.innerHeight * 0.8)); };
+  const left = () => document.documentElement.scrollHeight - window.scrollY - window.innerHeight;
+  const upd = () => { busy = false; b.classList.toggle("show", window.scrollY > Math.max(500, window.innerHeight * 0.8)); if (d) d.classList.toggle("show", left() > Math.max(400, window.innerHeight * 0.5)); };
   window.addEventListener("scroll", () => { if (!busy) { busy = true; requestAnimationFrame(upd); } }, { passive: true });
+  window.addEventListener("resize", upd);
   b.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  if (d) d.onclick = () => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
   upd();
 }
 

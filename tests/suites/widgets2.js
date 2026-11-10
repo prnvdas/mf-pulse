@@ -22,6 +22,13 @@ const URL=process.env.BASE||(process.env.BASE||'http://localhost:8000/index.html
   ok(await p.$eval('#toTop',e=>e.classList.contains('show')),'back-to-top shown at the bottom');
   await p.click('#toTop'); await settle(p); ok(await p.evaluate(()=>scrollY<5),'back-to-top returns to the top');
   await p.waitForTimeout(300); ok(!(await p.$eval('#toTop',e=>e.classList.contains('show'))),'hidden again at the top');
+  // down to the bottom: the mirror image (shown while a long way is left, gone at the very bottom)
+  ok(await p.$eval('#toBottom',e=>e.classList.contains('show')),'down arrow shown at the top');
+  await p.click('#toBottom'); await settle(p); await p.waitForTimeout(500);
+  ok(await p.evaluate(()=>document.documentElement.scrollHeight-scrollY-innerHeight<6),'down arrow goes to the bottom');
+  ok(!(await p.$eval('#toBottom',e=>e.classList.contains('show')))&&await p.$eval('#toTop',e=>e.classList.contains('show')),'at the bottom only the up arrow shows');
+  await p.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight/2)); await p.waitForTimeout(400);
+  ok(await p.$eval('#toBottom',e=>e.classList.contains('show'))&&await p.$eval('#toTop',e=>e.classList.contains('show')),'in the middle both arrows show');
   ok(!errs.length,'to-top errors',errs[0]); await ctx.close();}
  // header: Refresh and the eye button stay together however long the status text is
  for (const w of [1280,1080,900,760,600,390]) {const {p,ctx}=await page('2026-10-13T03:47:00Z',{},w);

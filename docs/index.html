@@ -137,7 +137,7 @@
 
   table{width:100%;border-collapse:collapse}
   th{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--grey);
-    text-align:right;padding:0 0 11px;border-bottom:1px solid var(--ink)}
+    text-align:right;padding:0 0 12px;border-bottom:1px solid var(--rule)}
   th:first-child{text-align:left}
   td{padding:16px 0;border-bottom:1px solid var(--rule);text-align:right}
   td:first-child{text-align:left}
@@ -149,7 +149,7 @@
   .impact{font-weight:600;font-size:16px}
   .cover{display:flex;align-items:center;gap:9px;justify-content:flex-end}
   .cover .track{width:52px;height:4px;background:var(--rule);position:relative}
-  .cover .fill{position:absolute;inset:0 auto 0 0;background:var(--ink)}
+  .cover .fill{position:absolute;inset:0 auto 0 0;background:var(--green-deep)}
   .cover em{font-style:normal;font-size:12px;color:var(--grey);min-width:34px;text-align:right}
 
   .contrib{display:grid;gap:8px}
@@ -323,9 +323,9 @@
   .chip.healthy{background:var(--green-deep)}.chip.watch{background:#c98a0a}.chip.caution{background:var(--red)}
   .hgrid{display:grid;gap:5px;margin:6px 0}
   .hrow{display:grid;grid-template-columns:minmax(90px,150px) minmax(0,1fr);gap:12px;align-items:center;font-size:12.5px}
-  .hrow .cells{display:flex;gap:2px;min-width:0}
-  .hrow .c{flex:1;height:18px;min-width:2px;background:var(--rule)}
-  .hrow .c.hit{background:var(--green)}.hrow .c.miss{background:var(--red)}
+  .hrow .cells{display:flex;gap:3px;min-width:0}
+  .hrow .c{flex:1;height:20px;min-width:2px;border-radius:5px;background:var(--rule)}
+  .hrow .c.hit{background:var(--green);opacity:.55}.hrow .c.miss{background:var(--red)}
   .hhead{display:flex;justify-content:space-between;font-size:11px;color:var(--grey-light);margin:0 0 0 162px}
   .hcards{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);margin-top:18px}
   .hcard{background:var(--paper);padding:20px 22px;font-size:13px}
@@ -1470,14 +1470,14 @@ function renderHitMiss() {
   });
   const top = Math.max(...errs.map(x => x.e), 0.1), bw = 100 / errs.length, avg = mean(errs.map(x => x.e));
   html += '<h2 style="margin-top:34px">Daily error <span>average miss across your funds, in percentage points — dashed line is the average</span></h2>' +
-    '<svg viewBox="0 0 100 40" preserveAspectRatio="none" style="width:100%;height:120px;display:block;background:var(--wash)">' +
+    '<svg viewBox="0 0 100 40" preserveAspectRatio="none" style="width:100%;height:120px;display:block">' +
     errs.map((x, i) => {
       const h = x.e / top * 36;
-      return '<rect x="' + (i * bw + bw * 0.15).toFixed(2) + '" y="' + (38 - h).toFixed(2) + '" width="' + (bw * 0.7).toFixed(2) +
-        '" height="' + h.toFixed(2) + '" fill="' + (x.allHit ? "#86bc25" : "#da291c") + '"><title>' + x.d + ": " + x.e.toFixed(2) + "pp</title></rect>";
+      return '<rect x="' + (i * bw + bw * 0.2).toFixed(2) + '" y="' + (38 - h).toFixed(2) + '" width="' + (bw * 0.6).toFixed(2) +
+        '" height="' + h.toFixed(2) + '" fill="' + (x.allHit ? "#86bc25" : "#da291c") + '" fill-opacity="' + (x.allHit ? ".6" : "1") + '"><title>' + x.d + ": " + x.e.toFixed(2) + "pp</title></rect>";
     }).join("") +
     '<line x1="0" x2="100" y1="' + (38 - avg / top * 36).toFixed(2) + '" y2="' + (38 - avg / top * 36).toFixed(2) +
-    '" stroke="#000" stroke-width=".4" stroke-dasharray="1.5 1.5" vector-effect="non-scaling-stroke"/></svg>' +
+    '" style="stroke:var(--grey)" stroke-width=".4" stroke-dasharray="1.5 1.5" vector-effect="non-scaling-stroke"/></svg>' +
     '<p class="sub2" style="margin-top:8px">Bars are green when every fund\'s direction was right that day, red when any was wrong. Tallest bar: ' +
     top.toFixed(2) + "pp. Average: " + avg.toFixed(2) + "pp.</p>";
   wrap.innerHTML = html;

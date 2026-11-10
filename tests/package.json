@@ -1,7 +1,7 @@
 {
   "name": "mf-pulse-tests",
   "private": true,
-  "description": "Browser tests for the dashboard page (Playwright). Run: npm install && npx playwright install chromium && npm test",
+  "description": "Browser tests for the dashboard page (Playwright). Run: npm install && npx playwright install chromium firefox webkit && npm test",
   "scripts": { "test": "node run.js" },
   "dependencies": { "playwright": "^1.64.0" }
 }

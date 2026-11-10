@@ -5,7 +5,7 @@ name: tests
 #    widths, feeds it deliberately broken data files, and then loads the real docs/data to confirm the live site renders
 #  - backend: unit tests for SIP detection, the transaction import, history snapshots, fund health, config overlay
 #  - data: every docs/data/*.json must be strictly valid JSON
-# A failed run emails you (GitHub's default). Run the same thing locally: cd tests && npm install && npx playwright install chromium && npm test
+# A failed run emails you (GitHub's default). Run the same thing locally: cd tests && npm install && npx playwright install chromium firefox webkit && npm test
 on:
   push:
     branches: [main]
@@ -59,11 +59,11 @@ jobs:
           node-version: "20"
           cache: npm
           cache-dependency-path: tests/package-lock.json
-      - name: Install Playwright and Chromium
+      - name: Install Playwright and its browsers (Chromium, Firefox, WebKit)
         working-directory: tests
         run: |
           npm ci
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps chromium firefox webkit
       - name: Page tests
         working-directory: tests
         run: node run.js
@@ -117,7 +117,7 @@ jobs:
           pip install -r requirements.txt
           python3 src/validate_data.py
           python -m unittest discover -s tests -p "test_*.py"
-          cd tests && npm ci && npx playwright install --with-deps chromium && node run.js
+          cd tests && npm ci && npx playwright install --with-deps chromium firefox webkit && node run.js
       - name: Publish the undo
         id: publish
         if: steps.decide.outputs.skip == '' && steps.undo.outcome == 'success'

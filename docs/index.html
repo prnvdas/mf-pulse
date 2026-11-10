@@ -191,14 +191,17 @@
   .pchart svg{display:block;width:100%;overflow:visible}
   .ptip{position:absolute;pointer-events:none;background:var(--paper);border:1px solid var(--rule);box-shadow:0 4px 18px rgba(0,0,0,.08);padding:10px 12px;font-size:12px;line-height:1.55;min-width:190px;z-index:2}
   .ptip b{font-weight:600}.ptip .m{color:var(--grey)}
-  .brief{padding:30px 0 26px}
-  .bgreet{font-size:22px;font-weight:600;letter-spacing:-.015em;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-  .bsub{font-size:12.5px;color:var(--grey);margin-top:2px}
-  .bquote{margin:14px 0 0;color:var(--grey);font-size:14.5px;font-style:italic;max-width:62ch}
-  .bpoints{list-style:none;display:grid;gap:11px;margin:20px 0 6px}
-  .bpoints li{display:grid;grid-template-columns:130px 1fr;gap:14px;font-size:14px;line-height:1.55}
+  .brief{padding:36px 0 28px}
+  .bgreet{font-size:32px;font-weight:600;letter-spacing:-.03em;line-height:1.15;display:flex;gap:6px 14px;align-items:center;flex-wrap:wrap}
+  .bgreet .chip{font-size:11px;letter-spacing:.08em;padding:6px 13px;color:var(--grey);background:var(--wash)}
+  .bgreet .chip.healthy{color:var(--green-deep);background:var(--soft-green)}.bgreet .chip.watch{color:var(--amber-deep);background:rgba(201,138,10,.14)}.bgreet .chip.caution{color:var(--red);background:var(--soft-red)}
+  .bsub{font-size:13px;color:var(--grey-light);margin-top:8px}
+  .bquote{margin:18px 0 0;color:var(--grey);font-size:15.5px;line-height:1.6;max-width:62ch}
+  .bpoints{list-style:none;display:grid;gap:0;margin:26px 0 6px}
+  .bpoints li{display:grid;grid-template-columns:140px 1fr;gap:14px;font-size:14.5px;line-height:1.6;padding:15px 0;border-top:1px solid var(--rule)}
   .bpoints .bk{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);padding-top:3px}
-  @media(max-width:760px){.bpoints li{grid-template-columns:1fr;gap:2px}}
+  @media(max-width:760px){.bpoints li{grid-template-columns:1fr;gap:3px}}
+  @media(max-width:560px){.bgreet{font-size:25px}}
   .ticker{display:flex;align-items:stretch;background:var(--wash);color:var(--ink);border-bottom:1px solid var(--rule);font-size:12.5px}
   .ticker[hidden]{display:none}
   .tk-lab{flex:none;color:var(--grey);font-size:10px;font-weight:600;letter-spacing:.14em;padding:0 18px 0 32px;display:flex;align-items:center;gap:7px;border-right:1px solid var(--rule);background:var(--wash);z-index:1}

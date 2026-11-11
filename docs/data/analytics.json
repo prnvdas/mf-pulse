@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T03:30:42.941229+05:30",
+  "generated_at": "2026-11-12T05:14:00.927258+05:30",
   "risk_free_pct": 6.5,
   "portfolio_xirr_pct": 13.2,
   "portfolio_returns": {
@@ -928,32 +928,32 @@
       },
       "returns": {
         "1M": {
-          "fund": 6.9,
-          "bench": 7.46,
-          "diff": -0.56
+          "fund": 8.11,
+          "bench": 9.44,
+          "diff": -1.33
         },
         "3M": {
-          "fund": -1.42,
-          "bench": -1.63,
-          "diff": 0.21
+          "fund": -0.58,
+          "bench": 0.41,
+          "diff": -0.99
         },
         "6M": {
-          "fund": 4.54,
-          "bench": 2.83,
-          "diff": 1.71
+          "fund": 7.25,
+          "bench": 5.93,
+          "diff": 1.32
         },
         "1Y": {
-          "fund": 2.17,
-          "bench": -0.1,
-          "diff": 2.27
+          "fund": 2.28,
+          "bench": 0.24,
+          "diff": 2.04
         }
       },
       "risk": {
         "window_days": 364,
         "beta": 0.84,
-        "alpha_pct": 1.37,
+        "alpha_pct": 1.28,
         "vol_pct": 15.2,
-        "bench_vol_pct": 15.2,
+        "bench_vol_pct": 15.3,
         "sharpe": -0.22,
         "max_drawdown_pct": -14.4,
         "bench_max_drawdown_pct": -14.5
@@ -964,8 +964,8 @@
         "fund_pb": 3.2,
         "bench_pe": 22.8
       },
-      "history_days": 615,
-      "as_of": "2026-11-09",
+      "history_days": 617,
+      "as_of": "2026-11-11",
       "scenarios": {
         "basis": "fund",
         "since": "2013-01-02",
@@ -978,9 +978,9 @@
         "share_positive": 88
       },
       "recovery": {
-        "nav_last": 178.877,
+        "nav_last": 180.523,
         "nav_peak_6m": 181.884,
-        "gap_pct": 1.7,
+        "gap_pct": 0.8,
         "peak_date": "2026-08-03"
       },
       "xirr": {

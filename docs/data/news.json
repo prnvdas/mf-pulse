@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-11T23:37:13.675111+05:30",
+  "generated_at": "2026-11-12T00:05:12.034219+05:30",
   "market": [
     {
       "title": "Bought Indo Thai Securities shares in 2026? Stock crashes 90% after two years of multibagger gains; what went wrong?",
@@ -358,7 +358,8 @@
       "source": "Moneycontrol",
       "fii": 12563.0,
       "dii": -8435.0,
-      "fii_index_futures": 3337.0
+      "fii_index_futures": 3337.0,
+      "from_cache": true
     },
     "macro": [
       {
@@ -372,11 +373,11 @@
       },
       {
         "name": "Brent crude",
-        "level": 92.76,
-        "pct": 1.39,
+        "level": 93.19,
+        "pct": 1.86,
         "unit": "$",
         "notable": false,
-        "z": 0.4,
+        "z": 0.5,
         "date": "2026-11-11"
       },
       {
@@ -396,15 +397,6 @@
         "notable": true,
         "z": 1.9,
         "date": "2026-11-10"
-      },
-      {
-        "name": "India VIX",
-        "level": 17.56,
-        "pct": 0.77,
-        "unit": "",
-        "notable": false,
-        "z": 0.2,
-        "date": "2026-11-11"
       }
     ],
     "portfolio": [
@@ -566,6 +558,14 @@
       "Company news": true,
       "Market-wrap news": true
     },
-    "rich_at": "2026-11-11T17:51:34.006588+00:00"
+    "trace": {
+      "nse_session": "blocked or unreachable",
+      "nse_sectors": false,
+      "nse_flows": false,
+      "moneycontrol_flows": "error: 403 Client Error: Forbidden for url: https://www.moneycontro",
+      "flows_cache": true,
+      "nse_archive_sectors": true
+    },
+    "rich_at": "2026-11-11T18:34:50.147417+00:00"
   }
 }

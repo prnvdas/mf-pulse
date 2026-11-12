@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-12T15:55:20.008295+05:30",
-  "generated_label": "12 Nov 2026, 15:55 IST",
+  "generated_at": "2026-11-12T16:55:25.141215+05:30",
+  "generated_label": "12 Nov 2026, 16:55 IST",
   "stale": false,
   "phase": "final",
   "market_open": false,
@@ -9,7 +9,7 @@
     "invested": 8510996.23,
     "total_returns": 2533663.98,
     "total_returns_pct": 29.77,
-    "today_impact": 77333.8,
+    "today_impact": 77340.69,
     "today_pct": 0.7,
     "band_rupees": 7659.0
   },
@@ -171,18 +171,18 @@
       "name": "JioBlackRock Flexi Cap Fund Direct Growth",
       "current_value": 218296.35,
       "invested": 211339.44,
-      "nav_move_pct": 0.263,
-      "rupee_impact": 573.9,
+      "nav_move_pct": 0.266,
+      "rupee_impact": 580.79,
       "last_nav": 10.1835,
-      "projected_nav": 10.2103,
-      "band_rupees": 202.0,
-      "coverage_pct": 95.0,
+      "projected_nav": 10.2106,
+      "band_rupees": 206.0,
+      "coverage_pct": 94.7,
       "cash_pct": 6.22,
       "tail_pct": 0.0,
       "tail_move_pct": 0.36,
       "holdings_as_of": "2026-11-04",
       "holdings_count": 127,
-      "priced_count": 127,
+      "priced_count": 126,
       "top_contributors": [
         {
           "name": "Oil & Natural Gas Corporation Ltd",
@@ -501,11 +501,11 @@
     ],
     "breadth": {
       "up": 161,
-      "down": 99,
-      "total": 260
+      "down": 98,
+      "total": 259
     },
     "portfolio_pct": 0.7,
-    "portfolio_impact": 77334,
+    "portfolio_impact": 77341,
     "funds": [
       {
         "id": "axis-small-cap",
@@ -522,8 +522,8 @@
       {
         "id": "jioblackrock-flexicap",
         "name": "JioBlackRock Flexi Cap Fund Direct Growth",
-        "nav_move_pct": 0.263,
-        "impact": 574
+        "nav_move_pct": 0.266,
+        "impact": 581
       }
     ]
   },
@@ -570,23 +570,23 @@
       "name": "Brent crude",
       "ticker": "BZ=F",
       "unit": "$",
-      "level": 92.06,
-      "change": 0.77,
-      "move_pct": 0.84,
-      "as_of": "2026-11-12T15:45:18+05:30"
+      "level": 92.26,
+      "change": 0.97,
+      "move_pct": 1.06,
+      "as_of": "2026-11-12T16:45:32+05:30"
     }
   ],
   "breadth": {
     "up": 161,
-    "down": 99,
-    "total": 260
+    "down": 98,
+    "total": 259
   },
   "health": {
     "status": "ok",
     "issues": [],
-    "checked_at": "2026-11-12T15:55:41.134939+05:30",
+    "checked_at": "2026-11-12T16:55:38.211196+05:30",
     "repaired": 0,
-    "gap": 0,
+    "gap": 1,
     "ignored": 0
   },
   "accuracy": {
@@ -615,6 +615,6 @@
       }
     }
   },
-  "tickers_resolved": 263,
+  "tickers_resolved": 262,
   "tickers_total": 263
 }

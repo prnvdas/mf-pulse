@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-11-13T03:30:56.614873+05:30",
-  "as_of": "2026-11-11",
+  "generated_at": "2026-11-13T04:23:19.650588+05:30",
+  "as_of": "2026-11-12",
   "value": 11129081,
   "risk_free_pct": 6.5,
   "fd_rate_pct": 7.000000000000001,
-  "basis": "today's mix applied to each fund's real NAV history (3,417 sessions, since 2013-01-03)",
+  "basis": "today's mix applied to each fund's real NAV history (3,418 sessions, since 2013-01-03)",
   "reward": {
-    "cagr_1y": 5.2,
-    "cagr_3y": 15.5,
-    "cagr_5y": 12.7,
+    "cagr_1y": 5.7,
+    "cagr_3y": 15.2,
+    "cagr_5y": 12.8,
     "cagr_all": 21.1,
     "nifty_cagr": {
       "1y": -1.8,
@@ -18,7 +18,7 @@
     "rolling": [
       {
         "years": 1,
-        "windows": 3165,
+        "windows": 3166,
         "worst": -20.2,
         "p5": -2.8,
         "p25": 6.1,
@@ -30,7 +30,7 @@
       },
       {
         "years": 3,
-        "windows": 2661,
+        "windows": 2662,
         "worst": 0.1,
         "p5": 9.5,
         "p25": 16.4,
@@ -42,7 +42,7 @@
       },
       {
         "years": 5,
-        "windows": 2157,
+        "windows": 2158,
         "worst": 5.9,
         "p5": 12.6,
         "p25": 17.5,
@@ -58,10 +58,10 @@
     "vol_1y_pct": 14.7,
     "vol_3y_pct": 14.4,
     "max_drawdown_pct": -35.5,
-    "current_drawdown_pct": -1.6,
-    "sharpe": 0.63,
-    "sortino": 0.85,
-    "calmar": 0.44,
+    "current_drawdown_pct": -1.0,
+    "sharpe": 0.6,
+    "sortino": 0.82,
+    "calmar": 0.43,
     "beta": 0.97,
     "downside_beta": 1.15,
     "correlation": 0.86,

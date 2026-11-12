@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-11-12T15:13:12.227244+05:30",
+  "generated_at": "2026-11-12T15:50:51.542833+05:30",
   "as_of": "2026-11-12",
   "index": "Nifty 50",
-  "level": 25271.95,
+  "level": 25299.35,
   "score": 3,
   "of": 9,
   "regime": {
@@ -10,14 +10,14 @@
     "label": "Mixed"
   },
   "stretched": true,
-  "drawdown_pct": -4.0,
+  "drawdown_pct": -3.9,
   "rsi": 80.0,
   "signals": [
     {
       "k": "above200",
       "label": "Price above its 200-day average",
       "state": "bull",
-      "value": "+5.3%"
+      "value": "+5.4%"
     },
     {
       "k": "cross",
@@ -35,13 +35,13 @@
       "k": "mom12",
       "label": "Higher than a year ago",
       "state": "bear",
-      "value": "-1.9%"
+      "value": "-1.8%"
     },
     {
       "k": "mom3",
       "label": "Higher than three months ago",
       "state": "bull",
-      "value": "+3.3%"
+      "value": "+3.4%"
     },
     {
       "k": "rsi",
@@ -59,7 +59,7 @@
       "k": "high",
       "label": "Within 10% of the 52-week high",
       "state": "bull",
-      "value": "-4.0%"
+      "value": "-3.9%"
     },
     {
       "k": "n500",
@@ -111,9 +111,9 @@
     "p90": 34.1,
     "worst": -57.0,
     "best": 104.4,
-    "level_p10": 22822,
-    "level_p50": 27815,
-    "level_p90": 33883
+    "level_p10": 22847,
+    "level_p50": 27845,
+    "level_p90": 33920
   },
   "edge": {
     "since": "2008-09-22",
@@ -136,7 +136,7 @@
   "pace": {
     "years": 3,
     "annual_pct": 3.4,
-    "level_12m": 26137
+    "level_12m": 26166
   },
   "earnings": {
     "as_of": "2026-10-30",
@@ -871,11 +871,11 @@
     ],
     [
       "2026-11-13",
-      25272
+      25299
     ],
     [
       "2026-11-12",
-      25272
+      25299
     ]
   ]
 }

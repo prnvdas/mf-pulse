@@ -2583,12 +2583,12 @@
     {
       "date": "2026-11-13",
       "phase": "final",
-      "generated_at": "2026-11-13T16:55:45.615402+05:30",
+      "generated_at": "2026-11-13T23:22:45.952244+05:30",
       "portfolio": {
         "value": 11129081,
-        "impact": -27869,
+        "impact": -28540,
         "market_rs": -19926,
-        "selection_rs": -7943,
+        "selection_rs": -8615,
         "sectors": [
           {
             "sector": "Financials",
@@ -2608,7 +2608,7 @@
           },
           {
             "sector": "Industrials",
-            "impact": 3297
+            "impact": 2645
           },
           {
             "sector": "Utilities",
@@ -2641,21 +2641,21 @@
           "id": "axis-small-cap",
           "name": "Axis Small Cap Fund Direct Growth",
           "value": 5484149,
-          "impact": -1198,
-          "nav_move_pct": -0.022,
+          "impact": -1869,
+          "nav_move_pct": -0.034,
           "benchmark": {
             "ticker": "NIFTYSMLCAP250.NS",
             "name": "Nifty Smallcap 250",
             "move_pct": -0.3
           },
-          "vs_benchmark_pp": 0.28,
+          "vs_benchmark_pp": 0.27,
           "market_rs": -16442,
-          "selection_rs": 15244,
+          "selection_rs": 14573,
           "sectors": [
             {
               "sector": "Industrials",
-              "impact": 8014,
-              "pp": 0.146
+              "impact": 7362,
+              "pp": 0.134
             },
             {
               "sector": "Technology",
@@ -2684,7 +2684,7 @@
             }
           ],
           "other_sectors_rs": -384,
-          "unpriced_rs": 0,
+          "unpriced_rs": -16,
           "cost_rs": -104,
           "cash_pct": 13.2,
           "helped": [

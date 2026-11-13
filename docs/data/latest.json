@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-13T16:55:22.026232+05:30",
-  "generated_label": "13 Nov 2026, 16:55 IST",
+  "generated_at": "2026-11-13T23:22:24.398180+05:30",
+  "generated_label": "13 Nov 2026, 23:22 IST",
   "stale": false,
   "phase": "final",
   "market_open": false,
@@ -9,9 +9,9 @@
     "invested": 8510996.23,
     "total_returns": 2618084.82,
     "total_returns_pct": 30.76,
-    "today_impact": -27869.0,
-    "today_pct": -0.25,
-    "band_rupees": 7718.0
+    "today_impact": -28540.41,
+    "today_pct": -0.256,
+    "band_rupees": 7750.0
   },
   "funds": [
     {
@@ -19,18 +19,18 @@
       "name": "Axis Small Cap Fund Direct Growth",
       "current_value": 5484148.55,
       "invested": 4174791.35,
-      "nav_move_pct": -0.022,
-      "rupee_impact": -1198.01,
+      "nav_move_pct": -0.034,
+      "rupee_impact": -1869.42,
       "last_nav": 135.5,
-      "projected_nav": 135.4704,
-      "band_rupees": 5485.0,
-      "coverage_pct": 86.8,
+      "projected_nav": 135.4538,
+      "band_rupees": 5530.0,
+      "coverage_pct": 86.7,
       "cash_pct": 13.2,
-      "tail_pct": 0.0,
+      "tail_pct": 0.1,
       "tail_move_pct": -0.3,
       "holdings_as_of": "2026-11-12",
       "holdings_count": 121,
-      "priced_count": 121,
+      "priced_count": 120,
       "top_contributors": [
         {
           "name": "Alicon Castalloy Ltd",
@@ -501,18 +501,18 @@
       }
     ],
     "breadth": {
-      "up": 90,
+      "up": 89,
       "down": 171,
-      "total": 262
+      "total": 261
     },
-    "portfolio_pct": -0.25,
-    "portfolio_impact": -27869,
+    "portfolio_pct": -0.256,
+    "portfolio_impact": -28540,
     "funds": [
       {
         "id": "axis-small-cap",
         "name": "Axis Small Cap Fund Direct Growth",
-        "nav_move_pct": -0.022,
-        "impact": -1198
+        "nav_move_pct": -0.034,
+        "impact": -1869
       },
       {
         "id": "mirae-large-midcap",
@@ -571,23 +571,23 @@
       "name": "Brent crude",
       "ticker": "BZ=F",
       "unit": "$",
-      "level": 95.77,
-      "change": 0.14,
-      "move_pct": 0.15,
-      "as_of": "2026-11-13T16:45:42+05:30"
+      "level": 95.71,
+      "change": 0.08,
+      "move_pct": 0.08,
+      "as_of": "2026-11-13T23:11:29+05:30"
     }
   ],
   "breadth": {
-    "up": 90,
+    "up": 89,
     "down": 171,
-    "total": 262
+    "total": 261
   },
   "health": {
     "status": "ok",
     "issues": [],
-    "checked_at": "2026-11-13T16:55:44.951621+05:30",
+    "checked_at": "2026-11-13T23:22:45.330878+05:30",
     "repaired": 0,
-    "gap": 0,
+    "gap": 1,
     "ignored": 0
   },
   "accuracy": {
@@ -616,6 +616,6 @@
       }
     }
   },
-  "tickers_resolved": 265,
+  "tickers_resolved": 264,
   "tickers_total": 265
 }

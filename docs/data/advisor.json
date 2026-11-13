@@ -18,7 +18,7 @@
     },
     {
       "label": "Large + midcaps",
-      "value": "below average",
+      "value": "cheap",
       "effect": "+"
     },
     {
@@ -32,7 +32,7 @@
       "effect": "+"
     }
   ],
-  "generated_at": "2026-11-13T16:59:24.324439+05:30",
+  "generated_at": "2026-11-13T20:11:16.868266+05:30",
   "mood_as_of": "2026-11-13",
   "stance": "Hold and keep your SIPs running",
   "stance_key": "hold",
@@ -54,23 +54,23 @@
     {
       "key": "val_axis-small-cap",
       "title": "Small caps \u00b7 your Axis Small Cap",
-      "value": "P/E 32.6 \u00b7 above average",
+      "value": "P/E 32.5 \u00b7 above average",
       "effect": "-",
-      "text": "Its benchmark trades at a P/E of 32.6, against a typical 32.2 over the last ten years (a premium of 1%). Only 53% of the last ten years were cheaper, and 85% of the last five. Verdict: above average."
+      "text": "Its benchmark trades at a P/E of 32.5, against a typical 32.2 over the last ten years (a premium of 1%). Only 53% of the last ten years were cheaper, and 85% of the last five. Verdict: above average."
     },
     {
       "key": "val_mirae-large-midcap",
       "title": "Large + midcaps \u00b7 your Mirae Asset Large & Midcap",
-      "value": "P/E 23.4 \u00b7 below average",
+      "value": "P/E 23.2 \u00b7 cheap",
       "effect": "+",
-      "text": "Its benchmark trades at a P/E of 23.4, against a typical 27.6 over the last ten years (a discount of 15%). Only 14% of the last ten years were cheaper, and 22% of the last five. Verdict: below average."
+      "text": "Its benchmark trades at a P/E of 23.2, against a typical 27.6 over the last ten years (a discount of 16%). Only 11% of the last ten years were cheaper, and 18% of the last five. Verdict: cheap."
     },
     {
       "key": "val_jioblackrock-flexicap",
       "title": "Whole market \u00b7 your JioBlackRock Flexi Cap",
-      "value": "P/E 22.3 \u00b7 below average",
+      "value": "P/E 22.2 \u00b7 below average",
       "effect": "+",
-      "text": "Its benchmark trades at a P/E of 22.3, against a typical 25.9 over the last ten years (a discount of 14%). Only 13% of the last ten years were cheaper, and 25% of the last five. Verdict: below average."
+      "text": "Its benchmark trades at a P/E of 22.2, against a typical 25.9 over the last ten years (a discount of 14%). Only 12% of the last ten years were cheaper, and 22% of the last five. Verdict: below average."
     },
     {
       "key": "trend",
@@ -97,48 +97,48 @@
   "do_today": [
     "Keep your \u20b91.11 lakh monthly SIP running. When prices are low it buys more units for the same money, which is exactly what a SIP is for.",
     "If you have spare cash, there is no urgency; investing it gradually is fine.",
-    "Of the parts of the market your funds track, large + midcaps looks cheapest (below average) and small caps the dearest (above average). If you add extra money, tilting it towards Mirae Asset Large & Midcap rather than Axis Small Cap follows that. Your regular SIPs can stay as they are.",
+    "Of the parts of the market your funds track, large + midcaps looks cheapest (cheap) and small caps the dearest (above average). If you add extra money, tilting it towards Mirae Asset Large & Midcap rather than Axis Small Cap follows that. Your regular SIPs can stay as they are.",
     "Do not sell because of today's fall or tomorrow's red or green call."
   ],
   "where_to_add": [
     {
       "label": "Large caps (Nifty 50)",
       "fund": [],
-      "pe": 20.6,
-      "verdict": "Below average",
-      "score_pct": 15
+      "pe": 20.5,
+      "verdict": "Cheap",
+      "score_pct": 14
     },
     {
       "label": "Large + midcaps (Nifty LargeMidcap 250)",
       "fund": [
         "Mirae Asset Large & Midcap"
       ],
-      "pe": 23.4,
-      "verdict": "Below average",
-      "score_pct": 18
+      "pe": 23.2,
+      "verdict": "Cheap",
+      "score_pct": 15
     },
     {
       "label": "Whole market (Nifty 500)",
       "fund": [
         "JioBlackRock Flexi Cap"
       ],
-      "pe": 22.3,
+      "pe": 22.2,
       "verdict": "Below average",
-      "score_pct": 19
+      "score_pct": 17
     },
     {
       "label": "Midcaps (Nifty Midcap 150)",
       "fund": [],
-      "pe": 28.3,
+      "pe": 28.2,
       "verdict": "Fair",
-      "score_pct": 37
+      "score_pct": 36
     },
     {
       "label": "Small caps (Nifty Smallcap 250)",
       "fund": [
         "Axis Small Cap"
       ],
-      "pe": 32.6,
+      "pe": 32.5,
       "verdict": "Above average",
       "score_pct": 69
     }

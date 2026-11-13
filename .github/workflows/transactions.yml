@@ -7,6 +7,7 @@ name: transactions
 # It then rebuilds the money-over-time history from your first purchase and the exact XIRR and tax lots.
 on:
   push:
+    branches: [main]            # not on Dependabot's branches (they have no access to the secrets)
     paths:
       - "statements/tx-*"
   workflow_dispatch:

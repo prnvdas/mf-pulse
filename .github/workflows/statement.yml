@@ -10,6 +10,7 @@ name: statement
 # statement hasn't been uploaded yet, it opens an issue to remind you instead.
 on:
   push:
+    branches: [main]            # not on Dependabot's branches (they have no access to the secrets)
     paths:
       - "statements/**"
   schedule:

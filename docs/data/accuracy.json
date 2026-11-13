@@ -1,6 +1,6 @@
 {
   "samples": 30,
-  "mae_pct": 0.081,
+  "mae_pct": 0.078,
   "direction_accuracy_pct": 96.7,
   "worst_error_pct": 0.262,
   "per_fund": {
@@ -12,13 +12,13 @@
     },
     "mirae-large-midcap": {
       "samples": 30,
-      "mae_pct": 0.039,
+      "mae_pct": 0.04,
       "direction_accuracy_pct": 96.7,
       "worst_error_pct": 0.125
     },
     "jioblackrock-flexicap": {
       "samples": 30,
-      "mae_pct": 0.106,
+      "mae_pct": 0.102,
       "direction_accuracy_pct": 100.0,
       "worst_error_pct": 0.262
     }

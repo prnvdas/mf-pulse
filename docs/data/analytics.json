@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-14T03:30:50.265647+05:30",
+  "generated_at": "2026-11-14T04:24:46.146660+05:30",
   "risk_free_pct": 6.5,
   "portfolio_xirr_pct": 13.4,
   "portfolio_returns": {
@@ -10,7 +10,7 @@
     "xirr_pct": 11.27,
     "xirr_source": "Groww statement (exact)",
     "rebuilt_xirr_pct": 10.96,
-    "nifty50_same_flows_pct": 3.0,
+    "nifty50_same_flows_pct": null,
     "fd_pct": 7.0,
     "since": "2022-12-08"
   },
@@ -978,16 +978,16 @@
         "share_positive": 88
       },
       "recovery": {
-        "nav_last": 181.626,
+        "nav_last": 180.8,
         "nav_peak_6m": 181.884,
-        "gap_pct": 0.1,
+        "gap_pct": 0.6,
         "peak_date": "2026-08-03"
       },
       "xirr": {
         "pct": 12.9,
         "source": "transactions",
         "since": "2019-04-30",
-        "bench_pct": 10.7
+        "bench_pct": null
       },
       "folios": [
         {

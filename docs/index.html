@@ -3134,8 +3134,9 @@ function showCalTip(cell) {
     if (!s || !Array.isArray(s.v) || !Array.isArray(s.i) || ![s.v[k], s.v[k - 1], s.i[k], s.i[k - 1]].every(num)) return "";
     const d = (s.v[k] - s.v[k - 1]) - (s.i[k] - s.i[k - 1]);
     return '<div class="fl"><span>' + esc(shortName(f.name)) + '</span><span>' + cl(s.v[k]) + ' <b class="' + cls(d) + '">' + sgc(d) + "</b></span></div>"; }).join("");
+  const g = dayGains(), mtd = Object.keys(g).filter(d => d.slice(0, 7) === iso.slice(0, 7) && d <= iso).reduce((t, d) => t + g[d], 0);   // this month, up to and including this day
   tip.innerHTML = "<b>" + dlong(iso) + " " + iso.slice(0, 4) + '</b><br>That day <b class="' + cls(day) + '">' + sgc(day) + "</b>" + (q.v > 0 ? ' <span class="m">(' + pcs(day / q.v * 100, 2) + ")</span>" : "") +
-    "<br>Worth <b>" + cl(p.v) + '</b><br><span class="m">put in ' + cl(p.i) + "<br>gain so far " + sgc(gain) + (p.i > 0 ? " (" + pcs(gain / p.i * 100, 1) + ")" : "") + "</span>" +
+    '<br>Month so far <b class="' + cls(mtd) + '">' + sgc(mtd) + "</b><br>Worth <b>" + cl(p.v) + '</b><br><span class="m">put in ' + cl(p.i) + "<br>gain so far " + sgc(gain) + (p.i > 0 ? " (" + pcs(gain / p.i * 100, 1) + ")" : "") + "</span>" +
     (funds ? '<div class="fund m">' + funds + "</div>" : "");
   document.querySelectorAll("#calGrid .d.sel").forEach(e => e.classList.remove("sel")); cell.classList.add("sel");
   tip.hidden = false;
@@ -3184,7 +3185,9 @@ function renderCalendar() {
   const up = inM.filter(d => g[d] >= 0).length, best = inM.reduce((b, d) => g[d] > g[b] ? d : b, inM[0]), worst = inM.reduce((b, d) => g[d] < g[b] ? d : b, inM[0]);
   let streak = 0; const dir = g[days[days.length - 1]] >= 0;
   for (let i = days.length - 1; i >= 0 && (g[days[i]] >= 0) === dir; i--) streak++;
-  $("calSum").innerHTML = "<span>This month <b class=\"" + (inM.reduce((s, d) => s + g[d], 0) >= 0 ? "pos" : "neg") + '">' + sgc(inM.reduce((s, d) => s + g[d], 0)) + "</b></span>" +
+  const hp = histPoints(), mi0 = hp.findIndex(q => q.d.startsWith(CAL.ym)), mEnd = hp.filter(q => q.d.startsWith(CAL.ym)).pop(), mOpen = mi0 > 0 ? hp[mi0 - 1] : null;   // worth at the last day shown, and when the month began
+  $("calSum").innerHTML = (mEnd ? "<span>Worth <b>" + cl(mEnd.v) + "</b> on " + dmon(mEnd.d) + (mOpen ? ' <span class="sub2">· ' + cl(mOpen.v) + " when the month began</span>" : "") + "</span>" : "") +
+    "<span>This month <b class=\"" + (inM.reduce((s, d) => s + g[d], 0) >= 0 ? "pos" : "neg") + '">' + sgc(inM.reduce((s, d) => s + g[d], 0)) + "</b></span>" +
     "<span><b>" + up + "</b> up days, <b>" + (inM.length - up) + "</b> down days</span>" +
     "<span>Best <b>" + dmon(best) + "</b> " + sgc(g[best]) + "</span><span>Worst <b>" + dmon(worst) + "</b> " + sgc(g[worst]) + "</span>" +
     "<span>Now on a run of <b>" + streak + (dir ? " up" : " down") + " day" + (streak > 1 ? "s" : "") + "</b></span>";

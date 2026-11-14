@@ -427,6 +427,9 @@
   .cal .d .a{font-size:11.5px;font-weight:600;white-space:nowrap}
   .cal .d.g .a{color:var(--green-deep)}.cal .d.r .a{color:var(--red)}
   .cal .d.today{outline:1.5px solid var(--ink);outline-offset:-1.5px}
+  .cal .d[data-d]{cursor:default}.cal .d.sel{box-shadow:inset 0 0 0 1.5px var(--grey)}.cal .d:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+  #calWrap{position:relative}
+  #calTip{min-width:230px;z-index:5}#calTip .fl{display:flex;justify-content:space-between;gap:16px}#calTip .fund{margin-top:7px;padding-top:7px;border-top:1px solid var(--rule)}
   .calsum{display:flex;gap:10px 28px;flex-wrap:wrap;margin-top:20px;padding-top:16px;border-top:1px solid var(--rule);font-size:13px;color:var(--grey)}
   .calsum b{color:var(--ink);font-weight:600}
   .cardsrow{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule)}
@@ -670,6 +673,7 @@
     <div class="calnav"><button class="ghost" id="calPrev" aria-label="Previous month">‹</button><b id="calMonth"></b><button class="ghost" id="calNext" aria-label="Next month">›</button></div>
     <div class="cal" id="calGrid"></div>
     <div class="calsum" id="calSum"></div>
+    <div class="ptip" id="calTip" role="status" hidden></div>
   </section>
   <section id="fundsSec">
     <h2>By fund <span id="fundNote"></span></h2>
@@ -3117,6 +3121,42 @@ function dayGains() {
   for (let i = 1; i < pts.length; i++) out[pts[i].d] = (pts[i].v - pts[i - 1].v) - (pts[i].i - pts[i - 1].i);
   return out;
 }
+// Day by day: an info popup for a day (hover, keyboard focus or tap): that day's change, what the portfolio was worth, what you had put in,
+// and each fund. Everything comes from the same history the calendar is drawn from; the amounts follow "Hide amounts".
+function hideCalTip() { const t = $("calTip"); if (t) t.hidden = true; document.querySelectorAll("#calGrid .d.sel").forEach(e => e.classList.remove("sel")); }
+function showCalTip(cell) {
+  const tip = $("calTip"), iso = cell.dataset.d, pts = histPoints(), i = pts.findIndex(q => q.d === iso);
+  if (!tip || i < 1) return;
+  const p = pts[i], q = pts[i - 1], day = (p.v - q.v) - (p.i - q.i), gain = p.v - p.i, cls = x => x >= 0 ? "pos" : "neg";
+  let funds = "";
+  const k = FUNDHIST && Array.isArray(FUNDHIST.dates) && isObj(FUNDHIST.funds) ? FUNDHIST.dates.indexOf(iso) : -1;
+  if (k > 0) funds = ((CFG && CFG.funds) || []).map(f => { const s = FUNDHIST.funds[f.id];
+    if (!s || !Array.isArray(s.v) || !Array.isArray(s.i) || ![s.v[k], s.v[k - 1], s.i[k], s.i[k - 1]].every(num)) return "";
+    const d = (s.v[k] - s.v[k - 1]) - (s.i[k] - s.i[k - 1]);
+    return '<div class="fl"><span>' + esc(shortName(f.name)) + '</span><span>' + cl(s.v[k]) + ' <b class="' + cls(d) + '">' + sgc(d) + "</b></span></div>"; }).join("");
+  tip.innerHTML = "<b>" + dlong(iso) + " " + iso.slice(0, 4) + '</b><br>That day <b class="' + cls(day) + '">' + sgc(day) + "</b>" + (q.v > 0 ? ' <span class="m">(' + pcs(day / q.v * 100, 2) + ")</span>" : "") +
+    "<br>Worth <b>" + cl(p.v) + '</b><br><span class="m">put in ' + cl(p.i) + "<br>gain so far " + sgc(gain) + (p.i > 0 ? " (" + pcs(gain / p.i * 100, 1) + ")" : "") + "</span>" +
+    (funds ? '<div class="fund m">' + funds + "</div>" : "");
+  document.querySelectorAll("#calGrid .d.sel").forEach(e => e.classList.remove("sel")); cell.classList.add("sel");
+  tip.hidden = false;
+  const sec = $("calWrap").getBoundingClientRect(), cr = cell.getBoundingClientRect(), tw = tip.offsetWidth, th = tip.offsetHeight;
+  const top = cr.top - sec.top - th - 8;
+  tip.style.left = Math.min(Math.max(cr.left - sec.left + cr.width / 2 - tw / 2, 0), Math.max(0, sec.width - tw)) + "px";
+  tip.style.top = (top < 0 ? cr.bottom - sec.top + 8 : top) + "px";            // no room above: show it below the day
+}
+let CALTIP_DOC = false;
+function setupCalTip() {
+  const g = $("calGrid"), day = e => e.target.closest && e.target.closest(".d[data-d]");
+  g.onmouseover = e => { const c = day(e); if (c) showCalTip(c); else hideCalTip(); };
+  g.onmouseleave = hideCalTip;
+  g.onclick = e => { const c = day(e); if (c) showCalTip(c); else hideCalTip(); };                 // a tap on a phone
+  if (!CALTIP_DOC) {                                                                                 // these live outside the grid, which is redrawn each month
+    CALTIP_DOC = true;
+    g.addEventListener("focusin", e => { const c = day(e); if (c) showCalTip(c); }); g.addEventListener("focusout", hideCalTip);
+    document.addEventListener("click", e => { if (!e.target.closest("#calGrid")) hideCalTip(); });
+    document.addEventListener("keydown", e => { if (e.key === "Escape") hideCalTip(); });
+  }
+}
 function renderCalendar() {
   const wrap = $("calWrap"), g = dayGains(), days = Object.keys(g).sort();
   if (days.length < 3) { wrap.hidden = true; return; }
@@ -3136,9 +3176,11 @@ function renderCalendar() {
     const iso = CAL.ym + "-" + String(d).padStart(2, "0"), v = g[iso], hol = holAny(iso);
     if (v == null) { cells += '<div class="d' + (iso === today ? " today" : "") + '" title="' + esc(hol || "no market data") + '"><span>' + d + "</span></div>"; continue; }
     const a = (.12 + .5 * Math.abs(v) / mx).toFixed(2), bg = v >= 0 ? "rgba(134,188,37," + a + ")" : "rgba(218,41,28," + a + ")";
-    cells += '<div class="d ' + (v >= 0 ? "g" : "r") + (iso === today ? " today" : "") + '" style="background:' + bg + '" title="' + esc(dlong(iso) + ": " + sgc(v)) + '"><span>' + d + '</span><span class="a">' + ks(v) + "</span></div>";
+    cells += '<div class="d ' + (v >= 0 ? "g" : "r") + (iso === today ? " today" : "") + '" style="background:' + bg + '" data-d="' + iso + '" tabindex="0" aria-label="' + esc(dlong(iso) + ": " + sgc(v)) + '"><span>' + d + '</span><span class="a">' + ks(v) + "</span></div>";
   }
+  hideCalTip();
   $("calGrid").innerHTML = cells;
+  setupCalTip();
   const up = inM.filter(d => g[d] >= 0).length, best = inM.reduce((b, d) => g[d] > g[b] ? d : b, inM[0]), worst = inM.reduce((b, d) => g[d] < g[b] ? d : b, inM[0]);
   let streak = 0; const dir = g[days[days.length - 1]] >= 0;
   for (let i = days.length - 1; i >= 0 && (g[days[i]] >= 0) === dir; i--) streak++;

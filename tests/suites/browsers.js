@@ -8,6 +8,7 @@ const { firefox, webkit } = require('playwright'); let n = 0, fail = 0; const ok
     for (const w of [1200, 390]) {
       const ctx = await b.newContext({ viewport: { width: w, height: 900 } }), p = await ctx.newPage(), errs = []; const tag = name + ' ' + w + 'px: ';
       p.on('pageerror', e => errs.push(e.message));
+      await p.route(/allorigins\.win|query1\.finance\.yahoo|priceapi\.moneycontrol/, r => r.abort());   // the suite runs on frozen data: no live third-party prices (the page copes with them failing)
       await p.clock.install({ time: new Date('2026-10-12T08:30:00Z') });
       await p.goto(process.env.BASE || 'http://localhost:8000/index.html', { waitUntil: 'networkidle' }); await p.waitForTimeout(500); await p.clock.fastForward(3000); await p.waitForTimeout(500);
       const t = await p.evaluate(() => ({ cv: document.getElementById('cv').innerText, greet: document.getElementById('bGreet').innerText, doc: document.documentElement.scrollWidth, iw: innerWidth, cal: document.querySelectorAll('.cal .d').length, seg: document.querySelectorAll('.seg button').length, body: document.body.innerText }));

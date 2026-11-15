@@ -1,90 +1,89 @@
 {
-  "generated_at": "2026-11-09T00:08:09.836366+05:30",
+  "generated_at": "2026-11-15T19:30:49.365860+05:30",
   "week_of": "2026-11-09",
   "crypto": {
     "picks": [
       {
-        "id": "zcash",
-        "symbol": "ZEC",
-        "name": "Zcash",
-        "price_usd": 1261.05,
-        "rank": 10,
-        "mcap_usd": 21480163589.0,
-        "score": 81.0,
-        "d30": 2.1,
-        "d200": 284.1,
-        "y1": 145.5,
+        "id": "just",
+        "symbol": "JST",
+        "name": "JUST",
+        "price_usd": 0.144781,
+        "rank": 65,
+        "mcap_usd": 1160250473.0,
+        "score": 84.0,
+        "d30": 5.0,
+        "d200": 71.1,
+        "y1": 297.1,
         "why": [
-          "+284% over 200 days against Bitcoin's -4%: it has been beating the market, not just riding it",
-          "+2% in 30 days (Bitcoin -8%)",
-          "Market cap $21.5B, rank #10: small enough to grow a lot, big enough to be liquid",
-          "60% below its all-time high of $3,192"
+          "+71% over 200 days against Bitcoin's -15%: it has been beating the market, not just riding it",
+          "+5% in 30 days (Bitcoin -20%)",
+          "Market cap $1.2B, rank #65: small enough to grow a lot, big enough to be liquid",
+          "25% below its all-time high of $0.1933"
+        ],
+        "risk": [
+          "Coins this size routinely fall 60-80% in a bad market; only money you can lose entirely belongs here",
+          "Small market cap: thinner markets, bigger swings, higher failure risk"
+        ]
+      },
+      {
+        "id": "pax-gold",
+        "symbol": "PAXG",
+        "name": "PAX Gold",
+        "price_usd": 3824.51,
+        "rank": 46,
+        "mcap_usd": 1711603590.0,
+        "score": 62.0,
+        "d30": -8.1,
+        "d200": -15.8,
+        "y1": -6.1,
+        "why": [
+          "-16% over 200 days against Bitcoin's -15%: it has been beating the market, not just riding it",
+          "-8% in 30 days (Bitcoin -20%)",
+          "Market cap $1.7B, rank #46: small enough to grow a lot, big enough to be liquid",
+          "32% below its all-time high of $5,619"
+        ],
+        "risk": [
+          "Coins this size routinely fall 60-80% in a bad market; only money you can lose entirely belongs here",
+          "Small market cap: thinner markets, bigger swings, higher failure risk"
+        ]
+      },
+      {
+        "id": "monero",
+        "symbol": "XMR",
+        "name": "Monero",
+        "price_usd": 506.58,
+        "rank": 12,
+        "mcap_usd": 9538254955.0,
+        "score": 57.0,
+        "d30": -9.1,
+        "d200": 32.3,
+        "y1": 20.8,
+        "why": [
+          "+32% over 200 days against Bitcoin's -15%: it has been beating the market, not just riding it",
+          "-9% in 30 days (Bitcoin -20%)",
+          "Market cap $9.5B, rank #12: small enough to grow a lot, big enough to be liquid",
+          "36% below its all-time high of $797.7"
         ],
         "risk": [
           "Coins this size routinely fall 60-80% in a bad market; only money you can lose entirely belongs here"
         ]
       },
       {
-        "id": "uniswap",
-        "symbol": "UNI",
-        "name": "Uniswap",
-        "price_usd": 7.01,
-        "rank": 24,
-        "mcap_usd": 4259854160.0,
-        "score": 70.5,
-        "d30": -5.3,
-        "d200": 105.2,
-        "y1": 17.6,
+        "id": "htx-dao",
+        "symbol": "HTX",
+        "name": "HTX DAO",
+        "price_usd": 1.48e-06,
+        "rank": 59,
+        "mcap_usd": 1317574925.0,
+        "score": 49.0,
+        "d30": -10.5,
+        "d200": -18.4,
+        "y1": -17.5,
         "why": [
-          "+105% over 200 days against Bitcoin's -4%: it has been beating the market, not just riding it",
-          "-5% in 30 days (Bitcoin -8%)",
-          "Market cap $4.3B, rank #24: small enough to grow a lot, big enough to be liquid",
-          "84% below its all-time high of $44.92"
-        ],
-        "risk": [
-          "Coins this size routinely fall 60-80% in a bad market; only money you can lose entirely belongs here",
-          "Far below its high: ask why before assuming it will come back"
-        ]
-      },
-      {
-        "id": "arbitrum",
-        "symbol": "ARB",
-        "name": "Arbitrum",
-        "price_usd": 0.167999,
-        "rank": 68,
-        "mcap_usd": 1157862373.0,
-        "score": 68.0,
-        "d30": -6.9,
-        "d200": 31.7,
-        "y1": -42.0,
-        "why": [
-          "+32% over 200 days against Bitcoin's -4%: it has been beating the market, not just riding it",
-          "-7% in 30 days (Bitcoin -8%)",
-          "Market cap $1.2B, rank #68: small enough to grow a lot, big enough to be liquid",
-          "85% below its all-time high of $2.39"
-        ],
-        "risk": [
-          "Coins this size routinely fall 60-80% in a bad market; only money you can lose entirely belongs here",
-          "Far below its high: ask why before assuming it will come back",
-          "Small market cap: thinner markets, bigger swings, higher failure risk"
-        ]
-      },
-      {
-        "id": "just",
-        "symbol": "JST",
-        "name": "JUST",
-        "price_usd": 0.142586,
-        "rank": 69,
-        "mcap_usd": 1143055445.0,
-        "score": 64.0,
-        "d30": 0.4,
-        "d200": 74.1,
-        "y1": 295.4,
-        "why": [
-          "+74% over 200 days against Bitcoin's -4%: it has been beating the market, not just riding it",
-          "+0% in 30 days (Bitcoin -8%)",
-          "Market cap $1.1B, rank #69: small enough to grow a lot, big enough to be liquid",
-          "26% below its all-time high of $0.1933"
+          "-18% over 200 days against Bitcoin's -15%: it has been beating the market, not just riding it",
+          "-10% in 30 days (Bitcoin -20%)",
+          "Market cap $1.3B, rank #59: small enough to grow a lot, big enough to be liquid",
+          "60% below its all-time high of $3.75e-06"
         ],
         "risk": [
           "Coins this size routinely fall 60-80% in a bad market; only money you can lose entirely belongs here",
@@ -92,34 +91,33 @@
         ]
       },
       {
-        "id": "venice-token",
-        "symbol": "VVV",
-        "name": "Venice Token",
-        "price_usd": 20.79,
-        "rank": 73,
-        "mcap_usd": 1017392305.0,
-        "score": 60.0,
-        "d30": -7.6,
-        "d200": 127.2,
-        "y1": 1505.1,
+        "id": "tron",
+        "symbol": "TRX",
+        "name": "TRON",
+        "price_usd": 0.307255,
+        "rank": 8,
+        "mcap_usd": 29201519665.0,
+        "score": 48.0,
+        "d30": -8.3,
+        "d200": -5.0,
+        "y1": 4.9,
         "why": [
-          "+127% over 200 days against Bitcoin's -4%: it has been beating the market, not just riding it",
-          "-8% in 30 days (Bitcoin -8%)",
-          "Market cap $1.0B, rank #73: small enough to grow a lot, big enough to be liquid",
-          "40% below its all-time high of $34.53"
+          "-5% over 200 days against Bitcoin's -15%: it has been beating the market, not just riding it",
+          "-8% in 30 days (Bitcoin -20%)",
+          "Market cap $29.2B, rank #8: large, so the upside is more limited",
+          "29% below its all-time high of $0.4313"
         ],
         "risk": [
-          "Coins this size routinely fall 60-80% in a bad market; only money you can lose entirely belongs here",
-          "Small market cap: thinner markets, bigger swings, higher failure risk"
+          "Coins this size routinely fall 60-80% in a bad market; only money you can lose entirely belongs here"
         ]
       }
     ],
-    "screened": 190,
-    "eligible": 10,
+    "screened": 192,
+    "eligible": 5,
     "bitcoin": {
-      "price": 75868.0,
-      "d30": -8.4474,
-      "d200": -3.8756
+      "price": 65450.0,
+      "d30": -20.1583,
+      "d200": -15.1441
     }
   },
   "stocks": {
@@ -128,19 +126,42 @@
         "symbol": "HFCL",
         "name": "HFCL Ltd.",
         "industry": "Telecommunication",
-        "price": 216.49,
-        "mcap_cr": 33129,
-        "score": 77.9,
-        "m6": 45.8,
-        "pe": 37.8,
+        "price": 205.5,
+        "mcap_cr": 31447,
+        "score": 74.9,
+        "m6": 35.5,
+        "pe": 35.9,
         "roe_pct": 18.7,
         "eg_pct": 100.0,
         "held_pct": 0.0,
         "why": [
           "Earnings growing 100%+ and revenue 100%+ a year",
           "Return on equity 19%, profit margin 12%, debt/equity 0.34",
-          "Valuation: P/E 38, about 0.4x its earnings growth (lower is cheaper for the growth)",
-          "Price +46% in six months, above its 200-day average and 20% below its 52-week high: the market is already agreeing"
+          "Valuation: P/E 36, about 0.4x its earnings growth (lower is cheaper for the growth)",
+          "Price +36% in six months, above its 200-day average and 24% below its 52-week high: the market is already agreeing"
+        ],
+        "risk": [
+          "Small and mid-cap stocks can fall 40-60% in a weak market, and quickly",
+          "Yahoo's fundamentals can lag the latest quarterly results by weeks: read the filings before acting"
+        ]
+      },
+      {
+        "symbol": "GESHIP",
+        "name": "Great Eastern Shipping Co. Ltd.",
+        "industry": "Services",
+        "price": 1510.5,
+        "mcap_cr": 20261,
+        "score": 74.1,
+        "m6": 2.2,
+        "pe": 4.9,
+        "roe_pct": 26.0,
+        "eg_pct": 100.0,
+        "held_pct": 0.0,
+        "why": [
+          "Earnings growing 100%+ and revenue 47% a year",
+          "Return on equity 26%, profit margin 65%, debt/equity 0.04",
+          "Valuation: P/E 5, about 0.1x its earnings growth (lower is cheaper for the growth)",
+          "Price +2% in six months, above its 200-day average and 12% below its 52-week high: the market is already agreeing"
         ],
         "risk": [
           "Small and mid-cap stocks can fall 40-60% in a weak market, and quickly",
@@ -151,11 +172,11 @@
         "symbol": "CHENNPETRO",
         "name": "Chennai Petroleum Corporation Ltd.",
         "industry": "Oil Gas & Consumable Fuels",
-        "price": 1456.6,
-        "mcap_cr": 21690,
-        "score": 74.6,
-        "m6": 38.5,
-        "pe": 3.8,
+        "price": 1429.0,
+        "mcap_cr": 21279,
+        "score": 73.1,
+        "m6": 38.7,
+        "pe": 3.7,
         "roe_pct": 50.9,
         "eg_pct": 100.0,
         "held_pct": 0.0,
@@ -163,7 +184,7 @@
           "Earnings growing 100%+ and revenue 26% a year",
           "Return on equity 51%, profit margin 7%, debt/equity 0.16",
           "Valuation: P/E 4, about 0.1x its earnings growth (lower is cheaper for the growth)",
-          "Price +39% in six months, above its 200-day average and 10% below its 52-week high: the market is already agreeing"
+          "Price +39% in six months, above its 200-day average and 12% below its 52-week high: the market is already agreeing"
         ],
         "risk": [
           "Small and mid-cap stocks can fall 40-60% in a weak market, and quickly",
@@ -174,19 +195,19 @@
         "symbol": "CGCL",
         "name": "Capri Global Capital Ltd.",
         "industry": "Financial Services",
-        "price": 243.66,
-        "mcap_cr": 23444,
-        "score": 73.3,
-        "m6": 27.5,
-        "pe": 18.0,
+        "price": 245.0,
+        "mcap_cr": 23573,
+        "score": 72.3,
+        "m6": 32.2,
+        "pe": 18.1,
         "roe_pct": 17.9,
         "eg_pct": 77.5,
         "held_pct": 0.0,
         "why": [
-          "Earnings growing 78% and revenue 54% a year",
+          "Earnings growing 78% and revenue 62% a year",
           "Return on equity 18%, profit margin 36%, debt/equity 3.83",
           "Valuation: P/E 18, about 0.2x its earnings growth (lower is cheaper for the growth)",
-          "Price +28% in six months, above its 200-day average and 13% below its 52-week high: the market is already agreeing"
+          "Price +32% in six months, above its 200-day average and 12% below its 52-week high: the market is already agreeing"
         ],
         "risk": [
           "Small and mid-cap stocks can fall 40-60% in a weak market, and quickly",
@@ -194,64 +215,41 @@
         ]
       },
       {
-        "symbol": "IIFL",
-        "name": "IIFL Finance Ltd.",
-        "industry": "Financial Services",
-        "price": 629.75,
-        "mcap_cr": 26891,
-        "score": 71.7,
-        "m6": 36.2,
-        "pe": 10.8,
-        "roe_pct": 16.6,
+        "symbol": "CPPLUS",
+        "name": "Aditya Infotech Ltd.",
+        "industry": "Capital Goods",
+        "price": 4125.0,
+        "mcap_cr": 50603,
+        "score": 71.3,
+        "m6": 62.9,
+        "pe": 82.0,
+        "roe_pct": 22.6,
         "eg_pct": 100.0,
-        "held_pct": 0.0,
+        "held_pct": 0.49,
         "why": [
-          "Earnings growing 100%+ and revenue 44% a year",
-          "Return on equity 17%, profit margin 26%, debt/equity 4.90",
-          "Valuation: P/E 11, about 0.1x its earnings growth (lower is cheaper for the growth)",
-          "Price +36% in six months, above its 200-day average and 10% below its 52-week high: the market is already agreeing"
+          "Earnings growing 100%+ and revenue 90% a year",
+          "Return on equity 23%, profit margin 10%, debt/equity 0.11",
+          "Valuation: P/E 82, about 0.8x its earnings growth (lower is cheaper for the growth)",
+          "Price +63% in six months, above its 200-day average and 7% below its 52-week high: the market is already agreeing"
         ],
         "risk": [
           "Small and mid-cap stocks can fall 40-60% in a weak market, and quickly",
-          "Yahoo's fundamentals can lag the latest quarterly results by weeks: read the filings before acting"
-        ]
-      },
-      {
-        "symbol": "ACUTAAS",
-        "name": "Acutaas Chemicals Ltd.",
-        "industry": "Healthcare",
-        "price": 3926.9,
-        "mcap_cr": 32150,
-        "score": 71.0,
-        "m6": 39.7,
-        "pe": 73.5,
-        "roe_pct": 26.1,
-        "eg_pct": 72.8,
-        "held_pct": 0.0,
-        "why": [
-          "Earnings growing 73% and revenue 43% a year",
-          "Return on equity 26%, profit margin 28%, debt/equity 0.01",
-          "Valuation: P/E 74, about 1.0x its earnings growth (lower is cheaper for the growth)",
-          "Price +40% in six months, above its 200-day average and 2% below its 52-week high: the market is already agreeing"
-        ],
-        "risk": [
-          "Small and mid-cap stocks can fall 40-60% in a weak market, and quickly",
-          "P/E of 74 already prices in a lot of growth",
-          "Yahoo's fundamentals can lag the latest quarterly results by weeks: read the filings before acting"
+          "P/E of 82 already prices in a lot of growth",
+          "Up 63% in six months: a pullback is likely at some point"
         ]
       }
     ],
-    "screened": 491,
-    "eligible": 60
+    "screened": 492,
+    "eligible": 62
   },
   "track_record": {
     "rows": [
       {
         "week_of": "2026-10-05",
         "kind": "crypto",
-        "age_days": 29,
-        "avg_pct": -30.8,
-        "bench_pct": -8.6,
+        "age_days": 35,
+        "avg_pct": -39.8,
+        "bench_pct": -21.2,
         "bench": "Bitcoin",
         "beat": 0,
         "n": 5
@@ -259,9 +257,9 @@
       {
         "week_of": "2026-10-05",
         "kind": "stock",
-        "age_days": 29,
-        "avg_pct": -3.7,
-        "bench_pct": 7.4,
+        "age_days": 35,
+        "avg_pct": -0.6,
+        "bench_pct": 8.5,
         "bench": "Nifty 500",
         "beat": 0,
         "n": 5
@@ -269,9 +267,9 @@
       {
         "week_of": "2026-10-12",
         "kind": "crypto",
-        "age_days": 22,
-        "avg_pct": -16.0,
-        "bench_pct": -6.5,
+        "age_days": 28,
+        "avg_pct": -26.9,
+        "bench_pct": -19.3,
         "bench": "Bitcoin",
         "beat": 1,
         "n": 5
@@ -279,88 +277,88 @@
       {
         "week_of": "2026-10-12",
         "kind": "stock",
-        "age_days": 22,
-        "avg_pct": 1.0,
-        "bench_pct": 5.5,
+        "age_days": 28,
+        "avg_pct": 4.6,
+        "bench_pct": 6.6,
         "bench": "Nifty 500",
-        "beat": 1,
+        "beat": 2,
         "n": 5
       },
       {
         "week_of": "2026-10-19",
         "kind": "crypto",
-        "age_days": 15,
-        "avg_pct": -9.5,
-        "bench_pct": -6.0,
+        "age_days": 21,
+        "avg_pct": -22.7,
+        "bench_pct": -18.9,
         "bench": "Bitcoin",
+        "beat": 2,
+        "n": 5
+      },
+      {
+        "week_of": "2026-10-19",
+        "kind": "stock",
+        "age_days": 21,
+        "avg_pct": -5.0,
+        "bench_pct": 10.8,
+        "bench": "Nifty 500",
+        "beat": 0,
+        "n": 5
+      },
+      {
+        "week_of": "2026-10-26",
+        "kind": "crypto",
+        "age_days": 14,
+        "avg_pct": -19.1,
+        "bench_pct": -15.9,
+        "bench": "Bitcoin",
+        "beat": 1,
+        "n": 5
+      },
+      {
+        "week_of": "2026-10-26",
+        "kind": "stock",
+        "age_days": 14,
+        "avg_pct": -5.6,
+        "bench_pct": 8.4,
+        "bench": "Nifty 500",
+        "beat": 0,
+        "n": 5
+      },
+      {
+        "week_of": "2026-11-02",
+        "kind": "crypto",
+        "age_days": 7,
+        "avg_pct": -18.8,
+        "bench_pct": -13.7,
+        "bench": "Bitcoin",
+        "beat": 1,
+        "n": 5
+      },
+      {
+        "week_of": "2026-11-02",
+        "kind": "stock",
+        "age_days": 7,
+        "avg_pct": -0.3,
+        "bench_pct": 1.0,
+        "bench": "Nifty 500",
         "beat": 3,
-        "n": 5
-      },
-      {
-        "week_of": "2026-10-19",
-        "kind": "stock",
-        "age_days": 15,
-        "avg_pct": -4.7,
-        "bench_pct": 9.6,
-        "bench": "Nifty 500",
-        "beat": 0,
-        "n": 5
-      },
-      {
-        "week_of": "2026-10-26",
-        "kind": "crypto",
-        "age_days": 8,
-        "avg_pct": -5.4,
-        "bench_pct": -2.6,
-        "bench": "Bitcoin",
-        "beat": 2,
-        "n": 5
-      },
-      {
-        "week_of": "2026-10-26",
-        "kind": "stock",
-        "age_days": 8,
-        "avg_pct": -6.3,
-        "bench_pct": 7.3,
-        "bench": "Nifty 500",
-        "beat": 0,
-        "n": 5
-      },
-      {
-        "week_of": "2026-11-02",
-        "kind": "crypto",
-        "age_days": 1,
-        "avg_pct": -0.2,
-        "bench_pct": 0.0,
-        "bench": "Bitcoin",
-        "beat": 2,
-        "n": 5
-      },
-      {
-        "week_of": "2026-11-02",
-        "kind": "stock",
-        "age_days": 1,
-        "avg_pct": 0.0,
-        "bench_pct": 0.0,
-        "bench": "Nifty 500",
-        "beat": 0,
         "n": 5
       }
     ],
     "summary": {
       "crypto": {
-        "weeks": 1,
-        "avg_pct": -30.8,
-        "bench_pct": -8.6,
-        "beat": 0,
-        "n": 5
+        "weeks": 2,
+        "avg_pct": -33.3,
+        "bench_pct": -20.2,
+        "beat": 1,
+        "n": 10
       },
       "stock": {
-        "weeks": 1,
-        "avg_pct": -3.7,
-        "bench_pct": 7.4,
-        "beat": 0,
-        "n": 5
+        "weeks": 2,
+        "avg_pct": 2.0,
+        "bench_pct": 7.5,
+        "beat": 2,
+        "n": 10
       }
     }
   },

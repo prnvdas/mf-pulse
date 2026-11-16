@@ -1,103 +1,103 @@
 {
-  "generated_at": "2026-11-10T06:22:39.835397+05:30",
+  "generated_at": "2026-11-16T23:31:24.947945+05:30",
   "bench_yield_pp": 1.0,
   "funds": [
     {
       "id": "axis-small-cap",
       "name": "Axis Small Cap Fund Direct Growth",
-      "verdict": "mixed",
-      "label": "Beats its benchmark, mid-table",
-      "text": "It is ahead of its own benchmark but only mid-table among its category. It ranks 14 of 26 in its category over 3 years.",
+      "verdict": "good",
+      "label": "On track",
+      "text": "It is ahead of its benchmark over the periods checked and in the better half of its category. It ranks 13 of 26 in its category over 3 years.",
       "benchmark": "Nifty Smallcap 250",
       "years_of_history": 12.9,
       "windows": {
         "1Y": {
-          "fund": 6.0,
-          "bench": 1.9,
-          "peer_median": 7.0,
+          "fund": 8.7,
+          "bench": 5.2,
+          "peer_median": 9.7,
           "rank": 18,
           "of": 31
         },
         "3Y": {
-          "fund": 13.5,
-          "bench": 12.0,
-          "peer_median": 13.6,
-          "rank": 14,
+          "fund": 14.3,
+          "bench": 12.1,
+          "peer_median": 14.1,
+          "rank": 13,
           "of": 26
         },
         "5Y": {
           "fund": 14.8,
-          "bench": 12.4,
+          "bench": 12.9,
           "peer_median": 13.7,
           "rank": 10,
           "of": 22
         }
       },
-      "beat_benchmark_pct": 60,
-      "ter_pct": 0.7,
+      "beat_benchmark_pct": 61,
+      "ter_pct": 0.69,
       "category_size": 37,
       "best_window": "3Y",
       "peers": [
         {
           "name": "BANDHAN Small Cap Fund",
-          "1Y": 6.8,
+          "1Y": 9.3,
           "3Y": 22.4,
-          "5Y": 19.0
+          "5Y": 19.3
         },
         {
           "name": "ITI Small Cap Fund",
-          "1Y": 16.0,
-          "3Y": 21.6,
-          "5Y": 17.1
+          "1Y": 19.8,
+          "3Y": 21.7,
+          "5Y": 17.3
         },
         {
           "name": "Invesco India Small Cap Fund",
-          "1Y": 15.9,
+          "1Y": 19.9,
           "3Y": 21.4,
-          "5Y": 19.4
+          "5Y": 19.7
         },
         {
           "name": "BANK OF INDIA SMALL CAP FUND",
-          "1Y": 22.5,
-          "3Y": 19.0,
+          "1Y": 26.6,
+          "3Y": 18.9,
           "5Y": 18.7
         },
         {
           "name": "Mahindra Manulife Small Cap Fund",
-          "1Y": 13.3,
-          "3Y": 18.4,
+          "1Y": 16.1,
+          "3Y": 18.7,
           "5Y": null
         }
       ],
-      "as_of": "2026-11-06"
+      "as_of": "2026-11-13"
     },
     {
       "id": "mirae-large-midcap",
       "name": "Mirae Asset Large & Midcap Fund Direct Growth",
       "verdict": "mixed",
       "label": "Beats its benchmark, trails its category",
-      "text": "It is ahead of its own benchmark, but most funds in its category did better over the longer run. Worth watching, not a reason to act. It ranks 22 of 26 in its category over 3 years.",
+      "text": "It is ahead of its own benchmark, but most funds in its category did better over the longer run. Worth watching, not a reason to act. It ranks 21 of 26 in its category over 3 years.",
       "benchmark": "Nifty LargeMidcap 250",
-      "years_of_history": 13.8,
+      "years_of_history": 13.9,
       "windows": {
         "1Y": {
-          "fund": 1.6,
-          "bench": -0.3,
-          "peer_median": 3.2,
+          "fund": 2.0,
+          "bench": -1.0,
+          "peer_median": 4.4,
           "rank": 24,
           "of": 33
         },
         "3Y": {
-          "fund": 13.0,
+          "fund": 13.3,
           "bench": 10.7,
-          "peer_median": 14.6,
-          "rank": 22,
+          "peer_median": 14.5,
+          "rank": 21,
           "of": 26
         },
         "5Y": {
-          "fund": 10.2,
+          "fund": 10.3,
           "bench": 9.0,
-          "peer_median": 12.1,
+          "peer_median": 12.0,
           "rank": 22,
           "of": 26
         }
@@ -109,36 +109,36 @@
       "peers": [
         {
           "name": "Invesco India Large & Mid Cap Fund",
-          "1Y": 11.3,
-          "3Y": 23.3,
-          "5Y": 17.4
+          "1Y": 14.2,
+          "3Y": 23.4,
+          "5Y": 17.6
         },
         {
           "name": "Motilal Oswal Large and Midcap Fund",
-          "1Y": 7.6,
-          "3Y": 21.5,
-          "5Y": 18.2
+          "1Y": 10.0,
+          "3Y": 21.4,
+          "5Y": 18.1
         },
         {
           "name": "HSBC Large & Mid Cap Fund",
-          "1Y": 11.1,
-          "3Y": 18.2,
-          "5Y": 14.2
+          "1Y": 12.6,
+          "3Y": 18.8,
+          "5Y": 14.5
         },
         {
           "name": "Bandhan Large & Mid Cap Fund",
           "1Y": 2.8,
-          "3Y": 18.0,
-          "5Y": 16.0
+          "3Y": 17.9,
+          "5Y": 16.1
         },
         {
-          "name": "Quant Large & Mid Cap Fund",
-          "1Y": 10.7,
-          "3Y": 15.7,
-          "5Y": 15.4
+          "name": "Axis Large & Mid Cap Fund",
+          "1Y": 7.6,
+          "3Y": 15.9,
+          "5Y": 11.8
         }
       ],
-      "as_of": "2026-11-06"
+      "as_of": "2026-11-13"
     },
     {
       "id": "jioblackrock-flexicap",
@@ -150,16 +150,16 @@
       "years_of_history": 1.1,
       "windows": {
         "1Y": {
-          "fund": -0.8,
-          "bench": -0.2,
-          "peer_median": 3.9,
-          "rank": 36,
+          "fund": -0.5,
+          "bench": -0.3,
+          "peer_median": 4.7,
+          "rank": 35,
           "of": 42
         },
         "3Y": {
           "fund": null,
-          "bench": 11.0,
-          "peer_median": 13.4,
+          "bench": 11.1,
+          "peer_median": 13.2,
           "rank": null,
           "of": null
         },
@@ -178,36 +178,36 @@
       "peers": [
         {
           "name": "ITI Flexi Cap Fund",
-          "1Y": 14.8,
+          "1Y": 15.9,
           "3Y": 19.8,
           "5Y": null
         },
         {
           "name": "BANK OF INDIA FLEXI CAP FUND",
-          "1Y": 9.4,
-          "3Y": 19.0,
-          "5Y": 15.7
-        },
-        {
-          "name": "Invesco India Flexi Cap Fund",
-          "1Y": 6.5,
-          "3Y": 18.5,
-          "5Y": null
+          "1Y": 11.3,
+          "3Y": 18.7,
+          "5Y": 16.0
         },
         {
           "name": "360 ONE Flexicap Fund",
-          "1Y": 8.6,
-          "3Y": 18.0,
+          "1Y": 10.5,
+          "3Y": 18.6,
           "5Y": null
         },
         {
-          "name": "HDFC Flexi Cap Fund",
-          "1Y": 4.0,
-          "3Y": 17.7,
-          "5Y": 16.7
+          "name": "Motilal Oswal Flexi Cap Fund",
+          "1Y": 5.9,
+          "3Y": 18.4,
+          "5Y": 13.8
+        },
+        {
+          "name": "Invesco India Flexi Cap Fund",
+          "1Y": 7.6,
+          "3Y": 18.4,
+          "5Y": null
         }
       ],
-      "as_of": "2026-11-06"
+      "as_of": "2026-11-13"
     }
   ],
   "note": "Ranked against every direct-growth fund in the same AMFI category, funds of very different age and size included. Returns are annualised for 3 and 5 years. Past returns do not predict the future."

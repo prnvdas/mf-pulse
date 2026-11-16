@@ -1,46 +1,46 @@
 {
-  "generated_at": "2026-11-17T02:12:10.539985+05:30",
+  "generated_at": "2026-11-17T03:26:50.618547+05:30",
   "base_close_date": "2026-11-13",
   "base_close": 25144.3,
   "sigma_pct": 0.75,
   "nifty": {
     "typical": [
-      24964.7,
-      25284.5
+      24841.3,
+      25161.2
     ],
     "wide": [
-      24837.9,
-      25456.6
+      24714.6,
+      25333.3
     ],
     "typical_pct": [
-      -0.71,
-      0.56
+      -1.2,
+      0.07
     ],
     "wide_pct": [
-      -1.22,
-      1.24
+      -1.71,
+      0.75
     ],
-    "centre_pct": -0.08,
+    "centre_pct": -0.57,
     "gift_adjusted": {
-      "gap_pct": 0.69,
-      "last": 25319.0,
-      "quote_time": "17-Nov-2026 02:09:57",
-      "centre_pct": 0.65,
+      "gap_pct": 0.6,
+      "last": 25295.0,
+      "quote_time": "17-Nov-2026 02:44:30",
+      "centre_pct": 0.56,
       "typical": [
-        25174.7,
-        25441.6
+        25152.1,
+        25419.0
       ],
       "wide": [
-        25068.9,
-        25585.2
+        25046.4,
+        25562.7
       ],
       "typical_pct": [
-        0.12,
-        1.18
+        0.03,
+        1.09
       ],
       "wide_pct": [
-        -0.3,
-        1.75
+        -0.39,
+        1.66
       ],
       "validated": false,
       "assumptions": "gap passes through x0.94; intraday vol 0.81x; GIFT-to-open noise 0.15%"
@@ -54,21 +54,21 @@
   },
   "lean": {
     "status": "ok",
-    "label": "no clear lean",
-    "p_up": 48.9,
-    "mu_pct": -0.08,
-    "sp_date": "2026-11-13",
-    "sp_move_pct": -0.4,
-    "us_sessions": 1
+    "label": "leans down",
+    "p_up": 32.7,
+    "mu_pct": -0.57,
+    "sp_date": "2026-11-16",
+    "sp_move_pct": -2.32,
+    "us_sessions": 2
   },
   "call": {
     "colour": "green",
-    "p_up": 75.5,
-    "p_call": 75.5,
+    "p_up": 72.5,
+    "p_call": 72.5,
     "basis": "gift",
-    "tier": "very high",
-    "hit_pct": 84.8,
-    "why": "GIFT Nifty is +0.69% from the Nifty's last close",
+    "tier": "good",
+    "hit_pct": 72.1,
+    "why": "GIFT Nifty is +0.60% from the Nifty's last close",
     "provisional": true,
     "note": "Provisional: it firms up once GIFT Nifty's pre-open price is in (about 08:45 IST)."
   },

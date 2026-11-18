@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-18T07:08:09.323551+05:30",
+  "generated_at": "2026-11-18T23:30:50.882465+05:30",
   "risk_free_pct": 6.5,
-  "portfolio_xirr_pct": 13.2,
+  "portfolio_xirr_pct": 12.8,
   "portfolio_returns": {
     "as_on": "2026-11-04",
     "invested": 8510996.23,
@@ -833,40 +833,40 @@
       },
       "mine": {
         "invested": 4174791.35,
-        "value": 5444485,
-        "gain_pct": 30.41
+        "value": 5418177,
+        "gain_pct": 29.78
       },
       "returns": {
         "1M": {
-          "fund": 2.16,
-          "bench": 0.76,
-          "diff": 1.4
+          "fund": 2.2,
+          "bench": 0.66,
+          "diff": 1.54
         },
         "3M": {
-          "fund": -1.93,
-          "bench": -2.95,
+          "fund": -2.21,
+          "bench": -3.23,
           "diff": 1.02
         },
         "6M": {
-          "fund": 10.0,
-          "bench": 7.88,
-          "diff": 2.12
+          "fund": 9.21,
+          "bench": 6.54,
+          "diff": 2.67
         },
         "1Y": {
-          "fund": 7.71,
-          "bench": 4.04,
-          "diff": 3.67
+          "fund": 6.77,
+          "bench": 3.24,
+          "diff": 3.53
         }
       },
       "risk": {
         "window_days": 364,
         "beta": 0.84,
-        "alpha_pct": 2.68,
+        "alpha_pct": 2.83,
         "vol_pct": 15.7,
-        "bench_vol_pct": 18.4,
-        "sharpe": 0.1,
-        "max_drawdown_pct": -14.5,
-        "bench_max_drawdown_pct": -17.2
+        "bench_vol_pct": 18.3,
+        "sharpe": 0.16,
+        "max_drawdown_pct": -13.7,
+        "bench_max_drawdown_pct": -16.4
       },
       "valuation": {
         "fund_pe": 31.4,
@@ -874,8 +874,8 @@
         "fund_pb": 3.8,
         "bench_pe": 26.1
       },
-      "history_days": 4729,
-      "as_of": "2026-11-16",
+      "history_days": 4730,
+      "as_of": "2026-11-17",
       "scenarios": {
         "basis": "fund",
         "since": "2013-12-05",
@@ -894,10 +894,10 @@
         "peak_date": "2026-09-08"
       },
       "xirr": {
-        "pct": 13.6,
+        "pct": 13.4,
         "source": "transactions",
         "since": "2021-01-08",
-        "bench_pct": 11.7
+        "bench_pct": 11.4
       },
       "folios": [
         {
@@ -923,38 +923,38 @@
       },
       "mine": {
         "invested": 4124865.44,
-        "value": 5413778,
-        "gain_pct": 31.25
+        "value": 5356362,
+        "gain_pct": 29.86
       },
       "returns": {
         "1M": {
-          "fund": 6.05,
-          "bench": 6.9,
-          "diff": -0.85
+          "fund": 6.56,
+          "bench": 7.3,
+          "diff": -0.74
         },
         "3M": {
-          "fund": -0.16,
-          "bench": 0.86,
-          "diff": -1.02
+          "fund": 0.7,
+          "bench": 1.56,
+          "diff": -0.86
         },
         "6M": {
-          "fund": 6.33,
-          "bench": 5.73,
-          "diff": 0.6
+          "fund": 6.11,
+          "bench": 5.65,
+          "diff": 0.46
         },
         "1Y": {
-          "fund": 1.83,
-          "bench": 0.29,
-          "diff": 1.54
+          "fund": 1.77,
+          "bench": -0.09,
+          "diff": 1.86
         }
       },
       "risk": {
         "window_days": 364,
         "beta": 0.84,
-        "alpha_pct": 0.93,
-        "vol_pct": 15.3,
+        "alpha_pct": 1.3,
+        "vol_pct": 15.2,
         "bench_vol_pct": 15.2,
-        "sharpe": -0.25,
+        "sharpe": -0.18,
         "max_drawdown_pct": -14.4,
         "bench_max_drawdown_pct": -14.5
       },
@@ -964,8 +964,8 @@
         "fund_pb": 3.2,
         "bench_pe": 22.8
       },
-      "history_days": 622,
-      "as_of": "2026-11-16",
+      "history_days": 623,
+      "as_of": "2026-11-17",
       "scenarios": {
         "basis": "fund",
         "since": "2013-01-02",
@@ -984,10 +984,10 @@
         "peak_date": "2026-08-03"
       },
       "xirr": {
-        "pct": 13.0,
+        "pct": 12.5,
         "source": "transactions",
         "since": "2019-04-30",
-        "bench_pct": 10.5
+        "bench_pct": 10.3
       },
       "folios": [
         {
@@ -1013,38 +1013,38 @@
       },
       "mine": {
         "invested": 211339.44,
-        "value": 218579,
-        "gain_pct": 3.43
+        "value": 217222,
+        "gain_pct": 2.78
       },
       "returns": {
         "1M": {
-          "fund": 5.8,
-          "bench": 6.66,
-          "diff": -0.86
+          "fund": 6.02,
+          "bench": 6.97,
+          "diff": -0.95
         },
         "3M": {
-          "fund": 0.21,
-          "bench": 0.8,
-          "diff": -0.59
+          "fund": 0.88,
+          "bench": 1.49,
+          "diff": -0.61
         },
         "6M": {
-          "fund": 6.01,
-          "bench": 5.75,
-          "diff": 0.26
+          "fund": 5.71,
+          "bench": 5.77,
+          "diff": -0.06
         },
         "1Y": {
-          "fund": -0.44,
-          "bench": -0.35,
-          "diff": -0.09
+          "fund": -0.81,
+          "bench": -0.55,
+          "diff": -0.26
         }
       },
       "risk": {
         "window_days": 364,
         "beta": 0.99,
-        "alpha_pct": -0.21,
+        "alpha_pct": -0.25,
         "vol_pct": 15.0,
         "bench_vol_pct": 14.9,
-        "sharpe": -0.41,
+        "sharpe": -0.36,
         "max_drawdown_pct": -14.3,
         "bench_max_drawdown_pct": -14.8
       },
@@ -1054,14 +1054,14 @@
         "fund_pb": 2.7,
         "bench_pe": 22.4
       },
-      "history_days": 395,
-      "as_of": "2026-11-16",
+      "history_days": 396,
+      "as_of": "2026-11-17",
       "scenarios": {
         "basis": "benchmark",
         "since": "2005-09-27",
         "years": 21.2,
         "worst": -60.3,
-        "p25": 0.6,
+        "p25": 0.5,
         "median": 9.6,
         "p75": 26.7,
         "best": 116.3,
@@ -1074,10 +1074,10 @@
         "peak_date": "2026-11-12"
       },
       "xirr": {
-        "pct": 5.3,
+        "pct": 4.3,
         "source": "transactions",
         "since": "2025-10-13",
-        "bench_pct": 5.8
+        "bench_pct": 4.9
       },
       "folios": [
         {

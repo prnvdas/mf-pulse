@@ -2579,12 +2579,12 @@
     {
       "date": "2026-11-18",
       "phase": "final",
-      "generated_at": "2026-11-18T15:55:37.292107+05:30",
+      "generated_at": "2026-11-18T16:55:45.910382+05:30",
       "portfolio": {
         "value": 11076842,
-        "impact": -77385,
+        "impact": -77648,
         "market_rs": -100741,
-        "selection_rs": 23357,
+        "selection_rs": 23094,
         "sectors": [
           {
             "sector": "Financials",
@@ -2592,7 +2592,7 @@
           },
           {
             "sector": "Consumer (discretionary)",
-            "impact": -14877
+            "impact": -15252
           },
           {
             "sector": "Materials",
@@ -2637,16 +2637,16 @@
           "id": "axis-small-cap",
           "name": "Axis Small Cap Fund Direct Growth",
           "value": 5444485,
-          "impact": -21486,
-          "nav_move_pct": -0.395,
+          "impact": -21749,
+          "nav_move_pct": -0.399,
           "benchmark": {
             "ticker": "NIFTYSMLCAP250.NS",
             "name": "Nifty Smallcap 250",
             "move_pct": -0.49
           },
-          "vs_benchmark_pp": 0.1,
+          "vs_benchmark_pp": 0.09,
           "market_rs": -26786,
-          "selection_rs": 5300,
+          "selection_rs": 5037,
           "sectors": [
             {
               "sector": "Financials",
@@ -2655,8 +2655,8 @@
             },
             {
               "sector": "Consumer (discretionary)",
-              "impact": -5721,
-              "pp": -0.105
+              "impact": -6096,
+              "pp": -0.112
             },
             {
               "sector": "Consumer staples",
@@ -2680,7 +2680,7 @@
             }
           ],
           "other_sectors_rs": 165,
-          "unpriced_rs": -133,
+          "unpriced_rs": -27,
           "cost_rs": -103,
           "cash_pct": 13.2,
           "helped": [

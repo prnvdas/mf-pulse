@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-18T15:55:22.593062+05:30",
-  "generated_label": "18 Nov 2026, 15:55 IST",
+  "generated_at": "2026-11-18T16:55:37.526965+05:30",
+  "generated_label": "18 Nov 2026, 16:55 IST",
   "stale": false,
   "phase": "final",
   "market_open": false,
@@ -9,9 +9,9 @@
     "invested": 8510996.23,
     "total_returns": 2565845.77,
     "total_returns_pct": 30.15,
-    "today_impact": -77384.68,
-    "today_pct": -0.699,
-    "band_rupees": 7826.0
+    "today_impact": -77647.55,
+    "today_pct": -0.701,
+    "band_rupees": 7713.0
   },
   "funds": [
     {
@@ -19,18 +19,18 @@
       "name": "Axis Small Cap Fund Direct Growth",
       "current_value": 5444484.59,
       "invested": 4174791.35,
-      "nav_move_pct": -0.395,
-      "rupee_impact": -21485.65,
+      "nav_move_pct": -0.399,
+      "rupee_impact": -21748.52,
       "last_nav": 134.52,
-      "projected_nav": 133.9891,
-      "band_rupees": 5647.0,
-      "coverage_pct": 86.3,
+      "projected_nav": 133.9826,
+      "band_rupees": 5490.0,
+      "coverage_pct": 86.7,
       "cash_pct": 13.2,
-      "tail_pct": 0.5,
+      "tail_pct": 0.1,
       "tail_move_pct": -0.49,
       "holdings_as_of": "2026-11-12",
       "holdings_count": 121,
-      "priced_count": 119,
+      "priced_count": 120,
       "top_contributors": [
         {
           "name": "Vesuvius India Ltd",
@@ -500,17 +500,17 @@
     ],
     "breadth": {
       "up": 65,
-      "down": 195,
-      "total": 260
+      "down": 196,
+      "total": 261
     },
-    "portfolio_pct": -0.699,
-    "portfolio_impact": -77385,
+    "portfolio_pct": -0.701,
+    "portfolio_impact": -77648,
     "funds": [
       {
         "id": "axis-small-cap",
         "name": "Axis Small Cap Fund Direct Growth",
-        "nav_move_pct": -0.395,
-        "impact": -21486
+        "nav_move_pct": -0.399,
+        "impact": -21749
       },
       {
         "id": "mirae-large-midcap",
@@ -569,23 +569,23 @@
       "name": "Brent crude",
       "ticker": "BZ=F",
       "unit": "$",
-      "level": 89.48,
-      "change": -2.99,
-      "move_pct": -3.23,
-      "as_of": "2026-11-18T15:45:03+05:30"
+      "level": 89.92,
+      "change": -2.55,
+      "move_pct": -2.76,
+      "as_of": "2026-11-18T16:44:35+05:30"
     }
   ],
   "breadth": {
     "up": 65,
-    "down": 195,
-    "total": 260
+    "down": 196,
+    "total": 261
   },
   "health": {
     "status": "ok",
     "issues": [],
-    "checked_at": "2026-11-18T15:55:36.798537+05:30",
-    "repaired": 2,
-    "gap": 2,
+    "checked_at": "2026-11-18T16:55:45.506259+05:30",
+    "repaired": 0,
+    "gap": 1,
     "ignored": 0
   },
   "accuracy": {
@@ -614,6 +614,6 @@
       }
     }
   },
-  "tickers_resolved": 263,
+  "tickers_resolved": 264,
   "tickers_total": 265
 }

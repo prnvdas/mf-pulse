@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-11-18T09:15:52.188610+05:30",
+  "generated_at": "2026-11-18T15:32:13.527171+05:30",
   "as_of": "2026-11-18",
   "index": "Nifty 50",
-  "level": 25361.3,
+  "level": 25227.95,
   "score": 3,
   "of": 9,
   "regime": {
@@ -10,14 +10,14 @@
     "label": "Mixed"
   },
   "stretched": true,
-  "drawdown_pct": -3.7,
-  "rsi": 77.0,
+  "drawdown_pct": -4.2,
+  "rsi": 73.0,
   "signals": [
     {
       "k": "above200",
       "label": "Price above its 200-day average",
       "state": "bull",
-      "value": "+5.7%"
+      "value": "+5.1%"
     },
     {
       "k": "cross",
@@ -35,19 +35,19 @@
       "k": "mom12",
       "label": "Higher than a year ago",
       "state": "bear",
-      "value": "-0.8%"
+      "value": "-1.4%"
     },
     {
       "k": "mom3",
       "label": "Higher than three months ago",
       "state": "bull",
-      "value": "+4.4%"
+      "value": "+3.9%"
     },
     {
       "k": "rsi",
       "label": "Momentum (RSI) above 50",
       "state": "bull",
-      "value": "77"
+      "value": "73"
     },
     {
       "k": "macd",
@@ -59,7 +59,7 @@
       "k": "high",
       "label": "Within 10% of the 52-week high",
       "state": "bull",
-      "value": "-3.7%"
+      "value": "-4.2%"
     },
     {
       "k": "n500",
@@ -84,7 +84,7 @@
         "start": "2020-03-23",
         "end": "2026-01-02",
         "gain_pct": 246,
-        "now_pct": 233,
+        "now_pct": 231,
         "ongoing": true
       }
     },
@@ -111,9 +111,9 @@
     "p90": 34.1,
     "worst": -57.0,
     "best": 104.4,
-    "level_p10": 22907,
-    "level_p50": 27913,
-    "level_p90": 34002
+    "level_p10": 22786,
+    "level_p50": 27766,
+    "level_p90": 33823
   },
   "edge": {
     "since": "2008-09-22",
@@ -136,7 +136,7 @@
   "pace": {
     "years": 3,
     "annual_pct": 3.3,
-    "level_12m": 26190
+    "level_12m": 26052
   },
   "earnings": {
     "as_of": "2026-10-30",
@@ -871,11 +871,11 @@
     ],
     [
       "2026-11-20",
-      25361
+      25228
     ],
     [
       "2026-11-18",
-      25361
+      25228
     ]
   ]
 }

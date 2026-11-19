@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-19T15:55:34.031807+05:30",
-  "generated_label": "19 Nov 2026, 15:55 IST",
+  "generated_at": "2026-11-19T16:55:27.971647+05:30",
+  "generated_label": "19 Nov 2026, 16:55 IST",
   "stale": false,
   "phase": "final",
   "market_open": false,
@@ -9,9 +9,9 @@
     "invested": 8510996.23,
     "total_returns": 2480764.76,
     "total_returns_pct": 29.15,
-    "today_impact": 108911.98,
-    "today_pct": 0.991,
-    "band_rupees": 7655.0
+    "today_impact": 109259.77,
+    "today_pct": 0.994,
+    "band_rupees": 7815.0
   },
   "funds": [
     {
@@ -19,18 +19,18 @@
       "name": "Axis Small Cap Fund Direct Growth",
       "current_value": 5418176.87,
       "invested": 4174791.35,
-      "nav_move_pct": 0.914,
-      "rupee_impact": 49538.34,
+      "nav_move_pct": 0.921,
+      "rupee_impact": 49886.13,
       "last_nav": 133.87,
-      "projected_nav": 135.094,
-      "band_rupees": 5464.0,
-      "coverage_pct": 86.7,
+      "projected_nav": 135.1026,
+      "band_rupees": 5686.0,
+      "coverage_pct": 86.1,
       "cash_pct": 13.2,
-      "tail_pct": 0.1,
+      "tail_pct": 0.7,
       "tail_move_pct": 0.77,
       "holdings_as_of": "2026-11-12",
       "holdings_count": 121,
-      "priced_count": 120,
+      "priced_count": 119,
       "top_contributors": [
         {
           "name": "Blue Star Ltd",
@@ -502,17 +502,17 @@
     ],
     "breadth": {
       "up": 188,
-      "down": 73,
-      "total": 261
+      "down": 72,
+      "total": 260
     },
-    "portfolio_pct": 0.991,
-    "portfolio_impact": 108912,
+    "portfolio_pct": 0.994,
+    "portfolio_impact": 109260,
     "funds": [
       {
         "id": "axis-small-cap",
         "name": "Axis Small Cap Fund Direct Growth",
-        "nav_move_pct": 0.914,
-        "impact": 49538
+        "nav_move_pct": 0.921,
+        "impact": 49886
       },
       {
         "id": "mirae-large-midcap",
@@ -571,23 +571,23 @@
       "name": "Brent crude",
       "ticker": "BZ=F",
       "unit": "$",
-      "level": 89.84,
-      "change": 0.52,
-      "move_pct": 0.58,
-      "as_of": "2026-11-19T15:45:25+05:30"
+      "level": 89.41,
+      "change": 0.09,
+      "move_pct": 0.1,
+      "as_of": "2026-11-19T16:44:22+05:30"
     }
   ],
   "breadth": {
     "up": 188,
-    "down": 73,
-    "total": 261
+    "down": 72,
+    "total": 260
   },
   "health": {
     "status": "ok",
     "issues": [],
-    "checked_at": "2026-11-19T15:55:48.157358+05:30",
-    "repaired": 0,
-    "gap": 1,
+    "checked_at": "2026-11-19T16:55:38.737495+05:30",
+    "repaired": 2,
+    "gap": 2,
     "ignored": 0
   },
   "accuracy": {
@@ -616,6 +616,6 @@
       }
     }
   },
-  "tickers_resolved": 264,
+  "tickers_resolved": 263,
   "tickers_total": 265
 }

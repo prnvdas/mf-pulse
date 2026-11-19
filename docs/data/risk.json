@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-11-20T03:31:04.748480+05:30",
-  "as_of": "2026-11-18",
+  "generated_at": "2026-11-20T05:24:28.547048+05:30",
+  "as_of": "2026-11-19",
   "value": 11103951,
   "risk_free_pct": 6.5,
   "fd_rate_pct": 7.000000000000001,
-  "basis": "today's mix applied to each fund's real NAV history (3,422 sessions, since 2013-01-03)",
+  "basis": "today's mix applied to each fund's real NAV history (3,423 sessions, since 2013-01-03)",
   "reward": {
-    "cagr_1y": 3.4,
+    "cagr_1y": 5.3,
     "cagr_3y": 14.6,
-    "cagr_5y": 12.2,
-    "cagr_all": 21.0,
+    "cagr_5y": 12.6,
+    "cagr_all": 21.1,
     "nifty_cagr": {
       "1y": -1.4,
       "3y": 9.4,
@@ -18,7 +18,7 @@
     "rolling": [
       {
         "years": 1,
-        "windows": 3170,
+        "windows": 3171,
         "worst": -20.2,
         "p5": -2.8,
         "p25": 6.1,
@@ -30,7 +30,7 @@
       },
       {
         "years": 3,
-        "windows": 2666,
+        "windows": 2667,
         "worst": 0.1,
         "p5": 9.5,
         "p25": 16.4,
@@ -42,7 +42,7 @@
       },
       {
         "years": 5,
-        "windows": 2162,
+        "windows": 2163,
         "worst": 5.9,
         "p5": 12.6,
         "p25": 17.4,
@@ -58,13 +58,13 @@
     "vol_1y_pct": 14.8,
     "vol_3y_pct": 14.4,
     "max_drawdown_pct": -35.5,
-    "current_drawdown_pct": -2.1,
+    "current_drawdown_pct": -1.0,
     "sharpe": 0.56,
     "sortino": 0.76,
     "calmar": 0.41,
     "beta": 0.97,
     "downside_beta": 1.15,
-    "correlation": 0.85,
+    "correlation": 0.86,
     "var95_pct": 1.54,
     "var99_pct": 2.57,
     "es95_pct": 2.26,
@@ -213,7 +213,7 @@
       "beta": 1.04,
       "downside_beta": 1.2,
       "risk_share_pct": 48.0,
-      "history_years": 13.5
+      "history_years": 13.6
     },
     {
       "id": "jioblackrock-flexicap",

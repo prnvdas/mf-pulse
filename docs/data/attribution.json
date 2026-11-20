@@ -2571,56 +2571,56 @@
     {
       "date": "2026-11-20",
       "phase": "live",
-      "generated_at": "2026-11-20T15:20:45.502397+05:30",
+      "generated_at": "2026-11-20T15:27:14.695967+05:30",
       "portfolio": {
         "value": 11103951,
-        "impact": 74723,
-        "market_rs": 22500,
-        "selection_rs": 52223,
+        "impact": 69864,
+        "market_rs": 21794,
+        "selection_rs": 48069,
         "sectors": [
           {
             "sector": "Financials",
-            "impact": 47829
+            "impact": 40940
           },
           {
             "sector": "Healthcare",
-            "impact": 15928
+            "impact": 17183
           },
           {
             "sector": "Technology",
-            "impact": 5485
+            "impact": 5662
           },
           {
             "sector": "Real Estate",
-            "impact": 3398
-          },
-          {
-            "sector": "Materials",
-            "impact": -3315
+            "impact": 3241
           },
           {
             "sector": "Consumer (discretionary)",
-            "impact": 2730
+            "impact": 3201
+          },
+          {
+            "sector": "Materials",
+            "impact": -3142
           },
           {
             "sector": "Industrials",
-            "impact": 2068
-          },
-          {
-            "sector": "Telecom & media",
-            "impact": 566
+            "impact": 1649
           },
           {
             "sector": "Energy",
-            "impact": 507
+            "impact": 537
+          },
+          {
+            "sector": "Telecom & media",
+            "impact": 446
           },
           {
             "sector": "Utilities",
-            "impact": -186
+            "impact": -205
           },
           {
             "sector": "Consumer staples",
-            "impact": -51
+            "impact": 182
           }
         ]
       },
@@ -2629,49 +2629,49 @@
           "id": "axis-small-cap",
           "name": "Axis Small Cap Fund Direct Growth",
           "value": 5468364,
-          "impact": 26632,
-          "nav_move_pct": 0.487,
+          "impact": 27445,
+          "nav_move_pct": 0.502,
           "benchmark": {
             "ticker": "NIFTYSMLCAP250.NS",
             "name": "Nifty Smallcap 250",
-            "move_pct": -0.11
+            "move_pct": -0.12
           },
-          "vs_benchmark_pp": 0.59,
-          "market_rs": -5775,
-          "selection_rs": 32407,
+          "vs_benchmark_pp": 0.62,
+          "market_rs": -6481,
+          "selection_rs": 33926,
           "sectors": [
             {
               "sector": "Healthcare",
-              "impact": 11856,
-              "pp": 0.217
+              "impact": 12670,
+              "pp": 0.232
             },
             {
               "sector": "Financials",
-              "impact": 10647,
-              "pp": 0.195
+              "impact": 10560,
+              "pp": 0.193
             },
             {
               "sector": "Materials",
-              "impact": -2829,
-              "pp": -0.052
+              "impact": -2875,
+              "pp": -0.053
             },
             {
               "sector": "Real Estate",
-              "impact": 2423,
-              "pp": 0.044
-            },
-            {
-              "sector": "Industrials",
-              "impact": 2159,
-              "pp": 0.039
+              "impact": 2266,
+              "pp": 0.041
             },
             {
               "sector": "Technology",
-              "impact": 1576,
-              "pp": 0.029
+              "impact": 1752,
+              "pp": 0.032
+            },
+            {
+              "sector": "Industrials",
+              "impact": 1530,
+              "pp": 0.028
             }
           ],
-          "other_sectors_rs": 904,
+          "other_sectors_rs": 1647,
           "unpriced_rs": 0,
           "cost_rs": -103,
           "cash_pct": 13.2,
@@ -2683,20 +2683,20 @@
             },
             {
               "name": "Krishna Institute Of Medical Sciences Ltd",
-              "move_pct": 2.98,
-              "impact": 3719
+              "move_pct": 3.41,
+              "impact": 4246
             }
           ],
           "hurt": [
             {
-              "name": "Avalon Technologies Ltd.",
-              "move_pct": -3.23,
-              "impact": -2498
-            },
-            {
               "name": "Multi Commodity Exchange Of India Ltd",
               "move_pct": -3.6,
               "impact": -2159
+            },
+            {
+              "name": "Avalon Technologies Ltd.",
+              "move_pct": -2.72,
+              "impact": -2107
             }
           ]
         },
@@ -2704,26 +2704,26 @@
           "id": "mirae-large-midcap",
           "name": "Mirae Asset Large & Midcap Fund Direct Growth",
           "value": 5416258,
-          "impact": 47198,
-          "nav_move_pct": 0.871,
+          "impact": 41526,
+          "nav_move_pct": 0.767,
           "benchmark": {
             "ticker": "^NSEMDCP50",
             "name": null,
             "move_pct": 0.49
           },
-          "vs_benchmark_pp": 0.38,
+          "vs_benchmark_pp": 0.27,
           "market_rs": 26721,
-          "selection_rs": 20477,
+          "selection_rs": 14806,
           "sectors": [
             {
               "sector": "Financials",
-              "impact": 36204,
-              "pp": 0.668
+              "impact": 29404,
+              "pp": 0.543
             },
             {
               "sector": "Healthcare",
-              "impact": 4028,
-              "pp": 0.074
+              "impact": 4476,
+              "pp": 0.083
             },
             {
               "sector": "Technology",
@@ -2732,8 +2732,8 @@
             },
             {
               "sector": "Consumer (discretionary)",
-              "impact": 2847,
-              "pp": 0.053
+              "impact": 2782,
+              "pp": 0.051
             },
             {
               "sector": "Real Estate",
@@ -2746,8 +2746,8 @@
               "pp": -0.016
             }
           ],
-          "other_sectors_rs": 223,
-          "unpriced_rs": 0,
+          "other_sectors_rs": 563,
+          "unpriced_rs": 398,
           "cost_rs": -126,
           "cash_pct": 3.77,
           "helped": [
@@ -2769,9 +2769,9 @@
               "impact": -1859
             },
             {
-              "name": "Vedanta Aluminium Metal Ltd",
-              "move_pct": -1.93,
-              "impact": -1420
+              "name": "PI Industries Ltd",
+              "move_pct": -1.94,
+              "impact": -1040
             }
           ]
         },
@@ -2792,36 +2792,36 @@
           "sectors": [
             {
               "sector": "Financials",
-              "impact": 978,
-              "pp": 0.446
-            },
-            {
-              "sector": "Materials",
-              "impact": -112,
-              "pp": -0.051
+              "impact": 976,
+              "pp": 0.445
             },
             {
               "sector": "Industrials",
-              "impact": -107,
-              "pp": -0.049
+              "impact": -119,
+              "pp": -0.054
+            },
+            {
+              "sector": "Materials",
+              "impact": -100,
+              "pp": -0.046
             },
             {
               "sector": "Energy",
-              "impact": 45,
+              "impact": 47,
               "pp": 0.021
             },
             {
               "sector": "Healthcare",
-              "impact": 45,
-              "pp": 0.02
+              "impact": 38,
+              "pp": 0.017
             },
             {
-              "sector": "Telecom & media",
-              "impact": 27,
-              "pp": 0.012
+              "sector": "Consumer (discretionary)",
+              "impact": 28,
+              "pp": 0.013
             }
           ],
-          "other_sectors_rs": 23,
+          "other_sectors_rs": 30,
           "unpriced_rs": 0,
           "cost_rs": -7,
           "cash_pct": 6.22,

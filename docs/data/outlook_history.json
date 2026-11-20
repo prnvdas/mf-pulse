@@ -891,6 +891,36 @@
     "call_tier": "very high",
     "gift_gap_pct": -0.767,
     "gift_lo70_pct": -1.236,
-    "gift_hi70_pct": -0.205
+    "gift_hi70_pct": -0.205,
+    "actual_date": "2026-11-20",
+    "actual_pct": 1.12,
+    "inside_1s": false,
+    "inside_2s": true,
+    "inside_70": false,
+    "inside_95": false,
+    "actual_gap_pct": -0.573,
+    "gift_inside_70": false,
+    "call_hit": false,
+    "lean_hit": false
+  },
+  {
+    "base_date": "2026-11-20",
+    "made_at": "2026-11-20T15:55:51.190683+05:30",
+    "method": "gjr-v2",
+    "sigma_pct": 0.712,
+    "mu_pct": 0.0,
+    "lo70_pct": -0.608,
+    "hi70_pct": 0.611,
+    "lo95_pct": -1.088,
+    "hi95_pct": 1.257,
+    "lean": null,
+    "p_up": null,
+    "call_colour": "red",
+    "call_p_up": 40.2,
+    "call_basis": "gift",
+    "call_tier": "weak",
+    "gift_gap_pct": -0.214,
+    "gift_lo70_pct": -0.71,
+    "gift_hi70_pct": 0.311
   }
 ]

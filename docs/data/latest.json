@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-20T15:55:27.204660+05:30",
-  "generated_label": "20 Nov 2026, 15:55 IST",
+  "generated_at": "2026-11-20T16:55:28.070533+05:30",
+  "generated_label": "20 Nov 2026, 16:55 IST",
   "stale": false,
   "phase": "final",
   "market_open": false,
@@ -9,9 +9,9 @@
     "invested": 8510996.23,
     "total_returns": 2592954.84,
     "total_returns_pct": 30.47,
-    "today_impact": 81201.75,
+    "today_impact": 81200.41,
     "today_pct": 0.731,
-    "band_rupees": 7732.0
+    "band_rupees": 7700.0
   },
   "funds": [
     {
@@ -20,17 +20,17 @@
       "current_value": 5468363.91,
       "invested": 4174791.35,
       "nav_move_pct": 0.542,
-      "rupee_impact": 29633.32,
+      "rupee_impact": 29631.98,
       "last_nav": 135.11,
-      "projected_nav": 135.8422,
-      "band_rupees": 5514.0,
-      "coverage_pct": 86.7,
+      "projected_nav": 135.8421,
+      "band_rupees": 5469.0,
+      "coverage_pct": 86.8,
       "cash_pct": 13.2,
-      "tail_pct": 0.1,
+      "tail_pct": 0.0,
       "tail_move_pct": -0.1,
       "holdings_as_of": "2026-11-12",
       "holdings_count": 121,
-      "priced_count": 120,
+      "priced_count": 121,
       "top_contributors": [
         {
           "name": "City Union Bank Ltd",
@@ -503,17 +503,17 @@
     ],
     "breadth": {
       "up": 143,
-      "down": 118,
-      "total": 261
+      "down": 119,
+      "total": 262
     },
     "portfolio_pct": 0.731,
-    "portfolio_impact": 81202,
+    "portfolio_impact": 81200,
     "funds": [
       {
         "id": "axis-small-cap",
         "name": "Axis Small Cap Fund Direct Growth",
         "nav_move_pct": 0.542,
-        "impact": 29633
+        "impact": 29632
       },
       {
         "id": "mirae-large-midcap",
@@ -572,23 +572,23 @@
       "name": "Brent crude",
       "ticker": "BZ=F",
       "unit": "$",
-      "level": 87.75,
-      "change": -2.3,
-      "move_pct": -2.55,
-      "as_of": "2026-11-20T15:45:22+05:30"
+      "level": 88.78,
+      "change": -1.27,
+      "move_pct": -1.41,
+      "as_of": "2026-11-20T16:45:26+05:30"
     }
   ],
   "breadth": {
     "up": 143,
-    "down": 118,
-    "total": 261
+    "down": 119,
+    "total": 262
   },
   "health": {
     "status": "ok",
     "issues": [],
-    "checked_at": "2026-11-20T15:55:41.611834+05:30",
+    "checked_at": "2026-11-20T16:55:39.006678+05:30",
     "repaired": 0,
-    "gap": 1,
+    "gap": 0,
     "ignored": 0
   },
   "accuracy": {
@@ -617,6 +617,6 @@
       }
     }
   },
-  "tickers_resolved": 264,
+  "tickers_resolved": 265,
   "tickers_total": 265
 }

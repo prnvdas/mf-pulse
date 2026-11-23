@@ -2567,12 +2567,12 @@
     {
       "date": "2026-11-23",
       "phase": "final",
-      "generated_at": "2026-11-23T15:55:43.680877+05:30",
+      "generated_at": "2026-11-23T16:55:40.320736+05:30",
       "portfolio": {
         "value": 11185400,
-        "impact": -92160,
+        "impact": -91887,
         "market_rs": -99330,
-        "selection_rs": 7171,
+        "selection_rs": 7443,
         "sectors": [
           {
             "sector": "Financials",
@@ -2584,7 +2584,7 @@
           },
           {
             "sector": "Industrials",
-            "impact": -13945
+            "impact": -13385
           },
           {
             "sector": "Consumer (discretionary)",
@@ -2625,16 +2625,16 @@
           "id": "axis-small-cap",
           "name": "Axis Small Cap Fund Direct Growth",
           "value": 5499528,
-          "impact": -26760,
-          "nav_move_pct": -0.487,
+          "impact": -26515,
+          "nav_move_pct": -0.482,
           "benchmark": {
             "ticker": "NIFTYSMLCAP250.NS",
             "name": "Nifty Smallcap 250",
             "move_pct": -0.69
           },
-          "vs_benchmark_pp": 0.2,
+          "vs_benchmark_pp": 0.21,
           "market_rs": -38003,
-          "selection_rs": 11242,
+          "selection_rs": 11488,
           "sectors": [
             {
               "sector": "Consumer (discretionary)",
@@ -2643,8 +2643,8 @@
             },
             {
               "sector": "Industrials",
-              "impact": -6284,
-              "pp": -0.114
+              "impact": -6083,
+              "pp": -0.111
             },
             {
               "sector": "Financials",
@@ -2668,7 +2668,7 @@
             }
           ],
           "other_sectors_rs": -5442,
-          "unpriced_rs": -38,
+          "unpriced_rs": 0,
           "cost_rs": -104,
           "cash_pct": 13.2,
           "helped": [
@@ -2700,7 +2700,7 @@
           "id": "mirae-large-midcap",
           "name": "Mirae Asset Large & Midcap Fund Direct Growth",
           "value": 5465817,
-          "impact": -62227,
+          "impact": -62200,
           "nav_move_pct": -1.138,
           "benchmark": {
             "ticker": "^NSEMDCP50",
@@ -2709,7 +2709,7 @@
           },
           "vs_benchmark_pp": -0.07,
           "market_rs": -58216,
-          "selection_rs": -4011,
+          "selection_rs": -3984,
           "sectors": [
             {
               "sector": "Financials",
@@ -2723,8 +2723,8 @@
             },
             {
               "sector": "Industrials",
-              "impact": -7346,
-              "pp": -0.134
+              "impact": -6987,
+              "pp": -0.128
             },
             {
               "sector": "Consumer (discretionary)",
@@ -2743,7 +2743,7 @@
             }
           ],
           "other_sectors_rs": -3132,
-          "unpriced_rs": 0,
+          "unpriced_rs": -351,
           "cost_rs": -126,
           "cash_pct": 3.77,
           "helped": [

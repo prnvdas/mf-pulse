@@ -1,6 +1,12 @@
 {
-  "generated_at": "2026-11-24T04:02:51.724775+05:30",
+  "generated_at": "2026-11-24T04:15:39.925815+05:30",
   "market": [
+    {
+      "title": "Stock Market Today: Sensex Plunges 1,484 Points, Nifty Falls Below 25,350; Investors Lose Over \u20b95 Lakh Crore",
+      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9mRklNa25NTmpaYWhjRkhOQURPTUpJY2NleXZmOXN0djF4a1hjb3hQblctZ1dJU0ZMZXFULVhWNmZrc2dHaS1zTm16aGVSSFpzYThPUVZJcUZsTHdQYldsd3FtdXFJOHZ6bktjRHBGSnI?oc=5",
+      "source": "theopenpress.in",
+      "published": "2026-11-23T22:20:41+00:00"
+    },
     {
       "title": "Stock Market Crash Today: Sensex Plunges 1,484 Points, Nifty Falls Below 25,350; Investors Lose Over \u20b95 Lakh Crore",
       "link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxPeGJVTmJxTGdicnJfVkRMc19TMEM4NUpRUE56bWFwb3NPUW15UHhpOGxxR3Nzak9WYm9qcGlweGpLd29lMXRRNXZYZEp6Y3hCWEM5cUs5dzUxTjVuUGlnX2g0MllZT18zaE9jWmhiS1RiQWNSUmM0TTdKTFNBQkFlS1ZNTHBzWDB2Y2lWN1JySQ?oc=5",
@@ -18,12 +24,6 @@
       "link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQMHRyX0p5Yi1PTERtZW5BN0FHMHFILTV2TnFiYnI2aFJkQmVQamkzbzh2NlZuYWt0ZjlubFR0YjQ1N0NFMkd4TXRlRWtqVnFNMURCS1ZWS0M3UFdLN0FNZE9GTU5TMVVQSlJoQ0R5ZlRUR29QSWVyamxmOVlOdGtPcDBHREFfeXlvNks3dHN6dDNVLS1j?oc=5",
       "source": "theopenpress.in",
       "published": "2026-11-23T21:28:42+00:00"
-    },
-    {
-      "title": "Stock Market Today: Sensex Plunges 1,484 Points, Nifty Falls Below 25,350; Investors Lose Over \u20b95 Lakh Crore",
-      "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9mRklNa25NTmpaYWhjRkhOQURPTUpJY2NleXZmOXN0djF4a1hjb3hQblctZ1dJU0ZMZXFULVhWNmZrc2dHaS1zTm16aGVSSFpzYThPUVZJcUZsTHdQYldsd3FtdXFJOHZ6bktjRHBGSnI?oc=5",
-      "source": "theopenpress.in",
-      "published": "2026-11-23T21:03:26+00:00"
     },
     {
       "title": "Taiwan Meets With TSMC, Financial Firms in Bid to Calm Markets",
@@ -187,7 +187,7 @@
     "date": "2026-11-23",
     "direction": "down",
     "title": "Why the market fell today",
-    "summary": "The Nifty fell \u22121.75%. FPIs (foreign investors) bought \u20b95,673 cr while DIIs sold \u20b92,760 cr (net, provisional, per Moneycontrol). Notable global and macro moves: S&P 500 (overnight) \u22123.7%; Brent crude \u22126.3%; USD/INR \u22120.4%; US 10-yr yield \u22122.8%.",
+    "summary": "The Nifty fell \u22121.75%, dragged by Metals (\u22123.7%), PSU banks (\u22123.2%), while IT (+1.7%) held up. FPIs (foreign investors) bought \u20b95,673 cr while DIIs sold \u20b92,760 cr (net, provisional, per Moneycontrol). Notable global and macro moves: S&P 500 (overnight) \u22123.7%; Brent crude \u22126.3%; USD/INR \u22120.4%; US 10-yr yield \u22122.8%.",
     "points": [
       {
         "kind": "fact",
@@ -230,8 +230,143 @@
         "source": "Equitymaster"
       }
     ],
-    "sectors": [],
-    "broad": [],
+    "sectors": [
+      {
+        "name": "IT",
+        "pct": 1.69,
+        "last": 31850.8,
+        "up": null,
+        "down": null
+      },
+      {
+        "name": "Consumer durables",
+        "pct": 0.59,
+        "last": 38715.25,
+        "up": null,
+        "down": null
+      },
+      {
+        "name": "Realty",
+        "pct": 0.31,
+        "last": 941.85,
+        "up": null,
+        "down": null
+      },
+      {
+        "name": "Pharma",
+        "pct": -0.35,
+        "last": 28288.85,
+        "up": null,
+        "down": null
+      },
+      {
+        "name": "Media",
+        "pct": -0.37,
+        "last": 1749.2,
+        "up": null,
+        "down": null
+      },
+      {
+        "name": "FMCG",
+        "pct": -0.46,
+        "last": 48312.55,
+        "up": null,
+        "down": null
+      },
+      {
+        "name": "Auto",
+        "pct": -1.03,
+        "last": 28490.7,
+        "up": null,
+        "down": null
+      },
+      {
+        "name": "Infrastructure",
+        "pct": -1.64,
+        "last": 9530.35,
+        "up": null,
+        "down": null
+      },
+      {
+        "name": "Energy",
+        "pct": -1.78,
+        "last": 36655.1,
+        "up": null,
+        "down": null
+      },
+      {
+        "name": "Oil & gas",
+        "pct": -2.01,
+        "last": 11306.9,
+        "up": null,
+        "down": null
+      },
+      {
+        "name": "Financial services",
+        "pct": -2.49,
+        "last": 28153.5,
+        "up": null,
+        "down": null
+      },
+      {
+        "name": "Banks",
+        "pct": -3.17,
+        "last": 62585.35,
+        "up": null,
+        "down": null
+      },
+      {
+        "name": "Private banks",
+        "pct": -3.19,
+        "last": 30659.85,
+        "up": null,
+        "down": null
+      },
+      {
+        "name": "PSU banks",
+        "pct": -3.25,
+        "last": 9559.65,
+        "up": null,
+        "down": null
+      },
+      {
+        "name": "Metals",
+        "pct": -3.68,
+        "last": 11819.25,
+        "up": null,
+        "down": null
+      }
+    ],
+    "broad": [
+      {
+        "name": "Nifty 50",
+        "pct": -1.75,
+        "last": 25349.65,
+        "up": null,
+        "down": null
+      },
+      {
+        "name": "Nifty Next 50",
+        "pct": -1.31,
+        "last": 72245.4,
+        "up": null,
+        "down": null
+      },
+      {
+        "name": "Midcap 100",
+        "pct": -1.01,
+        "last": 61403.2,
+        "up": null,
+        "down": null
+      },
+      {
+        "name": "Smallcap 100",
+        "pct": -0.66,
+        "last": 19314.4,
+        "up": null,
+        "down": null
+      }
+    ],
     "breadth": null,
     "flows": {
       "date": "2026-11-23",
@@ -408,7 +543,7 @@
           {
             "title": "Tata Consultancy Services rallies Monday, outperforms competitors",
             "source": "MarketWatch",
-            "link": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxPNGZjY0lPQXZTM21PYWFaQ25odWJ1b0JTMFZBLUJaSXV5NnhrTVFCWVVNeFF5eF9CSy03dHAyU2gwVVFlTlhhNUpWbjBQLTJ5QWw1WjVZR2tFZmoxdk1wTjFHdS1BSENOZ1VCV2VsRVYxb2h0Uks2Z290VTlCbFpkZzZkRUc1aE5vSW1JZGhneGVyZktYU0x1X0szUFZrNHloRWpMUUdTeS1pMzJrMVNSTkQ0QkFHaEJNV0RMem9CNm4zdlg2YmpvQk9iN1lhTEJucEVIdTJ2cUpBQQ?oc=5",
+            "link": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxNdF9Md2JPTkJiTi0wNzZuTWVtLVJQMU52clV4MkJ2VnlaUVRPSkI3Y2czeklpbEFqNC1CTEN6Tm14QWNNS0Rwb3J5c1BsYVZhQmVRN0VxVDA3T0pPVDE0OUdxZ3hpMlJRUDdLY0pibFZRak9nOWFTTHllbEFsSDVSRG05NjVhZjRBRFV4ZEVSU2tHRW8tVlA4YWpSNXkwT0g5cm45N1pyb0FjWUUxYWg2djVNVDI1WnUzM1ZCOHJjZlRiNlkxVnoyLWNLZ3lCREYyWGlXTQ?oc=5",
             "published": "2026-11-23T10:33:00+00:00"
           }
         ]
@@ -447,7 +582,7 @@
       }
     ],
     "sources_ok": {
-      "Sectors": false,
+      "Sectors": true,
       "FII/DII flows": true,
       "Yahoo macro": true,
       "Company news": true,
@@ -459,8 +594,8 @@
       "nse_flows": false,
       "moneycontrol_flows": "error: 403 Client Error: Forbidden for url: https://www.moneycontro",
       "flows_cache": true,
-      "nse_archive_sectors": false
+      "nse_archive_sectors": true
     },
-    "rich_at": "2026-11-23T22:32:31.202824+00:00"
+    "rich_at": "2026-11-23T22:45:17.716942+00:00"
   }
 }

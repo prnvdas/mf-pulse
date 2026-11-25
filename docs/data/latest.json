@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-25T15:55:29.804222+05:30",
-  "generated_label": "25 Nov 2026, 15:55 IST",
+  "generated_at": "2026-11-25T16:55:23.985353+05:30",
+  "generated_label": "25 Nov 2026, 16:55 IST",
   "stale": false,
   "phase": "final",
   "market_open": false,
@@ -9,9 +9,9 @@
     "invested": 8510996.23,
     "total_returns": 2576115.93,
     "total_returns_pct": 30.27,
-    "today_impact": 66368.42,
-    "today_pct": 0.599,
-    "band_rupees": 7690.0
+    "today_impact": 66335.33,
+    "today_pct": 0.598,
+    "band_rupees": 7807.0
   },
   "funds": [
     {
@@ -19,18 +19,18 @@
       "name": "Axis Small Cap Fund Direct Growth",
       "current_value": 5468363.91,
       "invested": 4174791.35,
-      "nav_move_pct": 0.037,
-      "rupee_impact": 1998.51,
+      "nav_move_pct": 0.036,
+      "rupee_impact": 1965.24,
       "last_nav": 135.11,
-      "projected_nav": 135.1594,
-      "band_rupees": 5469.0,
-      "coverage_pct": 86.8,
+      "projected_nav": 135.1586,
+      "band_rupees": 5632.0,
+      "coverage_pct": 86.4,
       "cash_pct": 13.2,
-      "tail_pct": 0.0,
+      "tail_pct": 0.4,
       "tail_move_pct": -0.18,
       "holdings_as_of": "2026-11-12",
       "holdings_count": 121,
-      "priced_count": 121,
+      "priced_count": 120,
       "top_contributors": [
         {
           "name": "Torrent Pharmaceuticals Ltd",
@@ -172,17 +172,17 @@
       "current_value": 216770.08,
       "invested": 211339.44,
       "nav_move_pct": 0.743,
-      "rupee_impact": 1611.14,
+      "rupee_impact": 1611.32,
       "last_nav": 10.1123,
       "projected_nav": 10.1875,
-      "band_rupees": 200.0,
-      "coverage_pct": 95.0,
+      "band_rupees": 203.0,
+      "coverage_pct": 94.8,
       "cash_pct": 6.22,
       "tail_pct": 0.0,
       "tail_move_pct": 1.17,
       "holdings_as_of": "2026-11-12",
       "holdings_count": 127,
-      "priced_count": 127,
+      "priced_count": 126,
       "top_contributors": [
         {
           "name": "HDFC Bank Ltd",
@@ -504,17 +504,17 @@
     ],
     "breadth": {
       "up": 151,
-      "down": 111,
-      "total": 262
+      "down": 110,
+      "total": 261
     },
-    "portfolio_pct": 0.599,
-    "portfolio_impact": 66368,
+    "portfolio_pct": 0.598,
+    "portfolio_impact": 66335,
     "funds": [
       {
         "id": "axis-small-cap",
         "name": "Axis Small Cap Fund Direct Growth",
-        "nav_move_pct": 0.037,
-        "impact": 1999
+        "nav_move_pct": 0.036,
+        "impact": 1965
       },
       {
         "id": "mirae-large-midcap",
@@ -573,23 +573,23 @@
       "name": "Brent crude",
       "ticker": "BZ=F",
       "unit": "$",
-      "level": 88.54,
-      "change": 1.05,
-      "move_pct": 1.2,
-      "as_of": "2026-11-25T15:45:04+05:30"
+      "level": 88.05,
+      "change": 0.56,
+      "move_pct": 0.64,
+      "as_of": "2026-11-25T16:45:42+05:30"
     }
   ],
   "breadth": {
     "up": 151,
-    "down": 111,
-    "total": 262
+    "down": 110,
+    "total": 261
   },
   "health": {
     "status": "ok",
     "issues": [],
-    "checked_at": "2026-11-25T15:55:39.896609+05:30",
+    "checked_at": "2026-11-25T16:55:44.490875+05:30",
     "repaired": 0,
-    "gap": 0,
+    "gap": 1,
     "ignored": 0
   },
   "accuracy": {
@@ -618,6 +618,6 @@
       }
     }
   },
-  "tickers_resolved": 265,
+  "tickers_resolved": 264,
   "tickers_total": 265
 }

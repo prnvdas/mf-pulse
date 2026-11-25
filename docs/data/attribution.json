@@ -2563,12 +2563,12 @@
     {
       "date": "2026-11-25",
       "phase": "final",
-      "generated_at": "2026-11-25T15:55:40.254838+05:30",
+      "generated_at": "2026-11-25T16:55:45.150588+05:30",
       "portfolio": {
         "value": 11087112,
-        "impact": 66368,
+        "impact": 66335,
         "market_rs": 17672,
-        "selection_rs": 48697,
+        "selection_rs": 48664,
         "sectors": [
           {
             "sector": "Financials",
@@ -2612,7 +2612,7 @@
           },
           {
             "sector": "Utilities",
-            "impact": -521
+            "impact": -511
           }
         ]
       },
@@ -2621,8 +2621,8 @@
           "id": "axis-small-cap",
           "name": "Axis Small Cap Fund Direct Growth",
           "value": 5468364,
-          "impact": 1999,
-          "nav_move_pct": 0.037,
+          "impact": 1965,
+          "nav_move_pct": 0.036,
           "benchmark": {
             "ticker": "NIFTYSMLCAP250.NS",
             "name": "Nifty Smallcap 250",
@@ -2630,7 +2630,7 @@
           },
           "vs_benchmark_pp": 0.22,
           "market_rs": -9907,
-          "selection_rs": 11906,
+          "selection_rs": 11872,
           "sectors": [
             {
               "sector": "Materials",
@@ -2663,8 +2663,8 @@
               "pp": 0.025
             }
           ],
-          "other_sectors_rs": 2252,
-          "unpriced_rs": 0,
+          "other_sectors_rs": 2261,
+          "unpriced_rs": -39,
           "cost_rs": -103,
           "cash_pct": 13.2,
           "helped": [
@@ -2780,7 +2780,7 @@
           },
           "vs_benchmark_pp": -0.42,
           "market_rs": 2531,
-          "selection_rs": -920,
+          "selection_rs": -919,
           "sectors": [
             {
               "sector": "Financials",
@@ -2813,7 +2813,7 @@
               "pp": 0.086
             }
           ],
-          "other_sectors_rs": -102,
+          "other_sectors_rs": -101,
           "unpriced_rs": 0,
           "cost_rs": -7,
           "cash_pct": 6.22,

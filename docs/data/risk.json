@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-25T23:31:01.061410+05:30",
+  "generated_at": "2026-11-26T03:31:03.640999+05:30",
   "as_of": "2026-11-23",
   "value": 11163357,
   "risk_free_pct": 6.5,
@@ -11,9 +11,9 @@
     "cagr_5y": 13.1,
     "cagr_all": 21.1,
     "nifty_cagr": {
-      "1y": -0.4,
-      "3y": 10.5,
-      "5y": 6.9
+      "1y": -2.0,
+      "3y": 10.0,
+      "5y": 6.7
     },
     "rolling": [
       {
@@ -79,66 +79,66 @@
     {
       "nifty_pct": -10,
       "portfolio_pct": -11.5,
-      "rupees": -1289304,
+      "rupees": -1285623,
       "funds": [
         {
           "id": "axis-small-cap",
           "pct": -11.1,
-          "rupees": -608291
+          "rupees": -606092
         },
         {
           "id": "mirae-large-midcap",
-          "pct": -12.0,
-          "rupees": -655003
+          "pct": -11.9,
+          "rupees": -653546
         },
         {
           "id": "jioblackrock-flexicap",
           "pct": -11.5,
-          "rupees": -25023
+          "rupees": -24981
         }
       ]
     },
     {
       "nifty_pct": -20,
-      "portfolio_pct": -23.1,
-      "rupees": -2578607,
+      "portfolio_pct": -23.0,
+      "rupees": -2571246,
       "funds": [
         {
           "id": "axis-small-cap",
-          "pct": -22.2,
-          "rupees": -1216582
+          "pct": -22.1,
+          "rupees": -1212185
         },
         {
           "id": "mirae-large-midcap",
-          "pct": -24.0,
-          "rupees": -1310007
+          "pct": -23.9,
+          "rupees": -1307093
         },
         {
           "id": "jioblackrock-flexicap",
           "pct": -22.9,
-          "rupees": -50045
+          "rupees": -49962
         }
       ]
     },
     {
       "nifty_pct": -30,
-      "portfolio_pct": -34.6,
-      "rupees": -3867911,
+      "portfolio_pct": -34.5,
+      "rupees": -3856869,
       "funds": [
         {
           "id": "axis-small-cap",
-          "pct": -33.3,
-          "rupees": -1824873
+          "pct": -33.2,
+          "rupees": -1818277
         },
         {
           "id": "mirae-large-midcap",
-          "pct": -35.9,
-          "rupees": -1965010
+          "pct": -35.8,
+          "rupees": -1960639
         },
         {
           "id": "jioblackrock-flexicap",
           "pct": -34.4,
-          "rupees": -75068
+          "rupees": -74943
         }
       ]
     }
@@ -211,7 +211,7 @@
       "vol_pct": 14.7,
       "max_drawdown_pct": -36.9,
       "beta": 1.03,
-      "downside_beta": 1.2,
+      "downside_beta": 1.19,
       "risk_share_pct": 48.0,
       "history_years": 13.6
     },

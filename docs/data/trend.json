@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-11-25T09:16:00.599380+05:30",
+  "generated_at": "2026-11-25T16:40:35.129513+05:30",
   "as_of": "2026-11-25",
   "index": "Nifty 50",
-  "level": 25741.65,
+  "level": 25819.25,
   "score": 3,
   "of": 9,
   "regime": {
@@ -10,14 +10,14 @@
     "label": "Mixed"
   },
   "stretched": true,
-  "drawdown_pct": -2.2,
-  "rsi": 71.0,
+  "drawdown_pct": -1.9,
+  "rsi": 72.0,
   "signals": [
     {
       "k": "above200",
       "label": "Price above its 200-day average",
       "state": "bull",
-      "value": "+7.3%"
+      "value": "+7.6%"
     },
     {
       "k": "cross",
@@ -35,19 +35,19 @@
       "k": "mom12",
       "label": "Higher than a year ago",
       "state": "bear",
-      "value": "-0.6%"
+      "value": "-0.4%"
     },
     {
       "k": "mom3",
       "label": "Higher than three months ago",
       "state": "bull",
-      "value": "+6.1%"
+      "value": "+6.5%"
     },
     {
       "k": "rsi",
       "label": "Momentum (RSI) above 50",
       "state": "bull",
-      "value": "71"
+      "value": "72"
     },
     {
       "k": "macd",
@@ -59,7 +59,7 @@
       "k": "high",
       "label": "Within 10% of the 52-week high",
       "state": "bull",
-      "value": "-2.2%"
+      "value": "-1.9%"
     },
     {
       "k": "n500",
@@ -84,7 +84,7 @@
         "start": "2020-03-23",
         "end": "2026-01-02",
         "gain_pct": 246,
-        "now_pct": 238,
+        "now_pct": 239,
         "ongoing": true
       }
     },
@@ -111,9 +111,9 @@
     "p90": 34.1,
     "worst": -57.0,
     "best": 104.4,
-    "level_p10": 23252,
-    "level_p50": 28328,
-    "level_p90": 34508
+    "level_p10": 23322,
+    "level_p50": 28413,
+    "level_p90": 34612
   },
   "edge": {
     "since": "2008-09-22",
@@ -136,7 +136,7 @@
   "pace": {
     "years": 3,
     "annual_pct": 3.1,
-    "level_12m": 26535
+    "level_12m": 26616
   },
   "earnings": {
     "as_of": "2026-10-30",
@@ -871,11 +871,11 @@
     ],
     [
       "2026-11-27",
-      25742
+      25819
     ],
     [
       "2026-11-25",
-      25742
+      25819
     ]
   ]
 }

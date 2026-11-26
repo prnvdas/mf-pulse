@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-26T21:05:47.076576+05:30",
+  "generated_at": "2026-11-26T23:05:43.774844+05:30",
   "base_close_date": "2026-11-26",
   "base_close": 25884.5,
   "sigma_pct": 0.92,
@@ -23,23 +23,23 @@
     "centre_pct": 0.0,
     "gift_adjusted": {
       "gap_pct": 0.48,
-      "last": 26009.5,
-      "quote_time": "26-Nov-2026 21:05:11",
+      "last": 26008.0,
+      "quote_time": "26-Nov-2026 23:05:27",
       "centre_pct": 0.45,
       "typical": [
-        25833.4,
-        26171.8
+        25832.0,
+        26170.4
       ],
       "wide": [
-        25700.5,
-        26353.9
+        25699.1,
+        26352.5
       ],
       "typical_pct": [
         -0.2,
-        1.11
+        1.1
       ],
       "wide_pct": [
-        -0.71,
+        -0.72,
         1.81
       ],
       "validated": false,
@@ -58,8 +58,8 @@
   },
   "call": {
     "colour": "green",
-    "p_up": 68.4,
-    "p_call": 68.4,
+    "p_up": 68.2,
+    "p_call": 68.2,
     "basis": "gift",
     "tier": "good",
     "hit_pct": 72.1,

@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-11-26T06:41:41.334007+05:30",
+  "generated_at": "2026-11-26T07:45:01.381594+05:30",
   "as_of": "2026-11-25",
   "value": 11163357,
   "risk_free_pct": 6.5,
   "fd_rate_pct": 7.000000000000001,
   "basis": "today's mix applied to each fund's real NAV history (3,426 sessions, since 2013-01-03)",
   "reward": {
-    "cagr_1y": 6.5,
-    "cagr_3y": 14.2,
-    "cagr_5y": 13.4,
+    "cagr_1y": 6.0,
+    "cagr_3y": 14.0,
+    "cagr_5y": 13.3,
     "cagr_all": 21.1,
     "nifty_cagr": {
       "1y": -2.0,
@@ -58,11 +58,11 @@
     "vol_1y_pct": 14.8,
     "vol_3y_pct": 14.4,
     "max_drawdown_pct": -35.5,
-    "current_drawdown_pct": -0.6,
-    "sharpe": 0.53,
-    "sortino": 0.72,
-    "calmar": 0.4,
-    "beta": 0.95,
+    "current_drawdown_pct": -1.1,
+    "sharpe": 0.52,
+    "sortino": 0.7,
+    "calmar": 0.39,
+    "beta": 0.96,
     "downside_beta": 1.15,
     "correlation": 0.85,
     "var95_pct": 1.54,
@@ -79,12 +79,12 @@
     {
       "nifty_pct": -10,
       "portfolio_pct": -11.5,
-      "rupees": -1282820,
+      "rupees": -1284916,
       "funds": [
         {
           "id": "axis-small-cap",
           "pct": -11.1,
-          "rupees": -606092
+          "rupees": -605785
         },
         {
           "id": "mirae-large-midcap",
@@ -101,12 +101,12 @@
     {
       "nifty_pct": -20,
       "portfolio_pct": -23.0,
-      "rupees": -2565640,
+      "rupees": -2569832,
       "funds": [
         {
           "id": "axis-small-cap",
           "pct": -22.1,
-          "rupees": -1212185
+          "rupees": -1211571
         },
         {
           "id": "mirae-large-midcap",
@@ -123,12 +123,12 @@
     {
       "nifty_pct": -30,
       "portfolio_pct": -34.5,
-      "rupees": -3848460,
+      "rupees": -3854747,
       "funds": [
         {
           "id": "axis-small-cap",
           "pct": -33.2,
-          "rupees": -1818277
+          "rupees": -1817356
         },
         {
           "id": "mirae-large-midcap",

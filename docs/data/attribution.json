@@ -2559,56 +2559,56 @@
     {
       "date": "2026-11-26",
       "phase": "live",
-      "generated_at": "2026-11-26T11:20:48.922082+05:30",
+      "generated_at": "2026-11-26T11:35:41.670004+05:30",
       "portfolio": {
         "value": 11163357,
-        "impact": 60997,
-        "market_rs": 70745,
-        "selection_rs": -9749,
+        "impact": 53126,
+        "market_rs": 64808,
+        "selection_rs": -11683,
         "sectors": [
           {
             "sector": "Financials",
-            "impact": 21764
+            "impact": 19937
           },
           {
             "sector": "Technology",
-            "impact": 17462
+            "impact": 16335
           },
           {
             "sector": "Materials",
-            "impact": 11628
+            "impact": 14010
           },
           {
             "sector": "Real Estate",
-            "impact": 6452
+            "impact": 6677
           },
           {
             "sector": "Consumer (discretionary)",
-            "impact": -4048
+            "impact": -5926
           },
           {
             "sector": "Industrials",
-            "impact": 3539
-          },
-          {
-            "sector": "Healthcare",
-            "impact": 2194
-          },
-          {
-            "sector": "Energy",
-            "impact": 2084
-          },
-          {
-            "sector": "Utilities",
-            "impact": 681
+            "impact": 1437
           },
           {
             "sector": "Consumer staples",
-            "impact": -559
+            "impact": -1318
+          },
+          {
+            "sector": "Energy",
+            "impact": 1032
+          },
+          {
+            "sector": "Healthcare",
+            "impact": 914
+          },
+          {
+            "sector": "Utilities",
+            "impact": 821
           },
           {
             "sector": "Telecom & media",
-            "impact": 32
+            "impact": -559
           }
         ]
       },
@@ -2617,74 +2617,74 @@
           "id": "axis-small-cap",
           "name": "Axis Small Cap Fund Direct Growth",
           "value": 5476054,
-          "impact": 26403,
-          "nav_move_pct": 0.482,
+          "impact": 23932,
+          "nav_move_pct": 0.437,
           "benchmark": {
             "ticker": "NIFTYSMLCAP250.NS",
             "name": "Nifty Smallcap 250",
-            "move_pct": 0.56
+            "move_pct": 0.53
           },
-          "vs_benchmark_pp": -0.08,
-          "market_rs": 30579,
-          "selection_rs": -4176,
+          "vs_benchmark_pp": -0.09,
+          "market_rs": 28793,
+          "selection_rs": -4861,
           "sectors": [
             {
               "sector": "Technology",
-              "impact": 8851,
-              "pp": 0.162
-            },
-            {
-              "sector": "Financials",
-              "impact": 7930,
-              "pp": 0.145
+              "impact": 8515,
+              "pp": 0.155
             },
             {
               "sector": "Materials",
-              "impact": 5127,
-              "pp": 0.094
+              "impact": 7179,
+              "pp": 0.131
+            },
+            {
+              "sector": "Financials",
+              "impact": 6873,
+              "pp": 0.126
             },
             {
               "sector": "Consumer (discretionary)",
-              "impact": -4734,
-              "pp": -0.086
-            },
-            {
-              "sector": "Industrials",
-              "impact": 3635,
-              "pp": 0.066
+              "impact": -5263,
+              "pp": -0.096
             },
             {
               "sector": "Real Estate",
-              "impact": 3376,
+              "impact": 3391,
               "pp": 0.062
+            },
+            {
+              "sector": "Industrials",
+              "impact": 2037,
+              "pp": 0.037
             }
           ],
-          "other_sectors_rs": 2322,
+          "other_sectors_rs": 1302,
           "unpriced_rs": 0,
           "cost_rs": -104,
           "cash_pct": 13.2,
           "helped": [
             {
               "name": "Avalon Technologies Ltd.",
-              "move_pct": 4.3,
-              "impact": 3337
+              "move_pct": 4.85,
+              "impact": 3764
             },
             {
               "name": "Multi Commodity Exchange Of India Ltd",
-              "move_pct": 5.33,
-              "impact": 3202
+              "move_pct": 6.17,
+              "impact": 3707
             }
           ],
           "hurt": [
             {
               "name": "Craftsman Automation Ltd",
-              "move_pct": -2.72,
-              "impact": -2053
+              "move_pct": -3.03,
+              "impact": -2291
             },
             {
               "name": "Vijaya Diagnostic Centre Ltd",
-              "move_pct": -3.17,
-              "impact": -1768
+              "move_pct": -3.3,
+              "impact": -1844
             }
           ]
         },
@@ -2692,74 +2692,74 @@
           "id": "mirae-large-midcap",
           "name": "Mirae Asset Large & Midcap Fund Direct Growth",
           "value": 5469163,
-          "impact": 33555,
-          "nav_move_pct": 0.614,
+          "impact": 28270,
+          "nav_move_pct": 0.517,
           "benchmark": {
             "ticker": "^NSEMDCP50",
             "name": null,
-            "move_pct": 0.72
+            "move_pct": 0.65
           },
-          "vs_benchmark_pp": -0.1,
-          "market_rs": 39194,
-          "selection_rs": -5640,
+          "vs_benchmark_pp": -0.13,
+          "market_rs": 35318,
+          "selection_rs": -7048,
           "sectors": [
             {
               "sector": "Financials",
-              "impact": 13433,
-              "pp": 0.246
+              "impact": 12735,
+              "pp": 0.233
             },
             {
               "sector": "Technology",
-              "impact": 8275,
-              "pp": 0.151
+              "impact": 7520,
+              "pp": 0.138
             },
             {
               "sector": "Materials",
-              "impact": 6233,
-              "pp": 0.114
+              "impact": 6459,
+              "pp": 0.118
             },
             {
               "sector": "Real Estate",
-              "impact": 3076,
-              "pp": 0.056
-            },
-            {
-              "sector": "Healthcare",
-              "impact": 1953,
-              "pp": 0.036
+              "impact": 3285,
+              "pp": 0.06
             },
             {
               "sector": "Consumer staples",
-              "impact": -1705,
-              "pp": -0.031
+              "impact": -2378,
+              "pp": -0.043
+            },
+            {
+              "sector": "Healthcare",
+              "impact": 1477,
+              "pp": 0.027
             }
           ],
-          "other_sectors_rs": 2414,
+          "other_sectors_rs": -704,
           "unpriced_rs": 0,
           "cost_rs": -126,
           "cash_pct": 3.77,
           "helped": [
             {
               "name": "HDFC Bank Ltd",
-              "move_pct": 2.62,
-              "impact": 9165
+              "move_pct": 2.4,
+              "impact": 8420
             },
             {
-              "name": "Hindalco Industries Ltd",
-              "move_pct": 3.1,
-              "impact": 3337
+              "name": "Prestige Estates Projects Ltd",
+              "move_pct": 4.04,
+              "impact": 3267
             }
           ],
           "hurt": [
             {
-              "name": "Dalmia Bharat Ltd",
-              "move_pct": -2.3,
-              "impact": -2282
+              "name": "ICICI Bank Ltd",
+              "move_pct": -0.98,
+              "impact": -2110
             },
             {
-              "name": "ICICI Bank Ltd",
-              "move_pct": -0.96,
-              "impact": -2070
+              "name": "Dalmia Bharat Ltd",
+              "move_pct": -1.95,
+              "impact": -1932
             }
           ]
         },
@@ -2767,74 +2767,74 @@
           "id": "jioblackrock-flexicap",
           "name": "JioBlackRock Flexi Cap Fund Direct Growth",
           "value": 218140,
-          "impact": 1039,
-          "nav_move_pct": 0.476,
+          "impact": 924,
+          "nav_move_pct": 0.424,
           "benchmark": {
             "ticker": "^CRSLDX",
             "name": null,
-            "move_pct": 0.45
+            "move_pct": 0.32
           },
-          "vs_benchmark_pp": 0.03,
-          "market_rs": 972,
-          "selection_rs": 67,
+          "vs_benchmark_pp": 0.1,
+          "market_rs": 698,
+          "selection_rs": 226,
           "sectors": [
             {
+              "sector": "Materials",
+              "impact": 372,
+              "pp": 0.17
+            },
+            {
               "sector": "Financials",
-              "impact": 401,
-              "pp": 0.184
+              "impact": 329,
+              "pp": 0.151
             },
             {
               "sector": "Technology",
-              "impact": 337,
-              "pp": 0.154
-            },
-            {
-              "sector": "Materials",
-              "impact": 268,
-              "pp": 0.123
+              "impact": 300,
+              "pp": 0.138
             },
             {
               "sector": "Industrials",
-              "impact": 200,
-              "pp": 0.092
+              "impact": 199,
+              "pp": 0.091
             },
             {
               "sector": "Consumer (discretionary)",
-              "impact": -173,
-              "pp": -0.079
+              "impact": -181,
+              "pp": -0.083
             },
             {
-              "sector": "Energy",
-              "impact": 79,
-              "pp": 0.036
+              "sector": "Consumer staples",
+              "impact": -85,
+              "pp": -0.039
             }
           ],
-          "other_sectors_rs": -66,
+          "other_sectors_rs": -3,
           "unpriced_rs": 0,
           "cost_rs": -7,
           "cash_pct": 6.22,
           "helped": [
             {
               "name": "HDFC Bank Ltd",
-              "move_pct": 2.62,
-              "impact": 337
+              "move_pct": 2.4,
+              "impact": 309
             },
             {
-              "name": "Infosys Ltd",
-              "move_pct": 2.88,
-              "impact": 119
+              "name": "Tata Steel Ltd",
+              "move_pct": 2.2,
+              "impact": 109
             }
           ],
           "hurt": [
             {
               "name": "ICICI Bank Ltd",
-              "move_pct": -0.96,
-              "impact": -120
+              "move_pct": -0.98,
+              "impact": -122
             },
             {
               "name": "Nestle India Ltd",
-              "move_pct": -1.65,
-              "impact": -59
+              "move_pct": -2.05,
+              "impact": -74
             }
           ]
         }

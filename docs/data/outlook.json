@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-26T16:56:15.401629+05:30",
+  "generated_at": "2026-11-26T16:59:57.593781+05:30",
   "base_close_date": "2026-11-26",
   "base_close": 25884.5,
   "sigma_pct": 0.92,
@@ -22,25 +22,25 @@
     ],
     "centre_pct": 0.0,
     "gift_adjusted": {
-      "gap_pct": 0.6,
-      "last": 26041.0,
-      "quote_time": "26-Nov-2026 16:15:02",
-      "centre_pct": 0.57,
+      "gap_pct": 0.46,
+      "last": 26004.5,
+      "quote_time": "26-Nov-2026 16:59:21",
+      "centre_pct": 0.44,
       "typical": [
-        25863.0,
-        26201.4
+        25828.7,
+        26167.1
       ],
       "wide": [
-        25730.1,
-        26383.5
+        25695.8,
+        26349.2
       ],
       "typical_pct": [
-        -0.08,
-        1.22
+        -0.22,
+        1.09
       ],
       "wide_pct": [
-        -0.6,
-        1.93
+        -0.73,
+        1.8
       ],
       "validated": false,
       "assumptions": "gap passes through x0.94; intraday vol 0.81x; GIFT-to-open noise 0.15%"
@@ -58,12 +58,12 @@
   },
   "call": {
     "colour": "green",
-    "p_up": 72.7,
-    "p_call": 72.7,
+    "p_up": 67.7,
+    "p_call": 67.7,
     "basis": "gift",
     "tier": "good",
     "hit_pct": 72.1,
-    "why": "GIFT Nifty is +0.60% from the Nifty's last close",
+    "why": "GIFT Nifty is +0.46% from the Nifty's last close",
     "provisional": true,
     "note": "Provisional: it firms up once GIFT Nifty's pre-open price is in (about 08:45 IST)."
   },

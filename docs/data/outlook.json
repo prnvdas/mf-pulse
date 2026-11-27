@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-27T08:35:47.746120+05:30",
+  "generated_at": "2026-11-27T09:16:16.010391+05:30",
   "base_close_date": "2026-11-26",
   "base_close": 25884.5,
   "sigma_pct": 0.92,
@@ -20,31 +20,7 @@
       -1.41,
       1.65
     ],
-    "centre_pct": 0.0,
-    "gift_adjusted": {
-      "gap_pct": 0.29,
-      "last": 25959.5,
-      "quote_time": "27-Nov-2026 08:34:29",
-      "centre_pct": 0.27,
-      "typical": [
-        25786.4,
-        26124.8
-      ],
-      "wide": [
-        25653.5,
-        26306.9
-      ],
-      "typical_pct": [
-        -0.38,
-        0.93
-      ],
-      "wide_pct": [
-        -0.89,
-        1.63
-      ],
-      "validated": false,
-      "assumptions": "gap passes through x0.94; intraday vol 0.81x; GIFT-to-open noise 0.15%"
-    }
+    "centre_pct": 0.0
   },
   "portfolio": {
     "value": 11222041,
@@ -58,14 +34,14 @@
   },
   "call": {
     "colour": "green",
-    "p_up": 61.0,
-    "p_call": 61.0,
-    "basis": "gift",
-    "tier": "good",
-    "hit_pct": 72.1,
-    "why": "GIFT Nifty is +0.29% from the Nifty's last close",
-    "provisional": false,
-    "note": "Final pre-open reading."
+    "p_up": 52.9,
+    "p_call": 52.9,
+    "basis": "base",
+    "tier": "weak",
+    "hit_pct": 55.8,
+    "why": "no overnight information yet, so this is just the everyday odds",
+    "provisional": true,
+    "note": "Provisional: the US market hasn't closed yet."
   },
   "model": {
     "volatility": "GJR-GARCH(1,1) with Student-t errors",

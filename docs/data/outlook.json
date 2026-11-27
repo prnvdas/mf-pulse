@@ -1,46 +1,46 @@
 {
-  "generated_at": "2026-11-28T01:10:28.246272+05:30",
+  "generated_at": "2026-11-28T02:34:22.810428+05:30",
   "base_close_date": "2026-11-26",
   "base_close": 25884.5,
   "sigma_pct": 0.92,
   "nifty": {
     "typical": [
-      25680.4,
-      26090.1
+      25793.8,
+      26203.4
     ],
     "wide": [
-      25519.5,
-      26310.5
+      25632.8,
+      26423.8
     ],
     "typical_pct": [
-      -0.79,
-      0.79
+      -0.35,
+      1.23
     ],
     "wide_pct": [
-      -1.41,
-      1.65
+      -0.97,
+      2.08
     ],
-    "centre_pct": 0.0,
+    "centre_pct": 0.44,
     "gift_adjusted": {
-      "gap_pct": 0.13,
-      "last": 25917.5,
-      "quote_time": "28-Nov-2026 01:08:38",
-      "centre_pct": 0.12,
+      "gap_pct": 0.0,
+      "last": 25884.5,
+      "quote_time": "28-Nov-2026 02:29:59",
+      "centre_pct": 0.0,
       "typical": [
-        25746.9,
-        26085.3
+        25715.9,
+        26054.3
       ],
       "wide": [
-        25614.0,
-        26267.4
+        25583.0,
+        26236.4
       ],
       "typical_pct": [
-        -0.53,
-        0.78
+        -0.65,
+        0.66
       ],
       "wide_pct": [
-        -1.05,
-        1.48
+        -1.16,
+        1.36
       ],
       "validated": false,
       "assumptions": "gap passes through x0.94; intraday vol 0.81x; GIFT-to-open noise 0.15%"
@@ -53,17 +53,22 @@
     "wide_rupees": 130696
   },
   "lean": {
-    "status": "pending",
-    "reason": "The US market hasn't closed since the last Nifty close yet; this updates around 07:15 IST."
+    "status": "ok",
+    "label": "leans up",
+    "p_up": 66.1,
+    "mu_pct": 0.44,
+    "sp_date": "2026-11-27",
+    "sp_move_pct": 1.6,
+    "us_sessions": 1
   },
   "call": {
-    "colour": "green",
-    "p_up": 54.4,
-    "p_call": 54.4,
+    "colour": "red",
+    "p_up": 49.0,
+    "p_call": 51.0,
     "basis": "gift",
     "tier": "weak",
     "hit_pct": 54.8,
-    "why": "GIFT Nifty is +0.13% from the Nifty's last close",
+    "why": "GIFT Nifty is +0.00% from the Nifty's last close",
     "provisional": true,
     "note": "Provisional: it firms up once GIFT Nifty's pre-open price is in (about 08:45 IST)."
   },

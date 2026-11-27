@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-27T06:40:03.733943+05:30",
+  "generated_at": "2026-11-27T07:44:25.004257+05:30",
   "risk_free_pct": 6.5,
   "portfolio_xirr_pct": 13.7,
   "portfolio_returns": {
@@ -897,7 +897,7 @@
         "pct": 14.0,
         "source": "transactions",
         "since": "2021-01-08",
-        "bench_pct": 11.2
+        "bench_pct": 11.5
       },
       "folios": [
         {
@@ -987,7 +987,7 @@
         "pct": 13.5,
         "source": "transactions",
         "since": "2019-04-30",
-        "bench_pct": 11.1
+        "bench_pct": 11.2
       },
       "folios": [
         {
@@ -1018,33 +1018,33 @@
       },
       "returns": {
         "1M": {
-          "fund": 9.28,
-          "bench": 11.18,
-          "diff": -1.9
+          "fund": 8.66,
+          "bench": 10.82,
+          "diff": -2.16
         },
         "3M": {
-          "fund": 0.05,
-          "bench": 1.98,
-          "diff": -1.93
+          "fund": 0.63,
+          "bench": 2.57,
+          "diff": -1.94
         },
         "6M": {
-          "fund": 4.04,
-          "bench": 4.61,
-          "diff": -0.57
+          "fund": 4.16,
+          "bench": 4.87,
+          "diff": -0.71
         },
         "1Y": {
-          "fund": 0.36,
-          "bench": 1.57,
-          "diff": -1.21
+          "fund": -0.89,
+          "bench": 0.55,
+          "diff": -1.44
         }
       },
       "risk": {
         "window_days": 364,
         "beta": 0.99,
-        "alpha_pct": -1.42,
+        "alpha_pct": -1.48,
         "vol_pct": 15.1,
         "bench_vol_pct": 15.1,
-        "sharpe": -0.41,
+        "sharpe": -0.4,
         "max_drawdown_pct": -14.3,
         "bench_max_drawdown_pct": -14.8
       },
@@ -1054,8 +1054,8 @@
         "fund_pb": 2.7,
         "bench_pe": 22.3
       },
-      "history_days": 404,
-      "as_of": "2026-11-25",
+      "history_days": 405,
+      "as_of": "2026-11-26",
       "scenarios": {
         "basis": "benchmark",
         "since": "2005-09-27",
@@ -1077,7 +1077,7 @@
         "pct": 5.0,
         "source": "transactions",
         "since": "2025-10-13",
-        "bench_pct": 7.3
+        "bench_pct": 7.7
       },
       "folios": [
         {

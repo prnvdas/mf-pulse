@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-27T15:55:27.591155+05:30",
-  "generated_label": "27 Nov 2026, 15:55 IST",
+  "generated_at": "2026-11-27T16:55:31.918007+05:30",
+  "generated_label": "27 Nov 2026, 16:55 IST",
   "stale": false,
   "phase": "final",
   "market_open": false,
@@ -9,9 +9,9 @@
     "invested": 8510996.23,
     "total_returns": 2711045.18,
     "total_returns_pct": 31.85,
-    "today_impact": -1724.17,
+    "today_impact": -1687.19,
     "today_pct": -0.015,
-    "band_rupees": 7784.0
+    "band_rupees": 7817.0
   },
   "funds": [
     {
@@ -19,18 +19,18 @@
       "name": "Axis Small Cap Fund Direct Growth",
       "current_value": 5505194.72,
       "invested": 4174791.35,
-      "nav_move_pct": 0.273,
-      "rupee_impact": 15048.12,
+      "nav_move_pct": 0.274,
+      "rupee_impact": 15085.1,
       "last_nav": 136.02,
-      "projected_nav": 136.3918,
-      "band_rupees": 5506.0,
-      "coverage_pct": 86.8,
+      "projected_nav": 136.3927,
+      "band_rupees": 5552.0,
+      "coverage_pct": 86.7,
       "cash_pct": 13.2,
-      "tail_pct": 0.0,
+      "tail_pct": 0.1,
       "tail_move_pct": 0.53,
       "holdings_as_of": "2026-11-12",
       "holdings_count": 121,
-      "priced_count": 121,
+      "priced_count": 120,
       "top_contributors": [
         {
           "name": "City Union Bank Ltd",
@@ -505,17 +505,17 @@
     ],
     "breadth": {
       "up": 141,
-      "down": 121,
-      "total": 262
+      "down": 120,
+      "total": 261
     },
     "portfolio_pct": -0.015,
-    "portfolio_impact": -1724,
+    "portfolio_impact": -1687,
     "funds": [
       {
         "id": "axis-small-cap",
         "name": "Axis Small Cap Fund Direct Growth",
-        "nav_move_pct": 0.273,
-        "impact": 15048
+        "nav_move_pct": 0.274,
+        "impact": 15085
       },
       {
         "id": "mirae-large-midcap",
@@ -574,23 +574,23 @@
       "name": "Brent crude",
       "ticker": "BZ=F",
       "unit": "$",
-      "level": 92.47,
-      "change": 4.98,
-      "move_pct": 5.69,
-      "as_of": "2026-11-27T15:44:34+05:30"
+      "level": 92.04,
+      "change": 4.55,
+      "move_pct": 5.2,
+      "as_of": "2026-11-27T16:42:42+05:30"
     }
   ],
   "breadth": {
     "up": 141,
-    "down": 121,
-    "total": 262
+    "down": 120,
+    "total": 261
   },
   "health": {
     "status": "ok",
     "issues": [],
-    "checked_at": "2026-11-27T15:55:37.891164+05:30",
+    "checked_at": "2026-11-27T16:55:43.066961+05:30",
     "repaired": 0,
-    "gap": 0,
+    "gap": 1,
     "ignored": 0
   },
   "accuracy": {
@@ -619,6 +619,6 @@
       }
     }
   },
-  "tickers_resolved": 265,
+  "tickers_resolved": 264,
   "tickers_total": 265
 }

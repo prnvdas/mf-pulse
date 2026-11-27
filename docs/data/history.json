@@ -2242,5 +2242,33 @@
     "data_health": "ok",
     "band_rupees": 201.0,
     "actual_pl_rupees": 267.95
+  },
+  {
+    "date": "2026-11-27",
+    "fund_id": "axis-small-cap",
+    "predicted_pct": 0.274,
+    "actual_pct": 0.221,
+    "error_pct": 0.053,
+    "direction_hit": true,
+    "predicted_nav": 136.3927,
+    "actual_nav": 136.32,
+    "predicted_pl_rupees": 15085.1,
+    "data_health": "ok",
+    "band_rupees": 5552.0,
+    "actual_pl_rupees": 12142.03
+  },
+  {
+    "date": "2026-11-27",
+    "fund_id": "jioblackrock-flexicap",
+    "predicted_pct": -0.21,
+    "actual_pct": -0.293,
+    "error_pct": 0.083,
+    "direction_hit": true,
+    "predicted_nav": 10.1673,
+    "actual_nav": 10.1588,
+    "predicted_pl_rupees": -458.98,
+    "data_health": "ok",
+    "band_rupees": 202.0,
+    "actual_pl_rupees": -640.94
   }
 ]

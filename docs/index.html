@@ -667,12 +667,14 @@
   <section id="scoreWrap" hidden>
     <h2>Estimate vs actual NAV <span id="scoreNote"></span></h2>
     <div id="scoreBody"></div>
+    <p class="sub2" id="scoreLate" style="margin-top:10px" hidden></p>
   </section>
   <section id="calWrap" hidden>
     <h2>Day by day <span id="calNote">What the market did to your money each day (new SIP money left out)</span></h2>
     <div class="calnav"><button class="ghost" id="calPrev" aria-label="Previous month">‹</button><b id="calMonth"></b><button class="ghost" id="calNext" aria-label="Next month">›</button></div>
     <div class="cal" id="calGrid"></div>
     <div class="calsum" id="calSum"></div>
+    <p class="sub2" id="calLate" style="margin-top:10px" hidden></p>
     <div class="ptip" id="calTip" role="status" hidden></div>
   </section>
   <section id="fundsSec">
@@ -2478,7 +2480,7 @@ function paintStamp() {
 }
 setInterval(() => { paintStamp(); renderHolidayBar(); renderStatementBar(); }, 30000);        // keep the clock and the data age moving
 
-function stampBatch(a) { LAST_BATCH = a; paintStamp(); safe(renderScore, "scoreWrap"); safe(renderHealthLine); safe(renderDataBar); }
+function stampBatch(a) { LAST_BATCH = a; paintStamp(); safe(renderScore, "scoreWrap"); safe(paintLateNav); safe(renderHealthLine); safe(renderDataBar); }
 
 async function applyBatch() {
   const r = await fetch("data/latest.json?t=" + Date.now(), { cache: "no-store" });
@@ -3158,6 +3160,15 @@ function setupCalTip() {
     document.addEventListener("keydown", e => { if (e.key === "Escape") hideCalTip(); });
   }
 }
+// A fund house that publishes its NAV after the others': the newest day is not counted until it does, and the page says so (it used to say nothing).
+function lateNavText() {
+  const fs = ((CFG && CFG.funds) || []).map(f => ({ f, d: navIso(f && f.last_nav_date) })).filter(x => x.d && typeof x.f.name === "string");
+  const top = fs.reduce((m, x) => x.d > m ? x.d : m, ""), late = fs.filter(x => x.d < top);
+  if (!late.length) return "";
+  const many = late.length > 1;
+  return esc(late.map(x => shortName(x.f.name)).join(" and ")) + (many ? " have" : " has") + " not published " + (many ? "their NAVs" : "its NAV") + " for " + dmon(top) + " yet, so that day is not counted until " + (many ? "they do" : "it does") + ".";
+}
+function paintLateNav() { const t = lateNavText(); ["calLate", "scoreLate"].forEach(id => { const e = $(id); if (e) { e.hidden = !t; e.innerHTML = t; } }); }
 function renderCalendar() {
   const wrap = $("calWrap"), g = dayGains(), days = Object.keys(g).sort();
   if (days.length < 3) { wrap.hidden = true; return; }
@@ -3179,7 +3190,7 @@ function renderCalendar() {
     const a = (.12 + .5 * Math.abs(v) / mx).toFixed(2), bg = v >= 0 ? "rgba(134,188,37," + a + ")" : "rgba(218,41,28," + a + ")";
     cells += '<div class="d ' + (v >= 0 ? "g" : "r") + (iso === today ? " today" : "") + '" style="background:' + bg + '" data-d="' + iso + '" tabindex="0" aria-label="' + esc(dlong(iso) + ": " + sgc(v)) + '"><span>' + d + '</span><span class="a">' + ks(v) + "</span></div>";
   }
-  hideCalTip();
+  hideCalTip(); paintLateNav();
   $("calGrid").innerHTML = cells;
   setupCalTip();
   const up = inM.filter(d => g[d] >= 0).length, best = inM.reduce((b, d) => g[d] > g[b] ? d : b, inM[0]), worst = inM.reduce((b, d) => g[d] < g[b] ? d : b, inM[0]);

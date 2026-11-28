@@ -593,6 +593,37 @@ class Trend(unittest.TestCase):
         self.assertEqual(doc["of"], 9)
 
 
+class SnapshotTodayPoint(unittest.TestCase):
+    CFG = {"funds": [{"id": "a", "seed_invested": 100}, {"id": "b", "seed_invested": 50}]}
+
+    def state(self, date_a, date_b):
+        return {"a": {"units": 10, "last_nav": 12.0, "last_nav_date": date_a, "seed_invested": 100},
+                "b": {"units": 20, "last_nav": 3.0, "last_nav_date": date_b, "seed_invested": 50}}
+
+    def test_a_day_is_written_when_every_fund_has_that_days_nav(self):
+        p = snapshot.today_point(self.CFG, self.state("27-Nov-2026", "27-Nov-2026"))
+        self.assertEqual((p["d"], round(p["v"])), ("2026-11-27", 10 * 12 + 20 * 3))
+
+    def test_a_late_fund_does_not_write_a_mixed_day(self):
+        # Mirae's 27 Nov NAV was published late: the others' 27 Nov values must not land on 26 Nov (or anywhere) next to its old NAV
+        self.assertIsNone(snapshot.today_point(self.CFG, self.state("27-Nov-2026", "26-Nov-2026")))
+
+    def test_history_stops_at_the_last_day_every_fund_has(self):
+        import pandas as pd
+        ix = lambda *d: pd.Series(range(len(d)), index=pd.to_datetime(list(d)))
+        axis, mirae = ix("2026-11-25", "2026-11-26", "2026-11-27"), ix("2026-11-25", "2026-11-26")     # Mirae has not published 27 Nov
+        days = sorted(set(axis.index) | set(mirae.index))
+        self.assertEqual([d.date().isoformat() for d in snapshot.common_days(days, [axis, mirae])], ["2026-11-25", "2026-11-26"])
+        mirae2 = ix("2026-11-25", "2026-11-26", "2026-11-27")                                         # once it publishes, the day is in
+        self.assertEqual(len(snapshot.common_days(days, [axis, mirae2])), 3)
+        gap = ix("2026-11-25", "2026-11-27")                                                          # an odd gap in the middle is still carried over
+        self.assertEqual(len(snapshot.common_days(sorted(set(axis.index) | set(gap.index)), [axis, gap])), 3)
+
+    def test_missing_state_gives_no_point(self):
+        st = self.state("27-Nov-2026", "27-Nov-2026"); st["b"].pop("last_nav")
+        self.assertIsNone(snapshot.today_point(self.CFG, st))
+
+
 class Housekeeping(unittest.TestCase):
     TODAY = dt.date(2026, 11, 10)
 

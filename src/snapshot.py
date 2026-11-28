@@ -90,6 +90,13 @@ def tx_units() -> dict[str, dict[pd.Timestamp, float]]:
     return out
 
 
+def common_days(dates: list, series) -> list:
+    """The days up to the last one every fund has a NAV for. A fund whose NAV is simply late (published after the others') must not
+    pull the newest day in with its previous NAV carried forward: that day appears once it publishes."""
+    limit = min(x.index.max() for x in series)
+    return [d for d in dates if d <= limit]
+
+
 def backfill_from_transactions(cfg: dict, state: dict) -> list[dict] | None:
     """Exact history from the first purchase: units and money in are running sums of the real transactions.
     Returns None (so the caller falls back to the SIP reconstruction) when the file doesn't explain today's units."""
@@ -117,7 +124,7 @@ def backfill_from_transactions(cfg: dict, state: dict) -> list[dict] | None:
             print(f"[warn] transactions: {fid} units {cum[fid][0].iloc[-1]:,.1f} vs holding {held:,.1f}; using the SIP reconstruction", file=sys.stderr)
             return None
     start = min(c[0].index[0] for c in cum.values())
-    dates = sorted(set.union(*[set(s.index[s.index >= start]) for s in navs.values()]))
+    dates = common_days(sorted(set.union(*[set(s.index[s.index >= start]) for s in navs.values()])), navs.values())
     out = []
     for d in dates:
         rows = {}
@@ -197,7 +204,7 @@ def build_fund_history(cfg: dict, state: dict) -> dict | None:
     if not cum:
         return None
     start = min(c[0].index[0] for c in cum.values())
-    dates = sorted(set.union(*[set(s.index[s.index >= start]) for s in navs.values()]))
+    dates = common_days(sorted(set.union(*[set(s.index[s.index >= start]) for s in navs.values()])), navs.values())
     out = {}
     for f in cfg["funds"]:
         fid = f["id"]
@@ -247,7 +254,9 @@ def today_point(cfg: dict, state: dict) -> dict | None:
             return None
         rows[f["id"]] = (st["units"] * st["last_nav"], float(st.get("seed_invested", f.get("seed_invested", 0))))
         days.append(_day(st["last_nav_date"]))
-    return point(min(days), rows)          # a fund whose NAV is a day late must not be shown as today's value
+    if len(set(days)) > 1:                 # a fund whose NAV is a day late: no point yet (mixing its old NAV with the others' new ones would overwrite the earlier day with wrong totals)
+        return None
+    return point(days[0], rows)
 
 
 def main() -> None:

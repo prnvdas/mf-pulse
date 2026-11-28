@@ -71,6 +71,12 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
       return {n,hidden:t.hidden,L:Math.round(tp.left-pr.left),W:Math.round(tp.width),pw:Math.round(pr.width)};});
     if(h.hidden||h.n>0||h.L<-1||h.L+h.W>h.pw+1) bad.push([f,h]); }
   ok(!bad.length,'money hover box covers no part of the worth line and stays in the chart',JSON.stringify(bad)); ok(!errs.length,'hover errs',errs[0]); await ctx.close();}
+ // card layout: at every common phone and tablet width the page fits the screen and no tile's number spills out of its tile
+ {const {p,ctx,errs}=await page(); const bad=[];
+  for (const w of [320,360,390,430,768,1024]) { await p.setViewportSize({width:w,height:900}); await p.waitForTimeout(250);
+    const r=await p.evaluate(()=>({doc:document.documentElement.scrollWidth,iw:innerWidth,tiles:[...document.querySelectorAll('.stat,.acc>div,.kgrid>div')].filter(t=>t.offsetParent&&t.scrollWidth>t.clientWidth+1).length}));
+    if(r.doc>r.iw+1||r.tiles) bad.push([w,r]); }
+  ok(!bad.length,'page and tiles fit at 320-1024px',JSON.stringify(bad)); ok(!errs.length,'width sweep errs',errs[0]); await ctx.close();}
  // segmented switches are one-line pills, even on a small phone (they used to wrap their labels into a tall block)
  {const {p,ctx,errs}=await page(); await p.setViewportSize({width:340,height:800}); await p.waitForTimeout(300);
   const r=await p.evaluate(()=>{const b=[...document.querySelectorAll('.seg button')].filter(x=>x.offsetParent);return {n:b.length,tall:b.filter(x=>x.getBoundingClientRect().height>40).length,round:b.filter(x=>parseFloat(getComputedStyle(x).borderTopLeftRadius)<12).length,doc:document.documentElement.scrollWidth,iw:innerWidth};});

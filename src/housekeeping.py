@@ -1,4 +1,6 @@
-"""Keeps the GitHub side tidy: deletes old workflow runs and old Pages deployments, and closes alert issues whose reason has passed.
+"""Keeps the GitHub side tidy: deletes old workflow runs and old Pages deployments, closes alert issues whose reason has passed,
+and watches for silence: if the estimate or a fund's NAV stops updating (a scheduler that stopped firing fails nothing, so nobody
+would hear of it), it opens one "Data check:" issue, which GitHub emails, and closes it once the data is current again.
 
 Uses only the job's own token (GH_TOKEN, scope set in .github/workflows/cleanup.yml). It never touches code, data or the live site:
 only run history, deployment records and issues. GitHub allows that token ~1,000 requests an hour, so the first big clean-up paces
@@ -53,6 +55,38 @@ def statement_months(names: list[str]) -> set[str]:
 def older_deployments(deployments: list[dict], keep: int) -> list[dict]:
     """Everything but the newest `keep` (GitHub lists newest first, but do not rely on it)."""
     return sorted(deployments, key=lambda d: d.get("created_at", ""), reverse=True)[keep:]
+
+
+def previous_trading_day(day: dt.date, holidays: set[str]) -> dt.date:
+    d = day - dt.timedelta(days=1)
+    while d.weekday() >= 5 or d.isoformat() in holidays:
+        d -= dt.timedelta(days=1)
+    return d
+
+
+def data_problems(now: dt.datetime, latest_generated_at: str | None, nav_dates: dict[str, str], holidays: set[str]) -> list[str]:
+    """What looks stale against the trading calendar. The estimate must have run for the last trading day; a fund's NAV may be one
+    trading day behind (fund houses publish late at night, and the page already names a fund that is a day late), not two."""
+    last = previous_trading_day(now.date(), holidays)
+    nav_due = previous_trading_day(last, holidays)
+    out = []
+    try:
+        gen = dt.datetime.fromisoformat(str(latest_generated_at)).astimezone(IST).date()
+    except (TypeError, ValueError):
+        gen = None
+    if gen is None or gen < last:
+        out.append(f"The estimate has not updated since {gen.strftime('%d %b') if gen else 'it was last readable'}; it should have run on {last.strftime('%a %d %b')}. "
+                   "The scheduled jobs may have stopped (cron-job.org or GitHub's scheduler): check the Actions tab.")
+    for name, d in nav_dates.items():
+        try:
+            nd = dt.datetime.strptime(str(d), "%d-%b-%Y").date()
+        except ValueError:
+            out.append(f"{name}: the NAV date on file ({d}) cannot be read.")
+            continue
+        if nd < nav_due:
+            out.append(f"{name}: the newest NAV on file is from {nd.strftime('%d %b')}; the one for {nav_due.strftime('%a %d %b')} should be in by now "
+                       "(the fund house may be late, or the nightly NAV job is not running).")
+    return out
 
 
 # ----------------------------------------------------------------------------- GitHub API
@@ -118,6 +152,29 @@ def close_alerts(api: Api, dry: bool) -> None:
     notice(f"{n} alert issue(s) {'would be' if dry else ''} closed")
 
 
+def watch_data(api: Api, dry: bool) -> None:
+    """Open one "Data check:" issue when something is stale, close it when everything is current again."""
+    data = Path("docs/data")
+    read = lambda n: json.loads((data / n).read_text()) if (data / n).exists() else {}
+    latest, cfg, hol = read("latest.json"), read("config.json"), read("holidays.json")
+    holidays = {h.get("date") for h in hol.get("holidays", []) if isinstance(h, dict) and not h.get("weekend")}
+    navs = {f.get("name", f.get("id", "?")).replace(" Direct Growth", ""): f.get("last_nav_date") for f in cfg.get("funds", []) if isinstance(f, dict)}
+    problems = data_problems(dt.datetime.now(IST), latest.get("generated_at"), navs, holidays)
+    _, issues = api.call("GET", "/issues?state=open&per_page=100")
+    mine = [i for i in issues or [] if "pull_request" not in i and i["title"].startswith("Data check:")]
+    for p in problems:
+        print(f"[stale] {p}", flush=True)
+    if problems and not mine and not dry:
+        body = "Found by the daily housekeeping job:\n\n" + "\n".join(f"- {p}" for p in problems) + \
+               "\n\nThis issue closes itself once the data is current again."
+        api.call("POST", "/issues", {"title": "Data check: " + problems[0][:90], "body": body, "assignees": [os.environ.get("GITHUB_REPOSITORY_OWNER", "")]})
+    if not problems and not dry:
+        for i in mine:
+            api.call("POST", f"/issues/{i['number']}/comments", {"body": "Back to normal: the data is current again. Closed automatically."})
+            api.call("PATCH", f"/issues/{i['number']}", {"state": "closed", "state_reason": "completed"})
+    notice(f"data check: {len(problems)} problem(s)" + (f"; alert {'already open' if mine else 'opened' if not dry else 'would be opened'}" if problems else ("; alert closed" if mine else "")))
+
+
 def delete_runs(api: Api, dry: bool) -> None:
     cutoff = (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=KEEP_DAYS)).strftime("%Y-%m-%d")
     total = 0
@@ -174,6 +231,7 @@ def main() -> None:
     api = Api(repo, token)
     print(f"[info] {'DRY RUN: nothing is changed' if dry else 'cleaning up'}", flush=True)
     close_alerts(api, dry)
+    watch_data(api, dry)
     delete_runs(api, dry)
     delete_deployments(api, dry)
     print(f"[done] {api.calls} API call(s)", flush=True)

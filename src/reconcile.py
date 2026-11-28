@@ -43,7 +43,7 @@ def main() -> None:
     ts = now_ist()
     today = ts.date().isoformat()
 
-    navs = fetch_amfi_navs()
+    navs = fetch_amfi_navs(codes=[f["amfi_code"] for f in cfg["funds"] if f.get("amfi_code")])
     print(f"[info] AMFI returned {len(navs)} schemes")
 
     state = read_json("state.json", {})

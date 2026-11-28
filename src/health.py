@@ -23,7 +23,7 @@ import pandas as pd
 import requests
 
 from analytics import blended_level, fetch_nav_series, fetch_prices
-from common import AMFI_NAV_URL, load_portfolio, now_ist, read_json, write_json
+from common import AMFI_NAV_URLS, load_portfolio, now_ist, read_json, write_json
 
 BENCH_YIELD_PP = 1.0                 # a price index leaves out ~1%/yr of dividends
 WINDOWS = {"1Y": 1, "3Y": 3, "5Y": 5}
@@ -123,7 +123,14 @@ def main() -> None:
         return
     tickers = sorted({p["ticker"] for f in cfg["funds"] for p in bench_parts(f)})
     prices = fetch_prices(tickers)
-    navtext = requests.get(AMFI_NAV_URL, timeout=60).text
+    navtext = ""
+    for url in AMFI_NAV_URLS:                          # AMFI's new address first, the old one as a backup
+        try:
+            navtext = requests.get(url, timeout=60).text
+            if ";" in navtext:
+                break
+        except requests.RequestException as exc:
+            print(f"[warn] {url}: {exc}", file=sys.stderr)
     members = {}
     for f in cfg["funds"]:
         try:

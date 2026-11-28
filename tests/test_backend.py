@@ -647,6 +647,45 @@ class SnapshotTodayPoint(unittest.TestCase):
         self.assertIsNone(snapshot.today_point(self.CFG, st))
 
 
+class AmfiFetch(unittest.TestCase):
+    FILE = "Scheme Code;ISIN Div Payout/ ISIN Growth;ISIN Div Reinvestment;Scheme Name;Plan;Option;Net Asset Value;Date\n\nOpen Ended Schemes(Equity Scheme - Flexi Cap Fund)\n" \
+           "118834;INF769K01BI1;-;Mirae Asset Large & Midcap Fund;Direct Plan;Growth;184.059;26-Nov-2026\n125354;INF846K01K35;-;Axis Small Cap Fund;Direct Plan;Growth Option;N.A.;27-Nov-2026\n"
+
+    def resp(self, text="", status=200, js=None):
+        r = unittest.mock.Mock(status_code=status, text=text); r.json.return_value = js
+        r.raise_for_status.side_effect = None if status < 400 else RuntimeError(f"HTTP {status}")
+        return r
+
+    def run_with(self, answers):
+        def get(url, timeout=None):
+            for key, r in answers.items():
+                if key in url:
+                    if isinstance(r, Exception):
+                        raise r
+                    return r
+            raise RuntimeError("unexpected " + url)
+        with unittest.mock.patch.object(common.requests, "get", side_effect=get), unittest.mock.patch.object(common.time, "sleep"):
+            return common.fetch_amfi_navs(retries=1, codes=[118834])
+
+    def test_the_new_amfi_address_is_read_and_na_rows_are_skipped(self):
+        navs = self.run_with({"portal.amfiindia": self.resp(self.FILE)})
+        self.assertEqual(navs["118834"], {"name": "Mirae Asset Large & Midcap Fund Direct Plan Growth", "nav": 184.059, "date": "26-Nov-2026"})
+        self.assertNotIn("125354", navs)
+
+    def test_a_page_without_navs_falls_through_to_the_old_address(self):
+        navs = self.run_with({"portal.amfiindia": self.resp("<html>maintenance</html>"), "www.amfiindia": self.resp(self.FILE)})
+        self.assertEqual(navs["118834"]["nav"], 184.059)
+
+    def test_amfi_down_means_mfapi_with_amfis_date_format(self):
+        js = {"meta": {"scheme_name": "Mirae Asset Large & Midcap Fund - Direct Plan - Growth"}, "data": [{"date": "27-11-2026", "nav": "183.51000"}]}
+        navs = self.run_with({"amfiindia": RuntimeError("down"), "mfapi": self.resp(js=js)})
+        self.assertEqual((navs["118834"]["nav"], navs["118834"]["date"]), (183.51, "27-Nov-2026"))
+
+    def test_nothing_answering_raises(self):
+        with self.assertRaises(Exception):
+            self.run_with({"amfiindia": RuntimeError("down"), "mfapi": RuntimeError("down too")})
+
+
 class Housekeeping(unittest.TestCase):
     TODAY = dt.date(2026, 11, 10)
 
@@ -673,6 +712,33 @@ class Housekeeping(unittest.TestCase):
     def test_other_issues_are_left_alone(self):
         self.assertIsNone(self.reason("Something a person wrote", months={"2026-11"}))
         self.assertIsNone(self.reason("Upload your Groww statement \u2014 Smarch 2026", months={"2026-11"}))
+
+    HOL = {"2026-11-10"}                                                                             # a weekday holiday (Diwali-Balipratipada)
+    at = staticmethod(lambda iso: dt.datetime.fromisoformat(iso).replace(tzinfo=housekeeping.IST))
+
+    def test_fresh_data_raises_nothing(self):
+        # Saturday morning: Friday's estimate is in; NAVs for Thursday and Friday (Mirae a day late is not an alarm)
+        p = housekeeping.data_problems(self.at("2026-11-28T03:10"), "2026-11-27T23:22:24+05:30", {"Axis": "27-Nov-2026", "Mirae": "26-Nov-2026"}, self.HOL)
+        self.assertEqual(p, [])
+
+    def test_an_estimate_that_stopped_is_reported(self):
+        p = housekeeping.data_problems(self.at("2026-12-01T03:10"), "2026-11-27T23:22:24+05:30", {"Axis": "30-Nov-2026"}, self.HOL)
+        self.assertEqual(len(p), 1); self.assertIn("estimate has not updated since 27 Nov", p[0]); self.assertIn("Mon 30 Nov", p[0])
+
+    def test_a_nav_two_trading_days_behind_is_reported(self):
+        p = housekeeping.data_problems(self.at("2026-12-01T03:10"), "2026-11-30T23:00:00+05:30", {"Axis": "30-Nov-2026", "Mirae": "26-Nov-2026"}, self.HOL)
+        self.assertEqual(len(p), 1); self.assertTrue(p[0].startswith("Mirae: the newest NAV on file is from 26 Nov")); self.assertIn("Fri 27 Nov", p[0])
+
+    def test_weekends_and_holidays_are_not_trading_days(self):
+        # Wednesday 11 Nov, the day after the Tuesday holiday: the previous trading day is Monday 9 Nov, not the holiday
+        self.assertEqual(housekeeping.previous_trading_day(dt.date(2026, 11, 11), self.HOL), dt.date(2026, 11, 9))
+        self.assertEqual(housekeeping.previous_trading_day(dt.date(2026, 11, 30), self.HOL), dt.date(2026, 11, 27))
+        p = housekeeping.data_problems(self.at("2026-11-11T03:10"), "2026-11-09T23:00:00+05:30", {"Axis": "06-Nov-2026"}, self.HOL)
+        self.assertEqual(p, [])                                                                       # Monday's estimate and Friday's NAV are on time
+
+    def test_unreadable_values_are_reported_not_crashed_on(self):
+        p = housekeeping.data_problems(self.at("2026-12-01T03:10"), None, {"Axis": "soon"}, self.HOL)
+        self.assertEqual(len(p), 2)
 
     def test_the_newest_deployments_are_always_kept(self):
         deps = [{"id": i, "created_at": f"2026-11-{i:02d}T00:00:00Z"} for i in range(1, 11)]

@@ -6,6 +6,7 @@ import datetime as dt
 import json
 import os
 import pathlib
+import sys
 import time
 from zoneinfo import ZoneInfo
 
@@ -18,7 +19,9 @@ HOLDINGS_DIR = CONFIG / "holdings"
 DATA_DIR = ROOT / "docs" / "data"
 IST = ZoneInfo("Asia/Kolkata")
 
-AMFI_NAV_URL = "https://www.amfiindia.com/spages/NAVAll.txt"
+# AMFI moved its NAV file to portal.amfiindia.com in Nov 2026 (the old address redirects); mfapi.in mirrors it, so it is the fallback
+AMFI_NAV_URLS = ("https://portal.amfiindia.com/spages/NAVAll.txt", "https://www.amfiindia.com/spages/NAVAll.txt")
+MFAPI_LATEST = "https://api.mfapi.in/mf/{code}/latest"
 
 
 def now_ist() -> dt.datetime:
@@ -129,46 +132,54 @@ def write_json(name: str, payload) -> None:
         fh.write(blob)
 
 
-def fetch_amfi_navs(retries: int = 2) -> dict[str, dict]:
-    """Return {scheme_code: {name, nav, date}} from AMFI's daily text file.
-
-    The file is pipe-delimited with section headers scattered through it,
-    so anything that isn't a 6-field row is skipped.
-
-    Retries a couple of times on failure — without this, a single transient
-    network blip costs the whole night's reconciliation (no grading, no SIP
-    application, no NAV update) rather than just one slow request.
-    """
-    resp = None
-    last_exc: Exception | None = None
-    for attempt in range(retries + 1):
-        try:
-            resp = requests.get(AMFI_NAV_URL, timeout=30)
-            resp.raise_for_status()
-            break
-        except Exception as exc:  # noqa: BLE001
-            last_exc = exc
-            resp = None
-            if attempt < retries:
-                time.sleep(5)
-    if resp is None:
-        raise last_exc
-
+def parse_amfi_navs(text: str) -> dict[str, dict]:
+    """{scheme_code: {name, nav, date}} from AMFI's NAVAll.txt (8 fields a row; section headers and 'N.A.' rows are skipped)."""
     navs: dict[str, dict] = {}
-    for line in resp.text.splitlines():
+    for line in text.splitlines():
         parts = line.split(";")
         if len(parts) != 8 or parts[0].strip() == "Scheme Code":
             continue
-        code, _isin_g, _isin_r, scheme, plan, option, nav, date = (
-            p.strip() for p in parts
-        )
+        code, _isin_g, _isin_r, scheme, plan, option, nav, date = (p.strip() for p in parts)
         try:
             nav_val = float(nav)
         except ValueError:
             continue  # 'N.A.' on non-trading days
-        name = f"{scheme} {plan} {option}".strip()
-        navs[code] = {"name": name, "nav": nav_val, "date": date}
+        navs[code] = {"name": f"{scheme} {plan} {option}".strip(), "nav": nav_val, "date": date}
     return navs
+
+
+def fetch_amfi_navs(retries: int = 2, codes=()) -> dict[str, dict]:
+    """Return {scheme_code: {name, nav, date}} from AMFI's daily text file, trying its new and old addresses a few times each
+    (a single network blip would otherwise cost the night's reconciliation). A page with no NAV rows (a maintenance page, a moved
+    file) counts as a failure, not as "no NAVs today". If AMFI cannot be read at all, the latest NAV of each scheme in `codes`
+    comes from mfapi.in, which mirrors AMFI, with the date written the way AMFI writes it."""
+    last_exc: Exception | None = None
+    for attempt in range(retries + 1):
+        for url in AMFI_NAV_URLS:
+            try:
+                resp = requests.get(url, timeout=30)
+                resp.raise_for_status()
+                navs = parse_amfi_navs(resp.text)
+                if navs:
+                    return navs
+                last_exc = ValueError(f"{url}: no NAV rows in the file")
+            except Exception as exc:  # noqa: BLE001
+                last_exc = exc
+        if attempt < retries:
+            time.sleep(5)
+    out: dict[str, dict] = {}
+    for code in codes:
+        try:
+            d = requests.get(MFAPI_LATEST.format(code=code), timeout=20).json()
+            row = d["data"][0]
+            out[str(code)] = {"name": (d.get("meta") or {}).get("scheme_name", ""), "nav": float(row["nav"]),
+                              "date": dt.datetime.strptime(row["date"], "%d-%m-%Y").strftime("%d-%b-%Y")}
+        except Exception as exc:  # noqa: BLE001
+            print(f"[warn] mfapi fallback for {code}: {exc}", file=sys.stderr)
+    if out:
+        print(f"[warn] AMFI unreachable ({last_exc}); NAVs for {len(out)} scheme(s) taken from mfapi.in", file=sys.stderr)
+        return out
+    raise last_exc or RuntimeError("no NAV source answered")
 
 
 def special_session(cfg: dict, when: dt.datetime) -> dict | None:

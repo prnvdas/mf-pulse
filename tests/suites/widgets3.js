@@ -308,7 +308,7 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
   ok(/In 20 years/.test(t)&&await p.evaluate(()=>document.activeElement&&document.activeElement.dataset.k==='yrs'),'typing updates the result and keeps the cursor in the box',t.slice(0,120));
   await p.locator('#calcIn input[data-k="start"]').fill('0'); await p.waitForTimeout(150); ok(!/your portfolio today/.test(await p.$eval('#cfh-start',e=>e.textContent)),'a typed-over starting amount is no longer labelled as the portfolio');
   for (const v of ['','abc','-5','1e400']) {await box.fill(v).catch(()=>{}); await p.waitForTimeout(100); ok(!/NaN|undefined|Infinity/.test(await g()),'years '+JSON.stringify(v)+' handled');}
-  await p.evaluate(()=>scrollTo(0,0)); await p.locator('#snavIn button',{hasText:'Calculators'}).click(); await p.waitForTimeout(900);
+  await p.evaluate(()=>scrollTo(0,0)); await p.locator('#snavIn button',{hasText:'Calculators'}).click(); {let last=-1,same=0;for(let i=0;i<60&&same<4;i++){await p.waitForTimeout(100);const y=await p.evaluate(()=>Math.round(scrollY));same=y===last?same+1:0;last=y;}}   // wait until the smooth scroll has stopped (slow on CI)
   const nav=await p.evaluate(()=>({top:Math.round(document.getElementById('calcWrap').getBoundingClientRect().top),cur:[...document.querySelectorAll('#snavIn button')].find(b=>b.getAttribute('aria-current')==='true')?.textContent}));
   ok(nav.top>=0&&nav.top<200&&nav.cur==='Calculators','the Calculators menu button scrolls to the calculators and lights up',JSON.stringify(nav));
   await p.click('#calcSeg button[data-k="swp"]'); t=await g(); ok(/Total withdrawal/.test(t)&&/(pays out|runs out)/.test(t)&&/does today/.test(t),'SWP tab',t.slice(0,250));

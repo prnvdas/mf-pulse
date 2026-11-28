@@ -287,43 +287,6 @@ const { chromium } = require('playwright'); let n=0,fail=0; const ok=(c,name,d)=
  for (const [f,fn] of [['tax',j=>{j.funds.forEach(x=>{x.lots=null});return j;}],['tax',j=>{j.funds.forEach(x=>{x.lots=[{units:'a',value:null,gain:1,term:'x'},null]});return j;}],['tax',j=>{j.rates=null;return j;}],['tax',j=>{j.funds=[];return j;}],
    ['portfolio_history',j=>{j.points=j.points.slice(0,100);return j;}],['portfolio_history',j=>{j.points.forEach((p,i)=>{if(i%11===0)p.v=0});return j;}]]) {const {p,ctx,errs}=await page({[f]:fn});
   {const bt=await p.evaluate(()=>document.body.innerText);ok(!errs.length&&!/NaN|undefined|\[object/.test(bt),'hostile '+f+' for rolling/planner: '+String(fn).slice(0,60),errs[0]||(bt.match(/.{40}(NaN|undefined|\[object).{30}/)||[])[0]);} await ctx.close();}
- // calculators: the maths (Groww's worked SIP example; EPF worked by hand), then the page
- {const {p,ctx,errs}=await page();
-  const m=await p.evaluate(()=>({sip:sipCalc({start:0,sip:1000,ret:12,yrs:1,inf:6}),lump:sipCalc({start:100000,sip:0,ret:10,yrs:2,inf:0}),
-    swp0:swpCalc({corpus:120000,wd:1000,swpRet:0,swpYrs:5,inf:0}),swpOut:swpCalc({corpus:10000,wd:3000,swpRet:0,swpYrs:5,inf:0}),
-    epf:epfCalc({sal:15000,age:57,retire:58,own:12,rise:5,epfRate:8.25,bal:0,inf:0}),epfBal:epfCalc({sal:0,age:40,retire:41,own:12,rise:0,epfRate:8.25,bal:100000,inf:0}),
-    epfHigh:epfCalc({sal:50000,age:57,retire:58,own:12,rise:0,epfRate:0,bal:0,inf:0}),none:epfCalc({sal:50000,age:60,retire:58,own:12,rise:0,epfRate:8.25,bal:0,inf:0})}));
-  ok(Math.round(m.sip.total)===12766&&m.sip.put===12000,'SIP: Rs 1,000 a month at 12% for a year is Rs 12,766 (Groww\'s worked example)',JSON.stringify(m.sip));
-  ok(Math.round(m.lump.total)===121000,'SIP: a starting amount compounds yearly (1 lakh at 10% for 2 years = 1.21 lakh)',String(m.lump.total));
-  ok(m.swp0.out===60000&&m.swp0.final===60000&&!m.swp0.empty,'SWP at 0%: 60 withdrawals of 1,000 leave 60,000',JSON.stringify(m.swp0));
-  ok(m.swpOut.empty===4&&m.swpOut.out===10000&&m.swpOut.final===0,'SWP: 10,000 at 3,000 a month runs out in month 4 after paying out exactly 10,000',JSON.stringify(m.swpOut));
-  ok(Math.abs(m.epf.bal-29460.19)<0.5&&m.epf.own===21600&&m.epf.er===6600,'EPF at Rs 15,000: 1,800 + 550 a month (1,250 goes to EPS), interest 1,260 -> 29,460',JSON.stringify(m.epf));
-  ok(Math.abs(m.epfBal.bal-108250)<0.01,'EPF: an existing balance earns the yearly rate (1 lakh -> 1,08,250 at 8.25%)',String(m.epfBal.bal));
-  ok(m.epfHigh.er===12*(6000-1250),'EPF above Rs 15,000: the pension share stays capped at 1,250 a month',String(m.epfHigh.er)); ok(m.none.yrs===0,'EPF: retiring before your age gives no years');
-  const g=()=>p.$eval('#calcWrap',e=>e.hidden?'':e.innerText);
-  let t=await g(); const start=await p.$eval('#calcIn input[data-k="start"]',e=>+e.value), sip=await p.$eval('#calcIn input[data-k="sip"]',e=>+e.value);
-  ok(start>0&&sip>0&&/your portfolio today/.test(t)&&/your SIPs today/.test(t)&&/could grow to/.test(t)&&/in today's money/i.test(t)&&!/NaN|undefined|Infinity/.test(t),'SIP tab: filled in from the portfolio and the SIPs, result in today\'s money',t.slice(0,300));
-  ok(start===await p.evaluate(()=>Math.round(CALC.v.start)),'the starting amount is the portfolio value');
-  const box=p.locator('#calcIn input[data-k="yrs"]'); await box.fill('20'); await p.waitForTimeout(150); t=await g();
-  ok(/In 20 years/.test(t)&&await p.evaluate(()=>document.activeElement&&document.activeElement.dataset.k==='yrs'),'typing updates the result and keeps the cursor in the box',t.slice(0,120));
-  await p.locator('#calcIn input[data-k="start"]').fill('0'); await p.waitForTimeout(150); ok(!/your portfolio today/.test(await p.$eval('#cfh-start',e=>e.textContent)),'a typed-over starting amount is no longer labelled as the portfolio');
-  for (const v of ['','abc','-5','1e400']) {await box.fill(v).catch(()=>{}); await p.waitForTimeout(100); ok(!/NaN|undefined|Infinity/.test(await g()),'years '+JSON.stringify(v)+' handled');}
-  await p.evaluate(()=>scrollTo(0,0)); await p.locator('#snavIn button',{hasText:'Calculators'}).click(); await p.waitForTimeout(900);
-  const nav=await p.evaluate(()=>({top:Math.round(document.getElementById('calcWrap').getBoundingClientRect().top),cur:[...document.querySelectorAll('#snavIn button')].find(b=>b.getAttribute('aria-current')==='true')?.textContent}));
-  ok(nav.top>=0&&nav.top<200&&nav.cur==='Calculators','the Calculators menu button scrolls to the calculators and lights up',JSON.stringify(nav));
-  await p.click('#calcSeg button[data-k="swp"]'); t=await g(); ok(/Total withdrawal/.test(t)&&/(pays out|runs out)/.test(t)&&/does today/.test(t),'SWP tab',t.slice(0,250));
-  await p.locator('#calcIn input[data-k="wd"]').fill('99999999'); await p.waitForTimeout(150); ok(/runs out after/.test(await g()),'SWP: a withdrawal too big says when the money runs out');
-  await p.click('#calcSeg button[data-k="epf"]'); t=await g(); ok(/by the time you retire at 58/.test(t)&&/Employer's contributions/.test(t)&&/8\.25%/.test(t),'EPF tab',t.slice(0,250));
-  await p.locator('#calcIn input[data-k="retire"]').fill('20'); await p.waitForTimeout(150); ok(/retirement age above your age/.test(await g()),'EPF: retirement before your age is explained');
-  await p.locator('#calcIn input[data-k="retire"]').fill('58'); await p.setViewportSize({width:320,height:900}); await p.waitForTimeout(250);
-  const fit=await p.evaluate(()=>({doc:document.documentElement.scrollWidth,iw:innerWidth,tiles:[...document.querySelectorAll('#calcWrap .kgrid>div,#calcWrap .cf')].filter(t=>t.scrollWidth>t.clientWidth+1).length}));
-  ok(fit.doc<=fit.iw+1&&!fit.tiles,'calculators fit a 320px phone',JSON.stringify(fit)); await (await p.$('#calcWrap')).screenshot({path:'calc-320.png'});
-  ok(!errs.length,'calculator errs',errs[0]); await ctx.close();}
- // with amounts hidden, the portfolio's figures stay out of the calculator boxes
- {const ctx=await b.newContext({viewport:{width:1200,height:900}});const p=await ctx.newPage();await p.addInitScript(()=>{try{localStorage.setItem('mfp_hide','1')}catch(e){}});
-  await p.clock.install({time:new Date('2026-10-12T08:30:00Z')}); await p.goto(process.env.BASE||'http://localhost:8000/index.html',{waitUntil:'networkidle'}); await p.waitForTimeout(400); await p.clock.fastForward(3000); await p.waitForTimeout(250);
-  const h=await p.evaluate(()=>({start:document.querySelector('#calcIn input[data-k="start"]').value,sip:document.querySelector('#calcIn input[data-k="sip"]').value,txt:document.getElementById('calcWrap').innerText}));
-  ok(h.start===''&&h.sip===''&&!/₹\s?\d/.test(h.txt),'hidden amounts: calculator boxes and results are masked',JSON.stringify(h).slice(0,200)); await ctx.close();}
  // statement bar copy
  {const {p,ctx}=await page({analytics:j=>j});ok(true,'noop');await ctx.close();}
  console.log(`${n-fail}/${n} passed`);await b.close();process.exit(fail?1:0);})();

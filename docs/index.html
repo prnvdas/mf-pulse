@@ -595,15 +595,6 @@
   #bBull{max-width:100%;overflow-x:auto}
   @media(max-width:400px){.stat .v{font-size:19px}.acc.four{grid-template-columns:1fr}.acc .v{white-space:nowrap}.wrap{padding:0 10px}section,.hero,.strip,.brief{padding-left:12px;padding-right:12px}.hrow .cells{gap:2px}}
   .outlook details{max-width:100%;overflow-x:auto}                         /* its backtest tables scroll inside the card on small phones */
-  /* calculators: labelled boxes in a grid, the unit inside the box */
-  .calcf{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px 14px;margin:0 0 16px}.calcf>*{min-width:0}
-  .cf{display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:var(--grey)}
-  .cfi{display:flex;align-items:center;gap:6px;border:1px solid var(--rule);border-radius:10px;background:var(--paper);padding:0 10px}
-  .cfi:focus-within{outline:2px solid var(--ink);outline-offset:-1px}
-  .cfi input{font:inherit;font-size:16px;font-weight:600;color:var(--ink);background:none;border:0;outline:0;width:100%;min-width:0;padding:9px 0;-moz-appearance:textfield;appearance:textfield}
-  .cfi input::-webkit-outer-spin-button,.cfi input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
-  .cfi i{font-style:normal;color:var(--grey);font-size:14px}.cf small{font-size:11.5px;color:var(--grey-light);min-height:1.2em}
-  @media(max-width:420px){.calcf{grid-template-columns:1fr 1fr;gap:10px}}
 </style>
 </head>
 <body>
@@ -773,13 +764,6 @@
         <tbody id="projTable"></tbody>
       </table></div>
     </details>
-  </section>
-  <section id="calcWrap" hidden>
-    <h2>Calculators <span id="calcNote">try your own numbers</span></h2>
-    <div class="seg" id="calcSeg" role="tablist" aria-label="Calculator"></div>
-    <p class="sub2" id="calcWhat" style="margin:0 0 14px"></p>
-    <div class="calcf" id="calcIn"></div>
-    <div id="calcOut"></div>
   </section>
   <section id="whyWrap" class="why" hidden>
     <h2 id="whyTitle">Why the market moved</h2>
@@ -1345,7 +1329,6 @@ function render(funds, meta) {
       'here after a few sessions.</div>';
 
   renderProjection(value, invested);
-  safe(() => renderCalc(value), "calcWrap");
   renderBrief(funds, value, invested, impact, meta);
 }
 
@@ -3331,95 +3314,8 @@ function renderSectors() {
     '<p class="sub2" style="margin-top:12px">Sectors are Yahoo\'s classification (' + (num(X.classified_pct) ? X.classified_pct : "most") + "% of your money is covered); holdings are the funds' monthly disclosures, so this lags real life a little.</p>";
 }
 
-// ---- Calculators (SIP with a starting amount, SWP, EPF), modelled on Groww's. The starting amounts and the SIP come from your
-// portfolio and follow it until you type over them; every rate is an assumption you can change, and each result is also shown in
-// today's money (after inflation).
-const CALC = { tab: "sip", v: null, touched: {} }, CALC_AUTO = ["start", "sip", "corpus", "wd"];
-const CALC_TABS = { sip: ["SIP", "Invest every month on top of what you already have."], swp: ["SWP", "Take a fixed amount out every month and leave the rest invested."], epf: ["EPF", "Your provident fund by the time you retire."] };
-const CALC_INF = ["inf", "Inflation a year", "%", "your guess; the RBI aims for 4%"];
-const CALC_F = {
-  sip: [["start", "Starting amount", "₹", "your portfolio today"], ["sip", "Monthly SIP", "₹", "your SIPs today"], ["ret", "Expected return a year", "%"], ["yrs", "Years", "yr"], CALC_INF],
-  swp: [["corpus", "Total investment", "₹", "your portfolio today"], ["wd", "Withdrawal a month", "₹", "4% a year of your portfolio"], ["swpRet", "Expected return a year", "%"], ["swpYrs", "Years", "yr"], CALC_INF],
-  epf: [["sal", "Monthly salary (basic + DA)", "₹"], ["age", "Your age", "yr"], ["retire", "Retire at", "yr"], ["own", "Your contribution", "%"], ["rise", "Salary rise a year", "%"], ["epfRate", "EPF interest a year", "%", "the rate set for 2025-26"], ["bal", "EPF balance today", "₹"], CALC_INF]
-};
-function calcDefaults(value) {
-  return { start: Math.round(value), sip: Math.round(CFG.monthly_sip_total || 0), ret: ((CFG.projection || {}).scenarios_pct || [12])[0], yrs: 10, inf: 6,
-    corpus: Math.round(value), wd: Math.round(value * 0.04 / 12 / 1000) * 1000 || 10000, swpRet: 8, swpYrs: 10,
-    sal: 50000, age: 30, retire: 58, own: 12, rise: 5, epfRate: 8.25, bal: 0 };
-}
-const deflate = (x, inf, yrs) => x / Math.pow(1 + inf / 100, yrs);
-function sipCalc(v) { const n = Math.round(v.yrs * 12), total = projectFutureValue(v.start, v.sip, v.ret, v.yrs, n), put = v.start + v.sip * n; return { total, put, gain: total - put, real: deflate(total, v.inf, v.yrs) }; }
-// Each month the withdrawal comes out first, then the rest earns a month's return (Groww's order).
-function swpCalc(v) {
-  const i = Math.pow(1 + v.swpRet / 100, 1 / 12) - 1, n = Math.round(v.swpYrs * 12); let bal = v.corpus, out = 0, empty = 0;
-  for (let m = 1; m <= n; m++) { const w = Math.min(v.wd, bal); bal -= w; out += w; if (bal <= 0) { bal = 0; empty = m; break; } bal *= 1 + i; }
-  return { out, final: bal, empty, real: deflate(bal, v.inf, v.swpYrs) };
-}
-// EPF: you pay your share of salary; the employer pays 12%, of which 8.33% of up to ₹15,000 (at most ₹1,250) goes to the pension
-// scheme, not EPF. Interest runs on each month's balance and is added once a year, as EPFO does.
-function epfCalc(v) {
-  const yrs = Math.max(0, Math.round(v.retire - v.age)), r = v.epfRate / 100 / 12; let bal = v.bal, own = 0, er = 0, intr = 0;
-  for (let y = 0; y < yrs; y++) {
-    const s = v.sal * Math.pow(1 + v.rise / 100, y), a = s * v.own / 100, b = Math.max(0, s * 0.12 - Math.min(Math.round(Math.min(s, 15000) * 0.0833), 1250));
-    let run = bal, yi = 0; for (let m = 0; m < 12; m++) { run += a + b; yi += run * r; }
-    own += 12 * a; er += 12 * b; intr += yi; bal = run + yi;
-  }
-  return { yrs, bal, own, er, intr, real: deflate(bal, v.inf, yrs) };
-}
-function renderCalc(value) {
-  const wrap = $("calcWrap"); wrap.hidden = false;
-  const fresh = calcDefaults(num(value) && value > 0 ? value : 0);
-  if (!CALC.v) CALC.v = fresh; else CALC_AUTO.forEach(k => { if (!CALC.touched[k]) CALC.v[k] = fresh[k]; });
-  if (wrap.contains(document.activeElement) && document.activeElement.tagName === "INPUT") { calcResult(); return; }   // someone is typing: leave the boxes alone
-  drawCalc();
-}
-function drawCalc() {
-  $("calcSeg").innerHTML = Object.entries(CALC_TABS).map(([k, t]) => '<button role="tab" aria-selected="' + (k === CALC.tab) + '" data-k="' + k + '">' + t[0] + "</button>").join("");
-  $("calcSeg").querySelectorAll("button").forEach(b => b.onclick = () => { CALC.tab = b.dataset.k; drawCalc(); });
-  $("calcWhat").textContent = CALC_TABS[CALC.tab][1];
-  const masked = k => HIDE && CALC_AUTO.includes(k) && !CALC.touched[k];   // with amounts hidden, your portfolio's figures stay out of the boxes
-  $("calcIn").innerHTML = CALC_F[CALC.tab].map(([k, label, u]) => '<label class="cf"><span>' + label + '</span><span class="cfi">' + (u === "₹" ? "<i>₹</i>" : "") +
-    '<input type="number" min="0" step="any" inputmode="decimal" data-k="' + k + '" data-max="' + (u === "₹" ? 1e12 : 100) + '" value="' + (masked(k) ? "" : CALC.v[k]) + '"' + (masked(k) ? ' placeholder="••••"' : "") + ">" +
-    (u !== "₹" ? "<i>" + u + "</i>" : "") + '</span><small id="cfh-' + k + '"></small></label>').join("");
-  $("calcIn").querySelectorAll("input").forEach(e => e.oninput = () => { const x = parseFloat(e.value); if (x >= 0 && x <= +e.dataset.max) CALC.v[e.dataset.k] = x; CALC.touched[e.dataset.k] = true; calcResult(); });   // blank, negative or absurd: keep the last good number
-  calcResult();
-}
-function calcResult() {
-  const v = CALC.v, yr = y => y + " year" + (y === 1 ? "" : "s");
-  const tile = (k, val, n) => "<div><div class=\"k\">" + k + '</div><div class="v">' + val + "</div>" + (n ? '<div class="n">' + n + "</div>" : "") + "</div>";
-  const bar = parts => { parts = parts.filter(p => p[1] > 0); const t = parts.reduce((s, p) => s + p[1], 0) || 1;
-    return '<div class="sbar" style="margin-top:14px" role="img" aria-label="' + parts.map(p => p[0]).join(", ") + '">' + parts.map(p => '<i style="width:' + (p[1] / t * 100).toFixed(2) + "%;background:" + p[2] + '"></i>').join("") +
-      '</div><div class="slegend">' + parts.map(p => '<span><i style="background:' + p[2] + '"></i>' + p[0] + " <b>" + cl(p[1]) + "</b></span>").join("") + "</div>"; };
-  CALC_F[CALC.tab].forEach(([k, , u, src]) => { const h = $("cfh-" + k); if (h) h.textContent = u === "₹" ? cl(v[k]) + (src && !CALC.touched[k] ? " · " + src : "") : (src || ""); });
-  let html;
-  if (CALC.tab === "sip") {
-    const r = sipCalc(v);
-    html = '<p class="scoreline" style="margin-top:0">In <b>' + yr(v.yrs) + "</b> this could grow to <b>" + cl(r.total) + "</b>. At " + v.inf + "% inflation, that buys what <b>" + cl(r.real) + "</b> buys today.</p>" +
-      '<div class="kgrid">' + tile("Invested amount", cl(r.put), "starting amount plus SIPs") + tile("Est. returns", cl(r.gain)) + tile("Total value", cl(r.total)) + tile("In today's money", cl(r.real), "after " + v.inf + "% inflation a year") + "</div>" +
-      bar([["Invested", r.put, "#a7aaad"], ["Est. returns", r.gain, "#86bc25"]]) +
-      '<p class="sub2" style="margin-top:12px">Same maths as Groww\'s SIP calculator: each SIP goes in at the start of the month and grows at the monthly rate that adds up to the yearly return you set. Real markets go up and down, so this is an extrapolation at one steady rate, not a prediction. Tax and fund costs are not included.</p>';
-  } else if (CALC.tab === "swp") {
-    const r = swpCalc(v), real = deflate(v.wd, v.inf, v.swpYrs);
-    html = '<p class="scoreline" style="margin-top:0">' + (r.empty
-      ? "At " + cl(v.wd) + " a month the money <b>runs out after " + (r.empty >= 12 ? yr(Math.floor(r.empty / 12)) + (r.empty % 12 ? " " + (r.empty % 12) + " month" + (r.empty % 12 === 1 ? "" : "s") : "") : r.empty + " month" + (r.empty === 1 ? "" : "s")) + "</b>, having paid out <b>" + cl(r.out) + "</b>."
-      : "Taking <b>" + cl(v.wd) + "</b> a month for <b>" + yr(v.swpYrs) + "</b> pays out <b>" + cl(r.out) + "</b> and leaves <b>" + cl(r.final) + "</b> invested.") +
-      " By year " + v.swpYrs + ", " + cl(v.wd) + " a month buys what <b>" + cl(real) + "</b> does today (at " + v.inf + "% inflation).</p>" +
-      '<div class="kgrid">' + tile("Total investment", cl(v.corpus)) + tile("Total withdrawal", cl(r.out)) + tile("Final value", cl(r.final)) + tile("Final value in today's money", cl(r.real), "after " + v.inf + "% inflation a year") + "</div>" +
-      bar([["Taken out", r.out, "#a7aaad"], ["Left at the end", r.final, "#86bc25"]]) +
-      '<p class="sub2" style="margin-top:12px">Each month the withdrawal comes out first, then the rest earns the monthly rate that adds up to the yearly return you set. Groww divides the yearly rate by 12 instead, so its final value comes out slightly higher. The withdrawal stays the same every year, and tax on what you take out is not included.</p>';
-  } else {
-    const r = epfCalc(v);
-    html = !(r.yrs > 0) ? '<p class="note">Set a retirement age above your age.</p>'
-      : '<p class="scoreline" style="margin-top:0">You will have about <b>' + cl(r.bal) + "</b> by the time you retire at " + v.retire + " (" + yr(r.yrs) + " from now). At " + v.inf + "% inflation, that buys what <b>" + cl(r.real) + "</b> buys today.</p>" +
-      '<div class="kgrid">' + tile("Your contributions", cl(r.own)) + tile("Employer's contributions", cl(r.er), "to EPF; the pension share is left out") + tile("Interest earned", cl(r.intr)) + tile("At retirement", cl(r.bal), cl(r.real) + " in today's money") + "</div>" +
-      bar([["Balance today", v.bal, "#6b7075"], ["You", r.own, "#a7aaad"], ["Employer", r.er, "#5f8a15"], ["Interest", r.intr, "#86bc25"]]) +
-      '<p class="sub2" style="margin-top:12px">Assumes your employer pays 12% of your full salary. Of that, 8.33% of up to ₹15,000 (at most ₹1,250 a month) goes to the pension scheme (EPS), not to EPF. Interest is worked out on each month\'s balance and added once a year, as EPFO does. 8.25% is the rate set for 2025-26; later years\' rates are not known yet.</p>';
-  }
-  $("calcOut").innerHTML = html;
-}
-
 // ---- section menu
-const NAV = [["Today", ["hero"]], ["Advice", ["advWrap", "valWrap"]], ["Bull or bear", ["trendWrap"]], ["Estimate accuracy", ["scoreWrap"]], ["Day by day", ["calWrap"]], ["Money", ["fundsSec"]], ["Calculators", ["calcWrap"]], ["Market", ["whyWrap", "moveSec"]], ["Funds", ["compareWrap", "healthWrap", "accSec"]], ["Returns & tax", ["retWrap", "taxWrap"]], ["Ideas", ["ideasWrap"]]];
+const NAV = [["Today", ["hero"]], ["Advice", ["advWrap", "valWrap"]], ["Bull or bear", ["trendWrap"]], ["Estimate accuracy", ["scoreWrap"]], ["Day by day", ["calWrap"]], ["Money", ["fundsSec"]], ["Market", ["whyWrap", "moveSec"]], ["Funds", ["compareWrap", "healthWrap", "accSec"]], ["Returns & tax", ["retWrap", "taxWrap"]], ["Ideas", ["ideasWrap"]]];
 function navTarget(ids) { for (const id of ids) { const e = $(id); if (e && !e.hidden) return e; } return null; }
 function setupNav() {
   const bar = $("snav"), inner = $("snavIn"); if (!bar) return;

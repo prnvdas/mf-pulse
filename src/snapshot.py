@@ -90,11 +90,14 @@ def tx_units() -> dict[str, dict[pd.Timestamp, float]]:
     return out
 
 
-def common_days(dates: list, series) -> list:
-    """The days up to the last one every fund has a NAV for. A fund whose NAV is simply late (published after the others') must not
-    pull the newest day in with its previous NAV carried forward: that day appears once it publishes."""
+def common_days(dates: list, series, strict_days: int = 5) -> list:
+    """The days every fund can honestly be valued on. Never past the last day every fund has a NAV for, and for the most recent
+    `strict_days` days only days every fund has its own NAV for: a fund whose NAV is simply late must not pull a day in with its
+    previous NAV carried forward, because that day would then show a wrong total. (Older odd gaps are carried over: they are real.)"""
+    series = list(series)
     limit = min(x.index.max() for x in series)
-    return [d for d in dates if d <= limit]
+    edge = pd.Timestamp(now_ist().date() - dt.timedelta(days=strict_days))
+    return [d for d in dates if d <= limit and (d < edge or all(d in x.index for x in series))]
 
 
 def backfill_from_transactions(cfg: dict, state: dict) -> list[dict] | None:
@@ -246,6 +249,31 @@ def tx_check(cfg: dict, state: dict) -> dict:
     return {"status": "stale" if any(abs(g) > 1 for g in gaps.values()) or len(gaps) < len(cfg["funds"]) else "ok", "gaps_pct": gaps, "last_transaction": last}
 
 
+def refresh_recent_days(doc: dict, cfg: dict, state: dict, days: int = 14) -> int:
+    """Re-derive the last `days` days from the NAV histories, so late data always wins. A fund house that publishes a day late can leave a
+    hole (the nightly run only ever sees each fund's newest NAV, so a day it skipped never became a point) or a day built while its NAV was
+    missing; the next night the history has the real NAV and the day is corrected. Days the rebuild does not have (the newest one, written
+    from AMFI's file before the NAV history catches up) are left as they are. Returns how many days were added or changed."""
+    try:
+        pts = backfill_from_transactions(cfg, state)
+    except Exception as exc:  # noqa: BLE001 -- a repair pass must never block the nightly point
+        print(f"[warn] refresh recent days: {exc}", file=sys.stderr)
+        return 0
+    if not pts:
+        return 0
+    by = {p["d"]: p for p in doc["points"]}
+    cutoff = (now_ist().date() - dt.timedelta(days=days)).isoformat()
+    changed = 0
+    for p in pts:
+        if p["d"] < cutoff:
+            continue
+        old = by.get(p["d"])
+        changed += old is None or abs(old["v"] - p["v"]) > 1
+        by[p["d"]] = p
+    doc["points"] = [by[k] for k in sorted(by)]
+    return changed
+
+
 def today_point(cfg: dict, state: dict) -> dict | None:
     rows, days = {}, []
     for f in cfg["funds"]:
@@ -278,6 +306,9 @@ def main() -> None:
         by = {x["d"]: x for x in doc["points"]}
         by[p["d"]] = p
         doc["points"] = [by[k] for k in sorted(by)]
+    fixed = 0 if args.backfill else refresh_recent_days(doc, cfg, state)
+    if fixed:
+        print(f"[ok] {fixed} recent day(s) added or corrected from the NAV histories (a fund house had published late)")
     got = add_benchmarks(doc["points"])
     doc["benchmarks"] = {"n": "Nifty 50", "m": "Nifty 500", "note": "the same money invested on the same dates; price index, so without dividends (about 1.3% a year)"} if got else None
     try:

@@ -608,16 +608,39 @@ class SnapshotTodayPoint(unittest.TestCase):
         # Mirae's 27 Nov NAV was published late: the others' 27 Nov values must not land on 26 Nov (or anywhere) next to its old NAV
         self.assertIsNone(snapshot.today_point(self.CFG, self.state("27-Nov-2026", "26-Nov-2026")))
 
-    def test_history_stops_at_the_last_day_every_fund_has(self):
+    def test_history_only_has_days_every_fund_can_be_valued_on(self):
         import pandas as pd
         ix = lambda *d: pd.Series(range(len(d)), index=pd.to_datetime(list(d)))
-        axis, mirae = ix("2026-11-25", "2026-11-26", "2026-11-27"), ix("2026-11-25", "2026-11-26")     # Mirae has not published 27 Nov
+        axis, mirae = ix("2026-11-25", "2026-11-26", "2026-11-27", "2026-11-30"), ix("2026-11-25", "2026-11-26", "2026-11-30")      # Mirae: Friday still missing
         days = sorted(set(axis.index) | set(mirae.index))
-        self.assertEqual([d.date().isoformat() for d in snapshot.common_days(days, [axis, mirae])], ["2026-11-25", "2026-11-26"])
-        mirae2 = ix("2026-11-25", "2026-11-26", "2026-11-27")                                         # once it publishes, the day is in
-        self.assertEqual(len(snapshot.common_days(days, [axis, mirae2])), 3)
-        gap = ix("2026-11-25", "2026-11-27")                                                          # an odd gap in the middle is still carried over
-        self.assertEqual(len(snapshot.common_days(sorted(set(axis.index) | set(gap.index)), [axis, gap])), 3)
+        iso = lambda xs: [d.date().isoformat() for d in xs]
+        with unittest.mock.patch.object(snapshot, "now_ist", return_value=dt.datetime(2026, 11, 30, 23, 0)):
+            self.assertEqual(iso(snapshot.common_days(days, [axis, mirae])), ["2026-11-25", "2026-11-26", "2026-11-30"])       # Friday waits for its real NAV
+            late = ix("2026-11-25", "2026-11-26")                                                                               # Mirae has nothing after Thursday
+            self.assertEqual(iso(snapshot.common_days(days, [axis, late])), ["2026-11-25", "2026-11-26"])
+            mirae2 = ix("2026-11-25", "2026-11-26", "2026-11-27", "2026-11-30")                                                 # once Friday is published the day is in
+            self.assertEqual(len(snapshot.common_days(days, [axis, mirae2])), 4)
+        with unittest.mock.patch.object(snapshot, "now_ist", return_value=dt.datetime(2026, 12, 20, 23, 0)):                   # an old gap is carried over, as before
+            self.assertEqual(len(snapshot.common_days(days, [axis, mirae])), 4)
+
+    def test_recent_days_are_added_and_corrected_from_the_nav_histories(self):
+        # stored: 27 Nov never became a point; 26 Nov was built while Mirae's NAV was missing; the newest day (30 Nov) is not in the rebuild yet
+        doc = {"points": [{"d": "2026-11-20", "v": 90.0, "i": 80.0}, {"d": "2026-11-26", "v": 101.0, "i": 90.0}, {"d": "2026-12-02", "v": 105.0, "i": 90.0}]}
+        rebuilt = [{"d": "2026-11-20", "v": 90.0, "i": 80.0}, {"d": "2026-11-26", "v": 99.0, "i": 90.0}, {"d": "2026-11-27", "v": 103.0, "i": 90.0}]
+        with unittest.mock.patch.object(snapshot, "backfill_from_transactions", return_value=rebuilt), \
+             unittest.mock.patch.object(snapshot, "now_ist", return_value=dt.datetime(2026, 12, 2, 23, 0)):
+            n = snapshot.refresh_recent_days(doc, self.CFG, {}, days=14)
+        self.assertEqual(n, 2)                                                                          # 27 Nov added, 26 Nov corrected
+        self.assertEqual([(p["d"], p["v"]) for p in doc["points"]], [("2026-11-20", 90.0), ("2026-11-26", 99.0), ("2026-11-27", 103.0), ("2026-12-02", 105.0)])
+
+    def test_days_older_than_the_window_are_left_alone_and_a_failed_rebuild_changes_nothing(self):
+        doc = {"points": [{"d": "2026-11-26", "v": 101.0, "i": 90.0}]}
+        old = [{"d": "2026-05-04", "v": 1.0, "i": 1.0}]
+        with unittest.mock.patch.object(snapshot, "now_ist", return_value=dt.datetime(2026, 12, 2, 23, 0)):
+            for kw in ({"return_value": old}, {"return_value": None}, {"side_effect": RuntimeError("mfapi down")}):
+                with unittest.mock.patch.object(snapshot, "backfill_from_transactions", **kw):
+                    self.assertEqual(snapshot.refresh_recent_days(doc, self.CFG, {}), 0)
+        self.assertEqual([(p["d"], p["v"]) for p in doc["points"]], [("2026-11-26", 101.0)])
 
     def test_missing_state_gives_no_point(self):
         st = self.state("27-Nov-2026", "27-Nov-2026"); st["b"].pop("last_nav")

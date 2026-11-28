@@ -573,27 +573,6 @@
   :root{color-scheme:light}
   button,input,select{-webkit-appearance:none;appearance:none}
   @media(max-width:760px){input,select{font-size:16px!important}}
-  /* Card layout (after a fintech dashboard the owner liked): a light-grey canvas with white rounded cards, calm sentence-case labels
-     over large light numbers, pill navigation. Colours keep their meaning (green gains, red losses); dark mode keeps the night sky. */
-  :root{--canvas:#f1f1f1;--card:#fff;--r:16px;--navbg:rgba(241,241,241,.94)}
-  :root[data-theme="dark"]{--canvas:#05070f;--card:rgba(130,150,255,.055);--navbg:rgba(5,7,15,.88)}
-  body{background:var(--canvas)}
-  section,.hero,.strip{background:var(--card);border-radius:22px;padding:30px 32px;margin-top:16px}
-  .brief{padding:32px}
-  .strip{border-top:0;padding:4px 32px}
-  .snav{border-bottom:0}
-  .snav button{border:0;border-radius:99px;padding:8px 16px;font-size:13.5px;letter-spacing:0;text-transform:none}
-  .snav button[aria-current=true]{background:var(--ink);color:var(--on-ink)}
-  .stat .k,.acc .k,.kgrid .k{font-size:12.5px;letter-spacing:0;text-transform:none}
-  .stat .v{font-size:28px;font-weight:400}.acc .v{font-size:30px;font-weight:400}.kgrid .v{font-size:28px;font-weight:400}
-  .trk,.outlook .oh{font-size:14px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--ink)}
-  .eyebrow,.gtxt>b:first-child,.outlook .ok,.bpoints .bk,.hbar .tg,.advbox .st,.rr-sub,.mvhd{letter-spacing:0;text-transform:none;font-size:12.5px;font-weight:600}.hc small{letter-spacing:0;text-transform:none;font-size:11.5px;font-weight:600}
-  button{text-transform:none;letter-spacing:0;font-weight:600}.stamp{text-transform:none;letter-spacing:0}
-  @media(max-width:760px){section,.hero,.strip{padding:22px 18px;border-radius:18px}.brief{padding:24px 18px}.strip{padding:2px 18px;grid-template-columns:repeat(2,minmax(0,1fr))}.stat .v{font-size:22px;white-space:nowrap}}
-  @media(max-width:760px){.acc .v,.kgrid .v{font-size:24px}}
-  @media(max-width:900px){.cardsrow{grid-template-columns:1fr}}
-  #bBull{max-width:100%;overflow-x:auto}
-  @media(max-width:400px){.stat .v{font-size:19px}.acc.four{grid-template-columns:1fr}.acc .v{white-space:nowrap}.wrap{padding:0 12px}section,.hero,.strip,.brief{padding-left:14px;padding-right:14px}.hrow .cells{gap:2px}}
 </style>
 </head>
 <body>
